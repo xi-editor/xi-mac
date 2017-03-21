@@ -38,14 +38,29 @@
                                     <rect key="frame" x="1" y="1" width="478" height="268"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="rTT-RO-I3T" customClass="EditView" customModule="XiEditor" customModuleProvider="target">
+                                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="rTT-RO-I3T">
                                             <rect key="frame" x="0.0" y="0.0" width="478" height="268"/>
+                                            <subviews>
+                                                <customView translatesAutoresizingMaskIntoConstraints="NO" id="3Js-0o-jqZ" customClass="GutterView" customModule="XiEditor" customModuleProvider="target">
+                                                    <rect key="frame" x="0.0" y="0.0" width="20" height="268"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="20" id="Smj-nI-f5r"/>
+                                                    </constraints>
+                                                </customView>
+                                                <customView translatesAutoresizingMaskIntoConstraints="NO" id="q1P-kd-995" customClass="EditView" customModule="XiEditor" customModuleProvider="target">
+                                                    <rect key="frame" x="20" y="0.0" width="458" height="268"/>
+                                                </customView>
+                                            </subviews>
                                             <constraints>
-                                                <constraint firstAttribute="height" constant="268" id="Saf-eA-IEJ"/>
+                                                <constraint firstItem="q1P-kd-995" firstAttribute="leading" secondItem="3Js-0o-jqZ" secondAttribute="trailing" id="LH9-Tc-TcJ"/>
+                                                <constraint firstAttribute="height" priority="900" constant="268" id="Saf-eA-IEJ"/>
+                                                <constraint firstAttribute="bottom" secondItem="q1P-kd-995" secondAttribute="bottom" id="anp-0j-jCG"/>
+                                                <constraint firstAttribute="trailing" secondItem="q1P-kd-995" secondAttribute="trailing" id="dC4-sm-7Xf"/>
+                                                <constraint firstItem="3Js-0o-jqZ" firstAttribute="leading" secondItem="rTT-RO-I3T" secondAttribute="leading" id="f7L-vN-ABi"/>
+                                                <constraint firstItem="q1P-kd-995" firstAttribute="top" secondItem="rTT-RO-I3T" secondAttribute="top" id="gJj-bF-tAE"/>
+                                                <constraint firstAttribute="bottom" secondItem="3Js-0o-jqZ" secondAttribute="bottom" id="kjU-1n-2Y5"/>
+                                                <constraint firstItem="3Js-0o-jqZ" firstAttribute="top" secondItem="rTT-RO-I3T" secondAttribute="top" id="ycq-Wi-XAC"/>
                                             </constraints>
-                                            <connections>
-                                                <outlet property="heightConstraint" destination="Saf-eA-IEJ" id="uZX-5F-hM2"/>
-                                            </connections>
                                         </customView>
                                     </subviews>
                                     <constraints>
@@ -63,7 +78,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                             </scrollView>
-                            <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="c3r-nr-uYj" customClass="ShadowView" customModule="XiEditor" customModuleProvider="target">
+                            <customView hidden="YES" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="c3r-nr-uYj" customClass="ShadowView" customModule="XiEditor" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="1" width="481" height="270"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             </customView>
@@ -77,7 +92,10 @@
                     </view>
                     <connections>
                         <outlet property="documentView" destination="1wJ-s5-kVO" id="6fc-8J-LwC"/>
-                        <outlet property="editView" destination="rTT-RO-I3T" id="YIl-Nk-fhb"/>
+                        <outlet property="editView" destination="q1P-kd-995" id="Dhz-gl-7Ut"/>
+                        <outlet property="editViewHeight" destination="Saf-eA-IEJ" id="oOC-Nd-tqI"/>
+                        <outlet property="gutterView" destination="3Js-0o-jqZ" id="BLh-Gh-ebk"/>
+                        <outlet property="gutterViewWidth" destination="Smj-nI-f5r" id="kjP-so-JhO"/>
                         <outlet property="scrollView" destination="Qwv-ci-fVA" id="4cE-10-pSP"/>
                         <outlet property="shadowView" destination="c3r-nr-uYj" id="X0D-a3-NVc"/>
                     </connections>

@@ -167,6 +167,11 @@ class LineCache {
     func computeMissing(_ first: Int, _ last: Int) -> [(Int, Int)] {
         var result: [(Int, Int)] = []
         let last = min(last, height)  // lines past the end aren't considered missing
+        guard first < last else {
+            Swift.print("compute missing called with first > last")
+            return result
+        }
+        
         for ix in first..<last {
             // could optimize a bit here, but unlikely to be important
             if ix < nInvalidBefore || ix >= nInvalidBefore + lines.count || lines[ix - nInvalidBefore] == nil {

@@ -19,6 +19,7 @@ protocol EditViewDataSource {
     var lines: LineCache { get }
     var styleMap: StyleMap { get }
     var textMetrics: TextDrawingMetrics { get }
+    var gutterWidth: CGFloat { get }
 }
 
 
@@ -28,6 +29,9 @@ class EditViewController: NSViewController, EditViewDataSource {
     @IBOutlet var shadowView: ShadowView!
     @IBOutlet var scrollView: NSScrollView!
     @IBOutlet var documentView: NSClipView!
+    @IBOutlet weak var gutterView: GutterView!
+    @IBOutlet weak var gutterViewWidth: NSLayoutConstraint!
+    @IBOutlet weak var editViewHeight: NSLayoutConstraint!
     
     var document: Document! {
         didSet {
@@ -43,6 +47,21 @@ class EditViewController: NSViewController, EditViewDataSource {
     //TODO: preferred font should be a user preference
     var textMetrics = TextDrawingMetrics(font: CTFontCreateWithName("InconsolataGo" as CFString?, 14, nil))
     
+    var gutterWidth: CGFloat {
+        return gutterViewWidth.constant
+    }
+    
+    // used to calculate the gutter width. Initial -1 so that a new document
+    // still triggers update of gutter width.
+    private var lineCount: Int = -1 {
+        didSet {
+            if lineCount != oldValue {
+                let gutterColumns = "\(lineCount)".characters.count
+                gutterViewWidth.constant = textMetrics.fontWidth * max(2, CGFloat(gutterColumns)) + 2 * gutterView.xPadding
+            }
+        }
+    }
+
     // visible scroll region, exclusive of lastLine
     var firstLine: Int = 0
     var lastLine: Int = 0
@@ -55,6 +74,7 @@ class EditViewController: NSViewController, EditViewDataSource {
     override func viewDidLoad() {
         super.viewDidLoad()
         editView.dataSource = self
+        gutterView.dataSource = self
         self.shadowView.mouseUpHandler = editView.mouseUp(with:)
         self.shadowView.mouseDraggedHandler = editView.mouseDragged(with:)
         scrollView.contentView.documentCursor = NSCursor.iBeam();
@@ -97,7 +117,12 @@ class EditViewController: NSViewController, EditViewDataSource {
     
     // MARK: - Core Commands
     func update(_ content: [String: AnyObject]) {
-        editView.update(update: content)
+        lines.applyUpdate(update: content)
+        self.lineCount = lines.height
+        self.editViewHeight.constant = max(CGFloat(lines.height) * textMetrics.linespace + 2 * textMetrics.descent, scrollView.bounds.height)
+        editView.showBlinkingCursor = editView.isFrontmostView
+        editView.needsDisplay = true
+        gutterView.needsDisplay = true
     }
 
     func scrollTo(_ line: Int, _ col: Int) {

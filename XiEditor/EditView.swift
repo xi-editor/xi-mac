@@ -31,6 +31,7 @@ extension NSFont {
 
 /// A store of properties used to determine the layout of text.
 struct TextDrawingMetrics {
+    let font: NSFont
     var attributes: [String: AnyObject] = [:]
     var ascent: CGFloat
     var descent: CGFloat
@@ -40,6 +41,7 @@ struct TextDrawingMetrics {
     var fontWidth: CGFloat
     
     init(font: NSFont) {
+        self.font = font
         ascent = CTFontGetAscent(font)
         descent = CTFontGetDescent(font)
         leading = CTFontGetLeading(font)
@@ -51,8 +53,7 @@ struct TextDrawingMetrics {
     
     /// Passed an NSFontManager instance (as on a user-initiated font change) computes the next set of drawing metrics.
     func newMetricsForFontChange(fontManager: NSFontManager) -> TextDrawingMetrics {
-        let oldFont = attributes[String(kCTFontAttributeName)] as! CTFont
-        let newFont = fontManager.convert(oldFont)
+        let newFont = fontManager.convert(font)
         return TextDrawingMetrics(font: newFont)
     }
 }
@@ -93,8 +94,6 @@ class EditView: NSView, NSTextInputClient {
     var document: Document!
     var dataSource: EditViewDataSource!
 
-    @IBOutlet var heightConstraint: NSLayoutConstraint?
-
     var textSelectionColor: NSColor {
         if self.isFrontmostView {
             return NSColor.selectedTextBackgroundColor
@@ -127,7 +126,7 @@ class EditView: NSView, NSTextInputClient {
     var _blinkTimer : Timer?
     private var _cursorStateOn = false
     /// if set to true, this view will show blinking cursors
-    private var showBlinkingCursor = false {
+    var showBlinkingCursor = false {
         didSet {
             _cursorStateOn = showBlinkingCursor
             _blinkTimer?.invalidate()
@@ -262,14 +261,6 @@ class EditView: NSView, NSTextInputClient {
     }
     
     //MARK: - Public API
-    
-    /// apply the given updates to the view.
-    public func update(update: [String: AnyObject]) {
-        dataSource.lines.applyUpdate(update: update)
-        self.heightConstraint?.constant = CGFloat(dataSource.lines.height) * dataSource.textMetrics.linespace + 2 * dataSource.textMetrics.descent
-        self.showBlinkingCursor = self.isFrontmostView
-        self.needsDisplay = true
-    }
 
     /// scrolls the editview to display the given line and column
     public func scrollTo(_ line: Int, _ col: Int) {
