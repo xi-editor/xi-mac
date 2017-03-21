@@ -8,7 +8,7 @@ set -e
 
 function build_target () {
     TARGET_NAME="$1"
-    cd "${SRCROOT}/$2"
+    cd "${SRCROOT}/xi-editor/$2"
     if [[ ${ACTION:-build} = "build" ]]; then
         if [[ $PLATFORM_NAME = "" ]]; then
             # default for building with xcodebuild
