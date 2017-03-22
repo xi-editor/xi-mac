@@ -32,14 +32,14 @@
                         <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <scrollView autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="Qwv-ci-fVA">
+                            <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="Qwv-ci-fVA">
                                 <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
                                 <clipView key="contentView" id="1wJ-s5-kVO">
-                                    <rect key="frame" x="1" y="1" width="478" height="268"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="rTT-RO-I3T" customClass="EditViewContainer" customModule="XiEditor" customModuleProvider="target">
-                                            <rect key="frame" x="0.0" y="0.0" width="478" height="268"/>
+                                            <rect key="frame" x="0.0" y="2" width="480" height="268"/>
                                             <subviews>
                                                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="3Js-0o-jqZ" customClass="GutterView" customModule="XiEditor" customModuleProvider="target">
                                                     <rect key="frame" x="0.0" y="0.0" width="20" height="268"/>
@@ -48,7 +48,7 @@
                                                     </constraints>
                                                 </customView>
                                                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="q1P-kd-995" customClass="EditView" customModule="XiEditor" customModuleProvider="target">
-                                                    <rect key="frame" x="20" y="0.0" width="458" height="268"/>
+                                                    <rect key="frame" x="20" y="0.0" width="460" height="268"/>
                                                 </customView>
                                             </subviews>
                                             <constraints>
@@ -78,7 +78,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                             </scrollView>
-                            <customView hidden="YES" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="c3r-nr-uYj" customClass="ShadowView" customModule="XiEditor" customModuleProvider="target">
+                            <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="c3r-nr-uYj" customClass="ShadowView" customModule="XiEditor" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="1" width="481" height="270"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             </customView>

@@ -28,8 +28,7 @@ class EditViewController: NSViewController, EditViewDataSource {
     
     @IBOutlet var shadowView: ShadowView!
     @IBOutlet var scrollView: NSScrollView!
-    @IBOutlet var documentView: NSClipView!
-    @IBOutlet weak var editViewContainer: NSView!
+    @IBOutlet weak var editViewContainer: EditViewContainer!
     @IBOutlet var editView: EditView!
     @IBOutlet weak var gutterView: GutterView!
     
@@ -78,8 +77,6 @@ class EditViewController: NSViewController, EditViewDataSource {
         super.viewDidLoad()
         editView.dataSource = self
         gutterView.dataSource = self
-        self.shadowView.mouseUpHandler = editView.mouseUp(with:)
-        self.shadowView.mouseDraggedHandler = editView.mouseDragged(with:)
         scrollView.contentView.documentCursor = NSCursor.iBeam();
         
         NotificationCenter.default.addObserver(self, selector: #selector(EditViewController.boundsDidChangeNotification(_:)), name: NSNotification.Name.NSViewBoundsDidChange, object: scrollView.contentView)
@@ -116,6 +113,8 @@ class EditViewController: NSViewController, EditViewDataSource {
             document?.sendRpcAsync("scroll", params: [firstLine, lastLine])
         }
         shadowView?.updateScroll(scrollView.contentView.bounds, scrollView.documentView!.bounds)
+        // if the window is resized, update the editViewHeight so we don't show scrollers unnecessarily
+        self.editViewHeight.constant = max(CGFloat(lines.height) * textMetrics.linespace + 2 * textMetrics.descent, scrollView.bounds.height)
     }
     
     // MARK: - Core Commands
