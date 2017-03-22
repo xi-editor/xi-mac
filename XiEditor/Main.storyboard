@@ -91,7 +91,6 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="documentView" destination="1wJ-s5-kVO" id="6fc-8J-LwC"/>
                         <outlet property="editView" destination="q1P-kd-995" id="Dhz-gl-7Ut"/>
                         <outlet property="editViewContainer" destination="rTT-RO-I3T" id="tpu-XX-c9T"/>
                         <outlet property="editViewHeight" destination="Saf-eA-IEJ" id="oOC-Nd-tqI"/>

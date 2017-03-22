@@ -17,21 +17,27 @@ import Cocoa
 class GutterView: NSView {
     var dataSource: EditViewDataSource!
     let xPadding: CGFloat = 8
-
+    
+    private let gutterBackground = NSColor(deviceWhite: 0.9, alpha: 1.0)
+    private let lineNumberDefaultTextColor = NSColor(deviceWhite: 0.5, alpha: 1.0)
+    private let lineNumberCursorTextColor = NSColor.black
+    
     override var isFlipped: Bool {
         return true
     }
     
     override func draw(_ dirtyRect: NSRect) {
-        let context = NSGraphicsContext.current()!.cgContext
-        NSColor(deviceWhite: 0.9, alpha: 1.0).setFill()
+        gutterBackground.setFill()
         NSRectFill(dirtyRect)
-        context.setShouldSmoothFonts(true)
         
-        var fontAttributes = dataSource.textMetrics.attributes
-        fontAttributes[NSForegroundColorAttributeName] = NSColor(deviceWhite: 0.5, alpha: 1.0)
+        var defaultAttributes = dataSource.textMetrics.attributes
+        var cursorAttributes = dataSource.textMetrics.attributes
+        defaultAttributes[NSForegroundColorAttributeName] = lineNumberDefaultTextColor
+        cursorAttributes[NSForegroundColorAttributeName] = lineNumberCursorTextColor
+
         let first = Int(floor(dirtyRect.origin.y / dataSource.textMetrics.linespace))
         let last = min(Int(ceil((dirtyRect.origin.y + dirtyRect.size.height) / dataSource.textMetrics.linespace)), dataSource.lines.height)
+
         guard first < last else {
             Swift.print("gutterview first > last")
             return
@@ -39,6 +45,8 @@ class GutterView: NSView {
 
         for lineNb in first..<last {
             let y = dataSource.textMetrics.linespace * CGFloat(lineNb + 1)
+            let hasCursor = dataSource.lines.get(lineNb)?.containsCursor ?? false
+            let fontAttributes = hasCursor ? cursorAttributes : defaultAttributes
             let attrString = NSMutableAttributedString(string: "\(lineNb)", attributes: fontAttributes)
             let expectedSize = attrString.size()
             attrString.draw(with: NSRect(x: dataSource.gutterWidth - expectedSize.width - xPadding, y: y, width: expectedSize.width, height: expectedSize.height), options: NSStringDrawingOptions(rawValue: 0))
