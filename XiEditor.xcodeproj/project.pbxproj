@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		50370A2B1D4209F300EA1B18 /* Dispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50370A2A1D4209F300EA1B18 /* Dispatcher.swift */; };
 		6B0DCDD41E8196D0007C14A3 /* GutterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0DCDD31E8196D0007C14A3 /* GutterView.swift */; };
+		6B0DCDD61E832101007C14A3 /* EditViewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0DCDD51E832101007C14A3 /* EditViewContainer.swift */; };
 		AE0243F61E4BDF8A00641BDA /* StyleMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE0243F51E4BDF8A00641BDA /* StyleMap.swift */; };
 		AE041BA61D4327EB0069AB8B /* xi-syntect-plugin in Resources */ = {isa = PBXBuildFile; fileRef = AE041BA51D4327EB0069AB8B /* xi-syntect-plugin */; };
 		AE168C5C1E4AD87B008249AE /* LineCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE168C5B1E4AD87B008249AE /* LineCache.swift */; };
@@ -52,6 +53,7 @@
 /* Begin PBXFileReference section */
 		50370A2A1D4209F300EA1B18 /* Dispatcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dispatcher.swift; sourceTree = "<group>"; };
 		6B0DCDD31E8196D0007C14A3 /* GutterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GutterView.swift; sourceTree = "<group>"; };
+		6B0DCDD51E832101007C14A3 /* EditViewContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditViewContainer.swift; sourceTree = "<group>"; };
 		AE0243F51E4BDF8A00641BDA /* StyleMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StyleMap.swift; sourceTree = "<group>"; };
 		AE041B971D4323460069AB8B /* build-rust-xcode.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-rust-xcode.sh"; sourceTree = "<group>"; };
 		AE041BA51D4327EB0069AB8B /* xi-syntect-plugin */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = "xi-syntect-plugin"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -126,6 +128,7 @@
 			children = (
 				F53EA2AE1DCAAA170071ACFD /* EditViewController.swift */,
 				6B0DCDD31E8196D0007C14A3 /* GutterView.swift */,
+				6B0DCDD51E832101007C14A3 /* EditViewContainer.swift */,
 				AE499DCF1C82BB2B002D68AF /* AppDelegate.swift */,
 				AED23F171C83CBEC002246CE /* EditView.swift */,
 				AEB66A781CAEFC8F002F686A /* ShadowView.swift */,
@@ -327,6 +330,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F53EA2AF1DCAAA170071ACFD /* EditViewController.swift in Sources */,
+				6B0DCDD61E832101007C14A3 /* EditViewContainer.swift in Sources */,
 				AE0243F61E4BDF8A00641BDA /* StyleMap.swift in Sources */,
 				AE168C5C1E4AD87B008249AE /* LineCache.swift in Sources */,
 				AE499DF91C82C835002D68AF /* CoreConnection.swift in Sources */,

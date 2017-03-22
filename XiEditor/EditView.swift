@@ -260,17 +260,6 @@ class EditView: NSView, NSTextInputClient {
         return true;
     }
     
-    //MARK: - Public API
-
-    /// scrolls the editview to display the given line and column
-    public func scrollTo(_ line: Int, _ col: Int) {
-        let x = CGFloat(col) * dataSource.textMetrics.fontWidth  // TODO: deal with non-ASCII, non-monospaced case
-        let y = CGFloat(line) * dataSource.textMetrics.linespace + dataSource.textMetrics.baseline
-        let scrollRect = NSRect(x: x, y: y - dataSource.textMetrics.baseline, width: 4, height: dataSource.textMetrics.linespace + dataSource.textMetrics.descent)
-        self.scrollToVisible(scrollRect)
-    }
-
-    
     // MARK: - NSTextInputClient protocol
     func insertText(_ aString: Any, replacementRange: NSRange) {
         self.removeMarkedText()

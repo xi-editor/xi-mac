@@ -25,11 +25,14 @@ protocol EditViewDataSource {
 
 class EditViewController: NSViewController, EditViewDataSource {
 
-    @IBOutlet var editView: EditView!
+    
     @IBOutlet var shadowView: ShadowView!
     @IBOutlet var scrollView: NSScrollView!
     @IBOutlet var documentView: NSClipView!
+    @IBOutlet weak var editViewContainer: NSView!
+    @IBOutlet var editView: EditView!
     @IBOutlet weak var gutterView: GutterView!
+    
     @IBOutlet weak var gutterViewWidth: NSLayoutConstraint!
     @IBOutlet weak var editViewHeight: NSLayoutConstraint!
     
@@ -126,7 +129,10 @@ class EditViewController: NSViewController, EditViewDataSource {
     }
 
     func scrollTo(_ line: Int, _ col: Int) {
-        editView.scrollTo(line, col)
+        let x = CGFloat(col) * textMetrics.fontWidth  // TODO: deal with non-ASCII, non-monospaced case
+        let y = CGFloat(line) * textMetrics.linespace + textMetrics.baseline
+        let scrollRect = NSRect(x: x, y: y - textMetrics.baseline, width: 4, height: textMetrics.linespace + textMetrics.descent)
+        editViewContainer.scrollToVisible(scrollRect)
     }
     
     // MARK: - System Events
