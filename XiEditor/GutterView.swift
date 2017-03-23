@@ -47,7 +47,7 @@ class GutterView: NSView {
             let y = dataSource.textMetrics.linespace * CGFloat(lineNb + 1)
             let hasCursor = dataSource.lines.get(lineNb)?.containsCursor ?? false
             let fontAttributes = hasCursor ? cursorAttributes : defaultAttributes
-            let attrString = NSMutableAttributedString(string: "\(lineNb)", attributes: fontAttributes)
+            let attrString = NSMutableAttributedString(string: "\(lineNb+1)", attributes: fontAttributes)
             let expectedSize = attrString.size()
             attrString.draw(with: NSRect(x: dataSource.gutterWidth - expectedSize.width - xPadding, y: y, width: expectedSize.width, height: expectedSize.height), options: NSStringDrawingOptions(rawValue: 0))
         }
