@@ -25,18 +25,16 @@ struct Line {
     var containsSelection: Bool {
             return styles.contains { $0.style == 0 }
         }
+    
+    /// A Boolean indicating whether this line contains a cursor.
+    var containsCursor: Bool {
+        return cursor.count > 0
+    }
 
     init(fromJson json: [String: AnyObject]) {
-        if let text = json["text"] as? String {
-            self.text = text
-        } else {
-            self.text = ""  // this should probably be an exception
-        }
-        if let cursor = json["cursor"] as? [Int] {
-            self.cursor = cursor
-        } else {
-            self.cursor = []
-        }
+        // this could be a more clear exception
+        text = json["text"] as! String
+        cursor = json["cursor"] as? [Int] ?? []
         if let styles = json["styles"] as? [Int] {
             self.styles = StyleSpan.styles(fromRaw: styles, text: self.text)
         } else {
@@ -45,23 +43,15 @@ struct Line {
     }
 
     init?(updateFromJson line: Line?, json: [String: AnyObject]) {
-        if let line = line {
-            self.text = line.text
-            if let cursor = json["cursor"] as? [Int] {
-                self.cursor = cursor
-            } else {
-                self.cursor = line.cursor
-            }
-            if let styles = json["styles"] as? [Int] {
-                self.styles = StyleSpan.styles(fromRaw: styles, text: self.text)
-            } else {
-                self.styles = line.styles
-            }
+        guard let line = line else { return nil }
+        self.text = line.text
+        cursor = json["cursor"] as? [Int] ?? line.cursor
+        if let styles = json["styles"] as? [Int] {
+            self.styles = StyleSpan.styles(fromRaw: styles, text: self.text)
         } else {
-            return nil
+            self.styles = line.styles
         }
     }
-
 }
 
 /// A data structure holding a cache of lines, with methods for updating based
@@ -92,7 +82,7 @@ class LineCache {
         }
         return nil
     }
-
+    
     func applyUpdate(update: [String: Any]) {
         guard let ops = update["ops"] else { return }
         var newInvalidBefore = 0
@@ -167,6 +157,11 @@ class LineCache {
     func computeMissing(_ first: Int, _ last: Int) -> [(Int, Int)] {
         var result: [(Int, Int)] = []
         let last = min(last, height)  // lines past the end aren't considered missing
+        guard first < last else {
+            Swift.print("compute missing called with first > last")
+            return result
+        }
+        
         for ix in first..<last {
             // could optimize a bit here, but unlikely to be important
             if ix < nInvalidBefore || ix >= nInvalidBefore + lines.count || lines[ix - nInvalidBefore] == nil {

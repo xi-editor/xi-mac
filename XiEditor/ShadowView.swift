@@ -13,15 +13,13 @@
 // limitations under the License.
 
 import Cocoa
-
+/// A custom view that draws a shadow over the editView when content is clipped.
+/// Note: - if we ever move to layer-based drawing this should be handled by a layer on the EditViewContainer
 class ShadowView: NSView {
-    var topShadow = false
-    var leadingShadow = false
-    var trailingShadow = false
+    private var topShadow = false
+    private var leadingShadow = false
+    private var trailingShadow = false
     
-    var mouseUpHandler: ((NSEvent) -> Void)?
-    var mouseDraggedHandler: ((NSEvent) -> Void)?
-
     override func draw(_ dirtyRect: NSRect) {
         if topShadow || leadingShadow || trailingShadow {
             let context = NSGraphicsContext.current()!.cgContext
@@ -44,11 +42,16 @@ class ShadowView: NSView {
     override var isFlipped: Bool {
         return true;
     }
-
+    
+    // shadow view shouldn't receive mouse events
+    override func hitTest(_ point: NSPoint) -> NSView? {
+        return nil
+    }
+    
     func updateScroll(_ contentBounds: NSRect, _ docBounds: NSRect) {
         let newTop = contentBounds.origin.y != 0
         let newLead = contentBounds.origin.x != 0
-        let newTrail = contentBounds.origin.x + contentBounds.width != docBounds.origin.x + docBounds.width
+        let newTrail = NSMaxX(contentBounds) < NSMaxX(docBounds)
         if newTop != topShadow || newLead != leadingShadow || newTrail != trailingShadow {
             needsDisplay = true
             topShadow = newTop
@@ -56,13 +59,4 @@ class ShadowView: NSView {
             trailingShadow = newTrail
         }
     }
-
-    override func mouseDragged(with theEvent: NSEvent) {
-        mouseDraggedHandler?(theEvent)
-    }
-
-    override func mouseUp(with theEvent: NSEvent) {
-        mouseUpHandler?(theEvent)
-    }
-
 }

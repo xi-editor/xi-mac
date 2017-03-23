@@ -14,16 +14,53 @@
 
 import Cocoa
 
-class EditViewController: NSViewController {
+/// The EditViewDataSource protocol describes the properties that an editView uses to determine how to render its contents.
+protocol EditViewDataSource {
+    var lines: LineCache { get }
+    var styleMap: StyleMap { get }
+    var textMetrics: TextDrawingMetrics { get }
+    var gutterWidth: CGFloat { get }
+}
 
-    @IBOutlet var editView: EditView!
+
+class EditViewController: NSViewController, EditViewDataSource {
+
+    
     @IBOutlet var shadowView: ShadowView!
     @IBOutlet var scrollView: NSScrollView!
-    @IBOutlet var documentView: NSClipView!
+    @IBOutlet weak var editViewContainer: EditViewContainer!
+    @IBOutlet var editView: EditView!
+    @IBOutlet weak var gutterView: GutterView!
+    
+    @IBOutlet weak var gutterViewWidth: NSLayoutConstraint!
+    @IBOutlet weak var editViewHeight: NSLayoutConstraint!
     
     var document: Document! {
         didSet {
             editView.document = document
+        }
+    }
+    
+    var lines: LineCache = LineCache()
+    var styleMap: StyleMap {
+        return (NSApplication.shared().delegate as! AppDelegate).styleMap
+    }
+
+    //TODO: preferred font should be a user preference
+    var textMetrics = TextDrawingMetrics(font: CTFontCreateWithName("InconsolataGo" as CFString?, 14, nil))
+    
+    var gutterWidth: CGFloat {
+        return gutterViewWidth.constant
+    }
+    
+    // used to calculate the gutter width. Initial -1 so that a new document
+    // still triggers update of gutter width.
+    private var lineCount: Int = -1 {
+        didSet {
+            if lineCount != oldValue {
+                let gutterColumns = "\(lineCount)".characters.count
+                gutterViewWidth.constant = textMetrics.fontWidth * max(2, CGFloat(gutterColumns)) + 2 * gutterView.xPadding
+            }
         }
     }
 
@@ -31,15 +68,32 @@ class EditViewController: NSViewController {
     var firstLine: Int = 0
     var lastLine: Int = 0
 
+    private var lastDragPosition: BufferPosition?
+    /// handles autoscrolling when a drag gesture exists the window
+    private var dragTimer: Timer?
+    private var dragEvent: NSEvent?
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.shadowView.mouseUpHandler = editView.mouseUp(with:)
-        self.shadowView.mouseDraggedHandler = editView.mouseDragged(with:)
+        editView.dataSource = self
+        gutterView.dataSource = self
         scrollView.contentView.documentCursor = NSCursor.iBeam();
         
         NotificationCenter.default.addObserver(self, selector: #selector(EditViewController.boundsDidChangeNotification(_:)), name: NSNotification.Name.NSViewBoundsDidChange, object: scrollView.contentView)
         NotificationCenter.default.addObserver(self, selector: #selector(EditViewController.frameDidChangeNotification(_:)), name: NSNotification.Name.NSViewFrameDidChange, object: scrollView)
     }
+
+    // this gets called when the user changes the font with the font book, for example
+    override func changeFont(_ sender: Any?) {
+        if let manager = sender as? NSFontManager {
+            textMetrics = textMetrics.newMetricsForFontChange(fontManager: manager)
+            self.editView.needsDisplay = true
+        } else {
+            Swift.print("changeFont: called with nil")
+            return
+        }
+    }
+
     
     func boundsDidChangeNotification(_ notification: Notification) {
         updateEditViewScroll()
@@ -49,10 +103,9 @@ class EditViewController: NSViewController {
         updateEditViewScroll()
     }
 
-    
     fileprivate func updateEditViewScroll() {
-        let first = Int(floor(scrollView.contentView.bounds.origin.y / editView.linespace))
-        let height = Int(ceil((scrollView.contentView.bounds.size.height) / editView.linespace))
+        let first = Int(floor(scrollView.contentView.bounds.origin.y / textMetrics.linespace))
+        let height = Int(ceil((scrollView.contentView.bounds.size.height) / textMetrics.linespace))
         let last = first + height
         if first != firstLine || last != lastLine && document != nil {
             firstLine = first
@@ -60,20 +113,65 @@ class EditViewController: NSViewController {
             document?.sendRpcAsync("scroll", params: [firstLine, lastLine])
         }
         shadowView?.updateScroll(scrollView.contentView.bounds, scrollView.documentView!.bounds)
+        // if the window is resized, update the editViewHeight so we don't show scrollers unnecessarily
+        self.editViewHeight.constant = max(CGFloat(lines.height) * textMetrics.linespace + 2 * textMetrics.descent, scrollView.bounds.height)
     }
     
     // MARK: - Core Commands
     func update(_ content: [String: AnyObject]) {
-        editView.update(update: content)
+        lines.applyUpdate(update: content)
+        self.lineCount = lines.height
+        self.editViewHeight.constant = max(CGFloat(lines.height) * textMetrics.linespace + 2 * textMetrics.descent, scrollView.bounds.height)
+        editView.showBlinkingCursor = editView.isFrontmostView
+        editView.needsDisplay = true
+        gutterView.needsDisplay = true
     }
 
     func scrollTo(_ line: Int, _ col: Int) {
-        editView.scrollTo(line, col)
+        let x = CGFloat(col) * textMetrics.fontWidth  // TODO: deal with non-ASCII, non-monospaced case
+        let y = CGFloat(line) * textMetrics.linespace + textMetrics.baseline
+        let scrollRect = NSRect(x: x, y: y - textMetrics.baseline, width: 4, height: textMetrics.linespace + textMetrics.descent)
+        editViewContainer.scrollToVisible(scrollRect)
     }
     
     // MARK: - System Events
     override func keyDown(with theEvent: NSEvent) {
         self.editView.inputContext?.handleEvent(theEvent);
+    }
+    
+    override func mouseDown(with theEvent: NSEvent) {
+        editView.removeMarkedText()
+        editView.inputContext?.discardMarkedText()
+        let position  = editView.bufferPositionFromPoint(theEvent.locationInWindow)
+        lastDragPosition = position
+        let flags = theEvent.modifierFlags.rawValue >> 16
+        let clickCount = theEvent.clickCount
+        document.sendRpcAsync("click", params: [position.line, position.column, flags, clickCount])
+        dragTimer = Timer.scheduledTimer(timeInterval: TimeInterval(1.0/60), target: self, selector: #selector(_autoscrollTimerCallback), userInfo: nil, repeats: true)
+        dragEvent = theEvent
+    }
+    
+    override func mouseDragged(with theEvent: NSEvent) {
+        editView.autoscroll(with: theEvent)
+        let dragPosition = editView.bufferPositionFromPoint(theEvent.locationInWindow)
+        if let last = lastDragPosition, last != dragPosition {
+            lastDragPosition = dragPosition
+            let flags = theEvent.modifierFlags.rawValue >> 16
+            document?.sendRpcAsync("drag", params: [last.line, last.column, flags])
+        }
+        dragEvent = theEvent
+    }
+    
+    override func mouseUp(with theEvent: NSEvent) {
+        dragTimer?.invalidate()
+        dragTimer = nil
+        dragEvent = nil
+    }
+    
+    func _autoscrollTimerCallback() {
+        if let event = dragEvent {
+            mouseDragged(with: event)
+        }
     }
     
     // NSResponder (used mostly for paste)
@@ -95,7 +193,7 @@ class EditViewController: NSViewController {
 
     // we override this to see if our view is empty, and should be reused for this open call
      func openDocument(_ sender: Any?) {
-        if editView?.lines.isEmpty ?? false {
+        if self.lines.isEmpty {
             Document._documentForNextOpenCall = self.document
         }
         Document.preferredTabbingIdentifier = nil
