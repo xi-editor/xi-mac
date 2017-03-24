@@ -29,7 +29,7 @@ class EditViewController: NSViewController, EditViewDataSource {
     
     @IBOutlet var shadowView: ShadowView!
     @IBOutlet var scrollView: NSScrollView!
-    @IBOutlet weak var editViewContainer: EditViewContainer!
+    @IBOutlet weak var editContainerView: EditContainerView!
     @IBOutlet var editView: EditView!
     @IBOutlet weak var gutterView: GutterView!
     
@@ -128,7 +128,7 @@ class EditViewController: NSViewController, EditViewDataSource {
         let x = CGFloat(col) * textMetrics.fontWidth  // TODO: deal with non-ASCII, non-monospaced case
         let y = CGFloat(line) * textMetrics.linespace + textMetrics.baseline
         let scrollRect = NSRect(x: x, y: y - textMetrics.baseline, width: 4, height: textMetrics.linespace + textMetrics.descent)
-        editViewContainer.scrollToVisible(scrollRect)
+        editContainerView.scrollToVisible(scrollRect)
     }
     
     // MARK: - System Events
