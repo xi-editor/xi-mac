@@ -179,6 +179,10 @@ class EditViewController: NSViewController, EditViewDataSource {
         document?.sendRpcAsync("insert", params: insertedStringToJson(insertString as! NSString))
     }
 
+    override func selectAll(_ sender: Any?) {
+        document.sendRpcAsync("select_all", params: [])
+    }
+
     // we intercept this method to check if we should open a new tab
     func newDocument(_ sender: NSMenuItem?) {
         // this tag is a property of the New Tab menu item, set in interface builder
