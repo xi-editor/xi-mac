@@ -14,7 +14,7 @@
 
 import Cocoa
 /// A custom view that draws a shadow over the editView when content is clipped.
-/// Note: - if we ever move to layer-based drawing this should be handled by a layer on the EditViewContainer
+/// Note: - if we ever move to layer-based drawing this should be handled by a layer on the EditContainerView
 class ShadowView: NSView {
     private var topShadow = false
     private var leadingShadow = false

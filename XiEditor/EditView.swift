@@ -91,7 +91,6 @@ func camelCaseToUnderscored(_ name: NSString) -> NSString {
 }
 
 class EditView: NSView, NSTextInputClient {
-    var document: Document!
     var dataSource: EditViewDataSource!
 
     var textSelectionColor: NSColor {
@@ -156,7 +155,7 @@ class EditView: NSView, NSTextInputClient {
     let font_style_italic: Int = 4;
 
     override func draw(_ dirtyRect: NSRect) {
-        if document?.tabName == nil { return }
+        if dataSource.document.tabName == nil { return }
         super.draw(dirtyRect)
         /*
         let path = NSBezierPath(ovalInRect: frame)
@@ -174,7 +173,7 @@ class EditView: NSView, NSTextInputClient {
         let missing = dataSource.lines.computeMissing(first, last)
         for (f, l) in missing {
             Swift.print("requesting missing: \(f)..\(l)")
-            document?.sendRpcAsync("request_lines", params: [f, l])
+            dataSource.document.sendRpcAsync("request_lines", params: [f, l])
         }
 
         // first pass, for drawing background selections
@@ -302,12 +301,12 @@ class EditView: NSView, NSTextInputClient {
             replacementRange.length = 0
         }
         for _ in 0..<aRange.length {
-            document?.sendRpcAsync("delete_backward", params  : [])
+            dataSource.document.sendRpcAsync("delete_backward", params  : [])
         }
         if let attrStr = aString as? NSAttributedString {
-            document?.sendRpcAsync("insert", params: insertedStringToJson(attrStr.string as NSString))
+            dataSource.document.sendRpcAsync("insert", params: insertedStringToJson(attrStr.string as NSString))
         } else if let str = aString as? NSString {
-            document?.sendRpcAsync("insert", params: insertedStringToJson(str))
+            dataSource.document.sendRpcAsync("insert", params: insertedStringToJson(str))
         }
         return NSMakeRange(replacementRange.location, len)
     }
@@ -328,7 +327,7 @@ class EditView: NSView, NSTextInputClient {
     func removeMarkedText() {
         if (_markedRange.location != NSNotFound) {
             for _ in 0..<_markedRange.length {
-                document?.sendRpcAsync("delete_backward", params: [])
+                dataSource.document.sendRpcAsync("delete_backward", params: [])
             }
         }
         _markedRange = NSMakeRange(NSNotFound, 0)
@@ -385,7 +384,7 @@ class EditView: NSView, NSTextInputClient {
             if (commandName == "noop") {
                 NSBeep()
             } else {
-                document?.sendRpcAsync(commandName, params: []);
+                dataSource.document.sendRpcAsync(commandName, params: []);
             }
         }
     }

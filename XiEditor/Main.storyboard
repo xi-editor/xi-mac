@@ -38,7 +38,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="rTT-RO-I3T" customClass="EditViewContainer" customModule="XiEditor" customModuleProvider="target">
+                                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="rTT-RO-I3T" customClass="EditContainerView" customModule="XiEditor" customModuleProvider="target">
                                             <rect key="frame" x="0.0" y="2" width="480" height="268"/>
                                             <subviews>
                                                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="3Js-0o-jqZ" customClass="GutterView" customModule="XiEditor" customModuleProvider="target">
@@ -91,8 +91,8 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="editContainerView" destination="rTT-RO-I3T" id="V33-lc-vP3"/>
                         <outlet property="editView" destination="q1P-kd-995" id="Dhz-gl-7Ut"/>
-                        <outlet property="editViewContainer" destination="rTT-RO-I3T" id="tpu-XX-c9T"/>
                         <outlet property="editViewHeight" destination="Saf-eA-IEJ" id="oOC-Nd-tqI"/>
                         <outlet property="gutterView" destination="3Js-0o-jqZ" id="BLh-Gh-ebk"/>
                         <outlet property="gutterViewWidth" destination="Smj-nI-f5r" id="kjP-so-JhO"/>

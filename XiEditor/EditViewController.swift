@@ -20,6 +20,7 @@ protocol EditViewDataSource {
     var styleMap: StyleMap { get }
     var textMetrics: TextDrawingMetrics { get }
     var gutterWidth: CGFloat { get }
+    var document: Document! { get }
 }
 
 
@@ -28,18 +29,14 @@ class EditViewController: NSViewController, EditViewDataSource {
     
     @IBOutlet var shadowView: ShadowView!
     @IBOutlet var scrollView: NSScrollView!
-    @IBOutlet weak var editViewContainer: EditViewContainer!
+    @IBOutlet weak var editContainerView: EditContainerView!
     @IBOutlet var editView: EditView!
     @IBOutlet weak var gutterView: GutterView!
     
     @IBOutlet weak var gutterViewWidth: NSLayoutConstraint!
     @IBOutlet weak var editViewHeight: NSLayoutConstraint!
     
-    var document: Document! {
-        didSet {
-            editView.document = document
-        }
-    }
+    var document: Document!
     
     var lines: LineCache = LineCache()
     var styleMap: StyleMap {
@@ -110,7 +107,7 @@ class EditViewController: NSViewController, EditViewDataSource {
         if first != firstLine || last != lastLine && document != nil {
             firstLine = first
             lastLine = last
-            document?.sendRpcAsync("scroll", params: [firstLine, lastLine])
+            document.sendRpcAsync("scroll", params: [firstLine, lastLine])
         }
         shadowView?.updateScroll(scrollView.contentView.bounds, scrollView.documentView!.bounds)
         // if the window is resized, update the editViewHeight so we don't show scrollers unnecessarily
@@ -131,7 +128,7 @@ class EditViewController: NSViewController, EditViewDataSource {
         let x = CGFloat(col) * textMetrics.fontWidth  // TODO: deal with non-ASCII, non-monospaced case
         let y = CGFloat(line) * textMetrics.linespace + textMetrics.baseline
         let scrollRect = NSRect(x: x, y: y - textMetrics.baseline, width: 4, height: textMetrics.linespace + textMetrics.descent)
-        editViewContainer.scrollToVisible(scrollRect)
+        editContainerView.scrollToVisible(scrollRect)
     }
     
     // MARK: - System Events
@@ -157,7 +154,7 @@ class EditViewController: NSViewController, EditViewDataSource {
         if let last = lastDragPosition, last != dragPosition {
             lastDragPosition = dragPosition
             let flags = theEvent.modifierFlags.rawValue >> 16
-            document?.sendRpcAsync("drag", params: [last.line, last.column, flags])
+            document.sendRpcAsync("drag", params: [last.line, last.column, flags])
         }
         dragEvent = theEvent
     }
@@ -176,7 +173,7 @@ class EditViewController: NSViewController, EditViewDataSource {
     
     // NSResponder (used mostly for paste)
     override func insertText(_ insertString: Any) {
-        document?.sendRpcAsync("insert", params: insertedStringToJson(insertString as! NSString))
+        document.sendRpcAsync("insert", params: insertedStringToJson(insertString as! NSString))
     }
 
     override func selectAll(_ sender: Any?) {
@@ -244,24 +241,24 @@ class EditViewController: NSViewController, EditViewDataSource {
     }
     
     func undo(_ sender: AnyObject?) {
-        document?.sendRpcAsync("undo", params: [])
+        document.sendRpcAsync("undo", params: [])
     }
     
     func redo(_ sender: AnyObject?) {
-        document?.sendRpcAsync("redo", params: [])
+        document.sendRpcAsync("redo", params: [])
     }
 
     // MARK: - Debug Methods
     @IBAction func debugRewrap(_ sender: AnyObject) {
-        document?.sendRpcAsync("debug_rewrap", params: [])
+        document.sendRpcAsync("debug_rewrap", params: [])
     }
     
     @IBAction func debugTestFGSpans(_ sender: AnyObject) {
-        document?.sendRpcAsync("debug_test_fg_spans", params: [])
+        document.sendRpcAsync("debug_test_fg_spans", params: [])
     }
     
     @IBAction func debugRunPlugin(_ sender: AnyObject) {
-        document?.sendRpcAsync("debug_run_plugin", params: [])
+        document.sendRpcAsync("debug_run_plugin", params: [])
     }
 }
 
