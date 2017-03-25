@@ -75,9 +75,14 @@ class EditViewController: NSViewController, EditViewDataSource {
         editView.dataSource = self
         gutterView.dataSource = self
         scrollView.contentView.documentCursor = NSCursor.iBeam();
-        
+    }
+
+    override func viewDidAppear() {
+        super.viewDidAppear()
         NotificationCenter.default.addObserver(self, selector: #selector(EditViewController.boundsDidChangeNotification(_:)), name: NSNotification.Name.NSViewBoundsDidChange, object: scrollView.contentView)
         NotificationCenter.default.addObserver(self, selector: #selector(EditViewController.frameDidChangeNotification(_:)), name: NSNotification.Name.NSViewFrameDidChange, object: scrollView)
+        // call to set initial scroll position once we know view size
+        updateEditViewScroll()
     }
 
     // this gets called when the user changes the font with the font book, for example
@@ -104,7 +109,7 @@ class EditViewController: NSViewController, EditViewDataSource {
         let first = Int(floor(scrollView.contentView.bounds.origin.y / textMetrics.linespace))
         let height = Int(ceil((scrollView.contentView.bounds.size.height) / textMetrics.linespace))
         let last = first + height
-        if first != firstLine || last != lastLine && document != nil {
+        if first != firstLine || last != lastLine {
             firstLine = first
             lastLine = last
             document.sendRpcAsync("scroll", params: [firstLine, lastLine])
