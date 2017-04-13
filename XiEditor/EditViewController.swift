@@ -267,18 +267,21 @@ class EditViewController: NSViewController, EditViewDataSource {
     }
     
     @IBAction func gotoLine(_ sender: AnyObject) {
+        guard let window = self.view.window else { return }
+        
         let alert = NSAlert.init()
         alert.addButton(withTitle: "Ok")
         alert.addButton(withTitle: "Cancel")
-        alert.messageText = "Enter line to go to:"
+        alert.messageText = "Goto Line"
+        alert.informativeText = "Enter line to go to:"
         let text = NSTextField.init(frame: NSRect.init(x: 0, y: 0, width: 200, height: 24))
         alert.accessoryView = text
-        if let window = self.view.window {
-            alert.beginSheetModal(for: window) { response in
-                if (response == NSAlertFirstButtonReturn) {
-                    let line = text.intValue
-                    self.document.sendRpcAsync("go_to_line", params: ["line": line])
-                }
+        alert.window.initialFirstResponder = text
+        
+        alert.beginSheetModal(for: window) { response in
+            if (response == NSAlertFirstButtonReturn) {
+                let line = text.intValue
+                self.document.sendRpcAsync("goto_line", params: ["line": line - 1])
             }
         }
     }

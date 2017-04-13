@@ -271,13 +271,6 @@
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="PN7-qq-hhD"/>
-                                        <menuItem title="Go to line..." keyEquivalent="g" id="5bM-PX-gWE">
-                                            <modifierMask key="keyEquivalentModifierMask" control="YES"/>
-                                            <connections>
-                                                <action selector="gotoLine:" target="7er-QZ-amI" id="12X-Za-Sbs"/>
-                                            </connections>
-                                        </menuItem>
-                                        <menuItem isSeparatorItem="YES" id="e9C-XN-iKg"/>
                                         <menuItem title="Find" id="EPp-zI-3PW">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <menu key="submenu" title="Find" id="J5p-di-aYF">
@@ -777,6 +770,12 @@
                                                 <action selector="debugRunPlugin:" target="7er-QZ-amI" id="ehi-9m-zMB"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem title="Goto Line" keyEquivalent="g" id="5bM-PX-gWE">
+                                            <modifierMask key="keyEquivalentModifierMask" control="YES"/>
+                                            <connections>
+                                                <action selector="gotoLine:" target="7er-QZ-amI" id="12X-Za-Sbs"/>
+                                            </connections>
+                                        </menuItem>
                                     </items>
                                 </menu>
                             </menuItem>
@@ -802,7 +801,7 @@
                 <customObject id="o5o-AY-Tmr" customClass="NSFontManager"/>
                 <customObject id="azf-ih-6fI" customClass="AppDelegate" customModule="XiEditor" customModuleProvider="target"/>
             </objects>
-            <point key="canvasLocation" x="-250" y="-385"/>
+            <point key="canvasLocation" x="-295" y="-593"/>
         </scene>
     </scenes>
 </document>
