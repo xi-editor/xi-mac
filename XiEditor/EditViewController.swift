@@ -265,6 +265,23 @@ class EditViewController: NSViewController, EditViewDataSource {
     @IBAction func debugRunPlugin(_ sender: AnyObject) {
         document.sendRpcAsync("debug_run_plugin", params: [])
     }
+    
+    @IBAction func gotoLine(_ sender: AnyObject) {
+        let alert = NSAlert.init()
+        alert.addButton(withTitle: "Ok")
+        alert.addButton(withTitle: "Cancel")
+        alert.messageText = "Enter line to go to:"
+        let text = NSTextField.init(frame: NSRect.init(x: 0, y: 0, width: 200, height: 24))
+        alert.accessoryView = text
+        if let window = self.view.window {
+            alert.beginSheetModal(for: window) { response in
+                if (response == NSAlertFirstButtonReturn) {
+                    let line = text.intValue
+                    self.document.sendRpcAsync("go_to_line", params: ["line": line])
+                }
+            }
+        }
+    }
 }
 
 // we set this in Document.swift when we load a new window or tab.
