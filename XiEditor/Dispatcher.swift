@@ -83,20 +83,24 @@ extension Event {
 typealias TabIdentifier = String
 
 enum Events { // namespace
-    struct NewTab: Event {
+    struct NewView: Event {
         typealias Output = String
-
-        let method = "new_tab"
-        let params: AnyObject? = nil
-        let dispatchMethod = EventDispatchMethod.sync
+        
+        let path: String?
+        let method = "new_view"
+        var params: AnyObject? {
+            guard let path = self.path else { return nil }
+            return ["filename": path] as AnyObject
+        }
+        let dispatchMethod = EventDispatchMethod.async
     }
-
-    struct DeleteTab: Event {
+    
+    struct CloseView: Event {
         typealias Output = Void
-
+        
         let tabId: TabIdentifier
-
-        let method = "delete_tab"
+        
+        let method = "close_view"
         var params: AnyObject? { return ["tab": tabId] as AnyObject }
         let dispatchMethod = EventDispatchMethod.async
     }

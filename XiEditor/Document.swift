@@ -63,6 +63,35 @@ class Document: NSDocument {
     /// used to keep track of whether we're in the process of reusing an empty window
     fileprivate var _skipShowingWindow = false
 
+    // called only when creating a _new_ document
+    convenience init(type: String) throws {
+        self.init()
+        self.fileType = type
+        Events.NewView(path: nil).dispatchWithCallback(dispatcher!) { (tabName) in
+            DispatchQueue.main.async {
+                self.tabName = tabName
+            }
+        }
+    }
+    
+    // called when opening a document
+    convenience init(contentsOf url: URL, ofType typeName: String) throws {
+        self.init()
+        self.fileURL = url
+        self.fileType = typeName
+        Events.NewView(path: url.path).dispatchWithCallback(dispatcher!) { (tabName) in
+            DispatchQueue.main.async {
+                self.tabName = tabName
+            }
+        }
+        try self.read(from: url, ofType: typeName)
+    }
+    
+    // called when NSDocument reopens documents on launch
+    convenience init(for urlOrNil: URL?, withContentsOf contentsURL: URL, ofType typeName: String) throws {
+        try self.init(contentsOf: contentsURL, ofType: typeName)
+    }
+    
     override init() {
         dispatcher = (NSApplication.shared().delegate as? AppDelegate)?.dispatcher
         tabbingIdentifier = Document.preferredTabbingIdentifier ?? Document.nextTabbingIdentifier()
@@ -104,12 +133,6 @@ class Document: NSDocument {
         editViewController?.document = self
         windowController.window?.delegate = editViewController
         self.addWindowController(windowController)
-
-        Events.NewTab().dispatchWithCallback(dispatcher!) { (tabName) in
-            DispatchQueue.main.async {
-            self.tabName = tabName
-            }
-        }
     }
 
     override func showWindows() {
@@ -123,7 +146,7 @@ class Document: NSDocument {
     }
     
     override func read(from url: URL, ofType typeName: String) throws {
-        self.open(url.path)
+//        self.open(url.path)
     }
     
     override func save(to url: URL, ofType typeName: String, for saveOperation: NSSaveOperationType, completionHandler: @escaping (Error?) -> Void) {
@@ -135,7 +158,7 @@ class Document: NSDocument {
     
     override func close() {
         super.close()
-        Events.DeleteTab(tabId: tabName!).dispatch(dispatcher!)
+        Events.CloseView(tabId: tabName!).dispatch(dispatcher!)
     }
     
     override var isEntireFileLoaded: Bool {
@@ -146,9 +169,6 @@ class Document: NSDocument {
         return false
     }
 
-    fileprivate func open(_ filename: String) {
-        sendRpcAsync("open", params: ["filename": filename])
-    }
     
     fileprivate func save(_ filename: String) {
         sendRpcAsync("save", params: ["filename": filename])
