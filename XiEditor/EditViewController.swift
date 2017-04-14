@@ -55,8 +55,7 @@ class EditViewController: NSViewController, EditViewDataSource {
     private var lineCount: Int = -1 {
         didSet {
             if lineCount != oldValue {
-                let gutterColumns = "\(lineCount)".characters.count
-                gutterViewWidth.constant = textMetrics.fontWidth * max(2, CGFloat(gutterColumns)) + 2 * gutterView.xPadding
+                updateGutterWidth()
             }
         }
     }
@@ -89,6 +88,7 @@ class EditViewController: NSViewController, EditViewDataSource {
     override func changeFont(_ sender: Any?) {
         if let manager = sender as? NSFontManager {
             textMetrics = textMetrics.newMetricsForFontChange(fontManager: manager)
+            updateGutterWidth()
             self.editView.needsDisplay = true
         } else {
             Swift.print("changeFont: called with nil")
@@ -96,6 +96,10 @@ class EditViewController: NSViewController, EditViewDataSource {
         }
     }
 
+    func updateGutterWidth() {
+        let gutterColumns = "\(lineCount)".characters.count
+        gutterViewWidth.constant = textMetrics.fontWidth * max(2, CGFloat(gutterColumns)) + 2 * gutterView.xPadding
+    }
     
     func boundsDidChangeNotification(_ notification: Notification) {
         updateEditViewScroll()
