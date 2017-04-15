@@ -155,7 +155,7 @@ class EditView: NSView, NSTextInputClient {
     let font_style_italic: Int = 4;
 
     override func draw(_ dirtyRect: NSRect) {
-        if dataSource.document.tabName == nil { return }
+        if dataSource.document.coreViewIdentifier == nil { return }
         super.draw(dirtyRect)
         /*
         let path = NSBezierPath(ovalInRect: frame)
@@ -262,7 +262,7 @@ class EditView: NSView, NSTextInputClient {
     // MARK: - NSTextInputClient protocol
     func insertText(_ aString: Any, replacementRange: NSRange) {
         self.removeMarkedText()
-        self.replaceCharactersInRange(replacementRange, withText: aString as AnyObject)
+        let _ = self.replaceCharactersInRange(replacementRange, withText: aString as AnyObject)
     }
     
     public func characterIndex(for point: NSPoint) -> Int {

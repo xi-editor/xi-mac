@@ -80,7 +80,8 @@ extension Event {
     }
 }
 
-typealias TabIdentifier = String
+/// Identifies a given document view for routing with xi-core
+typealias ViewIdentifier = String
 
 enum Events { // namespace
     struct NewView: Event {
@@ -89,19 +90,30 @@ enum Events { // namespace
         let path: String?
         let method = "new_view"
         var params: AnyObject? {
-            guard let path = self.path else { return nil }
-            return ["filename": path] as AnyObject
+            guard let path = self.path else { return [:] as AnyObject }
+            return ["file_path": path] as AnyObject
         }
-        let dispatchMethod = EventDispatchMethod.async
+        let dispatchMethod = EventDispatchMethod.sync
     }
     
     struct CloseView: Event {
         typealias Output = Void
         
-        let tabId: TabIdentifier
+        let viewIdentifier: ViewIdentifier
         
         let method = "close_view"
-        var params: AnyObject? { return ["tab": tabId] as AnyObject }
+        var params: AnyObject? { return ["view_id": viewIdentifier] as AnyObject }
+        let dispatchMethod = EventDispatchMethod.async
+    }
+    
+    struct Save: Event {
+        typealias Output = Void
+        
+        let viewIdentifier: ViewIdentifier
+        let path: String
+        
+        let method = "save"
+        var params: AnyObject? { return ["view_id": viewIdentifier, "file_path": path] as AnyObject }
         let dispatchMethod = EventDispatchMethod.async
     }
 }

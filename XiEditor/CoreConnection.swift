@@ -120,7 +120,7 @@ class CoreConnection {
             result = r
             semaphore.signal()
         }
-        semaphore.wait(timeout: DispatchTime.distantFuture)
+        let _ = semaphore.wait(timeout: DispatchTime.distantFuture)
         return result
     }
 
