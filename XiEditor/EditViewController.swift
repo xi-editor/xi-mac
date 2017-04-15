@@ -163,7 +163,7 @@ class EditViewController: NSViewController, EditViewDataSource {
         if let last = lastDragPosition, last != dragPosition {
             lastDragPosition = dragPosition
             let flags = theEvent.modifierFlags.rawValue >> 16
-            document.sendRpcAsync("drag", params: [last.line, last.column, flags])
+            document.sendRpcAsync("drag", params: [dragPosition.line, dragPosition.column, flags])
         }
         dragEvent = theEvent
     }
