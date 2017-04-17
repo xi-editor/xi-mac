@@ -125,6 +125,12 @@ class EditViewController: NSViewController, EditViewDataSource {
     
     // MARK: - Core Commands
     func update(_ content: [String: AnyObject]) {
+        if (content["unsaved_changes"] as? Bool ?? true) {
+            document.updateChangeCount(.changeDone)
+        } else {
+            document.updateChangeCount(.changeCleared)
+        }
+
         lines.applyUpdate(update: content)
         self.lineCount = lines.height
         self.editViewHeight.constant = max(CGFloat(lines.height) * textMetrics.linespace + 2 * textMetrics.descent, scrollView.bounds.height)
