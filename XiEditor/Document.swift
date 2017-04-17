@@ -37,12 +37,11 @@ class Document: NSDocument {
     static var preferredTabbingIdentifier: String?
 
     var dispatcher: Dispatcher!
-    /// tabName is the name used to identify this document when communicating with the Core.
-    /// - Note: This should not be confused with the tabbingIdentifier, which is a macOS/Cocoa property used to group windows together
-    var tabName: String? {
+    /// coreViewIdentifier is the name used to identify this document when communicating with the Core.
+    var coreViewIdentifier: ViewIdentifier? {
         didSet {
-            guard tabName != nil else { return }
-            // apply initial updates when tabName is set
+            guard coreViewIdentifier != nil else { return }
+            // apply initial updates when coreViewIdentifier is set
             for pending in self.pendingNotifications {
                 self.sendRpcAsync(pending.method, params: pending.params)
             }
@@ -63,6 +62,35 @@ class Document: NSDocument {
     /// used to keep track of whether we're in the process of reusing an empty window
     fileprivate var _skipShowingWindow = false
 
+    // called only when creating a _new_ document
+    convenience init(type: String) throws {
+        self.init()
+        self.fileType = type
+        Events.NewView(path: nil).dispatchWithCallback(dispatcher!) { (coreViewIdentifier) in
+            DispatchQueue.main.async {
+                self.coreViewIdentifier = coreViewIdentifier
+            }
+        }
+    }
+    
+    // called when opening a document
+    convenience init(contentsOf url: URL, ofType typeName: String) throws {
+        self.init()
+        self.fileURL = url
+        self.fileType = typeName
+        Events.NewView(path: url.path).dispatchWithCallback(dispatcher!) { (coreViewIdentifier) in
+            DispatchQueue.main.async {
+                self.coreViewIdentifier = coreViewIdentifier
+            }
+        }
+        try self.read(from: url, ofType: typeName)
+    }
+    
+    // called when NSDocument reopens documents on launch
+    convenience init(for urlOrNil: URL?, withContentsOf contentsURL: URL, ofType typeName: String) throws {
+        try self.init(contentsOf: contentsURL, ofType: typeName)
+    }
+    
     override init() {
         dispatcher = (NSApplication.shared().delegate as? AppDelegate)?.dispatcher
         tabbingIdentifier = Document.preferredTabbingIdentifier ?? Document.nextTabbingIdentifier()
@@ -104,12 +132,6 @@ class Document: NSDocument {
         editViewController?.document = self
         windowController.window?.delegate = editViewController
         self.addWindowController(windowController)
-
-        Events.NewTab().dispatchWithCallback(dispatcher!) { (tabName) in
-            DispatchQueue.main.async {
-            self.tabName = tabName
-            }
-        }
     }
 
     override func showWindows() {
@@ -122,10 +144,6 @@ class Document: NSDocument {
         }
     }
     
-    override func read(from url: URL, ofType typeName: String) throws {
-        self.open(url.path)
-    }
-    
     override func save(to url: URL, ofType typeName: String, for saveOperation: NSSaveOperationType, completionHandler: @escaping (Error?) -> Void) {
         self.fileURL = url
         self.save(url.path)
@@ -135,7 +153,7 @@ class Document: NSDocument {
     
     override func close() {
         super.close()
-        Events.DeleteTab(tabId: tabName!).dispatch(dispatcher!)
+        Events.CloseView(viewIdentifier: coreViewIdentifier!).dispatch(dispatcher!)
     }
     
     override var isEntireFileLoaded: Bool {
@@ -146,19 +164,19 @@ class Document: NSDocument {
         return false
     }
 
-    fileprivate func open(_ filename: String) {
-        sendRpcAsync("open", params: ["filename": filename])
+    override func read(from data: Data, ofType typeName: String) throws {
+        // required override. xi-core handles file reading.
     }
     
     fileprivate func save(_ filename: String) {
-        sendRpcAsync("save", params: ["filename": filename])
+        Events.Save(viewIdentifier: coreViewIdentifier!, path: filename).dispatch(dispatcher!)
     }
     
     /// Send a notification specific to the tab. If the tab name hasn't been set, then the
     /// notification is queued, and sent when the tab name arrives.
     func sendRpcAsync(_ method: String, params: Any) {
-        if let tabName = tabName {
-            let inner = ["method": method, "params": params, "tab": tabName] as [String : Any]
+        if let coreViewIdentifier = coreViewIdentifier {
+            let inner = ["method": method, "params": params, "view_id": coreViewIdentifier] as [String : Any]
             dispatcher?.coreConnection.sendRpcAsync("edit", params: inner)
         } else {
             pendingNotifications.append(PendingNotification(method: method, params: params))
@@ -168,7 +186,7 @@ class Document: NSDocument {
     /// Note: this is a blocking call, and will also fail if the tab name hasn't been set yet.
     /// We should try to migrate users to either fully async or callback based approaches.
     func sendRpc(_ method: String, params: Any) -> Any? {
-        let inner = ["method": method as AnyObject, "params": params, "tab": tabName as AnyObject] as [String : Any]
+        let inner = ["method": method as AnyObject, "params": params, "view_id": coreViewIdentifier as AnyObject] as [String : Any]
         return dispatcher?.coreConnection.sendRpc("edit", params: inner)
     }
 

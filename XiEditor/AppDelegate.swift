@@ -37,11 +37,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         self.dispatcher = dispatcher
     }
     
-    /// returns the NSDocument corresponding to the given tabName
-    private func documentForTabName(tabName: String) -> Document? {
+    /// returns the NSDocument corresponding to the given viewIdentifier
+    private func documentForViewIdentifier(viewIdentifier: ViewIdentifier) -> Document? {
         for doc in NSApplication.shared().orderedDocuments {
             guard let doc = doc as? Document else { continue }
-            if doc.tabName == tabName {
+            if doc.coreViewIdentifier == viewIdentifier {
                 return doc
             }
         }
@@ -62,14 +62,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         case "update":
             if let obj = params as? [String : AnyObject], let update = obj["update"] as? [String : AnyObject] {
                 guard
-                    let tab = obj["tab"] as? String, let document = documentForTabName(tabName: tab)
-                    else { print("tab or document missing for update event: ", obj); return }
+                    let viewIdentifier = obj["view_id"] as? String, let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
+                    else { print("view_id or document missing for update event: ", obj); return }
                     document.update(update)
             }
         case "scroll_to":
             if let obj = params as? [String : AnyObject], let line = obj["line"] as? Int, let col = obj["col"] as? Int {
-                guard let tab = obj["tab"] as? String, let document = documentForTabName(tabName: tab)
-                    else { print("tab or document missing for update event: ", obj); return }
+                guard let viewIdentifier = obj["view_id"] as? String, let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
+                    else { print("view_id or document missing for update event: ", obj); return }
                     document.editViewController?.scrollTo(line, col)
             }
         case "def_style":
