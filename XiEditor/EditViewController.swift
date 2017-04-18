@@ -125,10 +125,10 @@ class EditViewController: NSViewController, EditViewDataSource {
     
     // MARK: - Core Commands
     func update(_ content: [String: AnyObject]) {
-        if (content["unsaved_changes"] as? Bool ?? true) {
-            document.updateChangeCount(.changeDone)
-        } else {
+        if (content["pristine"] as? Bool ?? false) {
             document.updateChangeCount(.changeCleared)
+        } else {
+            document.updateChangeCount(.changeDone)
         }
 
         lines.applyUpdate(update: content)
