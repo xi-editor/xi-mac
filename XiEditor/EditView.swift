@@ -204,6 +204,8 @@ class EditView: NSView, NSTextInputClient {
             dataSource.styleMap.applyStyles(text: s, string: &attrString, styles: line.styles)
             for c in line.cursor {
                 let cix = utf8_offset_to_utf16(s, c)
+                // TODO: How should we handle the situations that have multi-cursor?
+                self.cursorPos = (lineIx, cix)
                 if (markedRange().location != NSNotFound) {
                     let markRangeStart = cix - markedRange().length
                     if (markRangeStart >= 0) {
