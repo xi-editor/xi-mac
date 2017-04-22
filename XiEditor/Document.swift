@@ -150,13 +150,12 @@ class Document: NSDocument {
         //TODO: save operations should report success, and we should pass any errors to the completion handler
         completionHandler(nil)
     }
-    
+
     // Document.close() can be called multiple times (on window close and application terminate)
-    fileprivate var _isClosed = false
     override func close() {
-        if !self._isClosed {
-            self._isClosed = true
-            Events.CloseView(viewIdentifier: coreViewIdentifier!).dispatch(dispatcher!)
+        if let identifier = self.coreViewIdentifier {
+            self.coreViewIdentifier = nil
+            Events.CloseView(viewIdentifier: identifier).dispatch(dispatcher!)
             super.close()
         }
     }
