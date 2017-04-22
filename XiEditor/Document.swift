@@ -151,9 +151,14 @@ class Document: NSDocument {
         completionHandler(nil)
     }
     
+    // Document.close() can be called multiple times (on window close and application terminate)
+    fileprivate var _isClosed = false
     override func close() {
-        super.close()
-        Events.CloseView(viewIdentifier: coreViewIdentifier!).dispatch(dispatcher!)
+        if !self._isClosed {
+            self._isClosed = true
+            Events.CloseView(viewIdentifier: coreViewIdentifier!).dispatch(dispatcher!)
+            super.close()
+        }
     }
     
     override var isEntireFileLoaded: Bool {
