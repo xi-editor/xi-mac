@@ -152,7 +152,7 @@ class EditViewController: NSViewController, EditViewDataSource {
     }
     
     override func mouseDown(with theEvent: NSEvent) {
-        editView.removeMarkedText()
+        editView.unmarkText()
         editView.inputContext?.discardMarkedText()
         let position  = editView.bufferPositionFromPoint(theEvent.locationInWindow)
         lastDragPosition = position
