@@ -192,6 +192,8 @@ class EditViewController: NSViewController, EditViewDataSource {
     }
 
     override func selectAll(_ sender: Any?) {
+        editView.unmarkText()
+        editView.inputContext?.discardMarkedText()
         document.sendRpcAsync("select_all", params: [])
     }
 
