@@ -158,7 +158,15 @@ class EditViewController: NSViewController, EditViewDataSource {
         lastDragPosition = position
         let flags = theEvent.modifierFlags.rawValue >> 16
         let clickCount = theEvent.clickCount
-        document.sendRpcAsync("click", params: [position.line, position.column, flags, clickCount])
+        if theEvent.modifierFlags.contains(NSCommandKeyMask) {
+            // Note: all gestures will be moving to "gesture" rpc but for now, just toggle_sel
+            document.sendRpcAsync("gesture", params: [
+                "line": position.line,
+                "col": position.column,
+                "ty": "toggle_sel"])
+        } else {
+            document.sendRpcAsync("click", params: [position.line, position.column, flags, clickCount])
+        }
         dragTimer = Timer.scheduledTimer(timeInterval: TimeInterval(1.0/60), target: self, selector: #selector(_autoscrollTimerCallback), userInfo: nil, repeats: true)
         dragEvent = theEvent
     }
