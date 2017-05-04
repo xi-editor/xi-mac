@@ -18,14 +18,14 @@ class CoreConnection {
 
     var inHandle: FileHandle  // stdin of core process
     var recvBuf: Data
-    var callback: (AnyObject) -> ()
+    var callback: (Any) -> Any?
 
     // RPC state
     var queue = DispatchQueue(label: "com.levien.xi.CoreConnection", attributes: [])
     var rpcIndex = 0
     var pending = Dictionary<Int, (Any?) -> ()>()
 
-    init(path: String, callback: @escaping (Any) -> ()) {
+    init(path: String, callback: @escaping (Any) -> Any?) {
         let task = Process()
         task.launchPath = path
         task.arguments = []
@@ -84,14 +84,34 @@ class CoreConnection {
     func handleRaw(_ data: Data) {
         do {
             let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
-            //print("got \(json)")
-            if !handleRpcResponse(json as AnyObject) {
+//            print("got \(json)")
+            handleRpc(json as Any)
+        } catch {
+            print("json error \(error.localizedDescription)")
+        }
+    }
+
+    /// handle a JSON RPC call. Determines whether it is a request, response or notifcation
+    /// and executes/responds accordingly
+    func handleRpc(_ json: Any) {
+        if let obj = json as? [String: Any], let index = obj["id"] as? Int {
+            if let result = obj["result"] { // is response
+                var callback: ((Any?) -> ())?
+                queue.sync {
+                    callback = self.pending.removeValue(forKey: index)
+                }
+                callback?(result)
+            } else { // is request
                 DispatchQueue.main.async {
-                    self.callback(json as AnyObject)
+                    let result = self.callback(json as AnyObject)
+                    let resp = ["id": index, "result": result] as [String : Any?]
+                    self.sendJson(resp as Any)
                 }
             }
-        } catch _ {
-            print("json error")
+        } else { // is notification
+            DispatchQueue.main.async {
+                let _ = self.callback(json as AnyObject)
+            }
         }
     }
 
@@ -122,19 +142,5 @@ class CoreConnection {
         }
         let _ = semaphore.wait(timeout: DispatchTime.distantFuture)
         return result
-    }
-
-    func handleRpcResponse(_ response: Any) -> Bool {
-        if let resp = response as? [String: Any], let index = resp["id"] as? Int {
-            var callback: ((Any?) -> ())? = nil
-            let result = resp["result"]
-            queue.sync {
-                callback = self.pending.removeValue(forKey: index)
-            }
-            callback?(result)
-            return true;
-        } else {
-            return false;
-        }
     }
 }
