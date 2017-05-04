@@ -96,7 +96,7 @@ class CoreConnection {
     func handleRpc(_ json: Any) {
         if let obj = json as? [String: Any], let index = obj["id"] as? Int {
             if let result = obj["result"] { // is response
-                var callback: ((Any?) -> ())? = nil
+                var callback: ((Any?) -> ())?
                 queue.sync {
                     callback = self.pending.removeValue(forKey: index)
                 }
