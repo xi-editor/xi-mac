@@ -66,9 +66,10 @@ class Document: NSDocument {
     convenience init(type: String) throws {
         self.init()
         self.fileType = type
-        Events.NewView(path: nil).dispatchWithCallback(dispatcher!) { (coreViewIdentifier) in
+        Events.NewView(path: nil).dispatchWithCallback(dispatcher!) { (response) in
             DispatchQueue.main.async {
-                self.coreViewIdentifier = coreViewIdentifier
+                self.coreViewIdentifier = (response["view_id"] as! String)
+                self.editViewController!.availablePlugins = response["available_plugins"] as! [String]
             }
         }
     }
@@ -78,9 +79,10 @@ class Document: NSDocument {
         self.init()
         self.fileURL = url
         self.fileType = typeName
-        Events.NewView(path: url.path).dispatchWithCallback(dispatcher!) { (coreViewIdentifier) in
+        Events.NewView(path: url.path).dispatchWithCallback(dispatcher!) { (response) in
             DispatchQueue.main.async {
-                self.coreViewIdentifier = coreViewIdentifier
+                self.coreViewIdentifier = (response["view_id"] as! String)
+                self.editViewController!.availablePlugins = response["available_plugins"] as! [String]
             }
         }
         try self.read(from: url, ofType: typeName)

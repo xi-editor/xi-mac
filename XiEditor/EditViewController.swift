@@ -49,7 +49,14 @@ class EditViewController: NSViewController, EditViewDataSource {
     var gutterWidth: CGFloat {
         return gutterViewWidth.constant
     }
-    
+
+    /// A list of plugins available to this editor.
+    var availablePlugins: [String] = [] {
+        didSet {
+            updateAvailablePlugins()
+        }
+    }
+
     // used to calculate the gutter width. Initial -1 so that a new document
     // still triggers update of gutter width.
     private var lineCount: Int = -1 {
@@ -281,9 +288,18 @@ class EditViewController: NSViewController, EditViewDataSource {
     @IBAction func debugTestFGSpans(_ sender: AnyObject) {
         document.sendRpcAsync("debug_test_fg_spans", params: [])
     }
-    
-    @IBAction func debugRunPlugin(_ sender: AnyObject) {
-        document.sendRpcAsync("debug_run_plugin", params: [])
+
+    func runPlugin(_ sender: NSMenuItem) {
+        Events.RunPlugin(viewIdentifier: document.coreViewIdentifier!, plugin: sender.title).dispatch(document.dispatcher)
+        print("runPlugin: \(sender)")
+    }
+
+    func updateAvailablePlugins() {
+        let pluginsMenu = NSApplication.shared().mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Plugin");
+        pluginsMenu!.submenu?.removeAllItems()
+        for plugin in self.availablePlugins {
+            pluginsMenu!.submenu?.addItem(withTitle: plugin, action: #selector(EditViewController.runPlugin(_:)), keyEquivalent: "")
+        }
     }
     
     @IBAction func gotoLine(_ sender: AnyObject) {
@@ -312,6 +328,7 @@ class EditViewController: NSViewController, EditViewDataSource {
 extension EditViewController: NSWindowDelegate {
     func windowDidBecomeKey(_ notification: Notification) {
         editView.isFrontmostView = true
+        updateAvailablePlugins()
     }
 
     func windowDidResignKey(_ notification: Notification) {

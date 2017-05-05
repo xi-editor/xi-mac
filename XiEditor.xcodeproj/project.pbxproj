@@ -10,6 +10,9 @@
 		50370A2B1D4209F300EA1B18 /* Dispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50370A2A1D4209F300EA1B18 /* Dispatcher.swift */; };
 		6B0DCDD41E8196D0007C14A3 /* GutterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0DCDD31E8196D0007C14A3 /* GutterView.swift */; };
 		6B0DCDD61E832101007C14A3 /* EditContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0DCDD51E832101007C14A3 /* EditContainerView.swift */; };
+		6B5138471EBD23C200C992A8 /* bracket_example.py in Resources */ = {isa = PBXBuildFile; fileRef = 6B5138441EBD23C200C992A8 /* bracket_example.py */; };
+		6B5138481EBD23C200C992A8 /* shouty.py in Resources */ = {isa = PBXBuildFile; fileRef = 6B5138451EBD23C200C992A8 /* shouty.py */; };
+		6B5138491EBD23C200C992A8 /* spellcheck.py in Resources */ = {isa = PBXBuildFile; fileRef = 6B5138461EBD23C200C992A8 /* spellcheck.py */; };
 		AE0243F61E4BDF8A00641BDA /* StyleMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE0243F51E4BDF8A00641BDA /* StyleMap.swift */; };
 		AE041BA61D4327EB0069AB8B /* xi-syntect-plugin in Resources */ = {isa = PBXBuildFile; fileRef = AE041BA51D4327EB0069AB8B /* xi-syntect-plugin */; };
 		AE168C5C1E4AD87B008249AE /* LineCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE168C5B1E4AD87B008249AE /* LineCache.swift */; };
@@ -54,6 +57,9 @@
 		50370A2A1D4209F300EA1B18 /* Dispatcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dispatcher.swift; sourceTree = "<group>"; };
 		6B0DCDD31E8196D0007C14A3 /* GutterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GutterView.swift; sourceTree = "<group>"; };
 		6B0DCDD51E832101007C14A3 /* EditContainerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = EditContainerView.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		6B5138441EBD23C200C992A8 /* bracket_example.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; name = bracket_example.py; path = "xi-editor/python/bracket_example.py"; sourceTree = SOURCE_ROOT; };
+		6B5138451EBD23C200C992A8 /* shouty.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; name = shouty.py; path = "xi-editor/python/shouty.py"; sourceTree = SOURCE_ROOT; };
+		6B5138461EBD23C200C992A8 /* spellcheck.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; name = spellcheck.py; path = "xi-editor/python/spellcheck.py"; sourceTree = SOURCE_ROOT; };
 		AE0243F51E4BDF8A00641BDA /* StyleMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StyleMap.swift; sourceTree = "<group>"; };
 		AE041B971D4323460069AB8B /* build-rust-xcode.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-rust-xcode.sh"; sourceTree = "<group>"; };
 		AE041BA51D4327EB0069AB8B /* xi-syntect-plugin */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = "xi-syntect-plugin"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -168,6 +174,9 @@
 				AE041B971D4323460069AB8B /* build-rust-xcode.sh */,
 				AE228F5C1C897CE7000E9B0F /* xi-core */,
 				AE041BA51D4327EB0069AB8B /* xi-syntect-plugin */,
+				6B5138441EBD23C200C992A8 /* bracket_example.py */,
+				6B5138451EBD23C200C992A8 /* shouty.py */,
+				6B5138461EBD23C200C992A8 /* spellcheck.py */,
 			);
 			name = xicore;
 			sourceTree = "<group>";
@@ -301,9 +310,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6B5138491EBD23C200C992A8 /* spellcheck.py in Resources */,
 				F53EA2AD1DCAA8110071ACFD /* Main.storyboard in Resources */,
 				AE228F5D1C897CE7000E9B0F /* xi-core in Resources */,
+				6B5138471EBD23C200C992A8 /* bracket_example.py in Resources */,
 				AE041BA61D4327EB0069AB8B /* xi-syntect-plugin in Resources */,
+				6B5138481EBD23C200C992A8 /* shouty.py in Resources */,
 				AE499DD21C82BB2B002D68AF /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
