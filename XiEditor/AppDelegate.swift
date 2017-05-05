@@ -14,12 +14,16 @@
 
 import Cocoa
 
+//TODO: preferred font should be a user preference
+let defaultFont = CTFontCreateWithName("InconsolataGo" as CFString?, 14, nil)
+
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
 
     var dispatcher: Dispatcher?
-    var styleMap: StyleMap = StyleMap()
 
+    var textMetrics = TextDrawingMetrics(font: defaultFont)
+    var styleMap: StyleMap = StyleMap(font: defaultFont)
 
     func applicationWillFinishLaunching(_ aNotification: Notification) {
 
@@ -88,6 +92,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         return nil
+    }
+
+    /// Passed an NSFontManager instance (as on a user-initiated font change)
+    /// computes the next set of drawing metrics and updates cached styles.
+    func handleFontChange(fontManager: NSFontManager) {
+        let newFont = fontManager.convert(textMetrics.font)
+        textMetrics = TextDrawingMetrics(font: newFont)
+        styleMap.updateFont(to: newFont)
+
+        for doc in NSApplication.shared().orderedDocuments {
+            guard let doc = doc as? Document else { continue }
+            doc.editViewController?.updateGutterWidth()
+            doc.editViewController?.editView.needsDisplay = true
+        }
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {

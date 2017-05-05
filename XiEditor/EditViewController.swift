@@ -39,13 +39,14 @@ class EditViewController: NSViewController, EditViewDataSource {
     var document: Document!
     
     var lines: LineCache = LineCache()
+
+    var textMetrics: TextDrawingMetrics {
+        return (NSApplication.shared().delegate as! AppDelegate).textMetrics
+    }
     var styleMap: StyleMap {
         return (NSApplication.shared().delegate as! AppDelegate).styleMap
     }
 
-    //TODO: preferred font should be a user preference
-    var textMetrics = TextDrawingMetrics(font: CTFontCreateWithName("InconsolataGo" as CFString?, 14, nil))
-    
     var gutterWidth: CGFloat {
         return gutterViewWidth.constant
     }
@@ -87,9 +88,7 @@ class EditViewController: NSViewController, EditViewDataSource {
     // this gets called when the user changes the font with the font book, for example
     override func changeFont(_ sender: Any?) {
         if let manager = sender as? NSFontManager {
-            textMetrics = textMetrics.newMetricsForFontChange(fontManager: manager)
-            updateGutterWidth()
-            self.editView.needsDisplay = true
+            (NSApplication.shared().delegate as! AppDelegate).handleFontChange(fontManager: manager)
         } else {
             Swift.print("changeFont: called with nil")
             return
@@ -98,7 +97,8 @@ class EditViewController: NSViewController, EditViewDataSource {
 
     func updateGutterWidth() {
         let gutterColumns = "\(lineCount)".characters.count
-        gutterViewWidth.constant = textMetrics.fontWidth * max(2, CGFloat(gutterColumns)) + 2 * gutterView.xPadding
+        let chWidth = NSString(string: "9").size(withAttributes: textMetrics.attributes).width
+        gutterViewWidth.constant = chWidth * max(2, CGFloat(gutterColumns)) + 2 * gutterView.xPadding
     }
     
     func boundsDidChangeNotification(_ notification: Notification) {
