@@ -185,9 +185,8 @@ class EditView: NSView, NSTextInputClient {
             let y = dataSource.textMetrics.linespace * CGFloat(lineIx + 1)
             context.setFillColor(textSelectionColor.cgColor)
             for selection in selections {
-                let selStart = CTLineGetOffsetForStringIndex(ctline, selection.range.location, nil)
-                let selEnd = CTLineGetOffsetForStringIndex(ctline, selection.range.location + selection.range.length, nil)
-                context.fill(CGRect.init(x: x0 + selStart, y: y - dataSource.textMetrics.ascent, width: selEnd - selStart, height: dataSource.textMetrics.linespace))
+                let sel = caretOffsets(ctline, at: [selection.range.location, selection.range.location + selection.range.length])
+                context.fill(CGRect.init(x: x0 + sel[0], y: y - dataSource.textMetrics.ascent, width: sel[1] - sel[0], height: dataSource.textMetrics.linespace))
             }
             
         }
@@ -241,7 +240,7 @@ class EditView: NSView, NSTextInputClient {
                     // special case because measurement is so expensive; might have to rethink in rtl
                     if cursor != 0 {
                         let utf16_ix = utf8_offset_to_utf16(s, cursor)
-                        pos = CTLineGetOffsetForStringIndex(ctline, CFIndex(utf16_ix), nil)
+                        pos = caretOffset(ctline, at: CFIndex(utf16_ix))
                     }
                     context.setStrokeColor(cursorColor)
                     context.move(to: CGPoint(x: x0 + pos, y: y + dataSource.textMetrics.descent))
@@ -366,8 +365,9 @@ class EditView: NSView, NSTextInputClient {
             let line = getLine(lineIx) {
             let str = line.text
             let ctLine = CTLineCreateWithAttributedString(NSMutableAttributedString(string: str, attributes: dataSource.textMetrics.attributes))
-            let rangeWidth = CTLineGetOffsetForStringIndex(ctLine, pos, nil) - CTLineGetOffsetForStringIndex(ctLine, pos - aRange.length, nil)
-            return NSRect(x: viewWinFrame.origin.x + CTLineGetOffsetForStringIndex(ctLine, pos, nil),
+            let offsets = caretOffsets(ctLine, at: [pos - aRange.length, pos])
+            let rangeWidth = offsets[1] - offsets[0]
+            return NSRect(x: viewWinFrame.origin.x + offsets[1],
                           y: viewWinFrame.origin.y + viewWinFrame.size.height - dataSource.textMetrics.linespace * CGFloat(lineIx + 1) - 5,
                           width: rangeWidth,
                           height: dataSource.textMetrics.linespace)
@@ -436,5 +436,42 @@ class EditView: NSView, NSTextInputClient {
 
     func getLine(_ lineNum: Int) -> Line? {
         return dataSource.lines.get(lineNum)
+    }
+
+    /// determines the graphical offset for the given position in the given line
+    func caretOffset(_ line: CTLine, at pos: CFIndex) -> CGFloat {
+        var offset = CGFloat(0)
+        CTLineEnumerateCaretOffsets(line, {(o: Double, p: CFIndex, leadingEdge: Bool, stop: UnsafeMutablePointer<Bool>) -> Void in
+            if leadingEdge == true && p == pos {
+                offset = CGFloat(o)
+                stop[0] = true
+            }
+        })
+        return offset
+    }
+
+    /// determines the graphical offsets of the given positions in the given line.
+    /// The pos array must be already sorted in ascending order
+    func caretOffsets(_ line: CTLine, at pos: [CFIndex]) -> [CGFloat] {
+        var offsets = [CGFloat](repeating: 0, count: pos.count)
+        if pos.count == 0 {
+            return offsets
+        }
+        // shift positions one to the left so that we can use trailing edges to find positions,
+        // which optimizes finding offsets at the end of lines
+        let pos = pos.map({(p) -> Int in
+            return p > 0 ? p - 1 : p
+        })
+        var i = 0
+        CTLineEnumerateCaretOffsets(line, {(o: Double, p: CFIndex, leadingEdge: Bool, stop: UnsafeMutablePointer<Bool>) -> Void in
+            if (pos[i] == 0 && leadingEdge == true) || (leadingEdge == false && p == pos[i]) {
+                offsets[i] = CGFloat(o)
+                i += 1
+                if i >= pos.count {
+                    stop[0] = true
+                }
+            }
+        })
+        return offsets
     }
 }
