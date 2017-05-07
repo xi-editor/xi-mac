@@ -85,7 +85,7 @@ typealias ViewIdentifier = String
 
 enum Events { // namespace
     struct NewView: Event {
-        typealias Output = [String: AnyObject?]
+        typealias Output = String
         
         let path: String?
         let method = "new_view"
@@ -127,5 +127,16 @@ enum Events { // namespace
             return ["command": "start", "view_id": viewIdentifier, "plugin_name": plugin] as AnyObject
         }
         let dispatchMethod = EventDispatchMethod.async
+    }
+    
+    struct InitialPlugins: Event {
+        typealias Output = [String]
+        let viewIdentifier: ViewIdentifier
+        
+        let method = "plugin"
+        var params: AnyObject? {
+            return ["command": "initial_plugins", "view_id": viewIdentifier] as AnyObject
+        }
+        let dispatchMethod = EventDispatchMethod.sync
     }
 }
