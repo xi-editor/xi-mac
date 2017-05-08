@@ -116,4 +116,27 @@ enum Events { // namespace
         var params: AnyObject? { return ["view_id": viewIdentifier, "file_path": path] as AnyObject }
         let dispatchMethod = EventDispatchMethod.async
     }
+
+    struct RunPlugin: Event {
+        typealias Output = Void
+        let viewIdentifier: ViewIdentifier
+        let plugin: String
+
+        let method = "plugin"
+        var params: AnyObject? {
+            return ["command": "start", "view_id": viewIdentifier, "plugin_name": plugin] as AnyObject
+        }
+        let dispatchMethod = EventDispatchMethod.async
+    }
+    
+    struct InitialPlugins: Event {
+        typealias Output = [String]
+        let viewIdentifier: ViewIdentifier
+        
+        let method = "plugin"
+        var params: AnyObject? {
+            return ["command": "initial_plugins", "view_id": viewIdentifier] as AnyObject
+        }
+        let dispatchMethod = EventDispatchMethod.sync
+    }
 }
