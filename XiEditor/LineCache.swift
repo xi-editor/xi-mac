@@ -121,6 +121,10 @@ class LineCache {
                     nRemaining -= nInvalid
                 }
                 if nRemaining > 0 && oldIx < nInvalidBefore + lines.count {
+                    for _ in 0..<newInvalidAfter {
+                        newLines.append(nil)
+                    }
+                    newInvalidAfter = 0
                     let nCopy = min(nRemaining, nInvalidBefore + lines.count - oldIx)
                     let startIx = oldIx - nInvalidBefore
                     if op_type == "copy" {
