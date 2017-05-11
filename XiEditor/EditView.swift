@@ -94,6 +94,7 @@ class EditView: NSView, NSTextInputClient {
             return NSColor(colorLiteralRed: 0.8, green: 0.8, blue: 0.8, alpha: 1.0)
         }
     }
+    var textHighlightColor: NSColor = NSColor(deviceWhite: 0.8, alpha: 0.4)
 
     var lastDragLineCol: (Int, Int)?
     var timer: Timer?
@@ -166,20 +167,30 @@ class EditView: NSView, NSTextInputClient {
             dataSource.document.sendRpcAsync("request_lines", params: [f, l])
         }
 
-        // first pass, for drawing background selections
+        // first pass, for drawing background selections and search highlights
         for lineIx in first..<last {
-            guard let line = getLine(lineIx), line.containsSelection == true else { continue }
-            let selections = line.styles.filter { $0.style == 0 }
+            guard let line = getLine(lineIx), line.containsReservedStyle == true else { continue }
             let attrString = NSMutableAttributedString(string: line.text, attributes: dataSource.textMetrics.attributes)
             let ctline = CTLineCreateWithAttributedString(attrString)
             let y = dataSource.textMetrics.linespace * CGFloat(lineIx + 1)
+
             context.setFillColor(textSelectionColor.cgColor)
+            let selections = line.styles.filter { $0.style == 0 }
             for selection in selections {
                 let selStart = CTLineGetOffsetForStringIndex(ctline, selection.range.location, nil)
                 let selEnd = CTLineGetOffsetForStringIndex(ctline, selection.range.location + selection.range.length, nil)
-                context.fill(CGRect.init(x: x0 + selStart, y: y - dataSource.textMetrics.ascent, width: selEnd - selStart, height: dataSource.textMetrics.linespace))
+                context.fill(CGRect(x: x0 + selStart, y: y - dataSource.textMetrics.ascent,
+                                    width: selEnd - selStart, height: dataSource.textMetrics.linespace))
             }
-            
+
+            context.setFillColor(textHighlightColor.cgColor)
+            let highlights = line.styles.filter { $0.style == 1 }
+            for highlight in highlights {
+                let selStart = CTLineGetOffsetForStringIndex(ctline, highlight.range.location, nil)
+                let selEnd = CTLineGetOffsetForStringIndex(ctline, highlight.range.location + highlight.range.length, nil)
+                context.fill(CGRect(x: x0 + selStart, y: y - dataSource.textMetrics.ascent,
+                                    width: selEnd - selStart, height: dataSource.textMetrics.linespace))
+            }
         }
         // second pass, for actually rendering text.
         for lineIx in first..<last {

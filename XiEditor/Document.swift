@@ -17,6 +17,7 @@ import Cocoa
 struct PendingNotification {
     let method: String
     let params: Any
+    let callback: ((Any?) -> ())?
 }
 
 class Document: NSDocument {
@@ -59,7 +60,7 @@ class Document: NSDocument {
 
             // apply initial updates when coreViewIdentifier is set
             for pending in self.pendingNotifications {
-                self.sendRpcAsync(pending.method, params: pending.params)
+                self.sendRpcAsync(pending.method, params: pending.params, callback: pending.callback)
             }
             self.pendingNotifications.removeAll()
         }
@@ -194,12 +195,12 @@ class Document: NSDocument {
     
     /// Send a notification specific to the tab. If the tab name hasn't been set, then the
     /// notification is queued, and sent when the tab name arrives.
-    func sendRpcAsync(_ method: String, params: Any) {
+    func sendRpcAsync(_ method: String, params: Any, callback: ((Any?) -> ())? = nil) {
         if let coreViewIdentifier = coreViewIdentifier {
             let inner = ["method": method, "params": params, "view_id": coreViewIdentifier] as [String : Any]
-            dispatcher?.coreConnection.sendRpcAsync("edit", params: inner)
+            dispatcher?.coreConnection.sendRpcAsync("edit", params: inner, callback: callback)
         } else {
-            pendingNotifications.append(PendingNotification(method: method, params: params))
+            pendingNotifications.append(PendingNotification(method: method, params: params, callback: callback))
         }
     }
 

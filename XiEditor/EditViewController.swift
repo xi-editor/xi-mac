@@ -32,9 +32,20 @@ class EditViewController: NSViewController, EditViewDataSource {
     @IBOutlet weak var editContainerView: EditContainerView!
     @IBOutlet var editView: EditView!
     @IBOutlet weak var gutterView: GutterView!
+    @IBOutlet weak var stackView: NSStackView!
     
     @IBOutlet weak var gutterViewWidth: NSLayoutConstraint!
     @IBOutlet weak var editViewHeight: NSLayoutConstraint!
+
+    lazy var findViewController: FindViewController! = {
+        let storyboard = NSStoryboard(name: "Main", bundle: nil)
+        let controller = storyboard.instantiateController(withIdentifier: "Find View Controller") as! FindViewController
+        controller.editViewController = self
+
+        self.stackView.insertView(controller.view, at: 0, in: .top)
+        
+        return controller
+    }()
     
     var document: Document!
     

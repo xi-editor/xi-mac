@@ -14,6 +14,8 @@
 
 import Cocoa
 
+let N_RESERVED_STYLES = 2
+
 /// A represents a given text style.
 struct Style {
     var font: NSFont?
@@ -146,8 +148,8 @@ class StyleMap {
 
     /// Given style information, applies the appropriate text attributes to the passed NSAttributedString
     func applyStyles(text: String, string: inout NSMutableAttributedString, styles: [StyleSpan]) {
-        // we handle the 0 style (selection) in EditView.drawRect
-        for styleSpan in styles.filter({ $0.style != 0 }) {
+        // we handle the 0 (selection) and 1 (search highlight) styles in EditView.drawRect
+        for styleSpan in styles.filter({ $0.style >= N_RESERVED_STYLES }) {
                 applyStyle(string: string, id: styleSpan.style, range: styleSpan.range)
         }
     }
