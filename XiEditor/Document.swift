@@ -47,10 +47,16 @@ class Document: NSDocument {
                 dispatcher.coreConnection.sendRpcAsync(
                 req.method, params: req.params!) { [unowned self] (response) in
                     DispatchQueue.main.async {
-                        self.editViewController!.availablePlugins = response as! [String]
+                        let response = response as! [[String: AnyObject?]]
+                        var available: [String: Bool] = [:]
+                        for item in response {
+                            available[item["name"] as! String] = item["running"] as? Bool
+                        }
+                        self.editViewController!.availablePlugins = available
                     }
                 }
             }
+
             // apply initial updates when coreViewIdentifier is set
             for pending in self.pendingNotifications {
                 self.sendRpcAsync(pending.method, params: pending.params)
