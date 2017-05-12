@@ -14,16 +14,16 @@
 
 import Cocoa
 
-//TODO: preferred font should be a user preference
-let defaultFont = CTFontCreateWithName("InconsolataGo" as CFString?, 14, nil)
-
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
 
     var dispatcher: Dispatcher?
 
-    var textMetrics = TextDrawingMetrics(font: defaultFont)
-    var styleMap: StyleMap = StyleMap(font: defaultFont)
+    //TODO: preferred font should be a user preference
+    let defaultFont = CTFontCreateWithName("InconsolataGo" as CFString?, 14, nil)
+
+    lazy var textMetrics: TextDrawingMetrics = TextDrawingMetrics(font: self.defaultFont)
+    lazy var styleMap: StyleMap = StyleMap(font: self.defaultFont)
 
     func applicationWillFinishLaunching(_ aNotification: Notification) {
 
@@ -105,6 +105,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             guard let doc = doc as? Document else { continue }
             doc.editViewController?.updateGutterWidth()
             doc.editViewController?.editView.needsDisplay = true
+            doc.editViewController?.updateEditViewScroll()
         }
     }
 

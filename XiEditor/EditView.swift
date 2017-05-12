@@ -43,7 +43,7 @@ struct TextDrawingMetrics {
     init(font: NSFont) {
         self.font = font
         ascent = font.ascender
-        descent = abs(font.descender)
+        descent = -font.descender // descender is returned as a negative number
         leading = font.leading
         linespace = ceil(ascent + descent + leading)
         baseline = ceil(ascent)

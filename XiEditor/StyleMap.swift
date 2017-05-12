@@ -51,7 +51,7 @@ struct Style {
         }
 
         if font == nil && weight != nil {
-            font = closestMatch(of: fromFont, traits: fm.traits(of: fromFont), weight: weight!) ?? fromFont
+            font = closestMatch(of: fromFont, traits: fm.traits(of: fromFont), weight: weight!)
         }
 
         if let font = font {
@@ -104,7 +104,7 @@ func utf8_offset_to_utf16(_ s: String, _ ix: Int) -> Int {
 /// A store of text styles, indexable by id.
 class StyleMap {
     private var font: NSFont
-    private var map: [Style?] = []
+    private var styles: [Style?] = []
 
     init(font: NSFont) {
         self.font = font
@@ -120,25 +120,26 @@ class StyleMap {
         var weight = json["weight"] as? Int
         if let w = weight {
             // convert to NSFont weight: (100-500 -> 2-6 (5 normal weight), 600-800 -> 8-10, 900 -> 12
+            // see https://github.com/google/xi-mac/pull/32#discussion_r115114037
             weight = Int(floor(1 + Float(w) * (0.01 + 3e-6 * Float(w))))
         }
         
         let style = Style(font: font, fgColor: fgColor, bgColor: bgColor,
                           underline: underline, italic: italic, weight: weight)
-        while map.count < styleID {
-            map.append(nil)
+        while styles.count < styleID {
+            styles.append(nil)
         }
-        if map.count == styleID {
-            map.append(style)
+        if styles.count == styleID {
+            styles.append(style)
         } else {
-            map[styleID] = style
+            styles[styleID] = style
         }
     }
 
     /// applies a given style to the AttributedString
     private func applyStyle(string: NSMutableAttributedString, id: Int, range: NSRange) {
-        if id >= map.count { return }
-        guard let style = map[id] else { return }
+        if id >= styles.count { return }
+        guard let style = styles[id] else { return }
 
         string.addAttributes(style.attributes, range: range)
     }
@@ -153,7 +154,7 @@ class StyleMap {
 
     func updateFont(to font: NSFont) {
         self.font = font
-        map = map.map { $0.map {
+        styles = styles.map { $0.map {
             Style(font: font, fgColor: $0.fgColor, bgColor: $0.bgColor,
                   underline: $0.underline, italic: $0.italic, weight: $0.weight)
         } }
