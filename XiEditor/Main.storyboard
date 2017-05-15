@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16E195" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12120"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -780,6 +780,12 @@
                                                 <action selector="gotoLine:" target="7er-QZ-amI" id="12X-Za-Sbs"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem title="Vim mode" id="REe-LM-N5f">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="toggleVimMode:" target="7er-QZ-amI" id="zTr-Fk-zKI"/>
+                                            </connections>
+                                        </menuItem>
                                     </items>
                                 </menu>
                             </menuItem>
@@ -803,7 +809,11 @@
                 </application>
                 <customObject id="7er-QZ-amI" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
                 <customObject id="o5o-AY-Tmr" customClass="NSFontManager"/>
-                <customObject id="azf-ih-6fI" customClass="AppDelegate" customModule="XiEditor" customModuleProvider="target"/>
+                <customObject id="azf-ih-6fI" customClass="AppDelegate" customModule="XiEditor" customModuleProvider="target">
+                    <connections>
+                        <outlet property="vimModeMenuItem" destination="REe-LM-N5f" id="Eeu-NK-OPv"/>
+                    </connections>
+                </customObject>
             </objects>
             <point key="canvasLocation" x="-295" y="-593"/>
         </scene>

@@ -17,9 +17,13 @@ import Cocoa
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
 
+    // MARK: Properties
+    @IBOutlet weak var vimModeMenuItem: NSMenuItem!
+
     var dispatcher: Dispatcher?
     var styleMap: StyleMap = StyleMap()
 
+    var vimMode: Bool = false
 
     func applicationWillFinishLaunching(_ aNotification: Notification) {
 
@@ -109,4 +113,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Insert code here to tear down your application
     }
 
+    @IBAction func toggleVimMode(_ sender: AnyObject) {
+        vimMode = !vimMode
+        vimModeMenuItem.state = vimMode ? NSOnState : NSOffState
+        Swift.print("toggling vim mode, now \(vimMode)")
+    }
 }

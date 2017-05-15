@@ -155,6 +155,14 @@ class EditViewController: NSViewController, EditViewDataSource {
     
     // MARK: - System Events
     override func keyDown(with theEvent: NSEvent) {
+        if (NSApplication.shared().delegate as! AppDelegate).vimMode {
+            if let codepoint = theEvent.characters?.unicodeScalars.first?.value {
+                if codepoint > 0 && codepoint < 128 {
+                    document.sendRpcAsync("vim_key", params: ["key": codepoint])
+                    return
+                }
+            }
+        }
         self.editView.inputContext?.handleEvent(theEvent);
     }
     
