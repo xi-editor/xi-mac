@@ -76,6 +76,21 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             if let obj = params as? [String : AnyObject] {
                 styleMap.defStyle(json: obj)
             }
+        
+        case "plugin_started":
+            guard let obj = params as? [String : AnyObject] else { print("bad params \(params)"); return nil }
+                  let view_id = obj["view_id"] as! String
+//                  let document = documentForViewIdentifier(viewIdentifier: view_id)
+                  let plugin = obj["plugin"] as! String //else { print("missing plugin field in \(params)"); return nil }
+            documentForViewIdentifier(viewIdentifier: view_id)?.editViewController?.pluginStarted(plugin)
+            
+        case "plugin_stopped":
+            guard let obj = params as? [String : AnyObject],
+                let view_id = obj["view_id"] as? String,
+                let document = documentForViewIdentifier(viewIdentifier: view_id),
+                let plugin = obj["plugin"] as? String else { print("missing plugin field in \(params)"); return nil }
+            document.editViewController?.pluginStopped(plugin)
+            
         case "alert":
             if let obj = params as? [String : AnyObject], let msg = obj["msg"] as? String {
                 let alert =  NSAlert.init()

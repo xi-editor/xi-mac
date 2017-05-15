@@ -50,10 +50,10 @@ class EditViewController: NSViewController, EditViewDataSource {
         return gutterViewWidth.constant
     }
 
-    /// A list of plugins available to this editor.
-    var availablePlugins: [String] = [] {
+    /// A mapping of available plugins to activation status.
+    var availablePlugins: [String: Bool] = [:] {
         didSet {
-            updateAvailablePlugins()
+            updatePluginMenu()
         }
     }
 
@@ -289,16 +289,38 @@ class EditViewController: NSViewController, EditViewDataSource {
         document.sendRpcAsync("debug_test_fg_spans", params: [])
     }
 
-    func runPlugin(_ sender: NSMenuItem) {
-        Events.RunPlugin(viewIdentifier: document.coreViewIdentifier!, plugin: sender.title).dispatch(document.dispatcher)
-        print("runPlugin: \(sender)")
+    func togglePlugin(_ sender: NSMenuItem) {
+        switch sender.state {
+        case 0: Events.StartPlugin(
+            viewIdentifier: document.coreViewIdentifier!,
+            plugin: sender.title).dispatch(document.dispatcher)
+        case 1:
+            Events.StopPlugin(
+                viewIdentifier: document.coreViewIdentifier!,
+                plugin: sender.title).dispatch(document.dispatcher)
+        default:
+            print("unexpected plugin menu state \(sender.title) \(sender.state)")
+        }
+    }
+    
+    public func pluginStarted(_ plugin: String) {
+        self.availablePlugins[plugin] = true
+        print("client: plugin started \(plugin)")
+        updatePluginMenu()
+    }
+    
+    public func pluginStopped(_ plugin: String) {
+        self.availablePlugins[plugin] = false
+        print("client: plugin stopped \(plugin)")
+        updatePluginMenu()
     }
 
-    func updateAvailablePlugins() {
+    func updatePluginMenu() {
         let pluginsMenu = NSApplication.shared().mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Plugin");
         pluginsMenu!.submenu?.removeAllItems()
-        for plugin in self.availablePlugins {
-            pluginsMenu!.submenu?.addItem(withTitle: plugin, action: #selector(EditViewController.runPlugin(_:)), keyEquivalent: "")
+        for (plugin, isRunning) in self.availablePlugins {
+            let item = pluginsMenu!.submenu?.addItem(withTitle: plugin, action: #selector(EditViewController.togglePlugin(_:)), keyEquivalent: "")
+            item?.state = isRunning ? 1 : 0
         }
     }
     
@@ -328,7 +350,7 @@ class EditViewController: NSViewController, EditViewDataSource {
 extension EditViewController: NSWindowDelegate {
     func windowDidBecomeKey(_ notification: Notification) {
         editView.isFrontmostView = true
-        updateAvailablePlugins()
+        updatePluginMenu()
     }
 
     func windowDidResignKey(_ notification: Notification) {
