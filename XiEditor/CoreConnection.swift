@@ -14,18 +14,58 @@
 
 import Foundation
 
+/// Env var used to specify a path for logging RPC messages.
+/// These logs can be used for profiling & debugging.
+let XI_RPC_LOG = "XI_CLIENT_RPC_LOG"
+
+/// Error tolerant wrapper for append-writing to a file.
+struct FileWriter {
+    let path: URL
+    let handle: FileHandle
+    
+    init?(path: String) {
+        let path = NSString(string: path).expandingTildeInPath
+        if FileManager.default.fileExists(atPath: path) {
+            print("file exists at \(path), will not overwrite")
+            return nil
+        }
+        self.path = URL(fileURLWithPath: path)
+        FileManager.default.createFile(atPath: self.path.path, contents: nil, attributes: nil)
+        
+        do {
+            try self.handle = FileHandle(forWritingTo: self.path)
+        } catch let err as NSError {
+            print("error opening log file \(err)")
+            return nil
+        }
+    }
+
+    func write(bytes: Data) {
+        handle.write(bytes)
+    }
+}
+
 class CoreConnection {
 
     var inHandle: FileHandle  // stdin of core process
     var recvBuf: Data
     var callback: (Any) -> Any?
-
+    let rpcLogWriter: FileWriter?
+    
     // RPC state
     var queue = DispatchQueue(label: "com.levien.xi.CoreConnection", attributes: [])
     var rpcIndex = 0
     var pending = Dictionary<Int, (Any?) -> ()>()
 
     init(path: String, callback: @escaping (Any) -> Any?) {
+        if let rpcLogPath = ProcessInfo.processInfo.environment[XI_RPC_LOG] {
+            self.rpcLogWriter = FileWriter(path: rpcLogPath)
+            if self.rpcLogWriter != nil {
+                print("logging client RPC to \(rpcLogPath)")
+            }
+        } else {
+            self.rpcLogWriter = nil
+        }
         let task = Process()
         task.launchPath = path
         task.arguments = []
@@ -36,6 +76,7 @@ class CoreConnection {
         inHandle = inPipe.fileHandleForWriting
         recvBuf = Data()
         self.callback = callback
+
         outPipe.fileHandleForReading.readabilityHandler = { handle in
             let data = handle.availableData
             self.recvHandler(data)
@@ -75,6 +116,7 @@ class CoreConnection {
             mutdata.append(data)
             let nl = [0x0a as UInt8]
             mutdata.append(nl, length: 1)
+            rpcLogWriter?.write(bytes: mutdata as Data)
             inHandle.write(mutdata as Data)
         } catch _ {
             print("error serializing to json")
