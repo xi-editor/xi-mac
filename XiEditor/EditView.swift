@@ -42,19 +42,13 @@ struct TextDrawingMetrics {
     
     init(font: NSFont) {
         self.font = font
-        ascent = CTFontGetAscent(font)
-        descent = CTFontGetDescent(font)
-        leading = CTFontGetLeading(font)
+        ascent = font.ascender
+        descent = -font.descender // descender is returned as a negative number
+        leading = font.leading
         linespace = ceil(ascent + descent + leading)
         baseline = ceil(ascent)
         fontWidth = font.characterWidth()
-        attributes[String(kCTFontAttributeName)] = font
-    }
-    
-    /// Passed an NSFontManager instance (as on a user-initiated font change) computes the next set of drawing metrics.
-    func newMetricsForFontChange(fontManager: NSFontManager) -> TextDrawingMetrics {
-        let newFont = fontManager.convert(font)
-        return TextDrawingMetrics(font: newFont)
+        attributes[NSFontAttributeName] = font
     }
 }
 
@@ -97,7 +91,7 @@ class EditView: NSView, NSTextInputClient {
         if self.isFrontmostView {
             return NSColor.selectedTextBackgroundColor
         } else {
-        return NSColor(colorLiteralRed: 0.8, green: 0.8, blue: 0.8, alpha: 1.0)
+            return NSColor(colorLiteralRed: 0.8, green: 0.8, blue: 0.8, alpha: 1.0)
         }
     }
 
@@ -149,10 +143,6 @@ class EditView: NSView, NSTextInputClient {
     }
 
     let x0: CGFloat = 2;
-
-    let font_style_bold: Int = 1;
-    let font_style_underline: Int = 2;
-    let font_style_italic: Int = 4;
 
     override func draw(_ dirtyRect: NSRect) {
         if dataSource.document.coreViewIdentifier == nil { return }

@@ -16,11 +16,55 @@ import Cocoa
 
 /// A represents a given text style.
 struct Style {
-    var fgColor: NSColor;
-    var bgColor: NSColor;
-    var weight: UInt16;
-    var underline: Bool;
-    var italic: Bool;
+    var font: NSFont?
+    var fgColor: NSColor?
+    var bgColor: NSColor?
+    var underline: Bool
+    var italic: Bool
+    var weight: Int?
+    var attributes: [String: Any] = [:]
+
+    init(font fromFont: NSFont, fgColor: NSColor?, bgColor: NSColor?, underline: Bool, italic: Bool, weight: Int?) {
+        if let fgColor = fgColor {
+            attributes[NSForegroundColorAttributeName] = fgColor
+        }
+
+        if let bgColor = bgColor, bgColor.alphaComponent != 0.0 {
+            attributes[NSBackgroundColorAttributeName] = bgColor
+        }
+
+        if underline {
+            attributes[NSUnderlineStyleAttributeName] = NSUnderlineStyle.styleSingle.rawValue
+        }
+
+        let fm = NSFontManager.shared()
+        var font: NSFont?
+
+        if italic {
+            var traits = fm.traits(of: fromFont)
+            traits.insert(NSFontTraitMask.italicFontMask)
+            if let f = closestMatch(of: fromFont, traits: traits, weight: weight ?? fm.weight(of: fromFont)) {
+                font = f
+            } else {
+                attributes[NSObliquenessAttributeName] = 0.2
+            }
+        }
+
+        if font == nil && weight != nil {
+            font = closestMatch(of: fromFont, traits: fm.traits(of: fromFont), weight: weight!)
+        }
+
+        if let font = font {
+            attributes[NSFontAttributeName] = font
+        }
+
+        self.font = font
+        self.fgColor = fgColor
+        self.bgColor = bgColor
+        self.underline = underline
+        self.italic = italic
+        self.weight = weight
+    }
 }
 
 typealias StyleIdentifier = Int
@@ -45,7 +89,7 @@ struct StyleSpan {
                 //FIXME: how should we be doing error handling?
                 print("malformed style array for line:", text, raw)
             } else {
-                out.append(StyleSpan.init(range: NSMakeRange(startIx, endIx - startIx), style: style))
+                out.append(StyleSpan(range: NSMakeRange(startIx, endIx - startIx), style: style))
             }
             ix = end
         }
@@ -59,46 +103,45 @@ func utf8_offset_to_utf16(_ s: String, _ ix: Int) -> Int {
 
 /// A store of text styles, indexable by id.
 class StyleMap {
-    private var map: [Style?] = []
+    private var font: NSFont
+    private var styles: [Style?] = []
+
+    init(font: NSFont) {
+        self.font = font
+    }
 
     func defStyle(json: [String: AnyObject]) {
         guard let styleID = json["id"] as? Int else { return }
-        let fgColor = json["fg_color"] as? UInt32 ?? 0xFF000000
-        let bgColor = json["bg_color"] as? UInt32 ?? 0
-        let weight = json["weight"] as? UInt16 ?? 400
+
+        let fgColor = colorFromArgb(json["fg_color"] as? UInt32 ?? 0xFF000000)
+        let bgColor = colorFromArgb(json["bg_color"] as? UInt32 ?? 0)
         let underline = json["underline"] as? Bool ?? false
         let italic = json["italic"] as? Bool ?? false
-        
-        let style = Style(fgColor: colorFromArgb(fgColor), bgColor: colorFromArgb(bgColor), weight: weight, underline: underline, italic: italic);
-        while map.count < styleID {
-            map.append(nil)
+        var weight = json["weight"] as? Int
+        if let w = weight {
+            // convert to NSFont weight: (100-500 -> 2-6 (5 normal weight), 600-800 -> 8-10, 900 -> 12
+            // see https://github.com/google/xi-mac/pull/32#discussion_r115114037
+            weight = Int(floor(1 + Float(w) * (0.01 + 3e-6 * Float(w))))
         }
-        if map.count == styleID {
-            map.append(style)
+        
+        let style = Style(font: font, fgColor: fgColor, bgColor: bgColor,
+                          underline: underline, italic: italic, weight: weight)
+        while styles.count < styleID {
+            styles.append(nil)
+        }
+        if styles.count == styleID {
+            styles.append(style)
         } else {
-            map[styleID] = style
+            styles[styleID] = style
         }
     }
 
     /// applies a given style to the AttributedString
     private func applyStyle(string: NSMutableAttributedString, id: Int, range: NSRange) {
-        if id >= map.count { return }
-        guard let style = map[id] else { return }
-        string.addAttribute(NSForegroundColorAttributeName, value: style.fgColor, range: range)
-        if style.bgColor.alphaComponent != 0.0 {
-            string.addAttribute(NSBackgroundColorAttributeName, value: style.bgColor, range: range)
-        }
-        if style.underline {
-            string.addAttribute(NSUnderlineStyleAttributeName, value: NSUnderlineStyle.styleSingle.rawValue, range: range)
-        }
-        if style.weight > 500 {
-            // TODO: apply actual numeric weight
-            string.applyFontTraits(NSFontTraitMask.boldFontMask, range: range)
-        }
-        if style.italic {
-            // TODO: use true italic in font if available
-            string.addAttribute(NSObliquenessAttributeName, value: 0.2, range: range)
-        }
+        if id >= styles.count { return }
+        guard let style = styles[id] else { return }
+
+        string.addAttributes(style.attributes, range: range)
     }
 
     /// Given style information, applies the appropriate text attributes to the passed NSAttributedString
@@ -108,4 +151,26 @@ class StyleMap {
                 applyStyle(string: string, id: styleSpan.style, range: styleSpan.range)
         }
     }
+
+    func updateFont(to font: NSFont) {
+        self.font = font
+        styles = styles.map { $0.map {
+            Style(font: font, fgColor: $0.fgColor, bgColor: $0.bgColor,
+                  underline: $0.underline, italic: $0.italic, weight: $0.weight)
+        } }
+    }
+}
+
+func closestMatch(of font: NSFont, traits: NSFontTraitMask, weight: Int) -> NSFont? {
+    let fm = NSFontManager.shared()
+    var weight = weight
+    let fromWeight = fm.weight(of: font)
+    let direction = fromWeight > weight ? 1 : -1
+    while weight != fromWeight {
+        if let f = fm.font(withFamily: font.familyName ?? font.fontName, traits: traits, weight: weight, size: font.pointSize) {
+            return f
+        }
+        weight += direction
+    }
+    return nil
 }
