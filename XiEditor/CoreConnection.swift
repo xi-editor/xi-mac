@@ -40,10 +40,6 @@ struct FileWriter {
         }
     }
 
-    func write(string: String) {
-        self.write(bytes: "\(string)\n".data(using: .utf8)!)
-    }
-    
     func write(bytes: Data) {
         handle.write(bytes)
     }
