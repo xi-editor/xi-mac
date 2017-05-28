@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16F73" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12120"/>
@@ -265,9 +265,22 @@
                                                 <action selector="delete:" target="7er-QZ-amI" id="LwU-J4-aEN"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem isSeparatorItem="YES" id="ysm-Bc-Otd"/>
                                         <menuItem title="Select All" keyEquivalent="a" id="t6r-WD-TVF">
                                             <connections>
                                                 <action selector="selectAll:" target="7er-QZ-amI" id="4lC-y2-6Hm"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Add Previous Line" keyEquivalent="" id="jXq-9f-cwS">
+                                            <modifierMask key="keyEquivalentModifierMask" shift="YES" control="YES"/>
+                                            <connections>
+                                                <action selector="addPreviousLineToSelection:" target="7er-QZ-amI" id="vJn-Lb-7GS"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Add Next Line" keyEquivalent="" id="G15-4N-dih">
+                                            <modifierMask key="keyEquivalentModifierMask" shift="YES" control="YES"/>
+                                            <connections>
+                                                <action selector="addNextLineToSelection:" target="7er-QZ-amI" id="ddj-hT-V4x"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="PN7-qq-hhD"/>
