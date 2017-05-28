@@ -343,6 +343,14 @@ class EditViewController: NSViewController, EditViewDataSource {
             }
         }
     }
+
+    @IBAction func addPreviousLineToSelection(_ sender: NSMenuItem) {
+        document.sendRpcAsync("add_selection_above", params: [])
+    }
+
+    @IBAction func addNextLineToSelection(_ sender: NSMenuItem) {
+        document.sendRpcAsync("add_selection_below", params: [])
+    }
 }
 
 // we set this in Document.swift when we load a new window or tab.
