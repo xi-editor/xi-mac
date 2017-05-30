@@ -289,6 +289,10 @@ class EditViewController: NSViewController, EditViewDataSource {
         document.sendRpcAsync("debug_test_fg_spans", params: [])
     }
 
+    @IBAction func debugPrintSpans(_ sender: AnyObject) {
+        document.sendRpcAsync("debug_print_spans", params: [])
+    }
+
     func togglePlugin(_ sender: NSMenuItem) {
         switch sender.state {
         case 0: Events.StartPlugin(
