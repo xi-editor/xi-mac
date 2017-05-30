@@ -15,7 +15,7 @@
 import Cocoa
 import Swift
 
-class FindViewController: NSViewController {
+class FindViewController: NSViewController, NSTextFieldDelegate {
 
     @IBOutlet weak var searchField: NSSearchField!
     @IBOutlet weak var navigationButtons: NSSegmentedControl!
@@ -88,6 +88,10 @@ class FindViewController: NSViewController {
         default:
             break
         }
+    }
+
+    override func cancelOperation(_ sender: Any?) {
+        self.close()
     }
 
     func open() {
