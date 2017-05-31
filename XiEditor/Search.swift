@@ -15,7 +15,7 @@
 import Cocoa
 import Swift
 
-class FindViewController: NSViewController, NSTextFieldDelegate {
+class FindViewController: NSViewController, NSSearchFieldDelegate {
     var findDelegate: FindDelegate!
 
     @IBOutlet weak var searchField: NSSearchField!
@@ -57,6 +57,18 @@ class FindViewController: NSViewController, NSTextFieldDelegate {
         return true
     }
 
+    func control(_ control: NSControl, textView: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
+        switch commandSelector {
+        case #selector(NSResponder.cancelOperation(_:)):
+            // overriding cancelOperation is not enough, because the first Esc would just clear the
+            // search field and not call cancelOperation
+            findDelegate.closeFind()
+            return true
+        default:
+            return false
+        }
+    }
+
     @IBAction func selectIgnoreCaseMenuAction(_ sender: NSMenuItem) {
         ignoreCase = !ignoreCase
         sender.state = ignoreCase ? NSOnState : NSOffState
@@ -80,6 +92,11 @@ class FindViewController: NSViewController, NSTextFieldDelegate {
         }
     }
 
+    @IBAction func searchFieldAction(_ sender: NSSearchField) {
+        findDelegate.find(sender.stringValue, caseSensitive: !ignoreCase)
+        findDelegate.findNext(wrapAround: wrapAround)
+    }
+
     override func cancelOperation(_ sender: Any?) {
         findDelegate.closeFind()
     }
@@ -87,29 +104,41 @@ class FindViewController: NSViewController, NSTextFieldDelegate {
 
 extension EditViewController {
     func openFind() {
-        findViewController.view.isHidden = false
+        if findViewController.view.isHidden {
+            findViewController.view.isHidden = false
+
+            let offset = findViewController.viewHeight.constant
+            shadowView.topOffset = offset
+            viewTop.constant = offset
+            let scrollTo = NSPoint(x: scrollView.contentView.bounds.minX,
+                                   y: scrollView.contentView.bounds.minY + offset)
+            scrollView.contentView.scroll(to: scrollTo)
+
+            if !findViewController.searchField.stringValue.isEmpty {
+                find(findViewController.searchField.stringValue,
+                     caseSensitive: !findViewController.ignoreCase)
+            }
+        }
+
         findViewController.searchField.becomeFirstResponder()
-
-        let offset = findViewController.viewHeight.constant
-        shadowView.topOffset = offset
-        viewTop.constant = offset
-        let scrollTo = NSPoint(x: scrollView.contentView.bounds.minX,
-                               y: scrollView.contentView.bounds.minY + offset)
-        scrollView.contentView.scroll(to: scrollTo)
-
         editView.isFrontmostView = false
+
     }
 
     func closeFind() {
-        findViewController.view.isHidden = true
-        shadowView.topOffset = 0
-        viewTop.constant = 0
-        let offset = findViewController.viewHeight.constant
-        let scrollTo = NSPoint(x: scrollView.contentView.bounds.minX,
-                               y: scrollView.contentView.bounds.minY - offset)
-        scrollView.contentView.scroll(to: scrollTo)
-        clearFind()
+        if !findViewController.view.isHidden {
+            findViewController.view.isHidden = true
+            clearFind()
 
+            shadowView.topOffset = 0
+            viewTop.constant = 0
+            let offset = findViewController.viewHeight.constant
+            let scrollTo = NSPoint(x: scrollView.contentView.bounds.minX,
+                                   y: scrollView.contentView.bounds.minY - offset)
+            scrollView.contentView.scroll(to: scrollTo)
+        }
+
+        editView.window?.makeFirstResponder(editView)
         editView.isFrontmostView = true
     }
 
@@ -173,12 +202,8 @@ extension EditViewController {
             Swift.print("replaceAndFind not implemented")
 
         case .setSearchString:
-            if let searchField = sender as? NSSearchField {
-                self.find(searchField.stringValue, caseSensitive: !findViewController.ignoreCase)
-                self.findNext(wrapAround: findViewController.wrapAround)
-            } else {
-                self.find(nil, caseSensitive: !findViewController.ignoreCase)
-            }
+            openFind()
+            self.find(nil, caseSensitive: !findViewController.ignoreCase)
 
         case .replaceAllInSelection:
             Swift.print("replaceAllInSelection not implemented")

@@ -52,6 +52,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
         controller.view.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
         controller.view.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
         controller.view.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
+        controller.view.isHidden = true
         return controller
     }()
     
