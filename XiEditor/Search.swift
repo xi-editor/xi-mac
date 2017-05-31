@@ -121,7 +121,6 @@ extension EditViewController {
     func find(_ term: String?, case_sensitive: Bool, wrap_around: Bool) {
         var params: [String: Any] = [
             "case_sensitive": case_sensitive,
-            "wrap_around": wrap_around,
         ]
 
         if term != nil {
@@ -171,6 +170,7 @@ extension EditViewController {
                 self.find(searchField.stringValue,
                           case_sensitive: !findViewController.optionIgnoreCase,
                           wrap_around: findViewController.optionWrapAround)
+                self.findNext()
             } else {
                 self.find(nil,
                           case_sensitive: !findViewController.optionIgnoreCase,
