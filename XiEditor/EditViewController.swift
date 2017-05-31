@@ -23,8 +23,14 @@ protocol EditViewDataSource {
     var document: Document! { get }
 }
 
+protocol FindDelegate {
+    func find(_ term: String?, caseSensitive: Bool)
+    func findNext(wrapAround: Bool)
+    func findPrevious(wrapAround: Bool)
+    func closeFind()
+}
 
-class EditViewController: NSViewController, EditViewDataSource {
+class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
 
     
     @IBOutlet var shadowView: ShadowView!
@@ -32,18 +38,20 @@ class EditViewController: NSViewController, EditViewDataSource {
     @IBOutlet weak var editContainerView: EditContainerView!
     @IBOutlet var editView: EditView!
     @IBOutlet weak var gutterView: GutterView!
-    @IBOutlet weak var stackView: NSStackView!
     
     @IBOutlet weak var gutterViewWidth: NSLayoutConstraint!
     @IBOutlet weak var editViewHeight: NSLayoutConstraint!
+    @IBOutlet weak var viewTop: NSLayoutConstraint!
 
     lazy var findViewController: FindViewController! = {
         let storyboard = NSStoryboard(name: "Main", bundle: nil)
         let controller = storyboard.instantiateController(withIdentifier: "Find View Controller") as! FindViewController
-        controller.editViewController = self
-
-        self.stackView.insertView(controller.view, at: 0, in: .top)
-        
+        controller.findDelegate = self
+        self.view.addSubview(controller.view)
+        controller.view.translatesAutoresizingMaskIntoConstraints = false
+        controller.view.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
+        controller.view.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
+        controller.view.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
         return controller
     }()
     

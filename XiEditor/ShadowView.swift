@@ -16,6 +16,7 @@ import Cocoa
 /// A custom view that draws a shadow over the editView when content is clipped.
 /// Note: - if we ever move to layer-based drawing this should be handled by a layer on the EditContainerView
 class ShadowView: NSView {
+    var topOffset: CGFloat = 0.0
     private var topShadow = false
     private var leadingShadow = false
     private var trailingShadow = false
@@ -27,7 +28,7 @@ class ShadowView: NSView {
             let colorLocations: [CGFloat] = [0, 1]
             let gradient = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: colors as CFArray, locations: colorLocations)!
             if topShadow {
-                context.drawLinearGradient(gradient, start: NSPoint(x: 0, y: 0), end: NSPoint(x: 0, y: 3), options: [])
+                context.drawLinearGradient(gradient, start: NSPoint(x: 0, y: topOffset), end: NSPoint(x: 0, y: topOffset+3), options: [])
             }
             if leadingShadow {
                 context.drawLinearGradient(gradient, start: NSPoint(x: 0, y: 0), end: NSPoint(x: 3, y: 0), options: [])

@@ -28,80 +28,69 @@
         <!--Edit View Controller-->
         <scene sceneID="LEm-46-qP4">
             <objects>
-                <viewController storyboardIdentifier="Edit View Controller" id="K7o-qN-T9e" customClass="EditViewController" customModule="XiEditor" customModuleProvider="target" sceneMemberID="viewController">
-                    <stackView key="view" distribution="fill" orientation="vertical" alignment="leading" spacing="0.0" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" id="Bec-4r-xKZ">
-                        <rect key="frame" x="0.0" y="0.0" width="480" height="378"/>
-                        <autoresizingMask key="autoresizingMask"/>
+                <viewController id="K7o-qN-T9e" customClass="EditViewController" customModule="XiEditor" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="3ye-5b-Ab2">
+                        <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view translatesAutoresizingMaskIntoConstraints="NO" id="3ye-5b-Ab2">
-                                <rect key="frame" x="0.0" y="0.0" width="480" height="378"/>
-                                <subviews>
-                                    <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="Qwv-ci-fVA">
-                                        <rect key="frame" x="0.0" y="0.0" width="480" height="378"/>
-                                        <clipView key="contentView" id="1wJ-s5-kVO">
-                                            <rect key="frame" x="0.0" y="0.0" width="480" height="378"/>
-                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="Qwv-ci-fVA">
+                                <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
+                                <clipView key="contentView" id="1wJ-s5-kVO">
+                                    <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="rTT-RO-I3T" customClass="EditContainerView" customModule="XiEditor" customModuleProvider="target">
+                                            <rect key="frame" x="0.0" y="2" width="480" height="268"/>
                                             <subviews>
-                                                <customView translatesAutoresizingMaskIntoConstraints="NO" id="rTT-RO-I3T" customClass="EditContainerView" customModule="XiEditor" customModuleProvider="target">
-                                                    <rect key="frame" x="0.0" y="110" width="480" height="268"/>
-                                                    <subviews>
-                                                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="3Js-0o-jqZ" customClass="GutterView" customModule="XiEditor" customModuleProvider="target">
-                                                            <rect key="frame" x="0.0" y="0.0" width="20" height="268"/>
-                                                            <constraints>
-                                                                <constraint firstAttribute="width" constant="20" id="Smj-nI-f5r"/>
-                                                            </constraints>
-                                                        </customView>
-                                                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="q1P-kd-995" customClass="EditView" customModule="XiEditor" customModuleProvider="target">
-                                                            <rect key="frame" x="20" y="0.0" width="460" height="268"/>
-                                                        </customView>
-                                                    </subviews>
+                                                <customView translatesAutoresizingMaskIntoConstraints="NO" id="3Js-0o-jqZ" customClass="GutterView" customModule="XiEditor" customModuleProvider="target">
+                                                    <rect key="frame" x="0.0" y="0.0" width="20" height="268"/>
                                                     <constraints>
-                                                        <constraint firstItem="q1P-kd-995" firstAttribute="leading" secondItem="3Js-0o-jqZ" secondAttribute="trailing" id="LH9-Tc-TcJ"/>
-                                                        <constraint firstAttribute="height" priority="900" constant="268" id="Saf-eA-IEJ"/>
-                                                        <constraint firstAttribute="bottom" secondItem="q1P-kd-995" secondAttribute="bottom" id="anp-0j-jCG"/>
-                                                        <constraint firstAttribute="trailing" secondItem="q1P-kd-995" secondAttribute="trailing" id="dC4-sm-7Xf"/>
-                                                        <constraint firstItem="3Js-0o-jqZ" firstAttribute="leading" secondItem="rTT-RO-I3T" secondAttribute="leading" id="f7L-vN-ABi"/>
-                                                        <constraint firstItem="q1P-kd-995" firstAttribute="top" secondItem="rTT-RO-I3T" secondAttribute="top" id="gJj-bF-tAE"/>
-                                                        <constraint firstAttribute="bottom" secondItem="3Js-0o-jqZ" secondAttribute="bottom" id="kjU-1n-2Y5"/>
-                                                        <constraint firstItem="3Js-0o-jqZ" firstAttribute="top" secondItem="rTT-RO-I3T" secondAttribute="top" id="ycq-Wi-XAC"/>
+                                                        <constraint firstAttribute="width" constant="20" id="Smj-nI-f5r"/>
                                                     </constraints>
+                                                </customView>
+                                                <customView translatesAutoresizingMaskIntoConstraints="NO" id="q1P-kd-995" customClass="EditView" customModule="XiEditor" customModuleProvider="target">
+                                                    <rect key="frame" x="20" y="0.0" width="460" height="268"/>
                                                 </customView>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstAttribute="trailing" secondItem="rTT-RO-I3T" secondAttribute="trailing" id="Q9O-Xi-2fY"/>
-                                                <constraint firstItem="rTT-RO-I3T" firstAttribute="leading" secondItem="1wJ-s5-kVO" secondAttribute="leading" id="uaQ-li-gxJ"/>
-                                                <constraint firstItem="rTT-RO-I3T" firstAttribute="top" secondItem="1wJ-s5-kVO" secondAttribute="top" id="x4R-Ox-BgW"/>
+                                                <constraint firstItem="q1P-kd-995" firstAttribute="leading" secondItem="3Js-0o-jqZ" secondAttribute="trailing" id="LH9-Tc-TcJ"/>
+                                                <constraint firstAttribute="height" priority="900" constant="268" id="Saf-eA-IEJ"/>
+                                                <constraint firstAttribute="bottom" secondItem="q1P-kd-995" secondAttribute="bottom" id="anp-0j-jCG"/>
+                                                <constraint firstAttribute="trailing" secondItem="q1P-kd-995" secondAttribute="trailing" id="dC4-sm-7Xf"/>
+                                                <constraint firstItem="3Js-0o-jqZ" firstAttribute="leading" secondItem="rTT-RO-I3T" secondAttribute="leading" id="f7L-vN-ABi"/>
+                                                <constraint firstItem="q1P-kd-995" firstAttribute="top" secondItem="rTT-RO-I3T" secondAttribute="top" id="gJj-bF-tAE"/>
+                                                <constraint firstAttribute="bottom" secondItem="3Js-0o-jqZ" secondAttribute="bottom" id="kjU-1n-2Y5"/>
+                                                <constraint firstItem="3Js-0o-jqZ" firstAttribute="top" secondItem="rTT-RO-I3T" secondAttribute="top" id="ycq-Wi-XAC"/>
                                             </constraints>
-                                        </clipView>
-                                        <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="hEG-a6-BYd">
-                                            <rect key="frame" x="1" y="253" width="478" height="16"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                        </scroller>
-                                        <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="O02-Lc-5gg">
-                                            <rect key="frame" x="465" y="1" width="16" height="268"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                        </scroller>
-                                    </scrollView>
-                                    <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="c3r-nr-uYj" customClass="ShadowView" customModule="XiEditor" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="1" width="481" height="378"/>
-                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                    </customView>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstItem="Qwv-ci-fVA" firstAttribute="leading" secondItem="3ye-5b-Ab2" secondAttribute="leading" id="0TL-x0-ZpR"/>
-                                    <constraint firstAttribute="bottom" secondItem="Qwv-ci-fVA" secondAttribute="bottom" id="2oP-pv-WbK"/>
-                                    <constraint firstAttribute="trailing" secondItem="Qwv-ci-fVA" secondAttribute="trailing" id="YVP-Fu-Kqv"/>
-                                    <constraint firstItem="Qwv-ci-fVA" firstAttribute="top" secondItem="3ye-5b-Ab2" secondAttribute="top" id="hcS-Ds-4hI"/>
-                                </constraints>
-                            </view>
+                                        </customView>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstAttribute="trailing" secondItem="rTT-RO-I3T" secondAttribute="trailing" id="Q9O-Xi-2fY"/>
+                                        <constraint firstItem="rTT-RO-I3T" firstAttribute="leading" secondItem="1wJ-s5-kVO" secondAttribute="leading" id="uaQ-li-gxJ"/>
+                                        <constraint firstItem="rTT-RO-I3T" firstAttribute="top" secondItem="1wJ-s5-kVO" secondAttribute="top" id="x4R-Ox-BgW"/>
+                                    </constraints>
+                                </clipView>
+                                <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="hEG-a6-BYd">
+                                    <rect key="frame" x="1" y="253" width="478" height="16"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                                <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="O02-Lc-5gg">
+                                    <rect key="frame" x="465" y="1" width="16" height="268"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                            </scrollView>
+                            <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="c3r-nr-uYj" customClass="ShadowView" customModule="XiEditor" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="1" width="481" height="270"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            </customView>
                         </subviews>
-                        <visibilityPriorities>
-                            <integer value="1000"/>
-                        </visibilityPriorities>
-                        <customSpacing>
-                            <real value="3.4028234663852886e+38"/>
-                        </customSpacing>
-                    </stackView>
+                        <constraints>
+                            <constraint firstItem="Qwv-ci-fVA" firstAttribute="leading" secondItem="3ye-5b-Ab2" secondAttribute="leading" id="0TL-x0-ZpR"/>
+                            <constraint firstAttribute="bottom" secondItem="Qwv-ci-fVA" secondAttribute="bottom" id="2oP-pv-WbK"/>
+                            <constraint firstAttribute="trailing" secondItem="Qwv-ci-fVA" secondAttribute="trailing" id="YVP-Fu-Kqv"/>
+                            <constraint firstItem="Qwv-ci-fVA" firstAttribute="top" secondItem="3ye-5b-Ab2" secondAttribute="top" id="hcS-Ds-4hI"/>
+                        </constraints>
+                    </view>
                     <connections>
                         <outlet property="editContainerView" destination="rTT-RO-I3T" id="V33-lc-vP3"/>
                         <outlet property="editView" destination="q1P-kd-995" id="Dhz-gl-7Ut"/>
@@ -110,7 +99,7 @@
                         <outlet property="gutterViewWidth" destination="Smj-nI-f5r" id="kjP-so-JhO"/>
                         <outlet property="scrollView" destination="Qwv-ci-fVA" id="4cE-10-pSP"/>
                         <outlet property="shadowView" destination="c3r-nr-uYj" id="X0D-a3-NVc"/>
-                        <outlet property="stackView" destination="Bec-4r-xKZ" id="Nmy-qy-ltx"/>
+                        <outlet property="viewTop" destination="hcS-Ds-4hI" id="7N7-RH-mK4"/>
                     </connections>
                 </viewController>
                 <customObject id="ySa-Ve-cwL" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
@@ -130,7 +119,7 @@
                                 <subviews>
                                     <searchField wantsLayer="YES" focusRingType="none" verticalHuggingPriority="750" tag="7" allowsCharacterPickerTouchBarItem="NO" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yjF-1R-sp7" customClass="FindSeachField" customModule="XiEditor" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="8" width="363" height="22"/>
-                                        <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" focusRingType="none" usesSingleLineMode="YES" bezelStyle="round" recentsAutosaveName="xi-editor-find" id="4a0-aC-Kre">
+                                        <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" focusRingType="none" bezelStyle="round" recentsAutosaveName="xi-editor-find" id="4a0-aC-Kre">
                                             <font key="font" metaFont="system"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -153,7 +142,7 @@
                                             </segments>
                                         </segmentedCell>
                                         <connections>
-                                            <action selector="clickSegmentControl:" target="lKE-xV-0EG" id="JZW-bX-ulR"/>
+                                            <action selector="segmentControlAction:" target="lKE-xV-0EG" id="dcN-Hb-sap"/>
                                         </connections>
                                     </segmentedControl>
                                     <button verticalHuggingPriority="750" tag="11" translatesAutoresizingMaskIntoConstraints="NO" id="OLd-3g-GU4">
@@ -200,6 +189,7 @@
                         <outlet property="ignoreCaseMenuItem" destination="h8d-fe-rWj" id="mB1-7w-ZiV"/>
                         <outlet property="navigationButtons" destination="usm-aH-bgF" id="f6d-0g-ht5"/>
                         <outlet property="searchField" destination="yjF-1R-sp7" id="Zbr-6Y-tIV"/>
+                        <outlet property="viewHeight" destination="dIp-Lv-vRx" id="gjc-zs-H7f"/>
                         <outlet property="wrapAroundMenuItem" destination="LvD-lr-RfY" id="PcQ-US-cBd"/>
                     </connections>
                 </viewController>
@@ -209,15 +199,13 @@
                         <menuItem title="Ignore Case" state="on" id="h8d-fe-rWj">
                             <modifierMask key="keyEquivalentModifierMask"/>
                             <connections>
-                                <action selector="selectIgnoreCaseMenuItem:" target="lKE-xV-0EG" id="8pu-MZ-ENk"/>
-                                <binding destination="lKE-xV-0EG" name="value" keyPath="optionIgnoreCase" id="9EB-WA-YjN"/>
+                                <action selector="selectIgnoreCaseMenuAction:" target="lKE-xV-0EG" id="YL3-c0-UBZ"/>
                             </connections>
                         </menuItem>
                         <menuItem title="Wrap Around" id="LvD-lr-RfY">
                             <modifierMask key="keyEquivalentModifierMask"/>
                             <connections>
-                                <action selector="selectWrapAroundMenuItem:" target="lKE-xV-0EG" id="P4G-Qk-rJR"/>
-                                <binding destination="lKE-xV-0EG" name="value" keyPath="optionWrapAround" id="jlH-HY-1IZ"/>
+                                <action selector="selectWrapAroundMenuAction:" target="lKE-xV-0EG" id="B7N-nB-Wee"/>
                             </connections>
                         </menuItem>
                     </items>

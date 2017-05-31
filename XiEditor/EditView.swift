@@ -257,6 +257,11 @@ class EditView: NSView, NSTextInputClient {
         return true;
     }
 
+    override func mouseDown(with event: NSEvent) {
+        super.mouseDown(with: event)
+        isFrontmostView = true
+    }
+
     // we use a flipped coordinate system primarily to get better alignment when scrolling
     override var isFlipped: Bool {
         return true;

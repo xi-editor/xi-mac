@@ -16,17 +16,17 @@ import Cocoa
 import Swift
 
 class FindViewController: NSViewController, NSTextFieldDelegate {
+    var findDelegate: FindDelegate!
 
     @IBOutlet weak var searchField: NSSearchField!
     @IBOutlet weak var navigationButtons: NSSegmentedControl!
     @IBOutlet weak var doneButton: NSButton!
     @IBOutlet weak var ignoreCaseMenuItem: NSMenuItem!
     @IBOutlet weak var wrapAroundMenuItem: NSMenuItem!
+    @IBOutlet weak var viewHeight: NSLayoutConstraint!
 
-    var optionIgnoreCase: Bool = true
-    var optionWrapAround: Bool = true
-
-    var editViewController: EditViewController!
+    var ignoreCase = true
+    var wrapAround = true
 
     override func viewDidLoad() {
         // add recent searches menu items
@@ -47,80 +47,87 @@ class FindViewController: NSViewController, NSTextFieldDelegate {
         let recentClear = NSMenuItem(title: "Clear Recent Searches", action: nil, keyEquivalent: "")
         recentClear.tag = Int(NSSearchFieldClearRecentsMenuItemTag)
         menu.addItem(recentClear)
+
+        // set initial menu item states
+        ignoreCaseMenuItem.state = ignoreCase ? NSOnState : NSOffState
+        wrapAroundMenuItem.state = wrapAround ? NSOnState : NSOffState
     }
 
     override func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
         return true
     }
 
-    @IBAction func selectIgnoreCaseMenuItem(_ sender: Any) {
-        if let menuItem = sender as? NSMenuItem {
-            optionIgnoreCase = !optionIgnoreCase
-            if optionIgnoreCase {
-                menuItem.state = NSOnState
-            } else {
-                menuItem.state = NSOffState
-            }
-        }
+    @IBAction func selectIgnoreCaseMenuAction(_ sender: NSMenuItem) {
+        ignoreCase = !ignoreCase
+        sender.state = ignoreCase ? NSOnState : NSOffState
 
-        editViewController.find(searchField.stringValue,
-                                case_sensitive: !optionIgnoreCase,
-                                wrap_around: optionWrapAround)
+        findDelegate.find(searchField.stringValue, caseSensitive: !ignoreCase)
     }
     
-    @IBAction func selectWrapAroundMenuItem(_ sender: Any) {
-        if let menuItem = sender as? NSMenuItem {
-            optionWrapAround = !optionWrapAround
-            if optionWrapAround {
-                menuItem.state = NSOnState
-            } else {
-                menuItem.state = NSOffState
-            }
-        }
+    @IBAction func selectWrapAroundMenuAction(_ sender: NSMenuItem) {
+        wrapAround = !wrapAround
+        sender.state = wrapAround ? NSOnState : NSOffState
     }
-    
-    @IBAction func clickSegmentControl(_ sender: NSSegmentedControl) {
+
+    @IBAction func segmentControlAction(_ sender: NSSegmentedControl) {
         switch sender.selectedSegment {
         case 0:
-            editViewController.findPrevious()
+            findDelegate.findPrevious(wrapAround: wrapAround)
         case 1:
-            editViewController.findNext()
+            findDelegate.findNext(wrapAround: wrapAround)
         default:
             break
         }
     }
 
     override func cancelOperation(_ sender: Any?) {
-        self.close()
-    }
-
-    func open() {
-        self.view.isHidden = false
-        searchField.becomeFirstResponder()
-    }
-
-    func close() {
-        self.view.isHidden = true
-        editViewController.clearFind()
+        findDelegate.closeFind()
     }
 }
 
 extension EditViewController {
-    func findNext() {
+    func openFind() {
+        findViewController.view.isHidden = false
+        findViewController.searchField.becomeFirstResponder()
+
+        let offset = findViewController.viewHeight.constant
+        shadowView.topOffset = offset
+        viewTop.constant = offset
+        let scrollTo = NSPoint(x: scrollView.contentView.bounds.minX,
+                               y: scrollView.contentView.bounds.minY + offset)
+        scrollView.contentView.scroll(to: scrollTo)
+
+        editView.isFrontmostView = false
+    }
+
+    func closeFind() {
+        findViewController.view.isHidden = true
+        shadowView.topOffset = 0
+        viewTop.constant = 0
+        let offset = findViewController.viewHeight.constant
+        let scrollTo = NSPoint(x: scrollView.contentView.bounds.minX,
+                               y: scrollView.contentView.bounds.minY - offset)
+        scrollView.contentView.scroll(to: scrollTo)
+        clearFind()
+
+        editView.isFrontmostView = true
+    }
+
+    func findNext(wrapAround: Bool) {
         document.sendRpcAsync("find_next", params: [
-            "wrap_around": findViewController.optionWrapAround
+            "wrap_around": wrapAround
         ])
     }
 
-    func findPrevious() {
+    func findPrevious(wrapAround: Bool) {
         document.sendRpcAsync("find_previous", params: [
-            "wrap_around": findViewController.optionWrapAround
+            "wrap_around": wrapAround
         ])
     }
 
-    func find(_ term: String?, case_sensitive: Bool, wrap_around: Bool) {
+    func find(_ term: String?, caseSensitive: Bool) {
         var params: [String: Any] = [
-            "case_sensitive": case_sensitive,
+            "case_sensitive": caseSensitive,
         ]
 
         if term != nil {
@@ -145,16 +152,16 @@ extension EditViewController {
 
         switch action {
         case .showFindInterface:
-            findViewController.open()
+            openFind()
 
         case .hideFindInterface:
-            findViewController.close()
+            closeFind()
 
         case .nextMatch:
-            findNext()
+            findNext(wrapAround: findViewController.wrapAround)
 
         case .previousMatch:
-            findPrevious()
+            findPrevious(wrapAround: findViewController.wrapAround)
 
         case .replaceAll:
             Swift.print("replaceAll not implemented")
@@ -167,14 +174,10 @@ extension EditViewController {
 
         case .setSearchString:
             if let searchField = sender as? NSSearchField {
-                self.find(searchField.stringValue,
-                          case_sensitive: !findViewController.optionIgnoreCase,
-                          wrap_around: findViewController.optionWrapAround)
-                self.findNext()
+                self.find(searchField.stringValue, caseSensitive: !findViewController.ignoreCase)
+                self.findNext(wrapAround: findViewController.wrapAround)
             } else {
-                self.find(nil,
-                          case_sensitive: !findViewController.optionIgnoreCase,
-                          wrap_around: findViewController.optionWrapAround)
+                self.find(nil, caseSensitive: !findViewController.ignoreCase)
             }
 
         case .replaceAllInSelection:
