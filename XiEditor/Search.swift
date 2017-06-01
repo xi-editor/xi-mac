@@ -21,8 +21,6 @@ class FindViewController: NSViewController, NSSearchFieldDelegate {
     @IBOutlet weak var searchField: NSSearchField!
     @IBOutlet weak var navigationButtons: NSSegmentedControl!
     @IBOutlet weak var doneButton: NSButton!
-    @IBOutlet weak var ignoreCaseMenuItem: NSMenuItem!
-    @IBOutlet weak var wrapAroundMenuItem: NSMenuItem!
     @IBOutlet weak var viewHeight: NSLayoutConstraint!
 
     var ignoreCase = true
@@ -47,10 +45,6 @@ class FindViewController: NSViewController, NSSearchFieldDelegate {
         let recentClear = NSMenuItem(title: "Clear Recent Searches", action: nil, keyEquivalent: "")
         recentClear.tag = Int(NSSearchFieldClearRecentsMenuItemTag)
         menu.addItem(recentClear)
-
-        // set initial menu item states
-        ignoreCaseMenuItem.state = ignoreCase ? NSOnState : NSOffState
-        wrapAroundMenuItem.state = wrapAround ? NSOnState : NSOffState
     }
 
     override func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {

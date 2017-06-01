@@ -190,11 +190,9 @@
                     </visualEffectView>
                     <connections>
                         <outlet property="doneButton" destination="OLd-3g-GU4" id="inN-tK-kdf"/>
-                        <outlet property="ignoreCaseMenuItem" destination="h8d-fe-rWj" id="mB1-7w-ZiV"/>
                         <outlet property="navigationButtons" destination="usm-aH-bgF" id="f6d-0g-ht5"/>
                         <outlet property="searchField" destination="yjF-1R-sp7" id="Zbr-6Y-tIV"/>
                         <outlet property="viewHeight" destination="dIp-Lv-vRx" id="gjc-zs-H7f"/>
-                        <outlet property="wrapAroundMenuItem" destination="LvD-lr-RfY" id="PcQ-US-cBd"/>
                     </connections>
                 </viewController>
                 <customObject id="MxZ-GG-2K0" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
@@ -204,12 +202,14 @@
                             <modifierMask key="keyEquivalentModifierMask"/>
                             <connections>
                                 <action selector="selectIgnoreCaseMenuAction:" target="lKE-xV-0EG" id="YL3-c0-UBZ"/>
+                                <binding destination="lKE-xV-0EG" name="value" keyPath="ignoreCase" id="XX8-q0-SKg"/>
                             </connections>
                         </menuItem>
                         <menuItem title="Wrap Around" id="LvD-lr-RfY">
                             <modifierMask key="keyEquivalentModifierMask"/>
                             <connections>
                                 <action selector="selectWrapAroundMenuAction:" target="lKE-xV-0EG" id="B7N-nB-Wee"/>
+                                <binding destination="lKE-xV-0EG" name="value" keyPath="wrapAround" id="Pcz-D1-sYR"/>
                             </connections>
                         </menuItem>
                     </items>
