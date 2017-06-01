@@ -101,6 +101,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
         editView.dataSource = self
         gutterView.dataSource = self
         scrollView.contentView.documentCursor = NSCursor.iBeam();
+        scrollView.automaticallyAdjustsContentInsets = false
     }
 
     override func viewDidAppear() {
