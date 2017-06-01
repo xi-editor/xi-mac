@@ -25,7 +25,7 @@ protocol EditViewDataSource {
 
 protocol FindDelegate {
     func find(_ term: String?, caseSensitive: Bool)
-    func findNext(wrapAround: Bool)
+    func findNext(wrapAround: Bool, allowSame: Bool)
     func findPrevious(wrapAround: Bool)
     func closeFind()
 }

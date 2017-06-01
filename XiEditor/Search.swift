@@ -74,6 +74,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate {
         sender.state = ignoreCase ? NSOnState : NSOffState
 
         findDelegate.find(searchField.stringValue, caseSensitive: !ignoreCase)
+        findDelegate.findNext(wrapAround: wrapAround, allowSame: true)
     }
     
     @IBAction func selectWrapAroundMenuAction(_ sender: NSMenuItem) {
@@ -86,7 +87,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate {
         case 0:
             findDelegate.findPrevious(wrapAround: wrapAround)
         case 1:
-            findDelegate.findNext(wrapAround: wrapAround)
+            findDelegate.findNext(wrapAround: wrapAround, allowSame: false)
         default:
             break
         }
@@ -94,7 +95,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate {
 
     @IBAction func searchFieldAction(_ sender: NSSearchField) {
         findDelegate.find(sender.stringValue, caseSensitive: !ignoreCase)
-        findDelegate.findNext(wrapAround: wrapAround)
+        findDelegate.findNext(wrapAround: wrapAround, allowSame: false)
     }
 
     override func cancelOperation(_ sender: Any?) {
@@ -139,10 +140,12 @@ extension EditViewController {
         editView.window?.makeFirstResponder(editView)
     }
 
-    func findNext(wrapAround: Bool) {
-        document.sendRpcAsync("find_next", params: [
-            "wrap_around": wrapAround
-        ])
+    func findNext(wrapAround: Bool, allowSame: Bool) {
+        var params = ["wrap_around": wrapAround]
+        if allowSame {
+            params["allow_same"] = true
+        }
+        document.sendRpcAsync("find_next", params: params)
     }
 
     func findPrevious(wrapAround: Bool) {
@@ -184,7 +187,7 @@ extension EditViewController {
             closeFind()
 
         case .nextMatch:
-            findNext(wrapAround: findViewController.wrapAround)
+            findNext(wrapAround: findViewController.wrapAround, allowSame: false)
 
         case .previousMatch:
             findPrevious(wrapAround: findViewController.wrapAround)
