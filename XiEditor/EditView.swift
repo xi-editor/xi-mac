@@ -103,7 +103,8 @@ class EditView: NSView, NSTextInputClient {
     var cursorPos: (Int, Int)?
     fileprivate var _selectedRange: NSRange
     fileprivate var _markedRange: NSRange
-    
+
+    var isFirstResponder = false
     var isFrontmostView = false {
         didSet {
             //TODO: blinking should one day be a user preference
@@ -257,9 +258,16 @@ class EditView: NSView, NSTextInputClient {
         return true;
     }
 
-    override func mouseDown(with event: NSEvent) {
-        super.mouseDown(with: event)
+    override func becomeFirstResponder() -> Bool {
         isFrontmostView = true
+        isFirstResponder = true
+        return true
+    }
+
+    override func resignFirstResponder() -> Bool {
+        isFrontmostView = false
+        isFirstResponder = false
+        return true
     }
 
     // we use a flipped coordinate system primarily to get better alignment when scrolling

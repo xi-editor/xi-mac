@@ -121,8 +121,6 @@ extension EditViewController {
         }
 
         findViewController.searchField.becomeFirstResponder()
-        editView.isFrontmostView = false
-
     }
 
     func closeFind() {
@@ -139,7 +137,6 @@ extension EditViewController {
         }
 
         editView.window?.makeFirstResponder(editView)
-        editView.isFrontmostView = true
     }
 
     func findNext(wrapAround: Bool) {
