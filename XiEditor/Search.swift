@@ -110,10 +110,7 @@ extension EditViewController {
 
             let offset = findViewController.viewHeight.constant
             shadowView.topOffset = offset
-            viewTop.constant = offset
-            let scrollTo = NSPoint(x: scrollView.contentView.bounds.minX,
-                                   y: scrollView.contentView.bounds.minY + offset)
-            scrollView.contentView.scroll(to: scrollTo)
+            scrollView.contentInsets = NSEdgeInsetsMake(offset, 0, 0, 0)
 
             if !findViewController.searchField.stringValue.isEmpty {
                 find(findViewController.searchField.stringValue,
@@ -130,11 +127,7 @@ extension EditViewController {
             clearFind()
 
             shadowView.topOffset = 0
-            viewTop.constant = 0
-            let offset = findViewController.viewHeight.constant
-            let scrollTo = NSPoint(x: scrollView.contentView.bounds.minX,
-                                   y: scrollView.contentView.bounds.minY - offset)
-            scrollView.contentView.scroll(to: scrollTo)
+            scrollView.contentInsets = NSEdgeInsetsZero
         }
 
         editView.window?.makeFirstResponder(editView)

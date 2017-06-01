@@ -99,7 +99,6 @@
                         <outlet property="gutterViewWidth" destination="Smj-nI-f5r" id="kjP-so-JhO"/>
                         <outlet property="scrollView" destination="Qwv-ci-fVA" id="4cE-10-pSP"/>
                         <outlet property="shadowView" destination="c3r-nr-uYj" id="X0D-a3-NVc"/>
-                        <outlet property="viewTop" destination="hcS-Ds-4hI" id="7N7-RH-mK4"/>
                     </connections>
                 </viewController>
                 <customObject id="ySa-Ve-cwL" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>

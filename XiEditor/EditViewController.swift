@@ -41,7 +41,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
     
     @IBOutlet weak var gutterViewWidth: NSLayoutConstraint!
     @IBOutlet weak var editViewHeight: NSLayoutConstraint!
-    @IBOutlet weak var viewTop: NSLayoutConstraint!
 
     lazy var findViewController: FindViewController! = {
         let storyboard = NSStoryboard(name: "Main", bundle: nil)
