@@ -138,8 +138,12 @@
                                         <segmentedCell key="cell" borderStyle="border" alignment="left" style="roundRect" trackingMode="momentary" id="53c-PL-hc5">
                                             <font key="font" metaFont="cellTitle"/>
                                             <segments>
-                                                <segment label="&lt;" width="18"/>
-                                                <segment label="&gt;" width="18"/>
+                                                <segment image="NSLeftFacingTriangleTemplate" width="18">
+                                                    <nil key="label"/>
+                                                </segment>
+                                                <segment image="NSRightFacingTriangleTemplate" width="18">
+                                                    <nil key="label"/>
+                                                </segment>
                                             </segments>
                                         </segmentedCell>
                                         <connections>
@@ -427,7 +431,7 @@
                                                     </menuItem>
                                                     <menuItem title="Jump to Selection" keyEquivalent="j" id="CkI-7q-fng">
                                                         <connections>
-                                                            <action selector="performCustomFinderAction:" target="7er-QZ-amI" id="GyI-NI-bic"/>
+                                                            <action selector="centerSelectionInVisibleArea:" target="7er-QZ-amI" id="cSm-kk-Scc"/>
                                                         </connections>
                                                     </menuItem>
                                                 </items>
@@ -932,4 +936,8 @@
             <point key="canvasLocation" x="-295" y="-593"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="NSLeftFacingTriangleTemplate" width="9" height="12"/>
+        <image name="NSRightFacingTriangleTemplate" width="9" height="12"/>
+    </resources>
 </document>
