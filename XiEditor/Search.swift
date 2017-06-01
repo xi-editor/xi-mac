@@ -109,8 +109,8 @@ extension EditViewController {
             findViewController.view.isHidden = false
 
             let offset = findViewController.viewHeight.constant
-            shadowView.topOffset = offset
             scrollView.contentInsets = NSEdgeInsetsMake(offset, 0, 0, 0)
+            updateShadowPosition(offset: offset)
 
             if !findViewController.searchField.stringValue.isEmpty {
                 find(findViewController.searchField.stringValue,
@@ -126,11 +126,19 @@ extension EditViewController {
             findViewController.view.isHidden = true
             clearFind()
 
-            shadowView.topOffset = 0
             scrollView.contentInsets = NSEdgeInsetsZero
+            updateShadowPosition(offset: 0)
         }
 
         editView.window?.makeFirstResponder(editView)
+    }
+
+    fileprivate func updateShadowPosition(offset: CGFloat) {
+        shadowView.topOffset = offset
+        shadowView?.updateScroll(scrollView.contentView.bounds,
+                                 scrollView.documentView!.bounds)
+        gutterView.needsDisplay = true
+
     }
 
     func findNext(wrapAround: Bool, allowSame: Bool) {
@@ -216,7 +224,7 @@ extension EditViewController {
     }
 }
 
-class FindSeachField: NSSearchField {
+class FindSearchField: NSSearchField {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
 

@@ -109,14 +109,14 @@
         <scene sceneID="CRJ-r2-SVm">
             <objects>
                 <viewController storyboardIdentifier="Find View Controller" id="lKE-xV-0EG" customClass="FindViewController" customModule="XiEditor" customModuleProvider="target" sceneMemberID="viewController">
-                    <visualEffectView key="view" appearanceType="vibrantLight" blendingMode="behindWindow" material="appearanceBased" state="followsWindowActiveState" id="NrM-ac-2ZW">
+                    <visualEffectView key="view" blendingMode="behindWindow" material="appearanceBased" state="inactive" id="NrM-ac-2ZW">
                         <rect key="frame" x="0.0" y="0.0" width="480" height="38"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                         <subviews>
                             <stackView distribution="fill" orientation="horizontal" alignment="centerY" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0fT-ae-quE">
                                 <rect key="frame" x="8" y="0.0" width="464" height="38"/>
                                 <subviews>
-                                    <searchField wantsLayer="YES" focusRingType="none" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yjF-1R-sp7" customClass="FindSeachField" customModule="XiEditor" customModuleProvider="target">
+                                    <searchField wantsLayer="YES" focusRingType="none" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yjF-1R-sp7" customClass="FindSearchField" customModule="XiEditor" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="8" width="363" height="22"/>
                                         <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" focusRingType="none" bezelStyle="round" recentsAutosaveName="xi-editor-find" id="4a0-aC-Kre">
                                             <font key="font" metaFont="system"/>

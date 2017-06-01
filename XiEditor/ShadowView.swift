@@ -50,7 +50,7 @@ class ShadowView: NSView {
     }
     
     func updateScroll(_ contentBounds: NSRect, _ docBounds: NSRect) {
-        let newTop = contentBounds.origin.y != 0
+        let newTop = contentBounds.origin.y != -topOffset
         let newLead = contentBounds.origin.x != 0
         let newTrail = NSMaxX(contentBounds) < NSMaxX(docBounds)
         if newTop != topShadow || newLead != leadingShadow || newTrail != trailingShadow {
