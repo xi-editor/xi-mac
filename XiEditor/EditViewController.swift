@@ -147,7 +147,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
         }
         shadowView?.updateScroll(scrollView.contentView.bounds, scrollView.documentView!.bounds)
         // if the window is resized, update the editViewHeight so we don't show scrollers unnecessarily
-        self.editViewHeight.constant = max(CGFloat(lines.height) * textMetrics.linespace + 2 * textMetrics.descent, scrollView.bounds.height)
+        updateEditViewHeight()
     }
     
     // MARK: - Core Commands
@@ -160,10 +160,16 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
 
         lines.applyUpdate(update: content)
         self.lineCount = lines.height
-        self.editViewHeight.constant = max(CGFloat(lines.height) * textMetrics.linespace + 2 * textMetrics.descent, scrollView.bounds.height)
+        updateEditViewHeight()
         editView.showBlinkingCursor = editView.isFrontmostView
         editView.needsDisplay = true
         gutterView.needsDisplay = true
+    }
+
+    fileprivate func updateEditViewHeight() {
+        let contentHeight = CGFloat(lines.height) * textMetrics.linespace + 2 * textMetrics.descent
+        let pastEndHeight = min(contentHeight, scrollView.bounds.height) - textMetrics.linespace - 2 * textMetrics.descent
+        self.editViewHeight.constant = max(contentHeight, scrollView.bounds.height) + pastEndHeight
     }
 
     func scrollTo(_ line: Int, _ col: Int) {
