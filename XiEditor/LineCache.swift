@@ -20,12 +20,12 @@ struct Line {
     var cursor: [Int]
     var styles: [StyleSpan]
     
-    /// A Boolean value representing whether this line contains selected text.
+    /// A Boolean value representing whether this line contains selected/highlighted text.
     /// This is used to determine whether we should pre-draw its background.
-    var containsSelection: Bool {
-            return styles.contains { $0.style == 0 }
-        }
-    
+    var containsReservedStyle: Bool {
+        return styles.contains { $0.style < N_RESERVED_STYLES }
+    }
+
     /// A Boolean indicating whether this line contains a cursor.
     var containsCursor: Bool {
         return cursor.count > 0

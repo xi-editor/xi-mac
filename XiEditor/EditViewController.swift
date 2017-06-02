@@ -23,8 +23,14 @@ protocol EditViewDataSource {
     var document: Document! { get }
 }
 
+protocol FindDelegate {
+    func find(_ term: String?, caseSensitive: Bool)
+    func findNext(wrapAround: Bool, allowSame: Bool)
+    func findPrevious(wrapAround: Bool)
+    func closeFind()
+}
 
-class EditViewController: NSViewController, EditViewDataSource {
+class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
 
     
     @IBOutlet var shadowView: ShadowView!
@@ -35,6 +41,19 @@ class EditViewController: NSViewController, EditViewDataSource {
     
     @IBOutlet weak var gutterViewWidth: NSLayoutConstraint!
     @IBOutlet weak var editViewHeight: NSLayoutConstraint!
+
+    lazy var findViewController: FindViewController! = {
+        let storyboard = NSStoryboard(name: "Main", bundle: nil)
+        let controller = storyboard.instantiateController(withIdentifier: "Find View Controller") as! FindViewController
+        controller.findDelegate = self
+        self.view.addSubview(controller.view)
+        controller.view.translatesAutoresizingMaskIntoConstraints = false
+        controller.view.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
+        controller.view.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
+        controller.view.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
+        controller.view.isHidden = true
+        return controller
+    }()
     
     var document: Document!
     
@@ -82,6 +101,7 @@ class EditViewController: NSViewController, EditViewDataSource {
         editView.dataSource = self
         gutterView.dataSource = self
         scrollView.contentView.documentCursor = NSCursor.iBeam();
+        scrollView.automaticallyAdjustsContentInsets = false
     }
 
     override func viewDidAppear() {
@@ -357,7 +377,9 @@ class EditViewController: NSViewController, EditViewDataSource {
 //TODO: will have to think about whether this will work with splits
 extension EditViewController: NSWindowDelegate {
     func windowDidBecomeKey(_ notification: Notification) {
-        editView.isFrontmostView = true
+        if editView.isFirstResponder {
+            editView.isFrontmostView = true
+        }
         updatePluginMenu()
     }
 

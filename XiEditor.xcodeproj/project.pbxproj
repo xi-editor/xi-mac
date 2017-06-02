@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		28F1ED4A1EC4C735008839BE /* Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F1ED491EC4C735008839BE /* Search.swift */; };
 		50370A2B1D4209F300EA1B18 /* Dispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50370A2A1D4209F300EA1B18 /* Dispatcher.swift */; };
 		6B0DCDD41E8196D0007C14A3 /* GutterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0DCDD31E8196D0007C14A3 /* GutterView.swift */; };
 		6B0DCDD61E832101007C14A3 /* EditContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0DCDD51E832101007C14A3 /* EditContainerView.swift */; };
@@ -55,6 +56,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		28F1ED491EC4C735008839BE /* Search.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
 		50370A2A1D4209F300EA1B18 /* Dispatcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dispatcher.swift; sourceTree = "<group>"; };
 		6B0DCDD31E8196D0007C14A3 /* GutterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GutterView.swift; sourceTree = "<group>"; };
 		6B0DCDD51E832101007C14A3 /* EditContainerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = EditContainerView.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -148,6 +150,7 @@
 				AE499DD61C82BB2B002D68AF /* Info.plist */,
 				F53EA2AC1DCAA8110071ACFD /* Main.storyboard */,
 				AE499DD11C82BB2B002D68AF /* Assets.xcassets */,
+				28F1ED491EC4C735008839BE /* Search.swift */,
 			);
 			path = XiEditor;
 			sourceTree = "<group>";
@@ -354,6 +357,7 @@
 				AED23F181C83CBED002246CE /* EditView.swift in Sources */,
 				AE499DD01C82BB2B002D68AF /* AppDelegate.swift in Sources */,
 				6B0DCDD41E8196D0007C14A3 /* GutterView.swift in Sources */,
+				28F1ED4A1EC4C735008839BE /* Search.swift in Sources */,
 				F5BDBF371DCA9D2C0042430B /* Document.swift in Sources */,
 				AEB66A791CAEFC8F002F686A /* ShadowView.swift in Sources */,
 			);

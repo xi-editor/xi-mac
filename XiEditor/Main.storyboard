@@ -4,6 +4,7 @@
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12120"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+        <capability name="stacking Non-gravity area distributions on NSStackView" minToolsVersion="7.0" minSystemVersion="10.11"/>
     </dependencies>
     <scenes>
         <!--Window Controller-->
@@ -103,6 +104,119 @@
                 <customObject id="ySa-Ve-cwL" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="457" y="-144"/>
+        </scene>
+        <!--Find View Controller-->
+        <scene sceneID="CRJ-r2-SVm">
+            <objects>
+                <viewController storyboardIdentifier="Find View Controller" id="lKE-xV-0EG" customClass="FindViewController" customModule="XiEditor" customModuleProvider="target" sceneMemberID="viewController">
+                    <visualEffectView key="view" blendingMode="behindWindow" material="appearanceBased" state="inactive" id="NrM-ac-2ZW">
+                        <rect key="frame" x="0.0" y="0.0" width="480" height="38"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
+                        <subviews>
+                            <stackView distribution="fill" orientation="horizontal" alignment="centerY" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0fT-ae-quE">
+                                <rect key="frame" x="8" y="0.0" width="464" height="38"/>
+                                <subviews>
+                                    <searchField wantsLayer="YES" focusRingType="none" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yjF-1R-sp7" customClass="FindSearchField" customModule="XiEditor" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="8" width="363" height="22"/>
+                                        <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" focusRingType="none" bezelStyle="round" recentsAutosaveName="xi-editor-find" id="4a0-aC-Kre">
+                                            <font key="font" metaFont="system"/>
+                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            <connections>
+                                                <outlet property="searchMenuTemplate" destination="0va-ps-fv2" id="5uM-V8-Pcp"/>
+                                            </connections>
+                                        </searchFieldCell>
+                                        <connections>
+                                            <action selector="searchFieldAction:" target="lKE-xV-0EG" id="J4X-zh-yVO"/>
+                                            <outlet property="delegate" destination="lKE-xV-0EG" id="mo8-j0-vR1"/>
+                                            <outlet property="searchMenuTemplate" destination="0va-ps-fv2" id="hIs-xS-5bK"/>
+                                        </connections>
+                                    </searchField>
+                                    <segmentedControl verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="usm-aH-bgF">
+                                        <rect key="frame" x="370" y="9" width="43" height="20"/>
+                                        <segmentedCell key="cell" borderStyle="border" alignment="left" style="roundRect" trackingMode="momentary" id="53c-PL-hc5">
+                                            <font key="font" metaFont="cellTitle"/>
+                                            <segments>
+                                                <segment image="NSLeftFacingTriangleTemplate" width="18">
+                                                    <nil key="label"/>
+                                                </segment>
+                                                <segment image="NSRightFacingTriangleTemplate" width="18">
+                                                    <nil key="label"/>
+                                                </segment>
+                                            </segments>
+                                        </segmentedCell>
+                                        <connections>
+                                            <action selector="segmentControlAction:" target="lKE-xV-0EG" id="dcN-Hb-sap"/>
+                                        </connections>
+                                    </segmentedControl>
+                                    <button verticalHuggingPriority="750" tag="11" translatesAutoresizingMaskIntoConstraints="NO" id="OLd-3g-GU4">
+                                        <rect key="frame" x="420" y="9" width="44" height="19"/>
+                                        <buttonCell key="cell" type="roundRect" title="Done" bezelStyle="roundedRect" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="wFY-L9-Tvu">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="cellTitle"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="performCustomFinderAction:" target="MxZ-GG-2K0" id="xqt-Pf-AM8"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="38" id="dIp-Lv-vRx"/>
+                                </constraints>
+                                <visibilityPriorities>
+                                    <integer value="1000"/>
+                                    <integer value="1000"/>
+                                    <integer value="1000"/>
+                                </visibilityPriorities>
+                                <customSpacing>
+                                    <real value="3.4028234663852886e+38"/>
+                                    <real value="3.4028234663852886e+38"/>
+                                    <real value="3.4028234663852886e+38"/>
+                                </customSpacing>
+                            </stackView>
+                            <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="ZGd-Q7-ois">
+                                <rect key="frame" x="0.0" y="-2" width="480" height="5"/>
+                            </box>
+                        </subviews>
+                        <constraints>
+                            <constraint firstAttribute="bottom" secondItem="ZGd-Q7-ois" secondAttribute="bottom" id="Dgr-9e-NiR"/>
+                            <constraint firstItem="0fT-ae-quE" firstAttribute="top" secondItem="NrM-ac-2ZW" secondAttribute="top" id="E0g-mo-qQ2"/>
+                            <constraint firstItem="0fT-ae-quE" firstAttribute="leading" secondItem="NrM-ac-2ZW" secondAttribute="leading" constant="8" id="OYU-U0-901"/>
+                            <constraint firstAttribute="trailing" secondItem="0fT-ae-quE" secondAttribute="trailing" constant="8" id="Xnt-hU-19Z"/>
+                            <constraint firstItem="ZGd-Q7-ois" firstAttribute="leading" secondItem="NrM-ac-2ZW" secondAttribute="leading" id="loi-Lm-hoh"/>
+                            <constraint firstAttribute="trailing" secondItem="ZGd-Q7-ois" secondAttribute="trailing" id="q13-Vo-xNG"/>
+                            <constraint firstAttribute="bottom" secondItem="0fT-ae-quE" secondAttribute="bottom" id="t0p-ig-Uu0"/>
+                        </constraints>
+                    </visualEffectView>
+                    <connections>
+                        <outlet property="doneButton" destination="OLd-3g-GU4" id="inN-tK-kdf"/>
+                        <outlet property="navigationButtons" destination="usm-aH-bgF" id="f6d-0g-ht5"/>
+                        <outlet property="searchField" destination="yjF-1R-sp7" id="Zbr-6Y-tIV"/>
+                        <outlet property="viewHeight" destination="dIp-Lv-vRx" id="gjc-zs-H7f"/>
+                    </connections>
+                </viewController>
+                <customObject id="MxZ-GG-2K0" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+                <menu title="Find Menu" autoenablesItems="NO" id="0va-ps-fv2">
+                    <items>
+                        <menuItem title="Ignore Case" state="on" id="h8d-fe-rWj">
+                            <modifierMask key="keyEquivalentModifierMask"/>
+                            <connections>
+                                <action selector="selectIgnoreCaseMenuAction:" target="lKE-xV-0EG" id="YL3-c0-UBZ"/>
+                                <binding destination="lKE-xV-0EG" name="value" keyPath="ignoreCase" id="XX8-q0-SKg"/>
+                            </connections>
+                        </menuItem>
+                        <menuItem title="Wrap Around" id="LvD-lr-RfY">
+                            <modifierMask key="keyEquivalentModifierMask"/>
+                            <connections>
+                                <action selector="selectWrapAroundMenuAction:" target="lKE-xV-0EG" id="B7N-nB-Wee"/>
+                                <binding destination="lKE-xV-0EG" name="value" keyPath="wrapAround" id="Pcz-D1-sYR"/>
+                            </connections>
+                        </menuItem>
+                    </items>
+                </menu>
+                <userDefaultsController representsSharedInstance="YES" id="DVW-4U-qxz"/>
+            </objects>
+            <point key="canvasLocation" x="1085" y="-144"/>
         </scene>
         <!--Application-->
         <scene sceneID="uLn-e8-8sb">
@@ -290,28 +404,28 @@
                                                 <items>
                                                     <menuItem title="Find…" tag="1" keyEquivalent="f" id="dGF-cz-WCC">
                                                         <connections>
-                                                            <action selector="performFindPanelAction:" target="7er-QZ-amI" id="zmC-Nj-cEE"/>
+                                                            <action selector="performCustomFinderAction:" target="7er-QZ-amI" id="bmo-Jo-hT2"/>
                                                         </connections>
                                                     </menuItem>
                                                     <menuItem title="Find and Replace…" tag="12" keyEquivalent="f" id="LnJ-vN-ika">
                                                         <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                                         <connections>
-                                                            <action selector="performFindPanelAction:" target="7er-QZ-amI" id="3BB-TW-p6D"/>
+                                                            <action selector="performCustomFinderAction:" target="7er-QZ-amI" id="jr1-Fw-19B"/>
                                                         </connections>
                                                     </menuItem>
                                                     <menuItem title="Find Next" tag="2" keyEquivalent="g" id="Toc-Jd-jTr">
                                                         <connections>
-                                                            <action selector="performFindPanelAction:" target="7er-QZ-amI" id="rTM-OF-u9Y"/>
+                                                            <action selector="performCustomFinderAction:" target="7er-QZ-amI" id="W7J-gN-Wbc"/>
                                                         </connections>
                                                     </menuItem>
                                                     <menuItem title="Find Previous" tag="3" keyEquivalent="G" id="sQB-EY-Z5c">
                                                         <connections>
-                                                            <action selector="performFindPanelAction:" target="7er-QZ-amI" id="hqM-VF-9lA"/>
+                                                            <action selector="performCustomFinderAction:" target="7er-QZ-amI" id="Ty5-sv-3v1"/>
                                                         </connections>
                                                     </menuItem>
                                                     <menuItem title="Use Selection for Find" tag="7" keyEquivalent="e" id="f79-Bh-EZa">
                                                         <connections>
-                                                            <action selector="performFindPanelAction:" target="7er-QZ-amI" id="hAc-O6-FNh"/>
+                                                            <action selector="performCustomFinderAction:" target="7er-QZ-amI" id="NCr-C4-VFL"/>
                                                         </connections>
                                                     </menuItem>
                                                     <menuItem title="Jump to Selection" keyEquivalent="j" id="CkI-7q-fng">
@@ -821,4 +935,8 @@
             <point key="canvasLocation" x="-295" y="-593"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="NSLeftFacingTriangleTemplate" width="9" height="12"/>
+        <image name="NSRightFacingTriangleTemplate" width="9" height="12"/>
+    </resources>
 </document>
