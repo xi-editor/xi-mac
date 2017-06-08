@@ -186,8 +186,24 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
     }
     
     // MARK: - System Events
+
     override func keyDown(with theEvent: NSEvent) {
-        self.editView.inputContext?.handleEvent(theEvent);
+        switch theEvent.keyCode {
+        case 125 where shouldInterceptEvent(event: theEvent):
+            self.editView.doCommand(by: #selector(NSResponder.moveToEndOfParagraph(_:)))
+        case 126 where shouldInterceptEvent(event: theEvent):
+            self.editView.doCommand(by: #selector(NSResponder.moveToBeginningOfParagraph(_:)))
+        default:
+            self.editView.inputContext?.handleEvent(theEvent);
+        }
+    }
+    
+    // HACK: we intercept option-arrow events to override default system
+    // behaviour, which is to send two consecutive events.
+    // See https://github.com/google/xi-mac/issues/14#issuecomment-294324523
+    private func shouldInterceptEvent(event: NSEvent) -> Bool {
+        // arrow keys apparently send .function and .numeric, and some bottom bits are being set by something else? This isn't pretty but at least I'm reasonably confidient it does what I want
+        return event.modifierFlags.contains(.option) && event.modifierFlags.isDisjoint(with: [.control, .shift, .command])
     }
     
     override func mouseDown(with theEvent: NSEvent) {
