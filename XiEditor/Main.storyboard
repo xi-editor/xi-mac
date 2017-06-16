@@ -891,6 +891,12 @@
                                                 <action selector="debugTestFGSpans:" target="7er-QZ-amI" id="10b-2a-k0u"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem title="Print Selection Spans" keyEquivalent="" id="8QK-XZ-5IS">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="debugPrintSpans:" target="7er-QZ-amI" id="dEj-77-0Oh"/>
+                                            </connections>
+                                        </menuItem>
                                         <menuItem title="Plugin" id="eL2-QX-h3r">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <menu key="submenu" title="Plugin" id="23S-iW-lhp">
