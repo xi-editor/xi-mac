@@ -22,7 +22,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     //TODO: preferred font should be a user preference
     let defaultFont = CTFontCreateWithName("InconsolataGo" as CFString?, 14, nil)
 
-    lazy var textMetrics: TextDrawingMetrics = TextDrawingMetrics(font: self.defaultFont)
+    lazy var textMetrics: TextDrawingMetrics = TextDrawingMetrics(font: self.defaultFont,
+                                                                  textColor: self.theme.foreground)
     lazy var styleMap: StyleMap = StyleMap(font: self.defaultFont)
 
     var theme = Theme.defaultTheme()
@@ -96,7 +97,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 let document = documentForViewIdentifier(viewIdentifier: view_id),
                 let plugin = obj["plugin"] as? String else { print("missing plugin field in \(params)"); return nil }
             document.editViewController?.pluginStopped(plugin)
-            
+
+        case "theme_changed":
+            guard let obj = params as? [String : AnyObject],
+                let view_id = obj["view_id"] as? String,
+                let document = documentForViewIdentifier(viewIdentifier: view_id),
+                let name = obj["name"] as? String,
+                let themeJson = obj["theme"] as? [String: AnyObject] else {
+                    print("invalid 'theme_changed' rpc \(params)");
+                    return nil
+            }
+            self.theme = Theme(jsonObject: themeJson)
+            self.textMetrics = TextDrawingMetrics(font: textMetrics.font, textColor: theme.foreground)
+            document.editViewController?.themeChanged(name)
+
         case "alert":
             if let obj = params as? [String : AnyObject], let msg = obj["msg"] as? String {
                 let alert =  NSAlert.init()
@@ -115,7 +129,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     /// computes the next set of drawing metrics and updates cached styles.
     func handleFontChange(fontManager: NSFontManager) {
         let newFont = fontManager.convert(textMetrics.font)
-        textMetrics = TextDrawingMetrics(font: newFont)
+        textMetrics = TextDrawingMetrics(font: newFont, textColor: theme.foreground)
         styleMap.updateFont(to: newFont)
 
         for doc in NSApplication.shared().orderedDocuments {

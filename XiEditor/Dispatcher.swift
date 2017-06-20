@@ -151,4 +151,16 @@ enum Events { // namespace
         }
         let dispatchMethod = EventDispatchMethod.sync
     }
+
+    struct SetTheme: Event {
+        typealias Output = Void
+        let viewIdentifier: ViewIdentifier
+        let themeName: String
+
+        let method = "set_theme"
+        var params: AnyObject? {
+            return ["theme_name": themeName] as AnyObject
+        }
+        let dispatchMethod = EventDispatchMethod.async
+    }
 }

@@ -40,7 +40,7 @@ struct TextDrawingMetrics {
     var linespace: CGFloat
     var fontWidth: CGFloat
     
-    init(font: NSFont) {
+    init(font: NSFont, textColor: NSColor) {
         self.font = font
         ascent = font.ascender
         descent = -font.descender // descender is returned as a negative number
@@ -49,6 +49,10 @@ struct TextDrawingMetrics {
         baseline = ceil(ascent)
         fontWidth = font.characterWidth()
         attributes[NSFontAttributeName] = font
+        //FIXME: sometimes some regions of a file have no spans, so they don't have a style,
+        // which means they get drawn as black. With this we default to drawing them like plaintext.
+        // BUT: why are spans missing?
+        attributes[NSForegroundColorAttributeName] = textColor
     }
 }
 
