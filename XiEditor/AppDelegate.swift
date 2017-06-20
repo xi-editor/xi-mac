@@ -25,6 +25,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     lazy var textMetrics: TextDrawingMetrics = TextDrawingMetrics(font: self.defaultFont)
     lazy var styleMap: StyleMap = StyleMap(font: self.defaultFont)
 
+    var theme = Theme.defaultTheme()
+
     func applicationWillFinishLaunching(_ aNotification: Notification) {
 
         guard let corePath = Bundle.main.path(forResource: "xi-core", ofType: "")

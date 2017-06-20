@@ -87,15 +87,6 @@ func camelCaseToUnderscored(_ name: NSString) -> NSString {
 class EditView: NSView, NSTextInputClient {
     var dataSource: EditViewDataSource!
 
-    var textSelectionColor: NSColor {
-        if self.isFrontmostView {
-            return NSColor.selectedTextBackgroundColor
-        } else {
-            return NSColor(colorLiteralRed: 0.8, green: 0.8, blue: 0.8, alpha: 1.0)
-        }
-    }
-    var textHighlightColor: NSColor = NSColor(deviceWhite: 0.8, alpha: 0.4)
-
     var lastDragLineCol: (Int, Int)?
     var timer: Timer?
     var timerEvent: NSEvent?
@@ -133,10 +124,12 @@ class EditView: NSView, NSTextInputClient {
         }
     }
     
-    private var cursorColor: CGColor {
-        return _cursorStateOn ? CGColor(gray: 0, alpha: 1) : CGColor(gray: 1, alpha: 1)
+    private var cursorColor: NSColor {
+        // using foreground instead of caret because caret looks weird in the default font, and seems to be ignored
+        // by sublime text anyway?
+        return _cursorStateOn ? dataSource.theme.foreground : dataSource.theme.background
     }
-    
+
     required init?(coder: NSCoder) {
         
         _selectedRange = NSMakeRange(NSNotFound, 0)
@@ -158,7 +151,11 @@ class EditView: NSView, NSTextInputClient {
         path2.fill()
         */
 
+        // draw the background
         let context = NSGraphicsContext.current()!.cgContext
+        dataSource.theme.background.setFill()
+        NSRectFill(dirtyRect)
+
         let first = Int(floor(dirtyRect.origin.y / dataSource.textMetrics.linespace))
         let last = Int(ceil((dirtyRect.origin.y + dirtyRect.size.height) / dataSource.textMetrics.linespace))
 
@@ -174,8 +171,9 @@ class EditView: NSView, NSTextInputClient {
             let attrString = NSMutableAttributedString(string: line.text, attributes: dataSource.textMetrics.attributes)
             let ctline = CTLineCreateWithAttributedString(attrString)
             let y = dataSource.textMetrics.linespace * CGFloat(lineIx + 1)
+            //TODO: also draw line highlight, as dictated by theme
 
-            context.setFillColor(textSelectionColor.cgColor)
+            dataSource.theme.selection.setFill()
             let selections = line.styles.filter { $0.style == 0 }
             for selection in selections {
                 let selStart = CTLineGetOffsetForStringIndex(ctline, selection.range.location, nil)
@@ -184,7 +182,7 @@ class EditView: NSView, NSTextInputClient {
                                     width: selEnd - selStart, height: dataSource.textMetrics.linespace))
             }
 
-            context.setFillColor(textHighlightColor.cgColor)
+            dataSource.theme.findHighlight.setFill()
             let highlights = line.styles.filter { $0.style == 1 }
             for highlight in highlights {
                 let selStart = CTLineGetOffsetForStringIndex(ctline, highlight.range.location, nil)
@@ -206,7 +204,7 @@ class EditView: NSView, NSTextInputClient {
             dataSource.styleMap.applyStyles(text: s, string: &attrString, styles: line.styles)
             for c in line.cursor {
                 let cix = utf8_offset_to_utf16(s, c)
-                // TODO: How should we handle the situations that have multi-cursor?
+
                 self.cursorPos = (lineIx, cix)
                 if (markedRange().location != NSNotFound) {
                     let markRangeStart = cix - markedRange().length
@@ -226,10 +224,6 @@ class EditView: NSView, NSTextInputClient {
                 }
             }
 
-            // TODO: I don't understand where the 13 comes from (it's what aligns with baseline. We
-            // probably want to move to using CTLineDraw instead of drawing the attributed string,
-            // but that means drawing the selection highlight ourselves (which has other benefits).
-            //attrString.drawAtPoint(NSPoint(x: x0, y: y - 13))
             let y = dataSource.textMetrics.linespace * CGFloat(lineIx + 1);
             attrString.draw(with: NSRect(x: x0, y: y, width: dirtyRect.origin.x + dirtyRect.width - x0, height: 14), options: [])
             if showBlinkingCursor {
@@ -245,10 +239,12 @@ class EditView: NSView, NSTextInputClient {
                         let utf16_ix = utf8_offset_to_utf16(s, cursor)
                         pos = CTLineGetOffsetForStringIndex(ctline, CFIndex(utf16_ix), nil)
                     }
-                    context.setStrokeColor(cursorColor)
+                    cursorColor.setStroke()
+                    context.setShouldAntialias(false)
                     context.move(to: CGPoint(x: x0 + pos, y: y + dataSource.textMetrics.descent))
                     context.addLine(to: CGPoint(x: x0 + pos, y: y - dataSource.textMetrics.ascent))
                     context.strokePath()
+                    context.setShouldAntialias(true)
                 }
             }
         }

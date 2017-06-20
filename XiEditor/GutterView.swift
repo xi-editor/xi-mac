@@ -21,19 +21,20 @@ class GutterView: NSView {
     private let gutterBackground = NSColor(deviceWhite: 0.9, alpha: 1.0)
     private let lineNumberDefaultTextColor = NSColor(deviceWhite: 0.5, alpha: 1.0)
     private let lineNumberCursorTextColor = NSColor.black
-    
+
     override var isFlipped: Bool {
         return true
     }
     
     override func draw(_ dirtyRect: NSRect) {
-        gutterBackground.setFill()
+        dataSource.theme.gutter.setFill()
         NSRectFill(dirtyRect)
         
         var defaultAttributes = dataSource.textMetrics.attributes
         var cursorAttributes = dataSource.textMetrics.attributes
-        defaultAttributes[NSForegroundColorAttributeName] = lineNumberDefaultTextColor
-        cursorAttributes[NSForegroundColorAttributeName] = lineNumberCursorTextColor
+        defaultAttributes[NSForegroundColorAttributeName] = dataSource.theme.gutterForeground
+        //Note: tmThemes have no "activeLineGutterForeground" color. Using lineHighlight, which might look weird.
+        cursorAttributes[NSForegroundColorAttributeName] =  dataSource.theme.lineHighlight ?? lineNumberCursorTextColor
 
         let first = Int(floor(dirtyRect.origin.y / dataSource.textMetrics.linespace))
         let last = min(Int(ceil((dirtyRect.origin.y + dirtyRect.size.height) / dataSource.textMetrics.linespace)), dataSource.lines.height)

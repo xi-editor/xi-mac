@@ -18,6 +18,7 @@ import Cocoa
 protocol EditViewDataSource {
     var lines: LineCache { get }
     var styleMap: StyleMap { get }
+    var theme: Theme { get }
     var textMetrics: TextDrawingMetrics { get }
     var gutterWidth: CGFloat { get }
     var document: Document! { get }
@@ -62,8 +63,13 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
     var textMetrics: TextDrawingMetrics {
         return (NSApplication.shared().delegate as! AppDelegate).textMetrics
     }
+
     var styleMap: StyleMap {
         return (NSApplication.shared().delegate as! AppDelegate).styleMap
+    }
+
+    var theme: Theme {
+        return (NSApplication.shared().delegate as! AppDelegate).theme
     }
 
     var gutterWidth: CGFloat {
