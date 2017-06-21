@@ -14,6 +14,8 @@
 
 import Cocoa
 
+let USER_DEFAULTS_THEME_KEY = "io.xi-editor.settings.theme"
+
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
 
@@ -42,6 +44,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }()
 
         self.dispatcher = dispatcher
+
+        // set initial theme. This is a placeholder, and should not be used as an example for 
+        // other persistent settings. How to handle user preferences is an open question:
+        // https://github.com/google/xi-editor/issues/331
+        let preferredTheme = UserDefaults.standard.string(forKey: USER_DEFAULTS_THEME_KEY) ?? "InspiredGitHub"
+        let req = Events.SetTheme(themeName: preferredTheme)
+        dispatcher.coreConnection.sendRpcAsync(req.method, params: req.params!)
     }
     
     /// returns the NSDocument corresponding to the given viewIdentifier
@@ -100,16 +109,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         case "theme_changed":
             guard let obj = params as? [String : AnyObject],
-                let view_id = obj["view_id"] as? String,
-                let document = documentForViewIdentifier(viewIdentifier: view_id),
                 let name = obj["name"] as? String,
                 let themeJson = obj["theme"] as? [String: AnyObject] else {
                     print("invalid 'theme_changed' rpc \(params)");
                     return nil
             }
+            UserDefaults.standard.set(name, forKey: USER_DEFAULTS_THEME_KEY)
             self.theme = Theme(jsonObject: themeJson)
             self.textMetrics = TextDrawingMetrics(font: textMetrics.font, textColor: theme.foreground)
-            document.editViewController?.themeChanged(name)
+            for doc in NSApplication.shared().orderedDocuments {
+                guard let doc = doc as? Document else { continue }
+                doc.editViewController?.themeChanged(name)
+            }
 
         case "alert":
             if let obj = params as? [String : AnyObject], let msg = obj["msg"] as? String {

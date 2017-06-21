@@ -154,7 +154,6 @@ enum Events { // namespace
 
     struct SetTheme: Event {
         typealias Output = Void
-        let viewIdentifier: ViewIdentifier
         let themeName: String
 
         let method = "set_theme"

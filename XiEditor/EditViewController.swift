@@ -324,8 +324,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
     }
     
     @IBAction func debugSetTheme(_ sender: NSMenuItem) {
-        let req = Events.SetTheme(viewIdentifier: self.document.coreViewIdentifier!,
-                                  themeName: sender.title)
+        guard sender.state != 1 else { print("theme already active"); return }
+        let req = Events.SetTheme(themeName: sender.title)
         document.dispatcher.coreConnection.sendRpcAsync(req.method, params: req.params!)
     }
 
