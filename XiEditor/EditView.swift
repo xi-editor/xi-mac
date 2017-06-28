@@ -129,8 +129,8 @@ class EditView: NSView, NSTextInputClient {
     }
     
     private var cursorColor: NSColor {
-        // using foreground instead of caret because caret looks weird in the default font, and seems to be ignored
-        // by sublime text anyway?
+        // using foreground instead of caret because caret looks weird in the default
+        // theme, and seems to be ignored by sublime text anyway?
         return _cursorStateOn ? dataSource.theme.foreground : dataSource.theme.background
     }
 
@@ -176,8 +176,8 @@ class EditView: NSView, NSTextInputClient {
             let ctline = CTLineCreateWithAttributedString(attrString)
             let y = dataSource.textMetrics.linespace * CGFloat(lineIx + 1)
             //TODO: also draw line highlight, as dictated by theme
-
-            dataSource.theme.selection.setFill()
+            let selectionColor = self.isFrontmostView ? dataSource.theme.selection : dataSource.theme.inactiveSelection ?? dataSource.theme.selection
+            selectionColor.setFill()
             let selections = line.styles.filter { $0.style == 0 }
             for selection in selections {
                 let selStart = CTLineGetOffsetForStringIndex(ctline, selection.range.location, nil)
