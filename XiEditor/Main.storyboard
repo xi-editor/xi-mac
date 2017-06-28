@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16F73" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16F73" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12120"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12121"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
         <capability name="stacking Non-gravity area distributions on NSStackView" minToolsVersion="7.0" minSystemVersion="10.11"/>
     </dependencies>
@@ -885,12 +885,6 @@
                                                 <action selector="debugRewrap:" target="7er-QZ-amI" id="qoT-pS-n4J"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Test FG Spans" keyEquivalent="" id="tYN-NS-hnb">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
-                                            <connections>
-                                                <action selector="debugTestFGSpans:" target="7er-QZ-amI" id="10b-2a-k0u"/>
-                                            </connections>
-                                        </menuItem>
                                         <menuItem title="Print Selection Spans" keyEquivalent="" id="8QK-XZ-5IS">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
@@ -906,6 +900,52 @@
                                                     </menuItem>
                                                 </items>
                                             </menu>
+                                        </menuItem>
+                                        <menuItem title="Theme" id="SUL-oD-daT">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <menu key="submenu" title="Theme" id="Nmo-9S-zy4">
+                                                <items>
+                                                    <menuItem title="InspiredGitHub" id="BMs-Zd-s8F">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                        <connections>
+                                                            <action selector="debugSetTheme:" target="7er-QZ-amI" id="StJ-5w-ozt"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                    <menuItem title="base16-eighties.dark" id="OKg-X1-2gQ">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                        <connections>
+                                                            <action selector="debugSetTheme:" target="7er-QZ-amI" id="6Nq-Mo-YG2"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                    <menuItem title="base16-mocha.dark" id="Jcy-iQ-xOD">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                        <connections>
+                                                            <action selector="debugSetTheme:" target="7er-QZ-amI" id="mvr-Aq-oqn"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                    <menuItem title="base16-ocean.light" id="ldc-0b-P1I">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                        <connections>
+                                                            <action selector="debugSetTheme:" target="7er-QZ-amI" id="aXP-Eo-Isk"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                    <menuItem title="Solarized (dark)" id="9cl-oA-eEf">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                        <connections>
+                                                            <action selector="debugSetTheme:" target="7er-QZ-amI" id="3tJ-Eb-Nbc"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                    <menuItem title="Solarized (light)" id="V2W-cP-Mee">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                        <connections>
+                                                            <action selector="debugSetTheme:" target="7er-QZ-amI" id="VN7-xF-ej0"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                </items>
+                                            </menu>
+                                            <connections>
+                                                <action selector="debugSetTheme:" target="7er-QZ-amI" id="fX1-d3-1Fg"/>
+                                            </connections>
                                         </menuItem>
                                         <menuItem title="Goto Line" keyEquivalent="g" id="5bM-PX-gWE">
                                             <modifierMask key="keyEquivalentModifierMask" control="YES"/>

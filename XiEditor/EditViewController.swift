@@ -18,6 +18,7 @@ import Cocoa
 protocol EditViewDataSource {
     var lines: LineCache { get }
     var styleMap: StyleMap { get }
+    var theme: Theme { get }
     var textMetrics: TextDrawingMetrics { get }
     var gutterWidth: CGFloat { get }
     var document: Document! { get }
@@ -62,8 +63,13 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
     var textMetrics: TextDrawingMetrics {
         return (NSApplication.shared().delegate as! AppDelegate).textMetrics
     }
+
     var styleMap: StyleMap {
         return (NSApplication.shared().delegate as! AppDelegate).styleMap
+    }
+
+    var theme: Theme {
+        return (NSApplication.shared().delegate as! AppDelegate).theme
     }
 
     var gutterWidth: CGFloat {
@@ -317,8 +323,10 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
         document.sendRpcAsync("debug_rewrap", params: [])
     }
     
-    @IBAction func debugTestFGSpans(_ sender: AnyObject) {
-        document.sendRpcAsync("debug_test_fg_spans", params: [])
+    @IBAction func debugSetTheme(_ sender: NSMenuItem) {
+        guard sender.state != 1 else { print("theme already active"); return }
+        let req = Events.SetTheme(themeName: sender.title)
+        document.dispatcher.coreConnection.sendRpcAsync(req.method, params: req.params!)
     }
 
     @IBAction func debugPrintSpans(_ sender: AnyObject) {
@@ -360,6 +368,15 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
         }
     }
     
+    public func themeChanged(_ theme: String) {
+        let pluginsMenu = NSApplication.shared().mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Theme");
+        for subItem in (pluginsMenu?.submenu!.items)! {
+            subItem.state = (subItem.title == theme) ? 1 : 0
+        }
+        gutterView.needsDisplay = true
+        editView.needsDisplay = true
+    }
+
     @IBAction func gotoLine(_ sender: AnyObject) {
         guard let window = self.view.window else { return }
         

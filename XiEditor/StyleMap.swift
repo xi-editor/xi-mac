@@ -115,8 +115,18 @@ class StyleMap {
     func defStyle(json: [String: AnyObject]) {
         guard let styleID = json["id"] as? Int else { return }
 
-        let fgColor = colorFromArgb(json["fg_color"] as? UInt32 ?? 0xFF000000)
-        let bgColor = colorFromArgb(json["bg_color"] as? UInt32 ?? 0)
+        let fgColor: NSColor
+        var bgColor: NSColor? = nil
+
+        if let fg = json["fg_color"] as? UInt32 {
+            fgColor = colorFromArgb(fg)
+        } else {
+            fgColor = (NSApplication.shared().delegate as! AppDelegate).theme.foreground
+        }
+        if let bg = json["bg_color"] as? UInt32 {
+            bgColor = colorFromArgb(bg)
+        }
+
         let underline = json["underline"] as? Bool ?? false
         let italic = json["italic"] as? Bool ?? false
         var weight = json["weight"] as? Int
