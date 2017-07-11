@@ -99,11 +99,91 @@
                         <outlet property="gutterViewWidth" destination="Smj-nI-f5r" id="kjP-so-JhO"/>
                         <outlet property="scrollView" destination="Qwv-ci-fVA" id="4cE-10-pSP"/>
                         <outlet property="shadowView" destination="c3r-nr-uYj" id="X0D-a3-NVc"/>
+                        <segue destination="9Ak-VM-8lJ" kind="modal" identifier="UserInputSegue" id="GqW-PV-ZCy"/>
                     </connections>
                 </viewController>
                 <customObject id="ySa-Ve-cwL" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="457" y="-144"/>
+            <point key="canvasLocation" x="425" y="-119"/>
+        </scene>
+        <!--User Input Prompt Controller-->
+        <scene sceneID="eJE-Vi-nNd">
+            <objects>
+                <viewController storyboardIdentifier="InputPromptController" id="9Ak-VM-8lJ" customClass="UserInputPromptController" customModule="XiEditor" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="sxx-KC-gVw">
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="65"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="flF-PD-vTq">
+                                <rect key="frame" x="379" y="13" width="57" height="32"/>
+                                <buttonCell key="cell" type="push" title="Ok" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="jZ9-Xg-PHd">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                    <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="submitAction:" target="9Ak-VM-8lJ" id="jfs-Za-pTd"/>
+                                </connections>
+                            </button>
+                            <textField hidden="YES" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Di9-5Q-3Ia">
+                                <rect key="frame" x="20" y="20" width="275" height="22"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="zlO-6u-liO">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="69L-jM-1VW">
+                                <rect key="frame" x="297" y="13" width="82" height="32"/>
+                                <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="NFq-9f-OWc">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                    <string key="keyEquivalent" base64-UTF8="YES">
+Gw
+</string>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="cancelAction:" target="9Ak-VM-8lJ" id="0i5-T0-f1l"/>
+                                </connections>
+                            </button>
+                            <comboBox hidden="YES" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AHD-SX-Tuj">
+                                <rect key="frame" x="21" y="16" width="277" height="26"/>
+                                <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" completes="NO" numberOfVisibleItems="5" id="nnP-RF-Vev">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    <objectValues>
+                                        <string>Item 1</string>
+                                        <string>Item 2</string>
+                                        <string>Item 3</string>
+                                    </objectValues>
+                                </comboBoxCell>
+                            </comboBox>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="69L-jM-1VW" firstAttribute="baseline" secondItem="Di9-5Q-3Ia" secondAttribute="baseline" id="3hQ-W1-b3b"/>
+                            <constraint firstItem="flF-PD-vTq" firstAttribute="baseline" secondItem="69L-jM-1VW" secondAttribute="baseline" id="43d-lo-klP"/>
+                            <constraint firstItem="69L-jM-1VW" firstAttribute="leading" secondItem="AHD-SX-Tuj" secondAttribute="trailing" constant="8" id="Pg8-Me-KFe"/>
+                            <constraint firstItem="69L-jM-1VW" firstAttribute="leading" secondItem="Di9-5Q-3Ia" secondAttribute="trailing" constant="8" id="XO8-jh-7d5"/>
+                            <constraint firstAttribute="bottom" secondItem="AHD-SX-Tuj" secondAttribute="bottom" constant="20" id="ZT4-jh-e7k"/>
+                            <constraint firstItem="Di9-5Q-3Ia" firstAttribute="leading" secondItem="sxx-KC-gVw" secondAttribute="leading" constant="20" id="dlU-3H-hw9"/>
+                            <constraint firstAttribute="trailing" secondItem="flF-PD-vTq" secondAttribute="trailing" constant="20" id="jgz-Fc-1XM"/>
+                            <constraint firstItem="AHD-SX-Tuj" firstAttribute="leading" secondItem="sxx-KC-gVw" secondAttribute="leading" constant="21" id="mfs-Ot-9K0"/>
+                            <constraint firstItem="flF-PD-vTq" firstAttribute="leading" secondItem="69L-jM-1VW" secondAttribute="trailing" constant="12" id="sxi-70-oTD"/>
+                            <constraint firstAttribute="bottom" secondItem="Di9-5Q-3Ia" secondAttribute="bottom" constant="20" id="vNx-sq-7J7"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="comboBox" destination="AHD-SX-Tuj" id="f7P-C2-dWk"/>
+                        <outlet property="inputField" destination="Di9-5Q-3Ia" id="FIR-G2-RkA"/>
+                        <outlet property="submitButton" destination="flF-PD-vTq" id="tly-1Q-gvi"/>
+                    </connections>
+                </viewController>
+                <customObject id="mt0-rC-EbP" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="195" y="239.5"/>
         </scene>
         <!--Find View Controller-->
         <scene sceneID="CRJ-r2-SVm">

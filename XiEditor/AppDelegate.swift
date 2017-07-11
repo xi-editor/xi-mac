@@ -121,6 +121,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 guard let doc = doc as? Document else { continue }
                 doc.editViewController?.themeChanged(name)
             }
+        case "update_cmds":
+            guard let obj = params as? [String : AnyObject],
+                let view_id = obj["view_id"] as? String,
+                let document = documentForViewIdentifier(viewIdentifier: view_id),
+                let cmds = obj["cmds"] as? [[String: AnyObject]],
+                let plugin = obj["plugin"] as? String else { print("missing plugin field in \(params)"); return nil }
+            let parsedCommands = cmds.map { Command(jsonObject: $0) }
+                .filter { $0 != nil }
+                .map { $0! }
+
+            document.editViewController?.updateCommands(plugin: plugin, commands: parsedCommands)
+
 
         case "alert":
             if let obj = params as? [String : AnyObject], let msg = obj["msg"] as? String {

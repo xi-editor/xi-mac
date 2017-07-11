@@ -83,6 +83,13 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
         }
     }
 
+    /// A mapping of plugin names to available commands
+    var availableCommands: [String: [Command]] = [:] {
+        didSet {
+            updatePluginMenu()
+        }
+    }
+
     // used to calculate the gutter width. Initial -1 so that a new document
     // still triggers update of gutter width.
     private var lineCount: Int = -1 {
@@ -350,23 +357,68 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
     public func pluginStarted(_ plugin: String) {
         self.availablePlugins[plugin] = true
         print("client: plugin started \(plugin)")
-        updatePluginMenu()
     }
     
     public func pluginStopped(_ plugin: String) {
         self.availablePlugins[plugin] = false
         print("client: plugin stopped \(plugin)")
-        updatePluginMenu()
+    }
+
+    public func updateCommands(plugin: String, commands: [Command]) {
+        self.availableCommands[plugin] = commands
     }
 
     func updatePluginMenu() {
         let pluginsMenu = NSApplication.shared().mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Plugin");
         pluginsMenu!.submenu?.removeAllItems()
         for (plugin, isRunning) in self.availablePlugins {
-            let item = pluginsMenu!.submenu?.addItem(withTitle: plugin, action: #selector(EditViewController.togglePlugin(_:)), keyEquivalent: "")
-            item?.state = isRunning ? 1 : 0
+            if self.availableCommands[plugin]?.isEmpty ?? true {
+                let item = pluginsMenu!.submenu?.addItem(withTitle: plugin, action: #selector(EditViewController.togglePlugin(_:)), keyEquivalent: "")
+                item?.state = isRunning ? 1 : 0
+            } else {
+                let item = pluginsMenu!.submenu?.addItem(withTitle: plugin, action: nil, keyEquivalent: "")
+                item?.state = isRunning ? 1 : 0
+                item?.submenu = NSMenu()
+                item?.submenu?.addItem(withTitle: isRunning ? "Stop" : "Start",
+                                       action: #selector(EditViewController.togglePlugin(_:)),
+                                       keyEquivalent: "")
+                item?.submenu?.addItem(NSMenuItem.separator())
+                for cmd in self.availableCommands[plugin]! {
+                    item?.submenu?.addItem(withTitle: cmd.title,
+                                           action:#selector(EditViewController.handleCommand(_:)),
+                                           keyEquivalent: "")
+                }
+            }
         }
     }
+
+    func handleCommand(_ sender: NSMenuItem) {
+        let parent = sender.parent!.title
+        let command = self.availableCommands[parent]!.first(where: { $0.title == sender.title })!
+
+        self.resolveParams(command, completion: { [weak self] resolved in
+            if let resolved = resolved {
+                self?.document.sendPluginRpc(command.method, receiver: parent, params: resolved)
+            } else {
+                Swift.print("failed to resolve command params")
+            }
+            self?.dismissViewController(self!.userInputController)
+        })
+    }
+
+    func resolveParams(_ command: Command, completion: @escaping ([String: AnyObject]?) -> ()) {
+        guard !command.args.isEmpty else {
+            completion(command.params)
+            return
+        }
+        self.presentViewControllerAsSheet(userInputController)
+        userInputController.collectInput(forCommand: command, completion: completion)
+    }
+
+    lazy var userInputController: UserInputPromptController = {
+        return self.storyboard!.instantiateController(withIdentifier: "InputPromptController")
+            as! UserInputPromptController
+    }()
     
     public func themeChanged(_ theme: String) {
         let pluginsMenu = NSApplication.shared().mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Theme");

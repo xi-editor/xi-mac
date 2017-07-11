@@ -211,6 +211,19 @@ class Document: NSDocument {
         return dispatcher?.coreConnection.sendRpc("edit", params: inner)
     }
 
+    /// Send a custom plugin command.
+    func sendPluginRpc(_ method: String, receiver: String, params innerParams: [String: AnyObject]) {
+        let params = ["command": "plugin_rpc",
+                      "view_id": coreViewIdentifier!,
+                      "receiver": receiver,
+                      "rpc": [
+                        "type": "notification",
+                        "method": method,
+                        "params": innerParams]] as [String: AnyObject]
+
+        dispatcher.coreConnection.sendRpcAsync("plugin", params: params)
+    }
+
     func update(_ content: [String: AnyObject]) {
         if let editVC = editViewController {
             editVC.update(content)
