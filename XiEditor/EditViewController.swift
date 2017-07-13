@@ -402,7 +402,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
             } else {
                 Swift.print("failed to resolve command params")
             }
-            self?.dismissViewController(self!.userInputController)
+            if self?.userInputController.presenting != nil {
+                self?.dismissViewController(self!.userInputController)
+            }
         })
     }
 

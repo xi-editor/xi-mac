@@ -76,11 +76,6 @@ class UserInputPromptController: NSViewController, NSTextFieldDelegate, NSComboB
         submitButton.isEnabled = false
     }
 
-
-    @IBAction func boolSelect(_ sender: NSSegmentedControl) {
-        submitButton.isEnabled = true
-    }
-
     @IBAction func cancelAction(_ sender: Any) {
         completion!(nil)
     }
@@ -94,7 +89,7 @@ class UserInputPromptController: NSViewController, NSTextFieldDelegate, NSComboB
         case .Int, .PosInt:
             result = inputField.integerValue as AnyObject
         case .Bool:
-            result = (inputField.integerValue != 0) as AnyObject
+            result = ["y", "yes", "true", "1"].contains(inputField.stringValue.lowercased()) as AnyObject
         case .String:
             result = inputField.stringValue as AnyObject
         case .Choice:
@@ -114,12 +109,16 @@ class UserInputPromptController: NSViewController, NSTextFieldDelegate, NSComboB
         case .PosInt:
             valid = (Int(inputField.stringValue, radix: 10) ?? -1) >= 0
         case .Bool:
-            valid = ["yes", "no", "true", "false", "0", "1"].contains(inputField.stringValue.lowercased())
+            valid = ["yes", "no", "y", "n", "true", "false", "0", "1"].contains(inputField.stringValue.lowercased())
         case .String:
             valid = !inputField.stringValue.isEmpty
         case .Choice:
             valid = optionStrings!.contains(comboBox.stringValue)
         }
         submitButton.isEnabled = valid
+    }
+
+    func comboBoxWillDismiss(_ notification: Notification) {
+        self.controlTextDidChange(notification)
     }
 }
