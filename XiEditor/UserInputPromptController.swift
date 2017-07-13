@@ -42,7 +42,7 @@ class UserInputPromptController: NSViewController, NSTextFieldDelegate, NSComboB
     }
 
     public func collectInput(forCommand command: Command, completion: @escaping ([String: AnyObject]?) -> ()) {
-        self.resolved = [String: AnyObject]()
+        self.resolved = command.params
         self.command = command
         self.argumentIter = AnyIterator(command.args.makeIterator())
         self.completion = completion

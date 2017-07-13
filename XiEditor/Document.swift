@@ -213,11 +213,16 @@ class Document: NSDocument {
 
     /// Send a custom plugin command.
     func sendPluginRpc(_ method: String, receiver: String, params innerParams: [String: AnyObject]) {
+        var innerParams = innerParams;
+        if innerParams["view"] != nil {
+            innerParams["view"] = coreViewIdentifier! as AnyObject
+        }
+
         let params = ["command": "plugin_rpc",
                       "view_id": coreViewIdentifier!,
                       "receiver": receiver,
                       "rpc": [
-                        "type": "notification",
+                        "rpc_type": "notification",
                         "method": method,
                         "params": innerParams]] as [String: AnyObject]
 

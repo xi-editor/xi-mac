@@ -101,7 +101,7 @@ extension Command {
             let description = dict["description"] as? String,
             let rpc_cmd = dict["rpc_cmd"] as? [String: AnyObject],
             let method = rpc_cmd["method"] as? String,
-            let rpcTypeName = rpc_cmd["type"] as? String,
+            let rpcTypeName = rpc_cmd["rpc_type"] as? String,
             let rpcType = RpcType.fromString(string: rpcTypeName),
             let params = rpc_cmd["params"] as? [String: AnyObject],
             let args = dict["args"] as? [[String: AnyObject]]? else {
