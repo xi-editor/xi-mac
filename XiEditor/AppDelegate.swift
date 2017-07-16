@@ -96,8 +96,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         case "plugin_started":
             guard let obj = params as? [String : AnyObject] else { print("bad params \(params)"); return nil }
                   let view_id = obj["view_id"] as! String
-//                  let document = documentForViewIdentifier(viewIdentifier: view_id)
-                  let plugin = obj["plugin"] as! String //else { print("missing plugin field in \(params)"); return nil }
+                  let plugin = obj["plugin"] as! String
             documentForViewIdentifier(viewIdentifier: view_id)?.editViewController?.pluginStarted(plugin)
             
         case "plugin_stopped":
@@ -121,6 +120,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 guard let doc = doc as? Document else { continue }
                 doc.editViewController?.themeChanged(name)
             }
+        case "available_plugins":
+            guard let obj = params as? [String : AnyObject],
+                let view_id = obj["view_id"] as? String,
+                let document = documentForViewIdentifier(viewIdentifier: view_id),
+                let response = obj["plugins"] as? [[String: AnyObject]] else {
+                    print("failed to parse available_plugins rpc \(params)")
+                    return nil
+            }
+            var available: [String: Bool] = [:]
+            for item in response {
+                available[item["name"] as! String] = item["running"] as? Bool
+            }
+            document.editViewController?.availablePlugins = available
         case "update_cmds":
             guard let obj = params as? [String : AnyObject],
                 let view_id = obj["view_id"] as? String,
