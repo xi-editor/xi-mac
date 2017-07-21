@@ -15,6 +15,8 @@
 		6B5138481EBD23C200C992A8 /* shouty.py in Resources */ = {isa = PBXBuildFile; fileRef = 6B5138451EBD23C200C992A8 /* shouty.py */; };
 		6B5138491EBD23C200C992A8 /* spellcheck.py in Resources */ = {isa = PBXBuildFile; fileRef = 6B5138461EBD23C200C992A8 /* spellcheck.py */; };
 		6B53F5F21EF963EB00A4C664 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B53F5F11EF963EB00A4C664 /* Theme.swift */; };
+		6B90DD1C1F129C1A00DF3CE2 /* PluginCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B90DD1B1F129C1A00DF3CE2 /* PluginCommand.swift */; };
+		6B90DD221F14110B00DF3CE2 /* UserInputPromptController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B90DD211F14110B00DF3CE2 /* UserInputPromptController.swift */; };
 		6B9B4BA51EC012B2006C090B /* xi_plugin in Resources */ = {isa = PBXBuildFile; fileRef = 6B9B4BA41EC012B2006C090B /* xi_plugin */; };
 		AE0243F61E4BDF8A00641BDA /* StyleMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE0243F51E4BDF8A00641BDA /* StyleMap.swift */; };
 		AE041BA61D4327EB0069AB8B /* xi-syntect-plugin in Resources */ = {isa = PBXBuildFile; fileRef = AE041BA51D4327EB0069AB8B /* xi-syntect-plugin */; };
@@ -64,7 +66,9 @@
 		6B5138441EBD23C200C992A8 /* bracket_example.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; name = bracket_example.py; path = "xi-editor/python/bracket_example.py"; sourceTree = SOURCE_ROOT; };
 		6B5138451EBD23C200C992A8 /* shouty.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; name = shouty.py; path = "xi-editor/python/shouty.py"; sourceTree = SOURCE_ROOT; };
 		6B5138461EBD23C200C992A8 /* spellcheck.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; name = spellcheck.py; path = "xi-editor/python/spellcheck.py"; sourceTree = SOURCE_ROOT; };
-		6B53F5F11EF963EB00A4C664 /* Theme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Theme.swift; path = XiEditor/Theme.swift; sourceTree = "<group>"; };
+		6B53F5F11EF963EB00A4C664 /* Theme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		6B90DD1B1F129C1A00DF3CE2 /* PluginCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PluginCommand.swift; sourceTree = "<group>"; };
+		6B90DD211F14110B00DF3CE2 /* UserInputPromptController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserInputPromptController.swift; sourceTree = "<group>"; };
 		6B9B4BA41EC012B2006C090B /* xi_plugin */ = {isa = PBXFileReference; lastKnownFileType = folder; name = xi_plugin; path = "xi-editor/python/xi_plugin"; sourceTree = SOURCE_ROOT; };
 		AE0243F51E4BDF8A00641BDA /* StyleMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StyleMap.swift; sourceTree = "<group>"; };
 		AE041B971D4323460069AB8B /* build-rust-xcode.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-rust-xcode.sh"; sourceTree = "<group>"; };
@@ -117,7 +121,6 @@
 		AE499DC31C82BB2B002D68AF = {
 			isa = PBXGroup;
 			children = (
-				6B53F5F11EF963EB00A4C664 /* Theme.swift */,
 				D023DA021CD071B40087EC0A /* xicore */,
 				AE499DCE1C82BB2B002D68AF /* XiEditor */,
 				AE499DDE1C82BB2B002D68AF /* XiEditorTests */,
@@ -150,6 +153,9 @@
 				F5BDBF361DCA9D2C0042430B /* Document.swift */,
 				AE168C5B1E4AD87B008249AE /* LineCache.swift */,
 				AE0243F51E4BDF8A00641BDA /* StyleMap.swift */,
+				6B90DD1B1F129C1A00DF3CE2 /* PluginCommand.swift */,
+				6B53F5F11EF963EB00A4C664 /* Theme.swift */,
+				6B90DD211F14110B00DF3CE2 /* UserInputPromptController.swift */,
 				AE499DD61C82BB2B002D68AF /* Info.plist */,
 				F53EA2AC1DCAA8110071ACFD /* Main.storyboard */,
 				AE499DD11C82BB2B002D68AF /* Assets.xcassets */,
@@ -355,6 +361,7 @@
 				6B0DCDD61E832101007C14A3 /* EditContainerView.swift in Sources */,
 				AE0243F61E4BDF8A00641BDA /* StyleMap.swift in Sources */,
 				AE168C5C1E4AD87B008249AE /* LineCache.swift in Sources */,
+				6B90DD1C1F129C1A00DF3CE2 /* PluginCommand.swift in Sources */,
 				6B53F5F21EF963EB00A4C664 /* Theme.swift in Sources */,
 				AE499DF91C82C835002D68AF /* CoreConnection.swift in Sources */,
 				50370A2B1D4209F300EA1B18 /* Dispatcher.swift in Sources */,
@@ -363,6 +370,7 @@
 				6B0DCDD41E8196D0007C14A3 /* GutterView.swift in Sources */,
 				28F1ED4A1EC4C735008839BE /* Search.swift in Sources */,
 				F5BDBF371DCA9D2C0042430B /* Document.swift in Sources */,
+				6B90DD221F14110B00DF3CE2 /* UserInputPromptController.swift in Sources */,
 				AEB66A791CAEFC8F002F686A /* ShadowView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

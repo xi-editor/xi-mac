@@ -41,23 +41,7 @@ class Document: NSDocument {
     /// coreViewIdentifier is the name used to identify this document when communicating with the Core.
     var coreViewIdentifier: ViewIdentifier? {
         didSet {
-            guard let identifier = coreViewIdentifier else { return }
-            // on first set, request initial plugins
-            if oldValue == nil {
-                let req = Events.InitialPlugins(viewIdentifier: identifier)
-                dispatcher.coreConnection.sendRpcAsync(
-                req.method, params: req.params!) { [unowned self] (response) in
-                    DispatchQueue.main.async {
-                        let response = response as! [[String: AnyObject?]]
-                        var available: [String: Bool] = [:]
-                        for item in response {
-                            available[item["name"] as! String] = item["running"] as? Bool
-                        }
-                        self.editViewController!.availablePlugins = available
-                    }
-                }
-            }
-
+            guard coreViewIdentifier != nil else { return }
             // apply initial updates when coreViewIdentifier is set
             for pending in self.pendingNotifications {
                 self.sendRpcAsync(pending.method, params: pending.params, callback: pending.callback)
@@ -209,6 +193,24 @@ class Document: NSDocument {
     func sendRpc(_ method: String, params: Any) -> Any? {
         let inner = ["method": method as AnyObject, "params": params, "view_id": coreViewIdentifier as AnyObject] as [String : Any]
         return dispatcher?.coreConnection.sendRpc("edit", params: inner)
+    }
+
+    /// Send a custom plugin command.
+    func sendPluginRpc(_ method: String, receiver: String, params innerParams: [String: AnyObject]) {
+        var innerParams = innerParams;
+        if innerParams["view"] != nil {
+            innerParams["view"] = coreViewIdentifier! as AnyObject
+        }
+
+        let params = ["command": "plugin_rpc",
+                      "view_id": coreViewIdentifier!,
+                      "receiver": receiver,
+                      "rpc": [
+                        "rpc_type": "notification",
+                        "method": method,
+                        "params": innerParams]] as [String: AnyObject]
+
+        dispatcher.coreConnection.sendRpcAsync("plugin", params: params)
     }
 
     func update(_ content: [String: AnyObject]) {
