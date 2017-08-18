@@ -208,7 +208,7 @@ class Document: NSDocument {
                       "rpc": [
                         "rpc_type": "notification",
                         "method": method,
-                        "params": innerParams]] as [String: AnyObject]
+                        "params": innerParams]] as [String: Any]
 
         dispatcher.coreConnection.sendRpcAsync("plugin", params: params)
     }
