@@ -421,7 +421,22 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
         return self.storyboard!.instantiateController(withIdentifier: "InputPromptController")
             as! UserInputPromptController
     }()
-    
+
+    public func availableThemesChanged(_ themes: [String]) {
+        let pluginsMenu = NSApplication.shared().mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Theme")!.submenu!;
+
+        let currentlyActive = pluginsMenu.items
+            .filter { $0.state == 1 }
+            .first?.title
+
+        pluginsMenu.removeAllItems()
+        for theme in themes {
+            let item = NSMenuItem(title: theme, action: #selector(EditViewController.debugSetTheme(_:)), keyEquivalent: "")
+            item.state = (theme == currentlyActive) ? 1 : 0
+            pluginsMenu.addItem(item)
+        }
+    }
+
     public func themeChanged(_ theme: String) {
         let pluginsMenu = NSApplication.shared().mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Theme");
         for subItem in (pluginsMenu?.submenu!.items)! {
