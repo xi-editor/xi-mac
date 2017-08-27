@@ -1,11 +1,19 @@
 #!/bin/bash
 
-if [[ -f "${HOME}/.bash_profile" ]]; then
-    source "${HOME}/.bash_profile"
+# When building from Xcode we want to ensure that `cargo` is in PATH.
+# as a convenience, add the default cargo install location
+export PATH="$PATH:${HOME}/.cargo/bin"
+
+# Users can optionally set cargo path in xi-mac/.env
+if [[ -f "${SRCROOT}/.env" ]]; then
+    source "${SRCROOT}/.env"
+    export PATH="$PATH:$CARGO_PATH"
 fi
 
-if [[ -f "${HOME}/.zshrc" ]]; then
-source "${HOME}/.zshrc"
+
+if ! [ -x "$(command -v cargo)" ]; then
+    echo 'error: Unable to find cargo command. If cargo is not installed visit rustup.rs, otherwise set CARGO_PATH in xi-mac/.env' >&2
+    exit 127
 fi
 
 set -e
