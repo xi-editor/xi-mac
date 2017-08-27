@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16F73" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12121"/>
@@ -983,46 +983,7 @@ Gw
                                         </menuItem>
                                         <menuItem title="Theme" id="SUL-oD-daT">
                                             <modifierMask key="keyEquivalentModifierMask"/>
-                                            <menu key="submenu" title="Theme" id="Nmo-9S-zy4">
-                                                <items>
-                                                    <menuItem title="InspiredGitHub" id="BMs-Zd-s8F">
-                                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                                        <connections>
-                                                            <action selector="debugSetTheme:" target="7er-QZ-amI" id="StJ-5w-ozt"/>
-                                                        </connections>
-                                                    </menuItem>
-                                                    <menuItem title="base16-eighties.dark" id="OKg-X1-2gQ">
-                                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                                        <connections>
-                                                            <action selector="debugSetTheme:" target="7er-QZ-amI" id="6Nq-Mo-YG2"/>
-                                                        </connections>
-                                                    </menuItem>
-                                                    <menuItem title="base16-mocha.dark" id="Jcy-iQ-xOD">
-                                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                                        <connections>
-                                                            <action selector="debugSetTheme:" target="7er-QZ-amI" id="mvr-Aq-oqn"/>
-                                                        </connections>
-                                                    </menuItem>
-                                                    <menuItem title="base16-ocean.light" id="ldc-0b-P1I">
-                                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                                        <connections>
-                                                            <action selector="debugSetTheme:" target="7er-QZ-amI" id="aXP-Eo-Isk"/>
-                                                        </connections>
-                                                    </menuItem>
-                                                    <menuItem title="Solarized (dark)" id="9cl-oA-eEf">
-                                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                                        <connections>
-                                                            <action selector="debugSetTheme:" target="7er-QZ-amI" id="3tJ-Eb-Nbc"/>
-                                                        </connections>
-                                                    </menuItem>
-                                                    <menuItem title="Solarized (light)" id="V2W-cP-Mee">
-                                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                                        <connections>
-                                                            <action selector="debugSetTheme:" target="7er-QZ-amI" id="VN7-xF-ej0"/>
-                                                        </connections>
-                                                    </menuItem>
-                                                </items>
-                                            </menu>
+                                            <menu key="submenu" title="Theme" id="Nmo-9S-zy4"/>
                                             <connections>
                                                 <action selector="debugSetTheme:" target="7er-QZ-amI" id="fX1-d3-1Fg"/>
                                             </connections>

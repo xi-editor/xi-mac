@@ -44,6 +44,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }()
 
         self.dispatcher = dispatcher
+        dispatcher.coreConnection.sendRpcAsync("client_started", params: [:])
 
         // set initial theme. This is a placeholder, and should not be used as an example for 
         // other persistent settings. How to handle user preferences is an open question:
@@ -106,6 +107,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 let plugin = obj["plugin"] as? String else { print("missing plugin field in \(params)"); return nil }
             document.editViewController?.pluginStopped(plugin)
 
+        case "available_themes":
+            guard let obj = params as? [String : AnyObject],
+                let themes = obj["themes"] as? [String] else {
+                    print("invalid 'available_themes' rpc: \(params)");
+                    return nil
+            }
+            for doc in NSApplication.shared().orderedDocuments {
+                guard let doc = doc as? Document else { continue }
+                doc.editViewController?.availableThemesChanged(themes)
+            }
         case "theme_changed":
             guard let obj = params as? [String : AnyObject],
                 let name = obj["name"] as? String,
