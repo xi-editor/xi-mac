@@ -7,11 +7,14 @@ export PATH="$PATH:${HOME}/.cargo/bin"
 # Users can optionally set cargo path in xi-mac/.env
 if [[ -f "${SRCROOT}/.env" ]]; then
     source "${SRCROOT}/.env"
-    export PATH="$PATH:$CARGO_PATH"
+    if ! [[ -z "$CARGO_PATH" ]]; then
+        export PATH="$CARGO_PATH:$PATH"
+    else
+        echo "warning: ${SRCROOT}/.env file found, but CARGO_PATH not set."
+    fi
 fi
 
-
-if ! [ -x "$(command -v cargo)" ]; then
+if ! [[ -x "$(command -v cargo)" ]]; then
     echo 'error: Unable to find cargo command. If cargo is not installed visit rustup.rs, otherwise set CARGO_PATH in xi-mac/.env' >&2
     exit 127
 fi
