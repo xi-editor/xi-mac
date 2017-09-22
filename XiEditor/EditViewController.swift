@@ -44,8 +44,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
     @IBOutlet weak var editViewHeight: NSLayoutConstraint!
 
     lazy var findViewController: FindViewController! = {
-        let storyboard = NSStoryboard(name: "Main", bundle: nil)
-        let controller = storyboard.instantiateController(withIdentifier: "Find View Controller") as! FindViewController
+        let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
+        let controller = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Find View Controller")) as! FindViewController
         controller.findDelegate = self
         self.view.addSubview(controller.view)
         controller.view.translatesAutoresizingMaskIntoConstraints = false
@@ -61,15 +61,15 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
     var lines: LineCache = LineCache()
 
     var textMetrics: TextDrawingMetrics {
-        return (NSApplication.shared().delegate as! AppDelegate).textMetrics
+        return (NSApplication.shared.delegate as! AppDelegate).textMetrics
     }
 
     var styleMap: StyleMap {
-        return (NSApplication.shared().delegate as! AppDelegate).styleMap
+        return (NSApplication.shared.delegate as! AppDelegate).styleMap
     }
 
     var theme: Theme {
-        return (NSApplication.shared().delegate as! AppDelegate).theme
+        return (NSApplication.shared.delegate as! AppDelegate).theme
     }
 
     var gutterWidth: CGFloat {
@@ -116,14 +116,14 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
         super.viewDidLoad()
         editView.dataSource = self
         gutterView.dataSource = self
-        scrollView.contentView.documentCursor = NSCursor.iBeam();
+        scrollView.contentView.documentCursor = NSCursor.iBeam;
         scrollView.automaticallyAdjustsContentInsets = false
     }
 
     override func viewDidAppear() {
         super.viewDidAppear()
-        NotificationCenter.default.addObserver(self, selector: #selector(EditViewController.boundsDidChangeNotification(_:)), name: NSNotification.Name.NSViewBoundsDidChange, object: scrollView.contentView)
-        NotificationCenter.default.addObserver(self, selector: #selector(EditViewController.frameDidChangeNotification(_:)), name: NSNotification.Name.NSViewFrameDidChange, object: scrollView)
+        NotificationCenter.default.addObserver(self, selector: #selector(EditViewController.boundsDidChangeNotification(_:)), name: NSView.boundsDidChangeNotification, object: scrollView.contentView)
+        NotificationCenter.default.addObserver(self, selector: #selector(EditViewController.frameDidChangeNotification(_:)), name: NSView.frameDidChangeNotification, object: scrollView)
         // call to set initial scroll position once we know view size
         updateEditViewScroll()
     }
@@ -131,7 +131,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
     // this gets called when the user changes the font with the font book, for example
     override func changeFont(_ sender: Any?) {
         if let manager = sender as? NSFontManager {
-            (NSApplication.shared().delegate as! AppDelegate).handleFontChange(fontManager: manager)
+            (NSApplication.shared.delegate as! AppDelegate).handleFontChange(fontManager: manager)
         } else {
             Swift.print("changeFont: called with nil")
             return
@@ -144,11 +144,11 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
         gutterViewWidth.constant = chWidth * max(2, CGFloat(gutterColumns)) + 2 * gutterView.xPadding
     }
     
-    func boundsDidChangeNotification(_ notification: Notification) {
+    @objc func boundsDidChangeNotification(_ notification: Notification) {
         updateEditViewScroll()
     }
     
-    func frameDidChangeNotification(_ notification: Notification) {
+    @objc func frameDidChangeNotification(_ notification: Notification) {
         updateEditViewScroll()
     }
 
@@ -210,7 +210,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
         lastDragPosition = position
         let flags = theEvent.modifierFlags.rawValue >> 16
         let clickCount = theEvent.clickCount
-        if theEvent.modifierFlags.contains(NSCommandKeyMask) {
+        if theEvent.modifierFlags.contains(NSEvent.ModifierFlags.command) {
             // Note: all gestures will be moving to "gesture" rpc but for now, just toggle_sel
             document.sendRpcAsync("gesture", params: [
                 "line": position.line,
@@ -240,7 +240,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
         dragEvent = nil
     }
     
-    func _autoscrollTimerCallback() {
+    @objc func _autoscrollTimerCallback() {
         if let event = dragEvent {
             mouseDragged(with: event)
         }
@@ -266,7 +266,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
             Document.preferredTabbingIdentifier = nil
         }
         // pass the message to the intended recipient
-        NSDocumentController.shared().newDocument(sender)
+        NSDocumentController.shared.newDocument(sender)
     }
 
     // we override this to see if our view is empty, and should be reused for this open call
@@ -275,7 +275,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
             Document._documentForNextOpenCall = self.document
         }
         Document.preferredTabbingIdentifier = nil
-        NSDocumentController.shared().openDocument(sender)
+        NSDocumentController.shared.openDocument(sender)
     }
     
     // disable the New Tab menu item when running in 10.12
@@ -291,7 +291,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
     fileprivate func cutCopy(_ method: String) {
         let text = document?.sendRpc(method, params: [])
         if let text = text as? String {
-            let pasteboard = NSPasteboard.general()
+            let pasteboard = NSPasteboard.general
             pasteboard.clearContents()
             pasteboard.writeObjects([text as NSPasteboardWriting])
         }
@@ -306,10 +306,10 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
     }
     
     func paste(_ sender: AnyObject?) {
-        let pasteboard = NSPasteboard.general()
+        let pasteboard = NSPasteboard.general
         if let items = pasteboard.pasteboardItems {
             for element in items {
-                if let str = element.string(forType: "public.utf8-plain-text") {
+                if let str = element.string(forType: NSPasteboard.PasteboardType(rawValue: "public.utf8-plain-text")) {
                     insertText(str)
                     break
                 }
@@ -331,7 +331,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
     }
     
     @IBAction func debugSetTheme(_ sender: NSMenuItem) {
-        guard sender.state != 1 else { print("theme already active"); return }
+        guard sender.state != NSControl.StateValue.on else { print("theme already active"); return }
         let req = Events.SetTheme(themeName: sender.title)
         document.dispatcher.coreConnection.sendRpcAsync(req.method, params: req.params!)
     }
@@ -340,12 +340,12 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
         document.sendRpcAsync("debug_print_spans", params: [])
     }
 
-    func togglePlugin(_ sender: NSMenuItem) {
+    @objc func togglePlugin(_ sender: NSMenuItem) {
         switch sender.state {
-        case 0: Events.StartPlugin(
+        case NSControl.StateValue.off: Events.StartPlugin(
             viewIdentifier: document.coreViewIdentifier!,
             plugin: sender.title).dispatch(document.dispatcher)
-        case 1:
+        case NSControl.StateValue.on:
             Events.StopPlugin(
                 viewIdentifier: document.coreViewIdentifier!,
                 plugin: sender.title).dispatch(document.dispatcher)
@@ -369,15 +369,15 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
     }
 
     func updatePluginMenu() {
-        let pluginsMenu = NSApplication.shared().mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Plugin");
+        let pluginsMenu = NSApplication.shared.mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Plugin");
         pluginsMenu!.submenu?.removeAllItems()
         for (plugin, isRunning) in self.availablePlugins {
             if self.availableCommands[plugin]?.isEmpty ?? true {
                 let item = pluginsMenu!.submenu?.addItem(withTitle: plugin, action: #selector(EditViewController.togglePlugin(_:)), keyEquivalent: "")
-                item?.state = isRunning ? 1 : 0
+                item?.state = NSControl.StateValue(rawValue: isRunning ? 1 : 0)
             } else {
                 let item = pluginsMenu!.submenu?.addItem(withTitle: plugin, action: nil, keyEquivalent: "")
-                item?.state = isRunning ? 1 : 0
+                item?.state = NSControl.StateValue(rawValue: isRunning ? 1 : 0)
                 item?.submenu = NSMenu()
                 item?.submenu?.addItem(withTitle: isRunning ? "Stop" : "Start",
                                        action: #selector(EditViewController.togglePlugin(_:)),
@@ -392,7 +392,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
         }
     }
 
-    func handleCommand(_ sender: NSMenuItem) {
+    @objc func handleCommand(_ sender: NSMenuItem) {
         let parent = sender.parent!.title
         let command = self.availableCommands[parent]!.first(where: { $0.title == sender.title })!
 
@@ -418,29 +418,29 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
     }
 
     lazy var userInputController: UserInputPromptController = {
-        return self.storyboard!.instantiateController(withIdentifier: "InputPromptController")
+        return self.storyboard!.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "InputPromptController"))
             as! UserInputPromptController
     }()
 
     public func availableThemesChanged(_ themes: [String]) {
-        let pluginsMenu = NSApplication.shared().mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Theme")!.submenu!;
+        let pluginsMenu = NSApplication.shared.mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Theme")!.submenu!;
 
         let currentlyActive = pluginsMenu.items
-            .filter { $0.state == 1 }
+            .filter { $0.state.rawValue == 1 }
             .first?.title
 
         pluginsMenu.removeAllItems()
         for theme in themes {
             let item = NSMenuItem(title: theme, action: #selector(EditViewController.debugSetTheme(_:)), keyEquivalent: "")
-            item.state = (theme == currentlyActive) ? 1 : 0
+            item.state = NSControl.StateValue(rawValue: (theme == currentlyActive) ? 1 : 0)
             pluginsMenu.addItem(item)
         }
     }
 
     public func themeChanged(_ theme: String) {
-        let pluginsMenu = NSApplication.shared().mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Theme");
+        let pluginsMenu = NSApplication.shared.mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Theme");
         for subItem in (pluginsMenu?.submenu!.items)! {
-            subItem.state = (subItem.title == theme) ? 1 : 0
+            subItem.state = NSControl.StateValue(rawValue: (subItem.title == theme) ? 1 : 0)
         }
         gutterView.needsDisplay = true
         editView.needsDisplay = true
@@ -459,7 +459,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
         alert.window.initialFirstResponder = text
         
         alert.beginSheetModal(for: window) { response in
-            if (response == NSAlertFirstButtonReturn) {
+            if (response == NSApplication.ModalResponse.alertFirstButtonReturn) {
                 let line = text.intValue
                 self.document.sendRpcAsync("goto_line", params: ["line": line - 1])
             }

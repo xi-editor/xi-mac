@@ -22,7 +22,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var dispatcher: Dispatcher?
 
     //TODO: preferred font should be a user preference
-    let defaultFont = CTFontCreateWithName("InconsolataGo" as CFString?, 14, nil)
+    let defaultFont = CTFontCreateWithName(("InconsolataGo" as CFString?)!, 14, nil)
 
     lazy var textMetrics: TextDrawingMetrics = TextDrawingMetrics(font: self.defaultFont,
                                                                   textColor: self.theme.foreground)
@@ -56,7 +56,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     /// returns the NSDocument corresponding to the given viewIdentifier
     private func documentForViewIdentifier(viewIdentifier: ViewIdentifier) -> Document? {
-        for doc in NSApplication.shared().orderedDocuments {
+        for doc in NSApplication.shared.orderedDocuments {
             guard let doc = doc as? Document else { continue }
             if doc.coreViewIdentifier == viewIdentifier {
                 return doc
@@ -113,7 +113,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     print("invalid 'available_themes' rpc: \(params)");
                     return nil
             }
-            for doc in NSApplication.shared().orderedDocuments {
+            for doc in NSApplication.shared.orderedDocuments {
                 guard let doc = doc as? Document else { continue }
                 doc.editViewController?.availableThemesChanged(themes)
             }
@@ -127,7 +127,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             UserDefaults.standard.set(name, forKey: USER_DEFAULTS_THEME_KEY)
             self.theme = Theme(jsonObject: themeJson)
             self.textMetrics = TextDrawingMetrics(font: textMetrics.font, textColor: theme.foreground)
-            for doc in NSApplication.shared().orderedDocuments {
+            for doc in NSApplication.shared.orderedDocuments {
                 guard let doc = doc as? Document else { continue }
                 doc.editViewController?.themeChanged(name)
             }
@@ -178,7 +178,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         textMetrics = TextDrawingMetrics(font: newFont, textColor: theme.foreground)
         styleMap.updateFont(to: newFont)
 
-        for doc in NSApplication.shared().orderedDocuments {
+        for doc in NSApplication.shared.orderedDocuments {
             guard let doc = doc as? Document else { continue }
             doc.editViewController?.updateGutterWidth()
             doc.editViewController?.editView.needsDisplay = true

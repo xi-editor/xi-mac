@@ -93,7 +93,7 @@ class Document: NSDocument {
     }
     
     override init() {
-        dispatcher = (NSApplication.shared().delegate as? AppDelegate)?.dispatcher
+        dispatcher = (NSApplication.shared.delegate as? AppDelegate)?.dispatcher
         tabbingIdentifier = Document.preferredTabbingIdentifier ?? Document.nextTabbingIdentifier()
         super.init()
         // I'm not 100% sure this is necessary but it can't _hurt_
@@ -112,11 +112,11 @@ class Document: NSDocument {
             tabbingIdentifier = existing.tabbingIdentifier
         } else {
             // if we aren't reusing, create a new window as normal:
-            let storyboard = NSStoryboard(name: "Main", bundle: nil)
-            windowController = storyboard.instantiateController(withIdentifier: "Document Window Controller") as! NSWindowController
+            let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
+            windowController = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Document Window Controller")) as! NSWindowController
             
             if #available(OSX 10.12, *) {
-                windowController.window?.tabbingIdentifier = tabbingIdentifier
+                windowController.window?.tabbingIdentifier = NSWindow.TabbingIdentifier(rawValue: tabbingIdentifier)
                 // preferredTabbingIdentifier is set when a new document is created with cmd-T. When this is the case, set the window's tabbingMode.
                 if Document.preferredTabbingIdentifier != nil {
                     windowController.window?.tabbingMode = .preferred
@@ -145,7 +145,7 @@ class Document: NSDocument {
         }
     }
 
-    override func save(to url: URL, ofType typeName: String, for saveOperation: NSSaveOperationType, completionHandler: @escaping (Error?) -> Void) {
+    override func save(to url: URL, ofType typeName: String, for saveOperation: NSDocument.SaveOperationType, completionHandler: @escaping (Error?) -> Void) {
         self.fileURL = url
         self.save(url.path)
         //TODO: save operations should report success, and we should pass any errors to the completion handler
@@ -165,7 +165,7 @@ class Document: NSDocument {
         return false
     }
     
-    override class func autosavesInPlace() -> Bool {
+    override class var autosavesInPlace: Bool {
         return false
     }
 

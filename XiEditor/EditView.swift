@@ -32,7 +32,7 @@ extension NSFont {
 /// A store of properties used to determine the layout of text.
 struct TextDrawingMetrics {
     let font: NSFont
-    var attributes: [String: AnyObject] = [:]
+    var attributes: [NSAttributedStringKey: AnyObject] = [:]
     var ascent: CGFloat
     var descent: CGFloat
     var leading: CGFloat
@@ -48,11 +48,11 @@ struct TextDrawingMetrics {
         linespace = ceil(ascent + descent + leading)
         baseline = ceil(ascent)
         fontWidth = font.characterWidth()
-        attributes[NSFontAttributeName] = font
+        attributes[NSAttributedStringKey.font] = font
         //FIXME: sometimes some regions of a file have no spans, so they don't have a style,
         // which means they get drawn as black. With this we default to drawing them like plaintext.
         // BUT: why are spans missing?
-        attributes[NSForegroundColorAttributeName] = textColor
+        attributes[NSAttributedStringKey.foregroundColor] = textColor
     }
 }
 
@@ -156,9 +156,9 @@ class EditView: NSView, NSTextInputClient {
         */
 
         // draw the background
-        let context = NSGraphicsContext.current()!.cgContext
+        let context = NSGraphicsContext.current!.cgContext
         dataSource.theme.background.setFill()
-        NSRectFill(dirtyRect)
+        dirtyRect.fill()
 
         let first = Int(floor(dirtyRect.origin.y / dataSource.textMetrics.linespace))
         let last = Int(ceil((dirtyRect.origin.y + dirtyRect.size.height) / dataSource.textMetrics.linespace))
@@ -213,7 +213,7 @@ class EditView: NSView, NSTextInputClient {
                 if (markedRange().location != NSNotFound) {
                     let markRangeStart = cix - markedRange().length
                     if (markRangeStart >= 0) {
-                        attrString.addAttribute(NSUnderlineStyleAttributeName,
+                        attrString.addAttribute(NSAttributedStringKey.underlineStyle,
                                                 value: NSUnderlineStyle.styleSingle.rawValue,
                                                 range: NSMakeRange(markRangeStart, markedRange().length))
                     }
@@ -221,7 +221,7 @@ class EditView: NSView, NSTextInputClient {
                 if (selectedRange().location != NSNotFound) {
                     let selectedRangeStart = cix - markedRange().length + selectedRange().location
                     if (selectedRangeStart >= 0) {
-                        attrString.addAttribute(NSUnderlineStyleAttributeName,
+                        attrString.addAttribute(NSAttributedStringKey.underlineStyle,
                                                 value: NSUnderlineStyle.styleThick.rawValue,
                                                 range: NSMakeRange(selectedRangeStart, selectedRange().length))
                     }
@@ -370,8 +370,8 @@ class EditView: NSView, NSTextInputClient {
         return NSAttributedString()
     }
 
-    func validAttributesForMarkedText() -> [String] {
-        return [NSForegroundColorAttributeName, NSBackgroundColorAttributeName]
+    func validAttributesForMarkedText() -> [NSAttributedStringKey] {
+        return [NSAttributedStringKey.foregroundColor, NSAttributedStringKey.backgroundColor]
     }
 
     func firstRect(forCharacterRange aRange: NSRange, actualRange: NSRangePointer?) -> NSRect {
@@ -398,7 +398,7 @@ class EditView: NSView, NSTextInputClient {
         } else {
             let commandName = camelCaseToUnderscored(aSelector.description as NSString).replacingOccurrences(of: ":", with: "");
             if (commandName == "noop") {
-                NSBeep()
+                NSSound.beep()
             } else {
                 dataSource.document.sendRpcAsync(commandName, params: []);
             }
@@ -406,7 +406,7 @@ class EditView: NSView, NSTextInputClient {
     }
     
     /// timer callback to toggle the blink state
-    func _blinkInsertionPoint() {
+    @objc func _blinkInsertionPoint() {
         _cursorStateOn = !_cursorStateOn
         needsDisplay = true
     }
@@ -441,7 +441,7 @@ class EditView: NSView, NSTextInputClient {
 
     private func utf8_offset_to_utf16(_ s: String, _ ix: Int) -> Int {
         // String(s.utf8.prefix(ix)).utf16.count
-        return s.utf8.index(s.utf8.startIndex, offsetBy: ix).samePosition(in: s.utf16)!._offset
+        return s.utf8.index(s.utf8.startIndex, offsetBy: ix).encodedOffset
     }
     
     private func utf16_offset_to_utf8(_ s: String, _ ix: Int) -> Int {
