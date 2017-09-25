@@ -445,7 +445,7 @@ class EditView: NSView, NSTextInputClient {
     }
     
     private func utf16_offset_to_utf8(_ s: String, _ ix: Int) -> Int {
-        return String(describing: s.utf16.prefix(ix)).utf8.count
+        return Substring(s.utf16.prefix(ix)).utf8.count
     }
 
     func getLine(_ lineNum: Int) -> Line? {
