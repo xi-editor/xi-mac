@@ -71,22 +71,45 @@ func colorFromArgb(_ argb: UInt32) -> NSColor {
         alpha: CGFloat((argb >> 24) & 0xff) * 1.0/255)
 }
 
-func camelCaseToUnderscored(_ name: NSString) -> NSString {
-    let underscored = NSMutableString();
-    let scanner = Scanner(string: name as String);
-    let notUpperCase = CharacterSet.uppercaseLetters.inverted;
-    var notUpperCaseFragment: NSString?
-    while (scanner.scanUpToCharacters(from: CharacterSet.uppercaseLetters, into: &notUpperCaseFragment)) {
-        underscored.append(notUpperCaseFragment! as String);
-        var upperCaseFragement: NSString?
-        if (scanner.scanUpToCharacters(from: notUpperCase, into: &upperCaseFragement)) {
-            underscored.append("_");
-            let downcasedFragment = upperCaseFragement!.lowercased;
-            underscored.append(downcasedFragment);
-        }
-    }
-    return underscored;
-}
+// Mapping of selectors to simple no-parameter commands.
+let selectorToCommand = [
+    "deleteBackward:": "delete_backward",
+    "deleteForward:": "delete_forward",
+    "deleteToBeginningOfLine:": "delete_to_beginning_of_line",
+    "deleteToEndOfParagraph:": "delete_to_end_of_paragraph",
+    "deleteWordBackward:": "delete_word_backward",
+    "deleteWordForward:": "delete_word_forward",
+    "insertNewline:": "insert_newline",
+    "insertTab:": "insert_tab",
+    "moveBackward:": "move_backward",
+    "moveDown:": "move_down",
+    "moveDownAndModifySelection:": "move_down_and_modify_selection",
+    "moveForward:": "move_forward",
+    "moveLeft:": "move_left",
+    "moveLeftAndModifySelection:": "move_left_and_modify_selection",
+    "moveRight:": "move_right",
+    "moveRightAndModifySelection:": "move_right_and_modify_selection",
+    "moveToBeginningOfDocument:": "move_to_beginning_of_document",
+    "moveToBeginningOfDocumentAndModifySelection:": "move_to_beginning_of_document_and_modify_selection",
+    "moveToBeginningOfParagraph:": "move_to_beginning_of_paragraph",
+    "moveToEndOfDocument:": "move_to_end_of_document",
+    "moveToEndOfDocumentAndModifySelection:": "move_to_end_of_document_and_modify_selection",
+    "moveToLeftEndOfLine:": "move_to_left_end_of_line",
+    "moveToLeftEndOfLineAndModifySelection:": "move_to_left_end_of_line_and_modify_selection",
+    "moveToRightEndOfLine:": "move_to_right_end_of_line",
+    "moveToRightEndOfLineAndModifySelection:": "move_to_right_end_of_line_and_modify_selection",
+    "moveUp:": "move_up",
+    "moveUpAndModifySelection:": "move_up_and_modify_selection",
+    "pageDownAndModifySelection:": "page_down_and_modify_selection",
+    "pageUpAndModifySelection:": "page_up_and_modify_selection",
+    "scrollPageDown:": "scroll_page_down",
+    "scrollPageUp:": "scroll_page_up",
+    // Note: these next two are mappings. Possible TODO to fix if core provides distinct behaviors
+    "scrollToBeginningOfDocument:": "move_to_beginning_of_document",
+    "scrollToEndOfDocument:": "move_to_end_of_document",
+    "transpose:": "transpose",
+    "yank:": "yank",
+]
 
 class EditView: NSView, NSTextInputClient {
     var dataSource: EditViewDataSource!
@@ -396,11 +419,11 @@ class EditView: NSView, NSTextInputClient {
         if (self.responds(to: aSelector)) {
             super.doCommand(by: aSelector);
         } else {
-            let commandName = camelCaseToUnderscored(aSelector.description as NSString).replacingOccurrences(of: ":", with: "");
-            if (commandName == "noop") {
-                NSSound.beep()
-            } else {
+            if let commandName = selectorToCommand[aSelector.description] {
                 dataSource.document.sendRpcAsync(commandName, params: []);
+            } else {
+                Swift.print("Unhandled selector: \(aSelector.description)")
+                NSSound.beep()
             }
         }
     }
