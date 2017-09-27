@@ -24,22 +24,22 @@ struct Style {
     var underline: Bool
     var italic: Bool
     var weight: Int?
-    var attributes: [String: Any] = [:]
+    var attributes: [NSAttributedStringKey: Any] = [:]
 
     init(font fromFont: NSFont, fgColor: NSColor?, bgColor: NSColor?, underline: Bool, italic: Bool, weight: Int?) {
         if let fgColor = fgColor {
-            attributes[NSForegroundColorAttributeName] = fgColor
+            attributes[NSAttributedStringKey.foregroundColor] = fgColor
         }
 
         if let bgColor = bgColor, bgColor.alphaComponent != 0.0 {
-            attributes[NSBackgroundColorAttributeName] = bgColor
+            attributes[NSAttributedStringKey.backgroundColor] = bgColor
         }
 
         if underline {
-            attributes[NSUnderlineStyleAttributeName] = NSUnderlineStyle.styleSingle.rawValue
+            attributes[NSAttributedStringKey.underlineStyle] = NSUnderlineStyle.styleSingle.rawValue
         }
 
-        let fm = NSFontManager.shared()
+        let fm = NSFontManager.shared
         var font: NSFont?
 
         if italic {
@@ -48,7 +48,7 @@ struct Style {
             if let f = closestMatch(of: fromFont, traits: traits, weight: weight ?? fm.weight(of: fromFont)) {
                 font = f
             } else {
-                attributes[NSObliquenessAttributeName] = 0.2
+                attributes[NSAttributedStringKey.obliqueness] = 0.2
             }
         }
 
@@ -57,7 +57,7 @@ struct Style {
         }
 
         if let font = font {
-            attributes[NSFontAttributeName] = font
+            attributes[NSAttributedStringKey.font] = font
         }
 
         self.font = font
@@ -100,7 +100,7 @@ struct StyleSpan {
 }
 
 func utf8_offset_to_utf16(_ s: String, _ ix: Int) -> Int {
-    return s.utf8.index(s.utf8.startIndex, offsetBy: ix).samePosition(in: s.utf16)!._offset
+    return s.utf8.index(s.utf8.startIndex, offsetBy: ix).encodedOffset
 }
 
 /// A store of text styles, indexable by id.
@@ -111,13 +111,13 @@ class StyleMap {
     init(font: NSFont) {
         self.font = font
         let selectionStyle = Style(font: font,
-                                   fgColor: (NSApplication.shared().delegate as! AppDelegate).theme.selectionForeground,
+                                   fgColor: (NSApplication.shared.delegate as! AppDelegate).theme.selectionForeground,
                                    bgColor: nil,
                                    underline: false,
                                    italic: false,
                                    weight: nil)
         let highlightStyle = Style(font: font,
-                                   fgColor: (NSApplication.shared().delegate as! AppDelegate).theme.findHighlightForeground,
+                                   fgColor: (NSApplication.shared.delegate as! AppDelegate).theme.findHighlightForeground,
                                    bgColor: nil,
                                    underline: false,
                                    italic: false,
@@ -135,7 +135,7 @@ class StyleMap {
         if let fg = json["fg_color"] as? UInt32 {
             fgColor = colorFromArgb(fg)
         } else {
-            fgColor = (NSApplication.shared().delegate as! AppDelegate).theme.foreground
+            fgColor = (NSApplication.shared.delegate as! AppDelegate).theme.foreground
         }
         if let bg = json["bg_color"] as? UInt32 {
             bgColor = colorFromArgb(bg)
@@ -188,7 +188,7 @@ class StyleMap {
 }
 
 func closestMatch(of font: NSFont, traits: NSFontTraitMask, weight: Int) -> NSFont? {
-    let fm = NSFontManager.shared()
+    let fm = NSFontManager.shared
     var weight = weight
     let fromWeight = fm.weight(of: font)
     let direction = fromWeight > weight ? 1 : -1

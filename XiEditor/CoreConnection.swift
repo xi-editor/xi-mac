@@ -92,12 +92,15 @@ class CoreConnection {
         let scanStart = recvBuf.count
         recvBuf.append(data)
         let recvBufLen = recvBuf.count
+        
+        var newCount = 0
         recvBuf.withUnsafeMutableBytes { (recvBufBytes: UnsafeMutablePointer<UInt8>) -> Void in
             var i = 0
             for j in scanStart..<recvBufLen {
                 // TODO: using memchr would probably be faster
                 if recvBufBytes[j] == UInt8(ascii:"\n") {
-                    let dataPacket = recvBuf.subdata(in: i ..< j + 1)
+                    let bufferPointer = UnsafeBufferPointer(start: recvBufBytes.advanced(by: i), count: j + 1 - i);
+                    let dataPacket = Data(bufferPointer)
                     handleRaw(dataPacket)
                     i = j + 1
                 }
@@ -105,8 +108,9 @@ class CoreConnection {
             if i < recvBufLen {
                 memmove(recvBufBytes, recvBufBytes + i, recvBufLen - i)
             }
-            recvBuf.count = recvBufLen - i
+            newCount = recvBufLen - i
         }
+        recvBuf.count = newCount
     }
 
     func sendJson(_ json: Any) {

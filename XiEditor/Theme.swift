@@ -69,7 +69,7 @@ extension Theme {
               selection: NSColor.selectedTextBackgroundColor,
               selectionForeground: NSColor.selectedTextColor,
               selectionBorder: nil,
-              inactiveSelection: NSColor(colorLiteralRed: 0.8, green: 0.8, blue: 0.8, alpha: 1.0),
+              inactiveSelection: NSColor(red: 0.8, green: 0.8, blue: 0.8, alpha: 1.0),
               inactiveSelectionForeground: NSColor.selectedTextColor,
               shadow: nil
             )

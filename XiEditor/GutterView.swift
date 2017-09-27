@@ -27,13 +27,13 @@ class GutterView: NSView {
     
     override func draw(_ dirtyRect: NSRect) {
         dataSource.theme.gutter.setFill()
-        NSRectFill(dirtyRect)
+        dirtyRect.fill()
         
         var defaultAttributes = dataSource.textMetrics.attributes
         var cursorAttributes = dataSource.textMetrics.attributes
-        defaultAttributes[NSForegroundColorAttributeName] = dataSource.theme.gutterForeground
+        defaultAttributes[NSAttributedStringKey.foregroundColor] = dataSource.theme.gutterForeground
         //Note: tmThemes have no "activeLineGutterForeground" color.
-        cursorAttributes[NSForegroundColorAttributeName] =  dataSource.theme.foreground
+        cursorAttributes[NSAttributedStringKey.foregroundColor] =  dataSource.theme.foreground
 
         let first = Int(floor(dirtyRect.origin.y / dataSource.textMetrics.linespace))
         let last = min(Int(ceil((dirtyRect.origin.y + dirtyRect.size.height) / dataSource.textMetrics.linespace)), dataSource.lines.height)
@@ -49,7 +49,7 @@ class GutterView: NSView {
             let fontAttributes = hasCursor ? cursorAttributes : defaultAttributes
             let attrString = NSMutableAttributedString(string: "\(lineNb+1)", attributes: fontAttributes)
             let expectedSize = attrString.size()
-            attrString.draw(with: NSRect(x: dataSource.gutterWidth - expectedSize.width - xPadding, y: y, width: expectedSize.width, height: expectedSize.height), options: NSStringDrawingOptions(rawValue: 0))
+            attrString.draw(with: NSRect(x: dataSource.gutterWidth - expectedSize.width - xPadding, y: y, width: expectedSize.width, height: expectedSize.height), options: NSString.DrawingOptions(rawValue: 0))
         }
         super.draw(dirtyRect)
     }

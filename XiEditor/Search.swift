@@ -33,17 +33,17 @@ class FindViewController: NSViewController, NSSearchFieldDelegate {
         menu.addItem(NSMenuItem.separator())
 
         let recentTitle = NSMenuItem(title: "Recent Searches", action: nil, keyEquivalent: "")
-        recentTitle.tag = Int(NSSearchFieldRecentsTitleMenuItemTag)
+        recentTitle.tag = Int(NSSearchField.recentsTitleMenuItemTag)
         menu.addItem(recentTitle)
 
         let recentItem = NSMenuItem(title: "", action: nil, keyEquivalent: "")
-        recentItem.tag = Int(NSSearchFieldRecentsMenuItemTag)
+        recentItem.tag = Int(NSSearchField.recentsMenuItemTag)
         menu.addItem(recentItem)
 
         menu.addItem(NSMenuItem.separator())
 
         let recentClear = NSMenuItem(title: "Clear Recent Searches", action: nil, keyEquivalent: "")
-        recentClear.tag = Int(NSSearchFieldClearRecentsMenuItemTag)
+        recentClear.tag = Int(NSSearchField.clearRecentsMenuItemTag)
         menu.addItem(recentClear)
     }
 
@@ -65,7 +65,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate {
 
     @IBAction func selectIgnoreCaseMenuAction(_ sender: NSMenuItem) {
         ignoreCase = !ignoreCase
-        sender.state = ignoreCase ? NSOnState : NSOffState
+        sender.state = ignoreCase ? NSControl.StateValue.on : NSControl.StateValue.off
 
         findDelegate.find(searchField.stringValue, caseSensitive: !ignoreCase)
         findDelegate.findNext(wrapAround: wrapAround, allowSame: true)
@@ -73,7 +73,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate {
     
     @IBAction func selectWrapAroundMenuAction(_ sender: NSMenuItem) {
         wrapAround = !wrapAround
-        sender.state = wrapAround ? NSOnState : NSOffState
+        sender.state = wrapAround ? NSControl.StateValue.on : NSControl.StateValue.off
     }
 
     @IBAction func segmentControlAction(_ sender: NSSegmentedControl) {
@@ -172,7 +172,7 @@ extension EditViewController {
 
     @IBAction func performCustomFinderAction(_ sender: Any?) {
         guard let tag = (sender as AnyObject).value(forKey: "tag") as? Int,
-            let action = NSTextFinderAction(rawValue: tag) else { return }
+            let action = NSTextFinder.Action(rawValue: tag) else { return }
 
         switch action {
         case .showFindInterface:

@@ -23,7 +23,7 @@ class ShadowView: NSView {
     
     override func draw(_ dirtyRect: NSRect) {
         if topShadow || leadingShadow || trailingShadow {
-            let context = NSGraphicsContext.current()!.cgContext
+            let context = NSGraphicsContext.current!.cgContext
             let colors = [CGColor(red: 0, green: 0, blue: 0, alpha: 0.4), CGColor(red: 0, green: 0, blue: 0, alpha: 0.0)]
             let colorLocations: [CGFloat] = [0, 1]
             let gradient = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: colors as CFArray, locations: colorLocations)!
