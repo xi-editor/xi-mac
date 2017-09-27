@@ -258,7 +258,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
     }
 
     // we intercept this method to check if we should open a new tab
-    func newDocument(_ sender: NSMenuItem?) {
+    @objc func newDocument(_ sender: NSMenuItem?) {
         // this tag is a property of the New Tab menu item, set in interface builder
         if sender?.tag == 10 {
             Document.preferredTabbingIdentifier = document.tabbingIdentifier
@@ -270,7 +270,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
     }
 
     // we override this to see if our view is empty, and should be reused for this open call
-     func openDocument(_ sender: Any?) {
+    @objc func openDocument(_ sender: Any?) {
         if self.lines.isEmpty {
             Document._documentForNextOpenCall = self.document
         }
@@ -297,15 +297,15 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
         }
     }
     
-    func cut(_ sender: AnyObject?) {
+    @objc func cut(_ sender: AnyObject?) {
         cutCopy("cut")
     }
     
-    func copy(_ sender: AnyObject?) {
+    @objc func copy(_ sender: AnyObject?) {
         cutCopy("copy")
     }
     
-    func paste(_ sender: AnyObject?) {
+    @objc func paste(_ sender: AnyObject?) {
         let pasteboard = NSPasteboard.general
         if let items = pasteboard.pasteboardItems {
             for element in items {
@@ -317,11 +317,11 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
         }
     }
     
-    func undo(_ sender: AnyObject?) {
+    @objc func undo(_ sender: AnyObject?) {
         document.sendRpcAsync("undo", params: [])
     }
     
-    func redo(_ sender: AnyObject?) {
+    @objc func redo(_ sender: AnyObject?) {
         document.sendRpcAsync("redo", params: [])
     }
 

@@ -23,8 +23,8 @@ class FindViewController: NSViewController, NSSearchFieldDelegate {
     @IBOutlet weak var doneButton: NSButton!
     @IBOutlet weak var viewHeight: NSLayoutConstraint!
 
-    var ignoreCase = true
-    var wrapAround = true
+    @objc var ignoreCase = true
+    @objc var wrapAround = true
 
     override func viewDidLoad() {
         // add recent searches menu items
