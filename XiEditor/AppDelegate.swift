@@ -32,9 +32,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationWillFinishLaunching(_ aNotification: Notification) {
 
-        guard let corePath = Bundle.main.path(forResource: "xi-core", ofType: "")
-            else { fatalError("XI Core not found") }
+        guard let corePath = Bundle.main.path(forResource: "xi-core", ofType: ""),
+        let bundledPluginPath = Bundle.main.path(forResource: "plugins", ofType: "")
+            else { fatalError("Xi bundle missing expected resouces") }
 
+        // this env var tells xi-core that the client includes bundled plugins
+        setenv("XI_SYS_PLUGIN_PATH", bundledPluginPath, 1)
         let dispatcher: Dispatcher = {
             let coreConnection = CoreConnection(path: corePath) { [weak self] (json: Any) -> Any? in
                 return self?.handleCoreCmd(json)
@@ -46,14 +49,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         self.dispatcher = dispatcher
         dispatcher.coreConnection.sendRpcAsync("client_started", params: [:])
 
-        // set initial theme. This is a placeholder, and should not be used as an example for 
+        // set initial theme. This is a placeholder, and should not be used as an example for
         // other persistent settings. How to handle user preferences is an open question:
         // https://github.com/google/xi-editor/issues/331
         let preferredTheme = UserDefaults.standard.string(forKey: USER_DEFAULTS_THEME_KEY) ?? "InspiredGitHub"
         let req = Events.SetTheme(themeName: preferredTheme)
         dispatcher.coreConnection.sendRpcAsync(req.method, params: req.params!)
     }
-    
+
     /// returns the NSDocument corresponding to the given viewIdentifier
     private func documentForViewIdentifier(viewIdentifier: ViewIdentifier) -> Document? {
         for doc in NSApplication.shared.orderedDocuments {
@@ -93,13 +96,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             if let obj = params as? [String : AnyObject] {
                 styleMap.defStyle(json: obj)
             }
-        
+
         case "plugin_started":
             guard let obj = params as? [String : AnyObject] else { print("bad params \(params)"); return nil }
                   let view_id = obj["view_id"] as! String
                   let plugin = obj["plugin"] as! String
             documentForViewIdentifier(viewIdentifier: view_id)?.editViewController?.pluginStarted(plugin)
-            
+
         case "plugin_stopped":
             guard let obj = params as? [String : AnyObject],
                 let view_id = obj["view_id"] as? String,
