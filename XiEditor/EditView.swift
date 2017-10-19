@@ -398,6 +398,7 @@ class EditView: NSView, NSTextInputClient {
         "moveToBeginningOfParagraph:": "move_to_beginning_of_paragraph",
         "moveToEndOfDocument:": "move_to_end_of_document",
         "moveToEndOfDocumentAndModifySelection:": "move_to_end_of_document_and_modify_selection",
+        "moveToEndOfParagraph:": "move_to_end_of_paragraph",
         "moveToLeftEndOfLine:": "move_to_left_end_of_line",
         "moveToLeftEndOfLineAndModifySelection:": "move_to_left_end_of_line_and_modify_selection",
         "moveToRightEndOfLine:": "move_to_right_end_of_line",
