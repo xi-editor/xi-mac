@@ -16,7 +16,7 @@ Goals include:
 
 * ***Beauty***. The editor should fit well on a modern desktop, and not look like a
   throwback from the ’80s or ’90s. Text drawing should be done with the best
-  technology available (Core Text on Mac, DirectWrite on Windows, etc.), and
+  technology available (Core Text on macOS, DirectWrite on Windows, etc.), and
   support Unicode fully.
 
 * ***Reliability***. Crashing, hanging, or losing work should never happen.
@@ -29,7 +29,7 @@ Screenshot (will need to be updated as syntax coloring and UI polish is added):
 ![xi screenshot](/doc/img/xi-mac-screenshot.png?raw=true)
 
 ## Getting started
-You need [Xcode 8.2](https://developer.apple.com/xcode/) (only on Mac) and [Rust](https://www.rust-lang.org/) (version 1.13+ is
+You need [Xcode 8.2](https://developer.apple.com/xcode/) (only on macOS) and [Rust](https://www.rust-lang.org/) (version 1.13+ is
 recommended and supported). You should have `cargo` in your path. You'll also need
 cmake installed, to run the syntax highlighter. If you have homebrew,
 easiest to run `brew install cmake`. It is possible to build without cmake,
