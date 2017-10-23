@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="13196" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12121"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13196"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
         <capability name="stacking Non-gravity area distributions on NSStackView" minToolsVersion="7.0" minSystemVersion="10.11"/>
     </dependencies>
@@ -16,6 +16,9 @@
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
                         <rect key="contentRect" x="163" y="199" width="480" height="270"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
+                        <connections>
+                            <outlet property="delegate" destination="6dc-ME-In2" id="MAD-pQ-HzH"/>
+                        </connections>
                     </window>
                     <connections>
                         <segue destination="K7o-qN-T9e" kind="relationship" relationship="window.shadowedContentViewController" id="ilK-wy-XDq"/>
@@ -127,7 +130,7 @@ DQ
                                     <action selector="submitAction:" target="9Ak-VM-8lJ" id="jfs-Za-pTd"/>
                                 </connections>
                             </button>
-                            <textField hidden="YES" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Di9-5Q-3Ia">
+                            <textField hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Di9-5Q-3Ia">
                                 <rect key="frame" x="20" y="20" width="275" height="22"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="zlO-6u-liO">
                                     <font key="font" metaFont="system"/>
@@ -148,7 +151,7 @@ Gw
                                     <action selector="cancelAction:" target="9Ak-VM-8lJ" id="0i5-T0-f1l"/>
                                 </connections>
                             </button>
-                            <comboBox hidden="YES" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AHD-SX-Tuj">
+                            <comboBox hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="AHD-SX-Tuj">
                                 <rect key="frame" x="21" y="16" width="277" height="26"/>
                                 <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" completes="NO" numberOfVisibleItems="5" id="nnP-RF-Vev">
                                     <font key="font" metaFont="system"/>
@@ -196,7 +199,7 @@ Gw
                             <stackView distribution="fill" orientation="horizontal" alignment="centerY" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0fT-ae-quE">
                                 <rect key="frame" x="8" y="0.0" width="464" height="38"/>
                                 <subviews>
-                                    <searchField wantsLayer="YES" focusRingType="none" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yjF-1R-sp7" customClass="FindSearchField" customModule="XiEditor" customModuleProvider="target">
+                                    <searchField wantsLayer="YES" focusRingType="none" verticalHuggingPriority="750" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yjF-1R-sp7" customClass="FindSearchField" customModule="XiEditor" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="8" width="363" height="22"/>
                                         <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" focusRingType="none" bezelStyle="round" recentsAutosaveName="xi-editor-find" id="4a0-aC-Kre">
                                             <font key="font" metaFont="system"/>
@@ -987,6 +990,31 @@ Gw
                                             <connections>
                                                 <action selector="debugSetTheme:" target="7er-QZ-amI" id="fX1-d3-1Fg"/>
                                             </connections>
+                                        </menuItem>
+                                        <menuItem title="Whitespace" id="QTN-3K-g0d">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <menu key="submenu" title="Whitespace" id="P8e-Nz-IBv">
+                                                <items>
+                                                    <menuItem title="Tabs" id="0SZ-uW-iHm">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                        <connections>
+                                                            <action selector="debugOverrideWhitespace:" target="7er-QZ-amI" id="LOk-Di-Qvn"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                    <menuItem title="Spaces (2)" tag="2" id="lA6-TH-ROr">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                        <connections>
+                                                            <action selector="debugOverrideWhitespace:" target="7er-QZ-amI" id="BLZ-Vv-g5c"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                    <menuItem title="Spaces (4)" tag="4" id="w0u-Iz-Hu5">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                        <connections>
+                                                            <action selector="debugOverrideWhitespace:" target="7er-QZ-amI" id="LEn-zZ-xeH"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                </items>
+                                            </menu>
                                         </menuItem>
                                         <menuItem title="Goto Line" keyEquivalent="g" id="5bM-PX-gWE">
                                             <modifierMask key="keyEquivalentModifierMask" control="YES"/>
