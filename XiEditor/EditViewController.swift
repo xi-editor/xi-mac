@@ -128,16 +128,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
         updateEditViewScroll()
     }
 
-    // this gets called when the user changes the font with the font book, for example
-    override func changeFont(_ sender: Any?) {
-        if let manager = sender as? NSFontManager {
-            (NSApplication.shared.delegate as! AppDelegate).handleFontChange(fontManager: manager)
-        } else {
-            Swift.print("changeFont: called with nil")
-            return
-        }
-    }
-
     func updateGutterWidth() {
         let gutterColumns = "\(lineCount)".characters.count
         let chWidth = NSString(string: "9").size(withAttributes: textMetrics.attributes).width
@@ -386,6 +376,24 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
 
     public func updateCommands(plugin: String, commands: [Command]) {
         self.availableCommands[plugin] = commands
+    }
+    
+    public func configChanged(changes: [String: AnyObject]) {
+        for (key, _) in changes {
+            switch key {
+            case "font_size", "font_face":
+                self.handleFontChange(fontName: changes["font_face"] as? String,
+                                      fontSize: changes["font_size"] as? CGFloat)
+                
+            default:
+                break
+            }
+        }
+    }
+    
+    func handleFontChange(fontName: String?, fontSize: CGFloat?) {
+        (NSApplication.shared.delegate as! AppDelegate).handleFontChange(fontName: fontName,
+                                                                         fontSize: fontSize)
     }
 
     func updatePluginMenu() {
