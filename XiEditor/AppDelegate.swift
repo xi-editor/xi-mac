@@ -158,6 +158,21 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 .map { $0! }
 
             document.editViewController?.updateCommands(plugin: plugin, commands: parsedCommands)
+        
+        case "config_changed":
+            guard let obj = params as? [String : AnyObject],
+                let changes = obj["changes"] as? [String: AnyObject] else {
+                    print("failed to parse config_changed \(params)");
+                    return nil
+            }
+
+            if let view_id = obj["view_id"] as? String {
+                let document = documentForViewIdentifier(viewIdentifier: view_id)
+                document?.editViewController?.configChanged(changes: changes)
+            } else {
+                // this might be for global settings or something?
+                print("config_changes unhandled, no view_id")
+            }
 
 
         case "alert":
@@ -174,18 +189,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return nil
     }
 
-    /// Passed an NSFontManager instance (as on a user-initiated font change)
-    /// computes the next set of drawing metrics and updates cached styles.
-    func handleFontChange(fontManager: NSFontManager) {
-        let newFont = fontManager.convert(textMetrics.font)
-        textMetrics = TextDrawingMetrics(font: newFont, textColor: theme.foreground)
-        styleMap.updateFont(to: newFont)
+    func handleFontChange(fontName: String?, fontSize: CGFloat?) {
+        guard textMetrics.font.fontName != fontName && textMetrics.font.pointSize != fontSize else { return }
 
-        for doc in NSApplication.shared.orderedDocuments {
-            guard let doc = doc as? Document else { continue }
-            doc.editViewController?.updateGutterWidth()
-            doc.editViewController?.editView.needsDisplay = true
-            doc.editViewController?.updateEditViewScroll()
+        if let newFont = NSFont(name: fontName ?? textMetrics.font.fontName,
+                                size: fontSize ?? textMetrics.font.pointSize) {
+            textMetrics = TextDrawingMetrics(font: newFont, textColor: theme.foreground)
+            styleMap.updateFont(to: newFont)
+            for doc in NSApplication.shared.orderedDocuments {
+                guard let doc = doc as? Document else { continue }
+                doc.editViewController?.updateGutterWidth()
+                doc.editViewController?.editView.needsDisplay = true
+                doc.editViewController?.updateEditViewScroll()
+            }
         }
     }
 
