@@ -318,7 +318,11 @@ Gw
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="OTw-iT-AXI"/>
-                                        <menuItem title="Preferences…" keyEquivalent="," id="EAv-yV-wz8"/>
+                                        <menuItem title="Preferences…" keyEquivalent="," id="EAv-yV-wz8">
+                                            <connections>
+                                                <action selector="openPreferences:" target="7er-QZ-amI" id="dzf-4q-1J8"/>
+                                            </connections>
+                                        </menuItem>
                                         <menuItem isSeparatorItem="YES" id="gsd-kb-HGJ"/>
                                         <menuItem title="Services" id="LDz-hM-BVt">
                                             <modifierMask key="keyEquivalentModifierMask"/>

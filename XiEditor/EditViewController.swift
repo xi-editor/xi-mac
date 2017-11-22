@@ -330,25 +330,21 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
         document.sendRpcAsync("debug_print_spans", params: [])
     }
     @IBAction func debugOverrideWhitespace(_ sender: NSMenuItem) {
+        var changes = [String: Any]()
         switch sender.title {
         case "Tabs":
-            let params = ["view_id": self.document.coreViewIdentifier!,
-                        "key": "translate_tabs_to_spaces",
-                        "value": false] as [String : Any]
-            document.dispatcher.coreConnection.sendRpcAsync("debug_override_setting", params: params)
+            changes["translate_tabs_to_spaces"] = false
         case let other where other.starts(with: "Spaces"):
-            let params = ["view_id": self.document.coreViewIdentifier!,
-                          "key": "translate_tabs_to_spaces",
-                          "value": true] as [String : Any]
-            let params2 = ["view_id": self.document.coreViewIdentifier!,
-                          "key": "tab_size",
-                          "value": sender.tag] as [String : Any]
-            document.dispatcher.coreConnection.sendRpcAsync("debug_override_setting", params: params)
-            document.dispatcher.coreConnection.sendRpcAsync("debug_override_setting", params: params2)
+            changes["translate_tabs_to_spaces"] = true
+            changes["tab_size"] = sender.tag
         default:
             fatalError("unexpected sender")
         }
+        let domain: [String: Any] = ["user_override": self.document.coreViewIdentifier!]
+        let params = ["domain": domain, "changes": changes]
+        document.dispatcher.coreConnection.sendRpcAsync("modify_user_config", params: params)
     }
+
     @objc func togglePlugin(_ sender: NSMenuItem) {
         switch sender.state {
         case NSControl.StateValue.off: Events.StartPlugin(

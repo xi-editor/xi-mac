@@ -15,18 +15,47 @@
 import Cocoa
 
 let USER_DEFAULTS_THEME_KEY = "io.xi-editor.settings.theme"
+let XI_CONFIG_DIR = "XI_CONFIG_DIR";
+let PREFERENCES_FILE_NAME = "preferences.xiconfig"
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
 
     var dispatcher: Dispatcher?
 
-    //TODO: preferred font should be a user preference
-    let defaultFont = CTFontCreateWithName(("InconsolataGo" as CFString?)!, 14, nil)
+    // This is set to 'InconsolataGo' in the user preferences; this value is a fallback.
+    let fallbackFont = CTFontCreateWithName(("Menlo" as CFString?)!, 14, nil)
 
-    lazy var textMetrics: TextDrawingMetrics = TextDrawingMetrics(font: self.defaultFont,
+    lazy var textMetrics: TextDrawingMetrics = TextDrawingMetrics(font: self.fallbackFont,
                                                                   textColor: self.theme.foreground)
-    lazy var styleMap: StyleMap = StyleMap(font: self.defaultFont)
+    lazy var styleMap: StyleMap = StyleMap(font: self.fallbackFont)
+
+    lazy var defaultConfigDirectory: URL = {
+        let applicationDirectory = FileManager.default.urls(
+            for: .applicationSupportDirectory,
+            in: .userDomainMask)
+            .first!
+            .appendingPathComponent("XiEditor")
+
+        // create application support directory and copy preferences
+        // file on first run
+        if !FileManager.default.fileExists(atPath: applicationDirectory.absoluteString) {
+            do {
+
+                try FileManager.default.createDirectory(at: applicationDirectory,
+                                                        withIntermediateDirectories: true,
+                                                        attributes: nil)
+                let preferencesPath = applicationDirectory.appendingPathComponent(PREFERENCES_FILE_NAME)
+                let defaultConfigPath = Bundle.main.url(forResource: "client_example", withExtension: "toml")
+                try FileManager.default.copyItem(at: defaultConfigPath!, to: preferencesPath)
+
+
+            } catch {
+                fatalError("Failed to create application support directory")
+            }
+        }
+        return applicationDirectory
+    }()
 
     var theme = Theme.defaultTheme()
 
@@ -36,8 +65,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let bundledPluginPath = Bundle.main.path(forResource: "plugins", ofType: "")
             else { fatalError("Xi bundle missing expected resouces") }
 
-        // this env var tells xi-core that the client includes bundled plugins
-        setenv("XI_SYS_PLUGIN_PATH", bundledPluginPath, 1)
         let dispatcher: Dispatcher = {
             let coreConnection = CoreConnection(path: corePath) { [weak self] (json: Any) -> Any? in
                 return self?.handleCoreCmd(json)
@@ -47,11 +74,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }()
 
         self.dispatcher = dispatcher
-        dispatcher.coreConnection.sendRpcAsync("client_started", params: [:])
+        let params = ["client_extras_dir": bundledPluginPath,
+                           "config_dir": getUserConfigDirectory()]
+        dispatcher.coreConnection.sendRpcAsync("client_started",
+                                               params: params)
 
-        // set initial theme. This is a placeholder, and should not be used as an example for
-        // other persistent settings. How to handle user preferences is an open question:
-        // https://github.com/google/xi-editor/issues/331
+        // For legacy reasons, we currently treat themes distinctly than other preferences.
         let preferredTheme = UserDefaults.standard.string(forKey: USER_DEFAULTS_THEME_KEY) ?? "InspiredGitHub"
         let req = Events.SetTheme(themeName: preferredTheme)
         dispatcher.coreConnection.sendRpcAsync(req.method, params: req.params!)
@@ -189,8 +217,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return nil
     }
 
+    @IBAction func openPreferences(_ sender: NSMenuItem) {
+        let delegate = (NSApplication.shared.delegate as? AppDelegate)
+        if let preferencesPath = delegate?.defaultConfigDirectory.appendingPathComponent(PREFERENCES_FILE_NAME) {
+            NSDocumentController.shared.openDocument(
+                withContentsOf: preferencesPath,
+                display: true,
+                completionHandler: { (document, alreadyOpen, error) in
+                    if let error = error {
+                        print("error opening preferences \(error)")
+                    }
+            });
+        }
+    }
+
     func handleFontChange(fontName: String?, fontSize: CGFloat?) {
-        guard textMetrics.font.fontName != fontName && textMetrics.font.pointSize != fontSize else { return }
+        guard textMetrics.font.fontName != fontName || textMetrics.font.pointSize != fontSize else { return }
 
         if let newFont = NSFont(name: fontName ?? textMetrics.font.fontName,
                                 size: fontSize ?? textMetrics.font.pointSize) {
@@ -209,4 +251,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Insert code here to tear down your application
     }
 
+    func getUserConfigDirectory() -> String {
+        if let configDir = ProcessInfo.processInfo.environment[XI_CONFIG_DIR] {
+            return URL(fileURLWithPath: configDir).path
+        } else {
+            return defaultConfigDirectory.path
+        }
+    }
 }
