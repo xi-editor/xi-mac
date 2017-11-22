@@ -29,11 +29,13 @@ Screenshot (will need to be updated as syntax coloring and UI polish is added):
 ![xi screenshot](/doc/img/xi-mac-screenshot.png?raw=true)
 
 ## Getting started
-You need [Xcode 9.x](https://developer.apple.com/xcode/) (only on Mac) and [Rust](https://www.rust-lang.org/) (version 1.20  or higher.)
-You should have `cargo` in your path. You'll also need
-cmake installed, to run the syntax highlighter. If you have homebrew,
-easiest to run `brew install cmake`. It is possible to build without cmake,
-but requires some editing of build scripts.
+
+### Requirements
+- [Xcode 9.x](https://developer.apple.com/xcode/)
+- [Rust](https://www.rust-lang.org/). We test against the latest stable version,
+and recommend installing through [rustup](https:://rustup.rs).
+- `cmake`. We recommend installing through homebrew, with `brew install cmake`.
+
 
 Note: the front-end and back-end are now split into two separate repositories. This
 is the front-end, and the back-end (or core) is now in:
@@ -50,12 +52,28 @@ as a subdirectory.
 
 Or `open XiEditor.xcodeproj` and hit the Run button.
 
-It will look better if you have
-[InconsolataGo](http://levien.com/type/myfonts/inconsolata.html) installed, a
-customized version of Inconsolata tuned for code editing. You can change fonts
-per window in the Font menu or with `Cmd-Shift-T`. To choose another default font,
-edit the `CTFontCreateWithName()` call in EditView.swift.
+### Troubleshooting
 
+The most common cause of a failed build is an outdated version of `rustc`.
+If you've installed with rustup, make sure Rust is up to date by running
+`rustup update stable`.
+
+
+## Configuration
+
+User settings are currently stored in files; the general preferences are
+located at `~/Library/Application Support/XiEditor/preferences.xiconfig`.
+This file can be opened from File > Preferences (⌘ + ,).
+
+Users are encouraged to try out
+[Inconsolata](http://levien.com/type/myfonts/inconsolata.html), with which
+Xi is principally tested.
+
+### Theme
+
+A few theme files are bundled with the application. A theme can be selected
+from the Debug > Theme menu. There is not yet a mechanism for including
+custom themes.
 
 
 ## Authors
