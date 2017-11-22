@@ -39,7 +39,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         // create application support directory and copy preferences
         // file on first run
-        if !FileManager.default.fileExists(atPath: applicationDirectory.absoluteString) {
+        if !FileManager.default.fileExists(atPath: applicationDirectory.path) {
             do {
 
                 try FileManager.default.createDirectory(at: applicationDirectory,
@@ -50,10 +50,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 try FileManager.default.copyItem(at: defaultConfigPath!, to: preferencesPath)
 
 
-            } catch {
-                fatalError("Failed to create application support directory")
+            } catch let err  {
+                fatalError("Failed to create application support directory \(applicationDirectory.path). \(err)")
             }
-        }
+        } 
         return applicationDirectory
     }()
 
