@@ -23,12 +23,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     var dispatcher: Dispatcher?
 
-    //TODO: preferred font should be a user preference
-    let defaultFont = CTFontCreateWithName(("InconsolataGo" as CFString?)!, 14, nil)
+    // This is set to 'InconsolataGo' in the user preferences; this value is a fallback.
+    let fallbackFont = CTFontCreateWithName(("Menlo" as CFString?)!, 14, nil)
 
-    lazy var textMetrics: TextDrawingMetrics = TextDrawingMetrics(font: self.defaultFont,
+    lazy var textMetrics: TextDrawingMetrics = TextDrawingMetrics(font: self.fallbackFont,
                                                                   textColor: self.theme.foreground)
-    lazy var styleMap: StyleMap = StyleMap(font: self.defaultFont)
+    lazy var styleMap: StyleMap = StyleMap(font: self.fallbackFont)
 
     lazy var defaultConfigDirectory: URL = {
         let applicationDirectory = FileManager.default.urls(
@@ -46,7 +46,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                                                         withIntermediateDirectories: true,
                                                         attributes: nil)
                 let preferencesPath = applicationDirectory.appendingPathComponent(PREFERENCES_FILE_NAME)
-                let defaultConfigPath = Bundle.main.url(forResource: "defaults", withExtension: "toml")
+                let defaultConfigPath = Bundle.main.url(forResource: "client_example", withExtension: "toml")
                 try FileManager.default.copyItem(at: defaultConfigPath!, to: preferencesPath)
 
 
@@ -218,7 +218,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func handleFontChange(fontName: String?, fontSize: CGFloat?) {
-        guard textMetrics.font.fontName != fontName && textMetrics.font.pointSize != fontSize else { return }
+        guard textMetrics.font.fontName != fontName || textMetrics.font.pointSize != fontSize else { return }
 
         if let newFont = NSFont(name: fontName ?? textMetrics.font.fontName,
                                 size: fontSize ?? textMetrics.font.pointSize) {

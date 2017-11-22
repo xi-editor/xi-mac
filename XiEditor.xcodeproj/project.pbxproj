@@ -11,7 +11,7 @@
 		50370A2B1D4209F300EA1B18 /* Dispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50370A2A1D4209F300EA1B18 /* Dispatcher.swift */; };
 		6B0DCDD41E8196D0007C14A3 /* GutterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0DCDD31E8196D0007C14A3 /* GutterView.swift */; };
 		6B0DCDD61E832101007C14A3 /* EditContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0DCDD51E832101007C14A3 /* EditContainerView.swift */; };
-		6B1D39101FC53F5C008CCA35 /* defaults.toml in Resources */ = {isa = PBXBuildFile; fileRef = 6B1D390F1FC53F5C008CCA35 /* defaults.toml */; };
+		6B1D39101FC53F5C008CCA35 /* client_example.toml in Resources */ = {isa = PBXBuildFile; fileRef = 6B1D390F1FC53F5C008CCA35 /* client_example.toml */; };
 		6B53F5F21EF963EB00A4C664 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B53F5F11EF963EB00A4C664 /* Theme.swift */; };
 		6B90DD1C1F129C1A00DF3CE2 /* PluginCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B90DD1B1F129C1A00DF3CE2 /* PluginCommand.swift */; };
 		6B90DD221F14110B00DF3CE2 /* UserInputPromptController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B90DD211F14110B00DF3CE2 /* UserInputPromptController.swift */; };
@@ -60,7 +60,7 @@
 		50370A2A1D4209F300EA1B18 /* Dispatcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dispatcher.swift; sourceTree = "<group>"; };
 		6B0DCDD31E8196D0007C14A3 /* GutterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GutterView.swift; sourceTree = "<group>"; };
 		6B0DCDD51E832101007C14A3 /* EditContainerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = EditContainerView.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
-		6B1D390F1FC53F5C008CCA35 /* defaults.toml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = defaults.toml; path = "xi-editor/rust/core-lib/assets/defaults.toml"; sourceTree = "<group>"; };
+		6B1D390F1FC53F5C008CCA35 /* client_example.toml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = client_example.toml; path = "xi-editor/rust/core-lib/assets/client_example.toml"; sourceTree = "<group>"; };
 		6B53F5F11EF963EB00A4C664 /* Theme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		6B90DD1B1F129C1A00DF3CE2 /* PluginCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PluginCommand.swift; sourceTree = "<group>"; };
 		6B90DD211F14110B00DF3CE2 /* UserInputPromptController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserInputPromptController.swift; sourceTree = "<group>"; };
@@ -179,7 +179,7 @@
 		D023DA021CD071B40087EC0A /* xicore */ = {
 			isa = PBXGroup;
 			children = (
-				6B1D390F1FC53F5C008CCA35 /* defaults.toml */,
+				6B1D390F1FC53F5C008CCA35 /* client_example.toml */,
 				AE041B971D4323460069AB8B /* build-rust-xcode.sh */,
 				AE228F5C1C897CE7000E9B0F /* xi-core */,
 				AE041BA51D4327EB0069AB8B /* plugins */,
@@ -318,7 +318,7 @@
 			files = (
 				F53EA2AD1DCAA8110071ACFD /* Main.storyboard in Resources */,
 				AE228F5D1C897CE7000E9B0F /* xi-core in Resources */,
-				6B1D39101FC53F5C008CCA35 /* defaults.toml in Resources */,
+				6B1D39101FC53F5C008CCA35 /* client_example.toml in Resources */,
 				AE041BA61D4327EB0069AB8B /* plugins in Resources */,
 				AE499DD21C82BB2B002D68AF /* Assets.xcassets in Resources */,
 			);
