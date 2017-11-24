@@ -33,7 +33,7 @@ Screenshot (will need to be updated as syntax coloring and UI polish is added):
 ### Requirements
 - [Xcode 9.x](https://developer.apple.com/xcode/)
 - [Rust](https://www.rust-lang.org/). We test against the latest stable version,
-and recommend installing through [rustup](https:://rustup.rs).
+and recommend installing through [rustup](https://rustup.rs).
 - `cmake`. We recommend installing through homebrew, with `brew install cmake`.
 
 
