@@ -418,6 +418,7 @@ class EditView: NSView, NSTextInputClient {
         "scrollToEndOfDocument:": "move_to_end_of_document",
         "transpose:": "transpose",
         "yank:": "yank",
+        "cancelOperation:": "cancel_operation",
     ]
 
     override func doCommand(by aSelector: Selector) {
