@@ -111,8 +111,7 @@ extension EditViewController {
                      caseSensitive: !findViewController.ignoreCase)
             }
         }
-
-        findViewController.searchField.becomeFirstResponder()
+        editView.window?.makeFirstResponder(findViewController.searchField)
     }
 
     func closeFind() {
@@ -125,6 +124,8 @@ extension EditViewController {
         }
 
         editView.window?.makeFirstResponder(editView)
+        // forward command to editView to collapse find highlights?
+        editView.doCommand(by: #selector(NSResponder.cancelOperation(_:)))
     }
 
     fileprivate func updateShadowPosition(offset: CGFloat) {
