@@ -129,19 +129,18 @@ class EditView: NSView, NSTextInputClient {
     override func draw(_ dirtyRect: NSRect) {
         if dataSource.document.coreViewIdentifier == nil { return }
         super.draw(dirtyRect)
-        /*
-        let path = NSBezierPath(ovalInRect: frame)
-        NSColor(colorLiteralRed: 0, green: 0, blue: 1, alpha: 0.25).setFill()
-        path.fill()
-        let path2 = NSBezierPath(ovalInRect: dirtyRect)
-        NSColor(colorLiteralRed: 0, green: 0.5, blue: 0, alpha: 0.25).setFill()
-        path2.fill()
-        */
 
         // draw the background
         let context = NSGraphicsContext.current!.cgContext
         dataSource.theme.background.setFill()
         dirtyRect.fill()
+
+        // uncomment this to visualize dirty rects
+        /*
+        let path = NSBezierPath(ovalIn: dirtyRect)
+        NSColor(red: 0, green: 0.5, blue: 0, alpha: 0.25).setFill()
+        path.fill()
+        */
 
         let first = Int(floor(dirtyRect.origin.y / dataSource.textMetrics.linespace))
         let last = Int(ceil((dirtyRect.origin.y + dirtyRect.size.height) / dataSource.textMetrics.linespace))
@@ -291,7 +290,7 @@ class EditView: NSView, NSTextInputClient {
         var replacementRange = aRange
         var len = 0
         if let attrStr = aString as? NSAttributedString {
-            len = attrStr.string.characters.count
+            len = attrStr.string.count
         } else if let str = aString as? NSString {
             len = str.length
         }
@@ -478,5 +477,9 @@ class EditView: NSView, NSTextInputClient {
 
     func getLine(_ lineNum: Int) -> Line? {
         return dataSource.lines.get(lineNum)
+    }
+
+    override var isOpaque: Bool {
+        return true
     }
 }
