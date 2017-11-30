@@ -129,7 +129,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
     }
 
     func updateGutterWidth() {
-        let gutterColumns = "\(lineCount)".characters.count
+        let gutterColumns = "\(lineCount)".count
         let chWidth = NSString(string: "9").size(withAttributes: textMetrics.attributes).width
         gutterViewWidth.constant = chWidth * max(2, CGFloat(gutterColumns)) + 2 * gutterView.xPadding
     }
