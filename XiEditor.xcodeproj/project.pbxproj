@@ -24,7 +24,6 @@
 		AE499DE01C82BB2B002D68AF /* XiEditorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE499DDF1C82BB2B002D68AF /* XiEditorTests.swift */; };
 		AE499DEB1C82BB2B002D68AF /* XiEditorUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE499DEA1C82BB2B002D68AF /* XiEditorUITests.swift */; };
 		AE499DF91C82C835002D68AF /* CoreConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE499DF81C82C835002D68AF /* CoreConnection.swift */; };
-		AEB66A791CAEFC8F002F686A /* ShadowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEB66A781CAEFC8F002F686A /* ShadowView.swift */; };
 		AED23F181C83CBED002246CE /* EditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AED23F171C83CBEC002246CE /* EditView.swift */; };
 		F53EA2AD1DCAA8110071ACFD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F53EA2AC1DCAA8110071ACFD /* Main.storyboard */; };
 		F53EA2AF1DCAAA170071ACFD /* EditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53EA2AE1DCAAA170071ACFD /* EditViewController.swift */; };
@@ -80,7 +79,6 @@
 		AE499DEA1C82BB2B002D68AF /* XiEditorUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiEditorUITests.swift; sourceTree = "<group>"; };
 		AE499DEC1C82BB2B002D68AF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AE499DF81C82C835002D68AF /* CoreConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreConnection.swift; sourceTree = "<group>"; };
-		AEB66A781CAEFC8F002F686A /* ShadowView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ShadowView.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		AED23F171C83CBEC002246CE /* EditView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditView.swift; sourceTree = "<group>"; };
 		F53EA2AC1DCAA8110071ACFD /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		F53EA2AE1DCAAA170071ACFD /* EditViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = EditViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -141,7 +139,6 @@
 				6B0DCDD51E832101007C14A3 /* EditContainerView.swift */,
 				AE499DCF1C82BB2B002D68AF /* AppDelegate.swift */,
 				AED23F171C83CBEC002246CE /* EditView.swift */,
-				AEB66A781CAEFC8F002F686A /* ShadowView.swift */,
 				AE499DF81C82C835002D68AF /* CoreConnection.swift */,
 				50370A2A1D4209F300EA1B18 /* Dispatcher.swift */,
 				F5BDBF361DCA9D2C0042430B /* Document.swift */,
@@ -359,7 +356,6 @@
 				28F1ED4A1EC4C735008839BE /* Search.swift in Sources */,
 				F5BDBF371DCA9D2C0042430B /* Document.swift in Sources */,
 				6B90DD221F14110B00DF3CE2 /* UserInputPromptController.swift in Sources */,
-				AEB66A791CAEFC8F002F686A /* ShadowView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

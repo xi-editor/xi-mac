@@ -104,7 +104,6 @@ extension EditViewController {
 
             let offset = findViewController.viewHeight.constant
             scrollView.contentInsets = NSEdgeInsetsMake(offset, 0, 0, 0)
-            updateShadowPosition(offset: offset)
 
             if !findViewController.searchField.stringValue.isEmpty {
                 find(findViewController.searchField.stringValue,
@@ -120,20 +119,11 @@ extension EditViewController {
             clearFind()
 
             scrollView.contentInsets = NSEdgeInsetsZero
-            updateShadowPosition(offset: 0)
         }
 
         editView.window?.makeFirstResponder(editView)
         // forward command to editView to collapse find highlights?
         editView.doCommand(by: #selector(NSResponder.cancelOperation(_:)))
-    }
-
-    fileprivate func updateShadowPosition(offset: CGFloat) {
-        shadowView.topOffset = offset
-        shadowView?.updateScroll(scrollView.contentView.bounds,
-                                 scrollView.documentView!.bounds)
-        gutterView.needsDisplay = true
-
     }
 
     func findNext(wrapAround: Bool, allowSame: Bool) {
