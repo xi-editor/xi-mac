@@ -34,7 +34,6 @@ protocol FindDelegate {
 class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
 
     
-    @IBOutlet var shadowView: ShadowView!
     @IBOutlet var scrollView: NSScrollView!
     @IBOutlet weak var editContainerView: EditContainerView!
     @IBOutlet var editView: EditView!
@@ -151,7 +150,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
             lastLine = last
             document.sendRpcAsync("scroll", params: [firstLine, lastLine])
         }
-        shadowView?.updateScroll(scrollView.contentView.bounds, scrollView.documentView!.bounds)
         // if the window is resized, update the editViewHeight so we don't show scrollers unnecessarily
         updateEditViewHeight()
     }

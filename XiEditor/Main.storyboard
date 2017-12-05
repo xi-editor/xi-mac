@@ -82,10 +82,6 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                             </scrollView>
-                            <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="c3r-nr-uYj" customClass="ShadowView" customModule="XiEditor" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="1" width="481" height="270"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                            </customView>
                         </subviews>
                         <constraints>
                             <constraint firstItem="Qwv-ci-fVA" firstAttribute="leading" secondItem="3ye-5b-Ab2" secondAttribute="leading" id="0TL-x0-ZpR"/>
@@ -101,7 +97,6 @@
                         <outlet property="gutterView" destination="3Js-0o-jqZ" id="BLh-Gh-ebk"/>
                         <outlet property="gutterViewWidth" destination="Smj-nI-f5r" id="kjP-so-JhO"/>
                         <outlet property="scrollView" destination="Qwv-ci-fVA" id="4cE-10-pSP"/>
-                        <outlet property="shadowView" destination="c3r-nr-uYj" id="X0D-a3-NVc"/>
                         <segue destination="9Ak-VM-8lJ" kind="modal" identifier="UserInputSegue" id="GqW-PV-ZCy"/>
                     </connections>
                 </viewController>
