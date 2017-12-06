@@ -114,7 +114,7 @@ class EditView: NSView, NSTextInputClient {
     private var cursorColor: NSColor {
         // using foreground instead of caret because caret looks weird in the default
         // theme, and seems to be ignored by sublime text anyway?
-        return _cursorStateOn ? dataSource.theme.foreground : dataSource.theme.background
+        return dataSource.theme.foreground
     }
 
     required init?(coder: NSCoder) {
@@ -138,7 +138,7 @@ class EditView: NSView, NSTextInputClient {
         // uncomment this to visualize dirty rects
         /*
         let path = NSBezierPath(ovalIn: dirtyRect)
-        NSColor(red: 0, green: 0.5, blue: 0, alpha: 0.25).setFill()
+        NSColor(red: CGFloat(drand48()), green: CGFloat(drand48()), blue: CGFloat(drand48()), alpha: 0.25).setFill()
         path.fill()
         */
 
@@ -212,7 +212,7 @@ class EditView: NSView, NSTextInputClient {
 
             let y = dataSource.textMetrics.linespace * CGFloat(lineIx + 1);
             attrString.draw(with: NSRect(x: x0, y: y, width: dirtyRect.origin.x + dirtyRect.width - x0, height: 14), options: [])
-            if showBlinkingCursor {
+            if showBlinkingCursor && _cursorStateOn {
                 for cursor in line.cursor {
                     let ctline = CTLineCreateWithAttributedString(attrString)
                     /*
@@ -256,7 +256,15 @@ class EditView: NSView, NSTextInputClient {
     override var isFlipped: Bool {
         return true;
     }
-    
+
+    override var isOpaque: Bool {
+        return true
+    }
+
+    override var preservesContentDuringLiveResize: Bool {
+        return true
+    }
+
     // MARK: - NSTextInputClient protocol
     func insertText(_ aString: Any, replacementRange: NSRange) {
         self.removeMarkedText()
@@ -436,7 +444,7 @@ class EditView: NSView, NSTextInputClient {
     /// timer callback to toggle the blink state
     @objc func _blinkInsertionPoint() {
         _cursorStateOn = !_cursorStateOn
-        needsDisplay = true
+        partialInvalidate(invalid: dataSource.lines.cursorInval)
     }
 
     // TODO: more functions should call this, just dividing by linespace doesn't account for descent
@@ -480,7 +488,11 @@ class EditView: NSView, NSTextInputClient {
         return dataSource.lines.get(lineNum)
     }
 
-    override var isOpaque: Bool {
-        return true
+    func partialInvalidate(invalid: InvalSet) {
+        for (start, end) in invalid.ranges {
+            let y = CGFloat(start + 1) * dataSource.textMetrics.linespace - dataSource.textMetrics.ascent
+            let h = CGFloat(end - start) * dataSource.textMetrics.linespace
+            setNeedsDisplay(NSRect(x: 0, y: y, width: frame.width, height: h))
+        }
     }
 }

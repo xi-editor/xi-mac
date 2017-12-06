@@ -162,11 +162,12 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
             document.updateChangeCount(.changeDone)
         }
 
-        lines.applyUpdate(update: content)
+        let inval = lines.applyUpdate(update: content)
+        //print("invalidated \(inval.ranges)")
         self.lineCount = lines.height
         updateEditViewHeight()
         editView.showBlinkingCursor = editView.isFrontmostView
-        editView.needsDisplay = true
+        editView.partialInvalidate(invalid: inval)
         gutterView.needsDisplay = true
     }
 
