@@ -142,8 +142,9 @@ class EditView: NSView, NSTextInputClient {
         path.fill()
         */
 
-        let first = Int(floor(dirtyRect.origin.y / dataSource.textMetrics.linespace))
-        let last = Int(ceil((dirtyRect.origin.y + dirtyRect.size.height) / dataSource.textMetrics.linespace))
+        let topPad = dataSource.textMetrics.linespace - dataSource.textMetrics.ascent
+        let first = max(0, Int((floor(dirtyRect.origin.y - topPad) / dataSource.textMetrics.linespace)))
+        let last = Int(ceil((dirtyRect.origin.y + dirtyRect.size.height - topPad) / dataSource.textMetrics.linespace))
 
         let missing = dataSource.lines.computeMissing(first, last)
         for (f, l) in missing {
@@ -489,9 +490,11 @@ class EditView: NSView, NSTextInputClient {
     }
 
     func partialInvalidate(invalid: InvalSet) {
-        for (start, end) in invalid.ranges {
+        for range in invalid.ranges {
+            let start = range.lowerBound
+            let height = range.count
             let y = CGFloat(start + 1) * dataSource.textMetrics.linespace - dataSource.textMetrics.ascent
-            let h = CGFloat(end - start) * dataSource.textMetrics.linespace
+            let h = CGFloat(height) * dataSource.textMetrics.linespace
             setNeedsDisplay(NSRect(x: 0, y: y, width: frame.width, height: h))
         }
     }

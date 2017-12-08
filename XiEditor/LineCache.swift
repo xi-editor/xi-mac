@@ -214,13 +214,13 @@ class LineCache {
 
 /// A set of line numbers to be invalidated, in run-length representation
 class InvalSet {
-    var ranges: [(Int, Int)] = []
+    var ranges: [Range<Int>] = []
 
     func addRange(start: Int, end: Int) {
-        if ranges.last?.1 == start {
-            ranges[ranges.count - 1].1 = end
+        if ranges.last?.upperBound == start {
+            ranges[ranges.count - 1] = ranges[ranges.count - 1].lowerBound ..< end
         } else {
-            ranges.append((start, end))
+            ranges.append(start..<end)
         }
     }
 
