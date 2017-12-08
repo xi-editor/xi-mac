@@ -83,17 +83,30 @@ class LineCache {
         return nil
     }
     
-    func applyUpdate(update: [String: Any]) {
-        guard let ops = update["ops"] else { return }
+    /// Returns range of lines that have been invalidated
+    func applyUpdate(update: [String: Any]) -> InvalSet {
+        let inval = InvalSet()
+        guard let ops = update["ops"] else { return inval }
+        let oldHeight = height
         var newInvalidBefore = 0
         var newLines: [Line?] = []
         var newInvalidAfter = 0
         var oldIx = 0;
         for op in ops as! [[String: AnyObject]] {
-            guard let op_type = op["op"] as? String else { return }
-            guard let n = op["n"] as? Int else { return }
+            guard let op_type = op["op"] as? String else { return inval }
+            guard let n = op["n"] as? Int else { return inval }
             switch op_type {
             case "invalidate":
+                // Add only lines that were not already invalid
+                let curLine = newInvalidBefore + newLines.count + newInvalidAfter
+                let ix = curLine - nInvalidBefore
+                if ix + n > 0 && ix < lines.count {
+                    for i in max(ix, 0) ..< min(ix + n, lines.count) {
+                        if lines[i] != nil {
+                            inval.addRange(start: i + nInvalidBefore, n: 1)
+                        }
+                    }
+                }
                 if newLines.count == 0 {
                     newInvalidBefore += n
                 } else {
@@ -104,7 +117,8 @@ class LineCache {
                     newLines.append(nil)
                 }
                 newInvalidAfter = 0
-                guard let json_lines = op["lines"] as? [[String: AnyObject]] else { return }
+                inval.addRange(start: newInvalidBefore + newLines.count, n: n)
+                guard let json_lines = op["lines"] as? [[String: AnyObject]] else { return inval }
                 for json_line in json_lines {
                     newLines.append(Line(fromJson: json_line))
                 }
@@ -126,11 +140,14 @@ class LineCache {
                     }
                     newInvalidAfter = 0
                     let nCopy = min(nRemaining, nInvalidBefore + lines.count - oldIx)
+                    if oldIx != newInvalidBefore + newLines.count || op_type != "copy" {
+                        inval.addRange(start: newInvalidBefore + newLines.count, n: nCopy)
+                    }
                     let startIx = oldIx - nInvalidBefore
                     if op_type == "copy" {
                         newLines.append(contentsOf: lines[startIx ..< startIx + nCopy])
                     } else {
-                        guard let json_lines = op["lines"] as? [[String: AnyObject]] else { return }
+                        guard let json_lines = op["lines"] as? [[String: AnyObject]] else { return inval }
                         var jsonIx = n - nRemaining
                         for ix in startIx ..< startIx + nCopy {
                             newLines.append(Line(updateFromJson: lines[ix], json: json_lines[jsonIx]))
@@ -155,6 +172,10 @@ class LineCache {
         nInvalidBefore = newInvalidBefore
         lines = newLines
         nInvalidAfter = newInvalidAfter
+        if height < oldHeight {
+            inval.addRange(start: height, end: oldHeight)
+        }
+        return inval
     }
 
     /// Return ranges of invalid lines within the given range
@@ -177,5 +198,33 @@ class LineCache {
             }
         }
         return result
+    }
+
+    /// Set of lines that need to be invalidated to blink the cursor
+    var cursorInval: InvalSet {
+        let inval = InvalSet()
+        for (i, line) in lines.enumerated() {
+            if line?.containsCursor ?? false {
+                inval.addRange(start: i + nInvalidBefore, n: 1)
+            }
+        }
+        return inval
+    }
+}
+
+/// A set of line numbers to be invalidated, in run-length representation
+class InvalSet {
+    var ranges: [Range<Int>] = []
+
+    func addRange(start: Int, end: Int) {
+        if ranges.last?.upperBound == start {
+            ranges[ranges.count - 1] = ranges[ranges.count - 1].lowerBound ..< end
+        } else {
+            ranges.append(start..<end)
+        }
+    }
+
+    func addRange(start: Int, n: Int) {
+        addRange(start: start, end: start + n)
     }
 }
