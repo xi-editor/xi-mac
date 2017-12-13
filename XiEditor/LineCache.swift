@@ -54,14 +54,27 @@ struct Line {
     }
 }
 
+typealias LineRange = CountableRange<Int>
+
 /// A data structure holding a cache of lines, with methods for updating based
 /// on deltas from the core.
 class LineCache {
     var nInvalidBefore = 0;
     var lines: [Line?] = []
     var nInvalidAfter = 0;
+    
+    var awaitLinesCondition = NSCondition()
 
     var height: Int {
+        get {
+            awaitLinesCondition.lock()
+            let result = _height
+            awaitLinesCondition.unlock()
+            return result
+        }
+    }
+    
+    fileprivate var _height: Int {
         get {
             return nInvalidBefore + lines.count + nInvalidAfter
         }
@@ -70,24 +83,74 @@ class LineCache {
     /// A boolean value indicating whether or not the linecache contains any text.
     /// - Note: An empty line cache will still contain a single empty line, this
     /// is sent as an update from the core after a new document is created.
+    fileprivate var _isEmpty: Bool {
+        return  lines.count == 0 || (lines.count == 1 && lines[0]?.text  == "")
+    }
+    
     var isEmpty: Bool {
-        return lines.count == 0 || (lines.count == 1 && lines[0]?.text  == "")
+        awaitLinesCondition.lock()
+        let result = _isEmpty
+        awaitLinesCondition.unlock()
+        return result
     }
 
+    fileprivate var _isBlockingDraw = false
+    
     func get(_ ix: Int) -> Line? {
+        defer { awaitLinesCondition.unlock() }
+        awaitLinesCondition.lock()
+        return _get(ix)
+    }
+    
+    /// not threadsafe
+    fileprivate func _get(_ ix: Int) -> Line? {
         if ix < nInvalidBefore { return nil }
         let ix = ix - nInvalidBefore
         if ix < lines.count {
             return lines[ix]
         }
         return nil
+        
+    }
+    
+    // I'm not sure this is working
+    // TODO: move to GCD sempahores
+    let MAX_BLOCKING_TIME: TimeInterval = 0.05 // 50 ms
+
+    /// Returns the lines in `lineRange`, waiting for an update if necessary.
+    /// If any of the lines in `lineRange` are marked as `Pending` in the cache,
+    /// this function will block the current thread until those lines have been returned.
+    func blockingGet(lines lineRange: LineRange) -> [Line?] {
+        defer { awaitLinesCondition.unlock() }
+        awaitLinesCondition.lock()
+
+        let lineRange = lineRange.clamped(to: 0..<self._height)
+        let missingLines = lineRange.filter( { _get($0) == nil })
+        if !missingLines.isEmpty {
+            print("waiting for lines: (\(missingLines.first!), \(missingLines.last!))")
+
+            assert(!_isBlockingDraw, "LineCache.blockingGet(lines:) should be called by one view, from the main thread")
+            _isBlockingDraw = true
+            let blockTime = mach_absolute_time()
+            while _isBlockingDraw {
+                let deadline = Date().addingTimeInterval(MAX_BLOCKING_TIME)
+                awaitLinesCondition.wait(until: deadline)
+            }
+            let elapsed = mach_absolute_time() - blockTime
+            print("finished waiting: \(elapsed / 1000)us")
+        }
+
+        return lineRange.map( { _get($0) } )
     }
     
     /// Returns range of lines that have been invalidated
     func applyUpdate(update: [String: Any]) -> InvalSet {
+        defer { awaitLinesCondition.unlock() }
+        awaitLinesCondition.lock()
+        
         let inval = InvalSet()
         guard let ops = update["ops"] else { return inval }
-        let oldHeight = height
+        let oldHeight = _height
         var newInvalidBefore = 0
         var newLines: [Line?] = []
         var newInvalidAfter = 0
@@ -172,18 +235,27 @@ class LineCache {
         nInvalidBefore = newInvalidBefore
         lines = newLines
         nInvalidAfter = newInvalidAfter
-        if height < oldHeight {
-            inval.addRange(start: height, end: oldHeight)
+
+        if _isBlockingDraw {
+            _isBlockingDraw = false
+            awaitLinesCondition.signal()
+        }
+        
+        if _height < oldHeight {
+            inval.addRange(start: _height, end: oldHeight)
         }
         return inval
     }
 
     /// Return ranges of invalid lines within the given range
     func computeMissing(_ first: Int, _ last: Int) -> [(Int, Int)] {
+        defer { awaitLinesCondition.unlock() }
+        awaitLinesCondition.lock()
+        
         var result: [(Int, Int)] = []
-        let last = min(last, height)  // lines past the end aren't considered missing
+        let last = min(last, _height)  // lines past the end aren't considered missing
         guard first < last else {
-            Swift.print("compute missing called with first > last")
+            Swift.print("compute missing called with first > last (\(first), \(last))")
             return result
         }
         
@@ -202,6 +274,8 @@ class LineCache {
 
     /// Set of lines that need to be invalidated to blink the cursor
     var cursorInval: InvalSet {
+        defer { awaitLinesCondition.unlock() }
+        awaitLinesCondition.lock()
         let inval = InvalSet()
         for (i, line) in lines.enumerated() {
             if line?.containsCursor ?? false {
@@ -214,7 +288,7 @@ class LineCache {
 
 /// A set of line numbers to be invalidated, in run-length representation
 class InvalSet {
-    var ranges: [Range<Int>] = []
+    var ranges: [LineRange] = []
 
     func addRange(start: Int, end: Int) {
         if ranges.last?.upperBound == start {

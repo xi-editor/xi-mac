@@ -125,7 +125,12 @@ class EditView: NSView, NSTextInputClient {
     }
 
     let x0: CGFloat = 2;
+    var lastWillScroll: UInt64 = 0
 
+    func randColor() -> NSColor {
+        return NSColor(red: CGFloat(drand48()), green: CGFloat(drand48()), blue: CGFloat(drand48()), alpha: 1)
+    }
+    
     override func draw(_ dirtyRect: NSRect) {
         if dataSource.document.coreViewIdentifier == nil { return }
         super.draw(dirtyRect)
@@ -146,15 +151,18 @@ class EditView: NSView, NSTextInputClient {
         let first = max(0, Int((floor(dirtyRect.origin.y - topPad) / dataSource.textMetrics.linespace)))
         let last = Int(ceil((dirtyRect.origin.y + dirtyRect.size.height - topPad) / dataSource.textMetrics.linespace))
 
-        let missing = dataSource.lines.computeMissing(first, last)
-        for (f, l) in missing {
-            Swift.print("requesting missing: \(f)..\(l)")
-            dataSource.document.sendRpcAsync("request_lines", params: [f, l])
+        let lines = dataSource.lines.blockingGet(lines: first..<last)
+
+        let missing = lines.enumerated().filter( { $0.element == nil } )
+            .map( { $0.offset + first } )
+        if !missing.isEmpty {
+            print("draw missing lines: \(missing)")
         }
 
         // first pass, for drawing background selections and search highlights
-        for lineIx in first..<last {
-            guard let line = getLine(lineIx), line.containsReservedStyle == true else { continue }
+        for lineIx in first...last {
+            let relLineIx = lineIx - first
+            guard relLineIx < lines.count, let line = lines[relLineIx], line.containsReservedStyle == true else { continue }
             let attrString = NSMutableAttributedString(string: line.text, attributes: dataSource.textMetrics.attributes)
             let ctline = CTLineCreateWithAttributedString(attrString)
             let y = dataSource.textMetrics.linespace * CGFloat(lineIx + 1)
@@ -180,8 +188,8 @@ class EditView: NSView, NSTextInputClient {
         }
         // second pass, for actually rendering text.
         for lineIx in first..<last {
-            // TODO: could block for ~1ms waiting for missing lines to arrive
-            guard let line = getLine(lineIx) else { continue }
+            let relLineIx = lineIx - first
+            guard relLineIx < lines.count, let line = lines[relLineIx] else { continue }
             let s = line.text
             var attrString = NSMutableAttributedString(string: s, attributes: dataSource.textMetrics.attributes)
             /*
@@ -235,6 +243,9 @@ class EditView: NSView, NSTextInputClient {
                 }
             }
         }
+//        let now = mach_absolute_time()
+//        let sinceWillScroll = now - lastWillScroll
+//        print("painted (\(first), \(last)) dT \(sinceWillScroll / 1000)us")
     }
 
     override var acceptsFirstResponder: Bool {

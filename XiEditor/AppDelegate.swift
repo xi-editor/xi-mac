@@ -66,10 +66,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             else { fatalError("Xi bundle missing expected resouces") }
 
         let dispatcher: Dispatcher = {
-            let coreConnection = CoreConnection(path: corePath) { [weak self] (json: Any) -> Any? in
-                return self?.handleCoreCmd(json)
-            }
-
+            let coreConnection = CoreConnection(path: corePath,
+                                                updateCallback: {
+                                                    [weak self] (update) in
+                                                    self?.handleAsyncUpdate(update)
+                },
+                                                callback: {
+                                                    [weak self] (json: Any) -> Any? in
+                                                    return self?.handleCoreCmd(json)
+                })
             return Dispatcher(coreConnection: coreConnection)
         }()
 
@@ -96,6 +101,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return nil
     }
 
+    func handleAsyncUpdate(_ json: [String: AnyObject]) {
+        let update = json["update"] as! [String: AnyObject]
+        let viewIdentifier = json["view_id"] as! String
+        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
+        if document == nil { print("document missing for view id \(viewIdentifier)") }
+        document?.updateAsync(update: update)
+    }
+
     func handleCoreCmd(_ json: Any) -> Any? {
         guard let obj = json as? [String : Any],
             let method = obj["method"] as? String,
@@ -108,12 +121,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func handleRpc(_ method: String, params: Any) -> Any? {
         switch method {
         case "update":
-            if let obj = params as? [String : AnyObject], let update = obj["update"] as? [String : AnyObject] {
-                guard
-                    let viewIdentifier = obj["view_id"] as? String, let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
-                    else { print("view_id or document missing for update event: ", obj); return nil }
-                    document.update(update)
-            }
+            fatalError("update RPC must be handled off the main thread")
+
         case "scroll_to":
             if let obj = params as? [String : AnyObject], let line = obj["line"] as? Int, let col = obj["col"] as? Int {
                 guard let viewIdentifier = obj["view_id"] as? String, let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)

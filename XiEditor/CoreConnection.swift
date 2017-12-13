@@ -50,6 +50,7 @@ class CoreConnection {
     var inHandle: FileHandle  // stdin of core process
     var recvBuf: Data
     var callback: (Any) -> Any?
+    var updateCallback: ([String: AnyObject]) -> ()
     let rpcLogWriter: FileWriter?
     
     // RPC state
@@ -57,7 +58,7 @@ class CoreConnection {
     var rpcIndex = 0
     var pending = Dictionary<Int, (Any?) -> ()>()
 
-    init(path: String, callback: @escaping (Any) -> Any?) {
+    init(path: String, updateCallback: @escaping ([String: AnyObject]) -> (), callback: @escaping (Any) -> Any?) {
         if let rpcLogPath = ProcessInfo.processInfo.environment[XI_RPC_LOG] {
             self.rpcLogWriter = FileWriter(path: rpcLogPath)
             if self.rpcLogWriter != nil {
@@ -75,6 +76,7 @@ class CoreConnection {
         task.standardInput = inPipe
         inHandle = inPipe.fileHandleForWriting
         recvBuf = Data()
+        self.updateCallback = updateCallback
         self.callback = callback
 
         outPipe.fileHandleForReading.readabilityHandler = { handle in
@@ -140,7 +142,8 @@ class CoreConnection {
     /// handle a JSON RPC call. Determines whether it is a request, response or notifcation
     /// and executes/responds accordingly
     func handleRpc(_ json: Any) {
-        if let obj = json as? [String: Any], let index = obj["id"] as? Int {
+        guard let obj = json as? [String: AnyObject] else { fatalError("malformed json \(json)") }
+        if let index = obj["id"] as? Int {
             if let result = obj["result"] { // is response
                 var callback: ((Any?) -> ())?
                 queue.sync {
@@ -154,9 +157,17 @@ class CoreConnection {
                     self.sendJson(resp as Any)
                 }
             }
-        } else { // is notification
-            DispatchQueue.main.async {
-                let _ = self.callback(json as AnyObject)
+            // is notification
+        } else {
+            // updates get their own codepath, staying on this thread; the main thread may be blocked
+            // waiting for this update
+            if obj["method"] as? String == "update", let params = obj["params"] as? [String: AnyObject] {
+                self.updateCallback(params)
+            } else {
+            // other notifications go on the main thread
+                DispatchQueue.main.async {
+                    let _ = self.callback(json as AnyObject)
+                }
             }
         }
     }

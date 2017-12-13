@@ -68,7 +68,9 @@ class Document: NSDocument {
         self.init()
         self.fileType = type
         Events.NewView(path: nil).dispatchWithCallback(dispatcher!) { (response) in
-            DispatchQueue.main.async {
+            // this is a sync request because we need the id in place before we receive updates
+            // (updates are handled on the read thread, so may be processed before the response)
+            DispatchQueue.main.sync {
                 self.coreViewIdentifier = response
             }
         }
@@ -80,7 +82,7 @@ class Document: NSDocument {
         self.fileURL = url
         self.fileType = typeName
         Events.NewView(path: url.path).dispatchWithCallback(dispatcher!) { (response) in
-            DispatchQueue.main.async {
+            DispatchQueue.main.sync {
                 self.coreViewIdentifier = response
             }
         }
@@ -212,10 +214,14 @@ class Document: NSDocument {
 
         dispatcher.coreConnection.sendRpcAsync("plugin", params: params)
     }
+        
+    func sendWillScroll(first: Int, last: Int) {
+        self.sendRpcAsync("scroll", params: [first, last])
+    }
 
-    func update(_ content: [String: AnyObject]) {
+    func updateAsync(update: [String: AnyObject]) {
         if let editVC = editViewController {
-            editVC.update(content)
+            editVC.updateAsync(update: update)
         }
     }
 }

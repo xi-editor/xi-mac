@@ -31,7 +31,7 @@ protocol FindDelegate {
     func closeFind()
 }
 
-class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
+class EditViewController: NSViewController, EditViewDataSource, FindDelegate, ScrollInterested {
 
     
     @IBOutlet var scrollView: NSScrollView!
@@ -99,9 +99,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
         }
     }
 
-    // visible scroll region, exclusive of lastLine
-    var firstLine: Int = 0
-    var lastLine: Int = 0
+    // visible scroll region
+    var visibleLines: LineRange = 0..<0
 
     // TODO: should be an option in the user preferences
     var scrollPastEnd = false
@@ -117,6 +116,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
         gutterView.dataSource = self
         scrollView.contentView.documentCursor = NSCursor.iBeam;
         scrollView.automaticallyAdjustsContentInsets = false
+        (scrollView.contentView as? XiClipView)?.delegate = self
     }
 
     override func viewDidAppear() {
@@ -124,6 +124,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(EditViewController.boundsDidChangeNotification(_:)), name: NSView.boundsDidChangeNotification, object: scrollView.contentView)
         NotificationCenter.default.addObserver(self, selector: #selector(EditViewController.frameDidChangeNotification(_:)), name: NSView.frameDidChangeNotification, object: scrollView)
         // call to set initial scroll position once we know view size
+        willScroll(to: scrollView.contentView.bounds.origin)
         updateEditViewScroll()
     }
 
@@ -134,6 +135,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
     }
     
     @objc func boundsDidChangeNotification(_ notification: Notification) {
+        //TODO: revisit this, we have the 'willScroll' notification now
         updateEditViewScroll()
     }
     
@@ -141,34 +143,42 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
         updateEditViewScroll()
     }
 
-    func updateEditViewScroll() {
-        let first = Int(floor(scrollView.contentView.bounds.origin.y / textMetrics.linespace))
-        let height = Int(ceil((scrollView.contentView.bounds.size.height) / textMetrics.linespace))
+    var lastWillScroll: UInt64 = 0
+
+    func willScroll(to newOrigin: NSPoint) {
+        let first = Int(floor(newOrigin.y / textMetrics.linespace))
+        let height = Int(ceil((scrollView.contentView.bounds.size.height) / textMetrics.linespace)) + 1
         let last = first + height
-        if first != firstLine || last != lastLine {
-            firstLine = first
-            lastLine = last
-            document.sendRpcAsync("scroll", params: [firstLine, lastLine])
+
+        if first..<last != visibleLines {
+            document.sendWillScroll(first: first, last: last)
+            lastWillScroll = mach_absolute_time()
+            editView.lastWillScroll = lastWillScroll
+            print("will scroll (\(first), \(last))")
+            visibleLines = first..<last
         }
-        // if the window is resized, update the editViewHeight so we don't show scrollers unnecessarily
+    }
+
+    func updateEditViewScroll() {
         updateEditViewHeight()
     }
     
     // MARK: - Core Commands
-    func update(_ content: [String: AnyObject]) {
-        if (content["pristine"] as? Bool ?? false) {
-            document.updateChangeCount(.changeCleared)
-        } else {
-            document.updateChangeCount(.changeDone)
+
+    /// handles the `update` RPC. This is called from a dedicated thread.
+    func updateAsync(update: [String: AnyObject]) {
+        let inval = lines.applyUpdate(update: update)
+        let hasUnsavedChanges = update["pristine"] as? Bool ?? false
+        
+        DispatchQueue.main.async { [weak self] in
+            self?.document.updateChangeCount(hasUnsavedChanges ? .changeDone : .changeCleared)
+            self?.lineCount = self?.lines.height ?? 0
+            self?.updateEditViewHeight()
+            self?.editView.showBlinkingCursor = self?.editView.isFrontmostView ?? false
+            self?.editView.partialInvalidate(invalid: inval)
+            self?.gutterView.needsDisplay = true
         }
 
-        let inval = lines.applyUpdate(update: content)
-        //print("invalidated \(inval.ranges)")
-        self.lineCount = lines.height
-        updateEditViewHeight()
-        editView.showBlinkingCursor = editView.isFrontmostView
-        editView.partialInvalidate(invalid: inval)
-        gutterView.needsDisplay = true
     }
 
     fileprivate func updateEditViewHeight() {
