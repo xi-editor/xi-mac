@@ -176,7 +176,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         let hasUnsavedChanges = update["pristine"] as? Bool ?? false
         
         DispatchQueue.main.async { [weak self] in
-            self?.document.updateChangeCount(hasUnsavedChanges ? .changeDone : .changeCleared)
+            self?.document.updateChangeCount(hasUnsavedChanges ? .changeCleared : .changeDone)
             self?.lineCount = self?.lines.height ?? 0
             self?.updateEditViewHeight()
             self?.editView.showBlinkingCursor = self?.editView.isFrontmostView ?? false
