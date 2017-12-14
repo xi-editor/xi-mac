@@ -248,6 +248,9 @@ class LineCache {
     /// The underlying cache state
     fileprivate let state = LineCacheState()
 
+    /// The maximum time (in milliseconds) to block when missing lines.
+    let MAX_BLOCK_MS = 15;
+
     /// A boolean value indicating whether or not the linecache contains any text.
     /// - Note: An empty line cache will still contain a single empty line, this
     /// is sent as an update from the core after a new document is created.
@@ -287,7 +290,7 @@ class LineCache {
 
             let blockTime = mach_absolute_time()
             blockFlag.lock()
-            let waitResult = waitingForLines.wait(timeout: .now() + .milliseconds(100))
+            let waitResult = waitingForLines.wait(timeout: .now() + .milliseconds(MAX_BLOCK_MS))
             blockFlag.unlock()
 
             let elapsed = mach_absolute_time() - blockTime

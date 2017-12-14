@@ -136,6 +136,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         updateEditViewHeight()
     }
 
+    /// Called by `XiClipView`; this gives us early notice of an incoming scroll event.
+    /// Can be called manually with the current visible origin in order to ensure the line cache
+    /// is up to date.
     func willScroll(to newOrigin: NSPoint) {
         let first = Int(floor(newOrigin.y / textMetrics.linespace))
         let height = Int(ceil((scrollView.contentView.bounds.size.height) / textMetrics.linespace)) + 1
@@ -155,6 +158,16 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         editView.needsDisplay = true
         editView.needsDisplay = true
     }
+
+    fileprivate func updateEditViewHeight() {
+        let contentHeight = CGFloat(lines.height) * textMetrics.linespace + 2 * textMetrics.descent
+        self.editViewHeight.constant = max(contentHeight, scrollView.bounds.height)
+        if scrollPastEnd {
+            self.editViewHeight.constant += min(contentHeight, scrollView.bounds.height)
+                - textMetrics.linespace - 2 * textMetrics.descent;
+        }
+    }
+
     // MARK: - Core Commands
 
     /// handles the `update` RPC. This is called from a dedicated thread.
@@ -171,15 +184,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             self?.gutterView.needsDisplay = true
         }
 
-    }
-
-    fileprivate func updateEditViewHeight() {
-        let contentHeight = CGFloat(lines.height) * textMetrics.linespace + 2 * textMetrics.descent
-        self.editViewHeight.constant = max(contentHeight, scrollView.bounds.height)
-        if scrollPastEnd {
-            self.editViewHeight.constant += min(contentHeight, scrollView.bounds.height)
-                - textMetrics.linespace - 2 * textMetrics.descent;
-        }
     }
 
     func scrollTo(_ line: Int, _ col: Int) {
