@@ -154,7 +154,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             document.sendWillScroll(first: first, last: last)
             lastWillScroll = mach_absolute_time()
             editView.lastWillScroll = lastWillScroll
-            print("will scroll (\(first), \(last))")
+//            print("will scroll (\(first), \(last))")
             visibleLines = first..<last
         }
     }

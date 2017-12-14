@@ -14,12 +14,15 @@
 
 import Foundation
 
+/// A half-open range representing lines in a document.
+typealias LineRange = CountableRange<Int>
+
 /// Represents a single line, including rendering information.
 struct Line {
     var text: String
     var cursor: [Int]
     var styles: [StyleSpan]
-    
+
     /// A Boolean value representing whether this line contains selected/highlighted text.
     /// This is used to determine whether we should pre-draw its background.
     var containsReservedStyle: Bool {
@@ -42,6 +45,7 @@ struct Line {
         }
     }
 
+    /// Create a new line, applying new styles to an existing line's text
     init?(updateFromJson line: Line?, json: [String: AnyObject]) {
         guard let line = line else { return nil }
         self.text = line.text
@@ -54,55 +58,21 @@ struct Line {
     }
 }
 
-typealias LineRange = CountableRange<Int>
+/// The underlying state of the cache, with methods for applying update deltas.
+class LineCacheState {
 
-/// A data structure holding a cache of lines, with methods for updating based
-/// on deltas from the core.
-class LineCache {
     var nInvalidBefore = 0;
     var lines: [Line?] = []
     var nInvalidAfter = 0;
-    
-    var awaitLinesCondition = NSCondition()
 
     var height: Int {
-        get {
-            awaitLinesCondition.lock()
-            let result = _height
-            awaitLinesCondition.unlock()
-            return result
-        }
-    }
-    
-    fileprivate var _height: Int {
-        get {
-            return nInvalidBefore + lines.count + nInvalidAfter
-        }
-    }
-    
-    /// A boolean value indicating whether or not the linecache contains any text.
-    /// - Note: An empty line cache will still contain a single empty line, this
-    /// is sent as an update from the core after a new document is created.
-    fileprivate var _isEmpty: Bool {
-        return  lines.count == 0 || (lines.count == 1 && lines[0]?.text  == "")
-    }
-    
-    var isEmpty: Bool {
-        awaitLinesCondition.lock()
-        let result = _isEmpty
-        awaitLinesCondition.unlock()
-        return result
+        return nInvalidBefore + lines.count + nInvalidAfter
     }
 
-    fileprivate var _isBlockingDraw = false
-    
-    func get(_ ix: Int) -> Line? {
-        defer { awaitLinesCondition.unlock() }
-        awaitLinesCondition.lock()
-        return _get(ix)
+    var isEmpty: Bool {
+        return  lines.count == 0 || (lines.count == 1 && lines[0]?.text  == "")
     }
-    
-    /// not threadsafe
+
     fileprivate func _get(_ ix: Int) -> Line? {
         if ix < nInvalidBefore { return nil }
         let ix = ix - nInvalidBefore
@@ -110,47 +80,19 @@ class LineCache {
             return lines[ix]
         }
         return nil
-        
     }
-    
-    // I'm not sure this is working
-    // TODO: move to GCD sempahores
-    let MAX_BLOCKING_TIME: TimeInterval = 0.05 // 50 ms
 
-    /// Returns the lines in `lineRange`, waiting for an update if necessary.
-    /// If any of the lines in `lineRange` are marked as `Pending` in the cache,
-    /// this function will block the current thread until those lines have been returned.
-    func blockingGet(lines lineRange: LineRange) -> [Line?] {
-        defer { awaitLinesCondition.unlock() }
-        awaitLinesCondition.lock()
-
-        let lineRange = lineRange.clamped(to: 0..<self._height)
-        let missingLines = lineRange.filter( { _get($0) == nil })
-        if !missingLines.isEmpty {
-            print("waiting for lines: (\(missingLines.first!), \(missingLines.last!))")
-
-            assert(!_isBlockingDraw, "LineCache.blockingGet(lines:) should be called by one view, from the main thread")
-            _isBlockingDraw = true
-            let blockTime = mach_absolute_time()
-            while _isBlockingDraw {
-                let deadline = Date().addingTimeInterval(MAX_BLOCKING_TIME)
-                awaitLinesCondition.wait(until: deadline)
-            }
-            let elapsed = mach_absolute_time() - blockTime
-            print("finished waiting: \(elapsed / 1000)us")
-        }
-
-        return lineRange.map( { _get($0) } )
+    fileprivate func linesForRange(range: LineRange) -> [Line?] {
+        let range = range.clamped(to: 0..<self.height)
+        return range.map( { _get($0) } )
     }
-    
-    /// Returns range of lines that have been invalidated
-    func applyUpdate(update: [String: Any]) -> InvalSet {
-        defer { awaitLinesCondition.unlock() }
-        awaitLinesCondition.lock()
-        
+
+    /// Updates the state by applying a delta. The update format is detailed in the
+    /// [xi-core docs](https://github.com/google/xi-editor/blob/master/doc/update.md).
+    fileprivate func applyUpdate(update: [String: AnyObject]) -> InvalSet {
         let inval = InvalSet()
         guard let ops = update["ops"] else { return inval }
-        let oldHeight = _height
+        let oldHeight = height
         var newInvalidBefore = 0
         var newLines: [Line?] = []
         var newInvalidAfter = 0
@@ -236,46 +178,14 @@ class LineCache {
         lines = newLines
         nInvalidAfter = newInvalidAfter
 
-        if _isBlockingDraw {
-            _isBlockingDraw = false
-            awaitLinesCondition.signal()
-        }
-        
-        if _height < oldHeight {
-            inval.addRange(start: _height, end: oldHeight)
+        if height < oldHeight {
+            inval.addRange(start: height, end: oldHeight)
         }
         return inval
     }
 
-    /// Return ranges of invalid lines within the given range
-    func computeMissing(_ first: Int, _ last: Int) -> [(Int, Int)] {
-        defer { awaitLinesCondition.unlock() }
-        awaitLinesCondition.lock()
-        
-        var result: [(Int, Int)] = []
-        let last = min(last, _height)  // lines past the end aren't considered missing
-        guard first < last else {
-            Swift.print("compute missing called with first > last (\(first), \(last))")
-            return result
-        }
-        
-        for ix in first..<last {
-            // could optimize a bit here, but unlikely to be important
-            if ix < nInvalidBefore || ix >= nInvalidBefore + lines.count || lines[ix - nInvalidBefore] == nil {
-                if result.count == 0 || result[result.count - 1].1 != ix {
-                    result.append((ix, ix + 1))
-                } else {
-                    result[result.count - 1].1 = ix + 1
-                }
-            }
-        }
-        return result
-    }
-
-    /// Set of lines that need to be invalidated to blink the cursor
+    /// The set of lines which contain cursors.
     var cursorInval: InvalSet {
-        defer { awaitLinesCondition.unlock() }
-        awaitLinesCondition.lock()
         let inval = InvalSet()
         for (i, line) in lines.enumerated() {
             if line?.containsCursor ?? false {
@@ -286,15 +196,138 @@ class LineCache {
     }
 }
 
-/// A set of line numbers to be invalidated, in run-length representation
+//TODO: use os_unfair_lock_t on 10.12+
+
+/// A safe wrapper around a system lock.
+class Mutex {
+    fileprivate var mutex = pthread_mutex_t()
+
+    init() {
+        pthread_mutex_init(&mutex, nil)
+    }
+
+    deinit {
+        pthread_mutex_destroy(&mutex)
+    }
+
+    func lock() {
+        pthread_mutex_lock(&mutex)
+    }
+
+    func unlock() {
+        pthread_mutex_unlock(&mutex)
+    }
+
+    func isLocked() -> Bool {
+        if pthread_mutex_trylock(&mutex) == 0 {
+            defer { pthread_mutex_unlock(&mutex) }
+            return false
+        } else {
+            return true
+        }
+    }
+}
+
+/**
+ A cache of lines representing a document in xi-core. The cache is updated based
+ on deltas from the core.
+ 
+ - Note: To facilitate smooth scrolling, updates to the LineCache are expected
+ to arrive on a dedicated thread. When drawing, lines are fetched through the
+ `blockingGet(lines:)` method, which will block for some maximum ammount of time
+ waiting for the lines to arrive from xi-core.
+ */
+class LineCache {
+
+    /// A semaphore we use to wake up the main thread if it is blocking missing lines
+    fileprivate let waitingForLines = DispatchSemaphore(value: 0)
+    /// A dispatch queue used to synchronize access to the underlying state
+    fileprivate let queue = DispatchQueue(label: "io.xi-editor.cache-sync-queue")
+    /// A marker used to indicate if the main thread is blocked.
+    fileprivate let blockFlag = Mutex()
+    /// The underlying cache state
+    fileprivate let state = LineCacheState()
+
+    /// A boolean value indicating whether or not the linecache contains any text.
+    /// - Note: An empty line cache will still contain a single empty line, this
+    /// is sent as an update from the core after a new document is created.
+    var isEmpty: Bool {
+        return queue.sync { state.isEmpty }
+    }
+
+    /// The number of lines in the underlying document.
+    var height: Int {
+        return queue.sync { state.height }
+    }
+
+    /// Set of lines that need to be invalidated to blink the cursor
+    var cursorInval: InvalSet {
+        return queue.sync { state.cursorInval }
+    }
+    
+    /// Returns the line for the given index, if it exists in the cache.
+    func get(_ ix: Int) -> Line? {
+        return queue.sync { state._get(ix) }
+    }
+
+    /**
+     Returns the lines in `lineRange`, waiting for an update if necessary.
+    
+     - Note: If any of the lines in `lineRange` are absent in the cache, this method
+     will block the calling thread for a short time, to see if the missing lines are
+     contained in the next received update.
+     */
+    func blockingGet(lines lineRange: LineRange) -> [Line?] {
+        let lines = queue.sync { state.linesForRange(range: lineRange) }
+        let missingLines = lineRange.enumerated()
+            .filter( { lines.count > $0.offset && lines[$0.offset] == nil })
+            .map( { $0.element })
+        if !missingLines.isEmpty {
+            print("waiting for lines: (\(missingLines.first!), \(missingLines.last!))")
+
+            let blockTime = mach_absolute_time()
+            blockFlag.lock()
+            let waitResult = waitingForLines.wait(timeout: .now() + .milliseconds(100))
+            blockFlag.unlock()
+
+            let elapsed = mach_absolute_time() - blockTime
+
+            if waitResult == .timedOut {
+                waitingForLines.signal()
+                print("semaphore timeout \(elapsed / 1000)us")
+            } else {
+                print("finished waiting: \(elapsed / 1000)us")
+            }
+        }
+
+        return queue.sync { state.linesForRange(range: lineRange) }
+    }
+
+    /// Returns range of lines that have been invalidated
+    func applyUpdate(update: [String: AnyObject]) -> InvalSet {
+        let inval = queue.sync { state.applyUpdate(update: update) }
+        if blockFlag.isLocked() {
+            print("signalling")
+            waitingForLines.signal()
+        }
+        return inval
+    }
+}
+
+/// A set of line numbers, represented as a collection of `LineRange`s.
 class InvalSet {
-    var ranges: [LineRange] = []
+    private var _ranges: [LineRange] = []
+    
+    /// The ranges of lines in this set.
+    var ranges: [LineRange] {
+        return _ranges
+    }
 
     func addRange(start: Int, end: Int) {
-        if ranges.last?.upperBound == start {
-            ranges[ranges.count - 1] = ranges[ranges.count - 1].lowerBound ..< end
+        if _ranges.last?.upperBound == start {
+            _ranges[ranges.count - 1] = _ranges[ranges.count - 1].lowerBound ..< end
         } else {
-            ranges.append(start..<end)
+            _ranges.append(start..<end)
         }
     }
 
