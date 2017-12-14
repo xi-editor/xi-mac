@@ -125,12 +125,7 @@ class EditView: NSView, NSTextInputClient {
     }
 
     let x0: CGFloat = 2;
-    var lastWillScroll: UInt64 = 0
 
-    func randColor() -> NSColor {
-        return NSColor(red: CGFloat(drand48()), green: CGFloat(drand48()), blue: CGFloat(drand48()), alpha: 1)
-    }
-    
     override func draw(_ dirtyRect: NSRect) {
         if dataSource.document.coreViewIdentifier == nil { return }
         super.draw(dirtyRect)
@@ -243,9 +238,6 @@ class EditView: NSView, NSTextInputClient {
                 }
             }
         }
-//        let now = mach_absolute_time()
-//        let sinceWillScroll = now - lastWillScroll
-//        print("painted (\(first), \(last)) dT \(sinceWillScroll / 1000)us")
     }
 
     override var acceptsFirstResponder: Bool {

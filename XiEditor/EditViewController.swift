@@ -121,11 +121,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     override func viewDidAppear() {
         super.viewDidAppear()
-        NotificationCenter.default.addObserver(self, selector: #selector(EditViewController.boundsDidChangeNotification(_:)), name: NSView.boundsDidChangeNotification, object: scrollView.contentView)
         NotificationCenter.default.addObserver(self, selector: #selector(EditViewController.frameDidChangeNotification(_:)), name: NSView.frameDidChangeNotification, object: scrollView)
         // call to set initial scroll position once we know view size
-        willScroll(to: scrollView.contentView.bounds.origin)
-        updateEditViewScroll()
+        redrawEverything()
     }
 
     func updateGutterWidth() {
@@ -134,16 +132,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         gutterViewWidth.constant = chWidth * max(2, CGFloat(gutterColumns)) + 2 * gutterView.xPadding
     }
     
-    @objc func boundsDidChangeNotification(_ notification: Notification) {
-        //TODO: revisit this, we have the 'willScroll' notification now
-        updateEditViewScroll()
-    }
-    
     @objc func frameDidChangeNotification(_ notification: Notification) {
-        updateEditViewScroll()
+        updateEditViewHeight()
     }
-
-    var lastWillScroll: UInt64 = 0
 
     func willScroll(to newOrigin: NSPoint) {
         let first = Int(floor(newOrigin.y / textMetrics.linespace))
@@ -152,17 +143,18 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
         if first..<last != visibleLines {
             document.sendWillScroll(first: first, last: last)
-            lastWillScroll = mach_absolute_time()
-            editView.lastWillScroll = lastWillScroll
-//            print("will scroll (\(first), \(last))")
             visibleLines = first..<last
         }
     }
 
-    func updateEditViewScroll() {
+    /// If font size or theme changes, we invalidate all views.
+    func redrawEverything() {
+        updateGutterWidth()
         updateEditViewHeight()
+        willScroll(to: scrollView.contentView.bounds.origin)
+        editView.needsDisplay = true
+        editView.needsDisplay = true
     }
-    
     // MARK: - Core Commands
 
     /// handles the `update` RPC. This is called from a dedicated thread.
@@ -475,8 +467,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         for subItem in (pluginsMenu?.submenu!.items)! {
             subItem.state = NSControl.StateValue(rawValue: (subItem.title == theme) ? 1 : 0)
         }
-        gutterView.needsDisplay = true
-        editView.needsDisplay = true
     }
 
     @IBAction func gotoLine(_ sender: AnyObject) {
