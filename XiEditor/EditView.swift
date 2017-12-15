@@ -155,9 +155,9 @@ class EditView: NSView, NSTextInputClient {
         }
 
         // first pass, for drawing background selections and search highlights
-        for lineIx in first...last {
+        for lineIx in first..<last {
             let relLineIx = lineIx - first
-            guard relLineIx < lines.count, let line = lines[relLineIx], line.containsReservedStyle == true else { continue }
+            guard let line = lines[relLineIx], line.containsReservedStyle == true else { continue }
             let attrString = NSMutableAttributedString(string: line.text, attributes: dataSource.textMetrics.attributes)
             let ctline = CTLineCreateWithAttributedString(attrString)
             let y = dataSource.textMetrics.linespace * CGFloat(lineIx + 1)

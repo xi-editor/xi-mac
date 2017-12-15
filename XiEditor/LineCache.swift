@@ -83,7 +83,6 @@ class LineCacheState {
     }
 
     fileprivate func linesForRange(range: LineRange) -> [Line?] {
-        let range = range.clamped(to: 0..<self.height)
         return range.map( { _get($0) } )
     }
 
@@ -196,42 +195,10 @@ class LineCacheState {
     }
 }
 
-//TODO: use os_unfair_lock_t on 10.12+
-
-/// A safe wrapper around a system lock.
-class Mutex {
-    fileprivate var mutex = pthread_mutex_t()
-
-    init() {
-        pthread_mutex_init(&mutex, nil)
-    }
-
-    deinit {
-        pthread_mutex_destroy(&mutex)
-    }
-
-    func lock() {
-        pthread_mutex_lock(&mutex)
-    }
-
-    func unlock() {
-        pthread_mutex_unlock(&mutex)
-    }
-
-    func isLocked() -> Bool {
-        if pthread_mutex_trylock(&mutex) == 0 {
-            defer { pthread_mutex_unlock(&mutex) }
-            return false
-        } else {
-            return true
-        }
-    }
-}
-
 /**
  A cache of lines representing a document in xi-core. The cache is updated based
  on deltas from the core.
- 
+
  - Note: To facilitate smooth scrolling, updates to the LineCache are expected
  to arrive on a dedicated thread. When drawing, lines are fetched through the
  `blockingGet(lines:)` method, which will block for some maximum ammount of time
@@ -244,7 +211,7 @@ class LineCache {
     /// A dispatch queue used to synchronize access to the underlying state
     fileprivate let queue = DispatchQueue(label: "io.xi-editor.cache-sync-queue")
     /// A marker used to indicate if the main thread is blocked.
-    fileprivate let blockFlag = Mutex()
+    fileprivate let syncLock = Mutex()
     /// The underlying cache state
     fileprivate let state = LineCacheState()
 
@@ -267,7 +234,7 @@ class LineCache {
     var cursorInval: InvalSet {
         return queue.sync { state.cursorInval }
     }
-    
+
     /// Returns the line for the given index, if it exists in the cache.
     func get(_ ix: Int) -> Line? {
         return queue.sync { state._get(ix) }
@@ -275,7 +242,7 @@ class LineCache {
 
     /**
      Returns the lines in `lineRange`, waiting for an update if necessary.
-    
+
      - Note: If any of the lines in `lineRange` are absent in the cache, this method
      will block the calling thread for a short time, to see if the missing lines are
      contained in the next received update.
@@ -287,20 +254,22 @@ class LineCache {
             .map( { $0.element })
         if !missingLines.isEmpty {
             print("waiting for lines: (\(missingLines.first!), \(missingLines.last!))")
-
+            //TODO: this timing + printing code can come out
+            // when we're comfortable with the performance and
+            // the timeout duration
             let blockTime = mach_absolute_time()
-            blockFlag.lock()
+            syncLock.lock()
             let waitResult = waitingForLines.wait(timeout: .now() + .milliseconds(MAX_BLOCK_MS))
-            blockFlag.unlock()
+            syncLock.unlock()
 
             let elapsed = mach_absolute_time() - blockTime
 
             if waitResult == .timedOut {
-                waitingForLines.signal()
                 print("semaphore timeout \(elapsed / 1000)us")
             } else {
                 print("finished waiting: \(elapsed / 1000)us")
             }
+            waitingForLines.signal()
         }
 
         return queue.sync { state.linesForRange(range: lineRange) }
@@ -309,10 +278,10 @@ class LineCache {
     /// Returns range of lines that have been invalidated
     func applyUpdate(update: [String: AnyObject]) -> InvalSet {
         let inval = queue.sync { state.applyUpdate(update: update) }
-        if blockFlag.isLocked() {
-            print("signalling")
-            waitingForLines.signal()
-        }
+        waitingForLines.signal()
+        syncLock.lock()
+        waitingForLines.wait()
+        syncLock.unlock()
         return inval
     }
 }
@@ -336,5 +305,34 @@ class InvalSet {
 
     func addRange(start: Int, n: Int) {
         addRange(start: start, end: start + n)
+    }
+}
+
+//TODO: use os_unfair_lock_t on 10.12+ ?
+//TODO: this should go in some 'utils' file?
+
+/// A safe wrapper around a system lock.
+class Mutex {
+    fileprivate var mutex = pthread_mutex_t()
+
+    init() {
+        pthread_mutex_init(&mutex, nil)
+    }
+
+    deinit {
+        pthread_mutex_destroy(&mutex)
+    }
+
+    func lock() {
+        pthread_mutex_lock(&mutex)
+    }
+
+    func unlock() {
+        pthread_mutex_unlock(&mutex)
+    }
+
+    /// Tries to take the lock. Returns `true` if succesful.
+    func tryLock() -> Bool {
+        return pthread_mutex_trylock(&mutex) == 0
     }
 }
