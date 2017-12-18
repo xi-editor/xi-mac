@@ -17,8 +17,9 @@ import Cocoa
 
 /// Theme information for styling an editor instance.
 ///
-/// Note: this is copied verbatim from syntect (https://github.com/trishume/syntect/blob/master/src/highlighting/theme.rs)
-/// and that is derived from TextMate's .tmTheme format. Many fields may not be used.
+/// - Note: this is copied verbatim from
+/// [syntect](https://github.com/trishume/syntect/blob/master/src/highlighting/theme.rs);
+/// and that in turn is derived from TextMate's .tmTheme format. Many fields may not be used.
 struct Theme {
     /// Text color for the view.
     let foreground: NSColor

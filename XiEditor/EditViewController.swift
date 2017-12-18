@@ -31,7 +31,7 @@ protocol FindDelegate {
     func closeFind()
 }
 
-class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
+class EditViewController: NSViewController, EditViewDataSource, FindDelegate, ScrollInterested {
 
     
     @IBOutlet var scrollView: NSScrollView!
@@ -99,9 +99,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
         }
     }
 
-    // visible scroll region, exclusive of lastLine
-    var firstLine: Int = 0
-    var lastLine: Int = 0
+    // visible scroll region
+    var visibleLines: LineRange = 0..<0
 
     // TODO: should be an option in the user preferences
     var scrollPastEnd = false
@@ -117,14 +116,14 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
         gutterView.dataSource = self
         scrollView.contentView.documentCursor = NSCursor.iBeam;
         scrollView.automaticallyAdjustsContentInsets = false
+        (scrollView.contentView as? XiClipView)?.delegate = self
     }
 
     override func viewDidAppear() {
         super.viewDidAppear()
-        NotificationCenter.default.addObserver(self, selector: #selector(EditViewController.boundsDidChangeNotification(_:)), name: NSView.boundsDidChangeNotification, object: scrollView.contentView)
         NotificationCenter.default.addObserver(self, selector: #selector(EditViewController.frameDidChangeNotification(_:)), name: NSView.frameDidChangeNotification, object: scrollView)
         // call to set initial scroll position once we know view size
-        updateEditViewScroll()
+        redrawEverything()
     }
 
     func updateGutterWidth() {
@@ -133,42 +132,31 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
         gutterViewWidth.constant = chWidth * max(2, CGFloat(gutterColumns)) + 2 * gutterView.xPadding
     }
     
-    @objc func boundsDidChangeNotification(_ notification: Notification) {
-        updateEditViewScroll()
-    }
-    
     @objc func frameDidChangeNotification(_ notification: Notification) {
-        updateEditViewScroll()
+        updateEditViewHeight()
     }
 
-    func updateEditViewScroll() {
-        let first = Int(floor(scrollView.contentView.bounds.origin.y / textMetrics.linespace))
-        let height = Int(ceil((scrollView.contentView.bounds.size.height) / textMetrics.linespace))
+    /// Called by `XiClipView`; this gives us early notice of an incoming scroll event.
+    /// Can be called manually with the current visible origin in order to ensure the line cache
+    /// is up to date.
+    func willScroll(to newOrigin: NSPoint) {
+        let first = Int(floor(newOrigin.y / textMetrics.linespace))
+        let height = Int(ceil((scrollView.contentView.bounds.size.height) / textMetrics.linespace)) + 1
         let last = first + height
-        if first != firstLine || last != lastLine {
-            firstLine = first
-            lastLine = last
-            document.sendRpcAsync("scroll", params: [firstLine, lastLine])
-        }
-        // if the window is resized, update the editViewHeight so we don't show scrollers unnecessarily
-        updateEditViewHeight()
-    }
-    
-    // MARK: - Core Commands
-    func update(_ content: [String: AnyObject]) {
-        if (content["pristine"] as? Bool ?? false) {
-            document.updateChangeCount(.changeCleared)
-        } else {
-            document.updateChangeCount(.changeDone)
-        }
 
-        let inval = lines.applyUpdate(update: content)
-        //print("invalidated \(inval.ranges)")
-        self.lineCount = lines.height
+        if first..<last != visibleLines {
+            document.sendWillScroll(first: first, last: last)
+            visibleLines = first..<last
+        }
+    }
+
+    /// If font size or theme changes, we invalidate all views.
+    func redrawEverything() {
+        updateGutterWidth()
         updateEditViewHeight()
-        editView.showBlinkingCursor = editView.isFrontmostView
-        editView.partialInvalidate(invalid: inval)
-        gutterView.needsDisplay = true
+        willScroll(to: scrollView.contentView.bounds.origin)
+        editView.needsDisplay = true
+        editView.needsDisplay = true
     }
 
     fileprivate func updateEditViewHeight() {
@@ -178,6 +166,24 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
             self.editViewHeight.constant += min(contentHeight, scrollView.bounds.height)
                 - textMetrics.linespace - 2 * textMetrics.descent;
         }
+    }
+
+    // MARK: - Core Commands
+
+    /// handles the `update` RPC. This is called from a dedicated thread.
+    func updateAsync(update: [String: AnyObject]) {
+        let inval = lines.applyUpdate(update: update)
+        let hasNoUnsavedChanges = update["pristine"] as? Bool ?? false
+        
+        DispatchQueue.main.async { [weak self] in
+            self?.document.updateChangeCount(hasNoUnsavedChanges ? .changeCleared : .changeDone)
+            self?.lineCount = self?.lines.height ?? 0
+            self?.updateEditViewHeight()
+            self?.editView.showBlinkingCursor = self?.editView.isFrontmostView ?? false
+            self?.editView.partialInvalidate(invalid: inval)
+            self?.gutterView.needsDisplay = true
+        }
+
     }
 
     func scrollTo(_ line: Int, _ col: Int) {
@@ -465,8 +471,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate {
         for subItem in (pluginsMenu?.submenu!.items)! {
             subItem.state = NSControl.StateValue(rawValue: (subItem.title == theme) ? 1 : 0)
         }
-        gutterView.needsDisplay = true
-        editView.needsDisplay = true
     }
 
     @IBAction func gotoLine(_ sender: AnyObject) {

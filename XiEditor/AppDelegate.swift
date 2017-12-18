@@ -26,8 +26,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // This is set to 'InconsolataGo' in the user preferences; this value is a fallback.
     let fallbackFont = CTFontCreateWithName(("Menlo" as CFString?)!, 14, nil)
 
-    lazy var textMetrics: TextDrawingMetrics = TextDrawingMetrics(font: self.fallbackFont,
-                                                                  textColor: self.theme.foreground)
+    lazy fileprivate var _textMetrics = TextDrawingMetrics(font: self.fallbackFont,
+                                                           textColor: self.theme.foreground)
+
+    var textMetrics: TextDrawingMetrics {
+        get {
+            return _textMetrics
+        }
+        set {
+            _textMetrics = newValue
+            styleMap.updateFont(to: newValue.font)
+            self.updateAllViews()
+        }
+    }
+
     lazy var styleMap: StyleMap = StyleMap(font: self.fallbackFont)
 
     lazy var defaultConfigDirectory: URL = {
@@ -57,7 +69,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return applicationDirectory
     }()
 
-    var theme = Theme.defaultTheme()
+    var theme = Theme.defaultTheme() {
+        didSet {
+            self.textMetrics = TextDrawingMetrics(font: textMetrics.font,
+                                                  textColor: theme.foreground)
+        }
+    }
 
     func applicationWillFinishLaunching(_ aNotification: Notification) {
 
@@ -66,10 +83,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             else { fatalError("Xi bundle missing expected resouces") }
 
         let dispatcher: Dispatcher = {
-            let coreConnection = CoreConnection(path: corePath) { [weak self] (json: Any) -> Any? in
-                return self?.handleCoreCmd(json)
-            }
-
+            let coreConnection = CoreConnection(path: corePath,
+                                                updateCallback: {
+                                                    [weak self] (update) in
+                                                    self?.handleAsyncUpdate(update)
+                },
+                                                callback: {
+                                                    [weak self] (json: Any) -> Any? in
+                                                    return self?.handleCoreCmd(json)
+                })
             return Dispatcher(coreConnection: coreConnection)
         }()
 
@@ -96,6 +118,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return nil
     }
 
+    func handleAsyncUpdate(_ json: [String: AnyObject]) {
+        let update = json["update"] as! [String: AnyObject]
+        let viewIdentifier = json["view_id"] as! String
+        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
+        if document == nil { print("document missing for view id \(viewIdentifier)") }
+        document?.updateAsync(update: update)
+    }
+
     func handleCoreCmd(_ json: Any) -> Any? {
         guard let obj = json as? [String : Any],
             let method = obj["method"] as? String,
@@ -108,12 +138,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func handleRpc(_ method: String, params: Any) -> Any? {
         switch method {
         case "update":
-            if let obj = params as? [String : AnyObject], let update = obj["update"] as? [String : AnyObject] {
-                guard
-                    let viewIdentifier = obj["view_id"] as? String, let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
-                    else { print("view_id or document missing for update event: ", obj); return nil }
-                    document.update(update)
-            }
+            fatalError("update RPC must be handled off the main thread")
+
         case "scroll_to":
             if let obj = params as? [String : AnyObject], let line = obj["line"] as? Int, let col = obj["col"] as? Int {
                 guard let viewIdentifier = obj["view_id"] as? String, let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
@@ -157,7 +183,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
             UserDefaults.standard.set(name, forKey: USER_DEFAULTS_THEME_KEY)
             self.theme = Theme(jsonObject: themeJson)
-            self.textMetrics = TextDrawingMetrics(font: textMetrics.font, textColor: theme.foreground)
             for doc in NSApplication.shared.orderedDocuments {
                 guard let doc = doc as? Document else { continue }
                 doc.editViewController?.themeChanged(name)
@@ -231,24 +256,21 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    /// Redraws all open document views, as on a font or theme change.
+    private func updateAllViews() {
+        for doc in NSApplication.shared.orderedDocuments {
+            guard let doc = doc as? Document else { continue }
+            doc.editViewController?.redrawEverything()
+        }
+    }
+
     func handleFontChange(fontName: String?, fontSize: CGFloat?) {
         guard textMetrics.font.fontName != fontName || textMetrics.font.pointSize != fontSize else { return }
 
         if let newFont = NSFont(name: fontName ?? textMetrics.font.fontName,
                                 size: fontSize ?? textMetrics.font.pointSize) {
             textMetrics = TextDrawingMetrics(font: newFont, textColor: theme.foreground)
-            styleMap.updateFont(to: newFont)
-            for doc in NSApplication.shared.orderedDocuments {
-                guard let doc = doc as? Document else { continue }
-                doc.editViewController?.updateGutterWidth()
-                doc.editViewController?.editView.needsDisplay = true
-                doc.editViewController?.updateEditViewScroll()
-            }
         }
-    }
-
-    func applicationWillTerminate(_ aNotification: Notification) {
-        // Insert code here to tear down your application
     }
 
     func getUserConfigDirectory() -> String {
