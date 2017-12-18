@@ -37,7 +37,6 @@ class ShaderProgram {
             NSLog("loading shader \(name) failed")
             return
         }
-        print(data)
         let shader = glCreateShader(GLenum(type))
         var bytes = data.bytes.assumingMemoryBound(to: GLchar.self) as UnsafePointer<GLchar>?
         var length = GLint(data.length)
@@ -62,7 +61,7 @@ class ShaderProgram {
     func link() {
         glLinkProgram(program)
         var result: GLint = 0
-        glGetProgramiv(program, GLenum(GL_COMPILE_STATUS), &result)
+        glGetProgramiv(program, GLenum(GL_LINK_STATUS), &result)
         if result == GL_FALSE {
             NSLog("shader linking failed")
             // TODO: print log

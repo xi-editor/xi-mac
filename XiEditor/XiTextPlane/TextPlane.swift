@@ -34,22 +34,7 @@ class TextPlane: NSView {
         } else {
             // Fallback on earlier versions
         }
-        let attr = [
-            NSOpenGLPixelFormatAttribute(NSOpenGLPFAOpenGLProfile),
-            NSOpenGLPixelFormatAttribute(NSOpenGLProfileVersion3_2Core),
-            NSOpenGLPixelFormatAttribute(NSOpenGLPFAColorSize), 24,
-            NSOpenGLPixelFormatAttribute(NSOpenGLPFAAlphaSize), 8,
-            NSOpenGLPixelFormatAttribute(NSOpenGLPFADoubleBuffer),
-            NSOpenGLPixelFormatAttribute(NSOpenGLPFADepthSize), 0,
-            NSOpenGLPixelFormatAttribute(NSOpenGLPFAAccelerated),
-            0
-        ]
-        let format = NSOpenGLPixelFormat(attributes: attr)!
-        glLayer.openGLPixelFormat = format
-        let context = glLayer.openGLContext(for: format)
-        glLayer.openGLContext = context
         layer = glLayer
-        context.makeCurrentContext()
         glLayer.frame = CGRect(x: 0, y: 0, width: 500, height: 500)
     }
 

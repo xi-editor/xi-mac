@@ -22,10 +22,38 @@ struct CachedGlyph {
     var height: GLfloat
 }
 
-class FontRef {
+/// The font cache keeps track of currently active fonts and assigns them a small
+/// integer id, which is useful for very fast lookup. At present "active" means
+/// any font that has ever been seen, so callers should be careful to reuse fonts
+/// as much as possible.
+class FontCache {
+    var fonts: [FontInstance] = []
+    var fontMap: [CTFont: Int] = [:]
+
+    func getFontRef(font: CTFont) -> FontRef {
+        var fr = fontMap[font]
+        if fr == nil {
+            fr = fonts.count
+            fonts.append(FontInstance(ctFont: font))
+            fontMap[font] = fr
+        }
+        return fr!
+    }
+}
+
+/// This is an instance of a font in the font cache, which contains enough information
+/// to retrieve glyphs from the texture atlas, and also render them on demand.
+class FontInstance {
+    var ctFont: CTFont
     // glyph indices are dense/small, don't need a hashmap, but we're keeping it simple
     var map: [CGGlyph: CachedGlyph] = [:]
+
+    init(ctFont: CTFont) {
+        self.ctFont = ctFont
+    }
 }
+
+typealias FontRef = Int
 
 /// Texture atlas containing glyph cache.
 
@@ -38,7 +66,8 @@ class Atlas {
     // key is rounded-up height, value is x, y coords of next alloc
     var strips: [Int: (Int, Int)] = [:]
     var nextStrip = 0
-    
+
+    var fontCache = FontCache()
     var fontRefs: [CTFont: FontRef] = [:]
     
     init() {
@@ -95,27 +124,19 @@ class Atlas {
         strips[roundHeight] = (coords!.0 + w, coords!.1)
         return coords
     }
-    
-    func getFontRef(font: CTFont) -> FontRef {
-        var fr = fontRefs[font]
-        if fr == nil {
-            fr = FontRef()
-            fontRefs[font] = fr
-        }
-        return fr!
-    }
-    
-    func getGlyph(font: CTFont, fr: FontRef, glyph: CGGlyph) -> CachedGlyph? {
-        let probe = fr.map[glyph]
+
+    func getGlyph(fr: FontRef, glyph: CGGlyph) -> CachedGlyph? {
+        let fontInstance = fontCache.fonts[fr]
+        let probe = fontInstance.map[glyph]
         if probe != nil {
             return probe
         }
         var rect = CGRect()
         var glyphInOut = glyph
-        CTFontGetBoundingRectsForGlyphs(font, .horizontal, &glyphInOut, &rect, 1)
+        CTFontGetBoundingRectsForGlyphs(fontInstance.ctFont, .horizontal, &glyphInOut, &rect, 1)
         if rect.isEmpty {
             let result = CachedGlyph(uvCoords: [0, 0, 0, 0], xoff: 0, yoff: 0, width: 0, height: 0)
-            fr.map[glyph] = result
+            fontInstance.map[glyph] = result
             return result
         }
         // TODO: this can get more precise, and should take subpixel position into account
@@ -137,7 +158,7 @@ class Atlas {
         ctx.fill(CGRect(x: 0, y: 0, width: width, height: height))
         ctx.setFillColor(gray: 0.0, alpha: 1.0)
         var point = CGPoint(x: 1 - rect.origin.x, y: 1 - rect.origin.y)
-        CTFontDrawGlyphs(font, &glyphInOut, &point, 1, ctx)
+        CTFontDrawGlyphs(fontInstance.ctFont, &glyphInOut, &point, 1, ctx)
         glTexSubImage2D(GLenum(GL_TEXTURE_2D), 0, GLint(origin!.0), GLint(origin!.1), GLsizei(widthInt), GLsizei(heightInt), GLenum(GL_BGRA), GLenum(GL_UNSIGNED_BYTE), &data)
         let result = CachedGlyph(uvCoords: [GLfloat(origin!.0) * uvScale,
                                             GLfloat(origin!.1) * uvScale,
@@ -147,7 +168,7 @@ class Atlas {
                                  yoff: GLfloat(floor(-rect.origin.y) - 1) - GLfloat(heightInt),
                                  width: GLfloat(widthInt),
                                  height: GLfloat(heightInt))
-        fr.map[glyph] = result
+        fontInstance.map[glyph] = result
         return result
     }
 }

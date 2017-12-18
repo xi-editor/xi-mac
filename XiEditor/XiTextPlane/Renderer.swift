@@ -117,9 +117,9 @@ class Renderer {
         
         atlas = Atlas()
         let font = CTFontCreateWithName("InconsolataGo" as CFString, 28, nil)
-        let fr = atlas.getFontRef(font: font)
+        let fr = atlas.fontCache.getFontRef(font: font)
         for i in 0..<256 {
-            let _ = atlas.getGlyph(font: font, fr: fr, glyph: CGGlyph(i))
+            let _ = atlas.getGlyph(fr: fr, glyph: CGGlyph(i))
         }
     }
     
@@ -142,19 +142,19 @@ class Renderer {
             NSAttributedStringKey.font: font,
             ]
         let attrString = NSMutableAttributedString(string: text, attributes: attributes)
-        let line = CTLineCreateWithAttributedString(attrString)
-        
+        let ctLine = CTLineCreateWithAttributedString(attrString)
+        let tl = TextLine(ctLine: ctLine, fontCache: atlas.fontCache, argb: 0xffffffff)
         instanceBuf.removeAll()
         instanceBuf.append(contentsOf: [10, 100, 256, 256,  192.0, 192.0, 192.0, 255.0,  0.0, 0.0, 1.0, 1.0])
         for j in 0..<60 {
-            drawLine(line: line, x: 10, y: GLfloat(30 + j * 30), argb: 0xffffffff)
+            drawLine(line: tl, x0: 10, y0: GLfloat(30 + j * 30))
         }
         glBindBuffer(GLenum(GL_ARRAY_BUFFER), bufferIds[3])
         // todo: use subdata
         glBufferData(GLenum(GL_ARRAY_BUFFER), GLsizeiptr(instanceBuf.count * 4), instanceBuf, GLenum(GL_STATIC_DRAW))
         
         //print(instanceBuf)
-        
+
         textProgram.use()
         glBlendFunc(GLenum(GL_SRC1_COLOR), GLenum(GL_ONE_MINUS_SRC1_COLOR))
         glBindVertexArray(vertexArrayIds[1])
@@ -164,34 +164,26 @@ class Renderer {
         glDrawElementsInstanced(GLenum(GL_TRIANGLES), 6, GLenum(GL_UNSIGNED_INT), nil, GLsizei(instanceBuf.count / 12))
         glUseProgram(0)
     }
-    
-    func drawLine(line: CTLine, x: GLfloat, y: GLfloat, argb: UInt32) {
-        let fg = [GLfloat((argb >> 16) & 0xff),
-                  GLfloat((argb >> 8) & 0xff),
-                  GLfloat(argb & 0xff),
-                  GLfloat(argb >> 24)]
-        let runs = CTLineGetGlyphRuns(line) as [AnyObject] as! [CTRun]
-        for run in runs {
-            let count = CTRunGetGlyphCount(run)
-            let attributes: NSDictionary = CTRunGetAttributes(run)
-            let font = attributes[kCTFontAttributeName] as! CTFont
-            let fr = atlas.getFontRef(font: font)
-            for i in 0..<count {
-                var glyph = CGGlyph()
-                var pos = CGPoint()
-                let range = CFRange(location: i, length: 1)
-                CTRunGetGlyphs(run, range, &glyph)
-                CTRunGetPositions(run, range, &pos)
-                let cachedGlyph = atlas.getGlyph(font: font, fr: fr, glyph: glyph)
-                let dpiScale: GLfloat = 0.5 // TODO: be systematic
-                instanceBuf.append((x + GLfloat(pos.x) + cachedGlyph!.xoff) * dpiScale)
-                instanceBuf.append((y + GLfloat(pos.y) + cachedGlyph!.yoff) * dpiScale)
-                instanceBuf.append(cachedGlyph!.width * dpiScale)
-                instanceBuf.append(cachedGlyph!.height * dpiScale)
-                instanceBuf.append(contentsOf: fg)
-                instanceBuf.append(contentsOf: cachedGlyph!.uvCoords)
-            }
+
+    func drawLine(line: TextLine, x0: GLfloat, y0: GLfloat) {
+        for glyph in line.glyphs {
+            addGlyphInstance(glyph: glyph, x0: x0, y0: y0)
         }
     }
-}
 
+    func addGlyphInstance(glyph: GlyphInstance, x0: GLfloat, y0: GLfloat) {
+        // TODO: deal with texture atlas overflow
+        let cachedGlyph = atlas.getGlyph(fr: glyph.fontRef, glyph: glyph.glyph)
+        // TODO: dpi scaling should probably be somewhere else, and the value should be dynamic
+        let dpiScale: GLfloat = 0.5
+        instanceBuf.append((x0 + glyph.x + cachedGlyph!.xoff) * dpiScale)
+        instanceBuf.append((y0 + glyph.y + cachedGlyph!.yoff) * dpiScale)
+        instanceBuf.append(cachedGlyph!.width * dpiScale)
+        instanceBuf.append(cachedGlyph!.height * dpiScale)
+        instanceBuf.append(glyph.fgColor.0)
+        instanceBuf.append(glyph.fgColor.1)
+        instanceBuf.append(glyph.fgColor.2)
+        instanceBuf.append(glyph.fgColor.3)
+        instanceBuf.append(contentsOf: cachedGlyph!.uvCoords)
+    }
+}
