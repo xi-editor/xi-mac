@@ -268,8 +268,8 @@ class LineCache {
                 print("semaphore timeout \(elapsed / 1000)us")
             } else {
                 print("finished waiting: \(elapsed / 1000)us")
+                waitingForLines.signal()
             }
-            waitingForLines.signal()
         }
 
         return queue.sync { state.linesForRange(range: lineRange) }
