@@ -144,8 +144,10 @@ class EditView: NSView, NSTextInputClient {
 
         let topPad = dataSource.textMetrics.linespace - dataSource.textMetrics.ascent
         let first = max(0, Int((floor(dirtyRect.origin.y - topPad) / dataSource.textMetrics.linespace)))
-        let last = Int(ceil((dirtyRect.origin.y + dirtyRect.size.height - topPad) / dataSource.textMetrics.linespace))
+        let lastVisible = Int(ceil((dirtyRect.origin.y + dirtyRect.size.height - topPad) / dataSource.textMetrics.linespace))
 
+        let totalLines = dataSource.lines.height
+        let last = min(totalLines, lastVisible)
         let lines = dataSource.lines.blockingGet(lines: first..<last)
 
         let missing = lines.enumerated().filter( { $0.element == nil } )
