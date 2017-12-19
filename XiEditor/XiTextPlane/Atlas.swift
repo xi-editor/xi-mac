@@ -79,21 +79,7 @@ class Atlas {
         glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_MAG_FILTER), GL_NEAREST)
         glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_MIN_FILTER), GL_NEAREST)
         var data = [UInt8](repeating: 255, count: width * height * 4)
-        
-        let colorspace = CGColorSpaceCreateDeviceRGB()
-        let bitmapInfo = CGImageAlphaInfo.noneSkipFirst.rawValue | CGBitmapInfo.byteOrder32Little.rawValue
-        
-        let ctx = CGContext(data: &data, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width * 4, space: colorspace, bitmapInfo: bitmapInfo)!
-        ctx.setFillColor(gray: 1.0, alpha: 1.0)
-        ctx.fill(CGRect(x: 0, y: 0, width: width, height: height))
-        ctx.setFillColor(gray: 0.0, alpha: 1.0)
-        ctx.setAllowsFontSmoothing(true)
-        ctx.setShouldSmoothFonts(true)
-        ctx.setAllowsFontSubpixelPositioning(true)
-        ctx.setShouldSubpixelPositionFonts(true)
-        ctx.setAllowsFontSubpixelQuantization(false)
-        ctx.setShouldSubpixelQuantizeFonts(false)
-        
+
         glTexImage2D(GLenum(GL_TEXTURE_2D), 0, GL_RGBA, GLsizei(width), GLsizei(height), 0, GLenum(GL_BGRA), GLenum(GL_UNSIGNED_BYTE), &data)
         uvScale = 1.0 / Float(width)
     }

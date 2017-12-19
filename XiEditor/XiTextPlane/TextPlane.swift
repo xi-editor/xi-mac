@@ -16,9 +16,7 @@ import Cocoa
 import OpenGL
 import GLKit
 
-/// TextPlane is a view made of layers that supports fast text rendering.
-
-class TextPlane: NSView {
+class TextPlaneDemo: NSView, TextPlaneDelegate {
     var renderer: Renderer?
     var last: Double = 0
     var count = 0
@@ -27,7 +25,8 @@ class TextPlane: NSView {
         super.init(frame: frame)
         wantsLayer = true
         wantsBestResolutionOpenGLSurface = true
-        let glLayer = MyGlLayer()
+        let glLayer = TextPlaneLayer()
+        glLayer.textDelegate = self
         layer = glLayer
     }
 
@@ -54,10 +53,35 @@ class TextPlane: NSView {
     override var isOpaque: Bool {
         return true
     }
+
+    func render(_ renderer: Renderer) {
+        renderer.drawSolidRect(x: 200, y: 200, width: 600, height: 600, argb: 0xffff8080)
+        renderer.drawSolidRect(x: 500, y: 100, width: 100, height: 400, argb: 0x808080ff)
+
+        let text = "Now is the time for all good people to come to the aid of their country. This is a very long string because I really want to fill up the window and see if we can get 60Hz"
+        let font = NSFont(name: "InconsolataGo", size: 28)!
+        let builder = TextLineBuilder(text, font: font)
+        builder.addFgSpan(colorSpan: ColorSpan(range: 7..<10, argb: 0xffff0000))
+        let tl = builder.build(fontCache: renderer.atlas.fontCache)
+        //textInstances.removeAll()
+        //textInstances.append(contentsOf: [10, 100, 256, 256,  192.0, 192.0, 192.0, 255.0,  0.0, 0.0, 1.0, 1.0])
+        for j in 0..<60 {
+            renderer.drawLine(line: tl, x0: 10, y0: GLfloat(30 + j * 30))
+        }
+    }
+
 }
 
-class MyGlLayer : NSOpenGLLayer {
+protocol TextPlaneDelegate: NSObjectProtocol {
+    /// TODO: add bounding box, to help cull
+    func render(_ renderer: Renderer)
+}
+
+/// A layer that efficiently renders text content. It is a subclass of NSOpenGLLayer,
+/// and is the main top-level integration point.
+class TextPlaneLayer : NSOpenGLLayer {
     var renderer: Renderer?
+    weak var textDelegate: TextPlaneDelegate?
     var last: Double = 0
     var count = 0
     
@@ -79,9 +103,6 @@ class MyGlLayer : NSOpenGLLayer {
             NSOpenGLPixelFormatAttribute(NSOpenGLProfileVersion3_2Core),
             NSOpenGLPixelFormatAttribute(NSOpenGLPFAColorSize), 24,
             NSOpenGLPixelFormatAttribute(NSOpenGLPFAAlphaSize), 8,
-            NSOpenGLPixelFormatAttribute(NSOpenGLPFADoubleBuffer),
-            NSOpenGLPixelFormatAttribute(NSOpenGLPFADepthSize), 24,
-            NSOpenGLPixelFormatAttribute(NSOpenGLPFAAccelerated),
             0
         ]
         return NSOpenGLPixelFormat(attributes: attr)!.cglPixelFormatObj!
@@ -96,7 +117,9 @@ class MyGlLayer : NSOpenGLLayer {
         }
         glClearColor(0.0, 0.0, 0.0, 1.0)
         glClear(GLbitfield(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT))
-        renderer?.render(size: frame.size)
+        renderer!.beginDraw(size: frame.size)
+        textDelegate?.render(renderer!)
+        renderer!.endDraw()
         let now = NSDate().timeIntervalSince1970
         let elapsed = now - last
         last = now

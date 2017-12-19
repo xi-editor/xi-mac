@@ -287,6 +287,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let frame = NSRect(x: 100, y: 100, width: 800, height: 600)
         testWindow = NSWindow(contentRect: frame, styleMask: [.titled, .closable, .resizable, .miniaturizable], backing: .buffered, defer: false)
         testWindow?.makeKeyAndOrderFront(self)
-        testWindow?.contentView = TextPlane(frame: frame)
+        testWindow?.contentView = TextPlaneDemo(frame: frame)
     }
 }

@@ -138,26 +138,16 @@ class Renderer {
             let _ = atlas.getGlyph(fr: fr, glyph: CGGlyph(i))
         }
     }
-    
-    func render(size: CGSize) {
+
+    /// Prepare for drawing a surface of the given size.
+    func beginDraw(size: CGSize) {
         // Note: could move this computation so it only happens on size change
         u_x_scale = 2.0 / GLfloat(size.width)
         u_y_scale = -2.0 / GLfloat(size.height)
+    }
 
-        drawSolidRect(x: 200, y: 200, width: 600, height: 600, argb: 0xffff8080)
-        drawSolidRect(x: 500, y: 100, width: 100, height: 400, argb: 0x808080ff)
-
-        let text = "Now is the time for all good people to come to the aid of their country. This is a very long string because I really want to fill up the window and see if we can get 60Hz"
-        let font = NSFont(name: "InconsolataGo", size: 28)!
-        let builder = TextLineBuilder(text, font: font)
-        builder.addFgSpan(colorSpan: ColorSpan(range: 7..<10, argb: 0xffff0000))
-        let tl = builder.build(fontCache: atlas.fontCache)
-        //textInstances.removeAll()
-        //textInstances.append(contentsOf: [10, 100, 256, 256,  192.0, 192.0, 192.0, 255.0,  0.0, 0.0, 1.0, 1.0])
-        for j in 0..<60 {
-            drawLine(line: tl, x0: 10, y0: GLfloat(30 + j * 30))
-        }
-
+    /// Finish drawing.
+    func endDraw() {
         prepareForDraw(.none)
     }
 
@@ -252,5 +242,10 @@ class Renderer {
         if solidInstanceIx == maxSolidInstances * solidInstanceSize {
             flushDraw()
         }
+    }
+
+    /// The renderer's font cache. Useful for building text lines.
+    var fontCache: FontCache {
+        return atlas.fontCache
     }
 }
