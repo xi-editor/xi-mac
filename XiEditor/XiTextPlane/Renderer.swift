@@ -138,12 +138,9 @@ class Renderer {
         
         let text = "Now is the time for all good people to come to the aid of their country. This is a very long string because I really want to fill up the window and see if we can get 60Hz"
         let font = NSFont(name: "InconsolataGo", size: 28)!
-        let attributes: [NSAttributedStringKey: AnyObject] = [
-            NSAttributedStringKey.font: font,
-            ]
-        let attrString = NSMutableAttributedString(string: text, attributes: attributes)
-        let ctLine = CTLineCreateWithAttributedString(attrString)
-        let tl = TextLine(ctLine: ctLine, fontCache: atlas.fontCache, argb: 0xffffffff)
+        let builder = TextLineBuilder(text, font: font)
+        builder.addFgSpan(colorSpan: ColorSpan(range: 7..<10, argb: 0xffff0000))
+        let tl = builder.build(fontCache: atlas.fontCache)
         instanceBuf.removeAll()
         instanceBuf.append(contentsOf: [10, 100, 256, 256,  192.0, 192.0, 192.0, 255.0,  0.0, 0.0, 1.0, 1.0])
         for j in 0..<60 {

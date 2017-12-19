@@ -28,25 +28,13 @@ class TextPlane: NSView {
         wantsLayer = true
         wantsBestResolutionOpenGLSurface = true
         let glLayer = MyGlLayer()
-        // TODO: consider upgrading minimum version to 10.12
-        if #available(OSX 10.12, *) {
-            glLayer.colorspace = CGColorSpace(name: CGColorSpace.linearSRGB)
-        } else {
-            // Fallback on earlier versions
-        }
         layer = glLayer
-        glLayer.frame = CGRect(x: 0, y: 0, width: 500, height: 500)
     }
 
     required init?(coder: NSCoder) {
         fatalError("coding not implemented for text plane")
     }
 
-    override func awakeFromNib() {
-        print("awakeFromNib")
-        //renderer = Renderer()
-    }
-    
     override func draw(_ rect: NSRect) {
         print("draw \(rect)")
         //render()
@@ -73,6 +61,18 @@ class MyGlLayer : NSOpenGLLayer {
     var last: Double = 0
     var count = 0
     
+    override init() {
+        super.init()
+        // TODO: consider upgrading minimum version to 10.12
+        if #available(OSX 10.12, *) {
+            colorspace = CGColorSpace(name: CGColorSpace.linearSRGB)
+        }
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     override func copyCGLPixelFormat(forDisplayMask mask: UInt32) -> CGLPixelFormatObj {
         let attr = [
             NSOpenGLPixelFormatAttribute(NSOpenGLPFAOpenGLProfile),

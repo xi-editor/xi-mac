@@ -14,34 +14,75 @@
 
 import Cocoa
 
-/// A line of text with attributes that is ready for drawing.
-class TextLine {
-    var glyphs: [GlyphInstance]
-    
-    // TODO: this is a placeholder, we want a builder that works from string
-    // and builds our own CTLine
-    init(ctLine: CTLine, fontCache: FontCache, argb: UInt32) {
-        glyphs = []
-        let fgColor = (GLfloat((argb >> 16) & 0xff),
-                  GLfloat((argb >> 8) & 0xff),
-                  GLfloat(argb & 0xff),
-                  GLfloat(argb >> 24))
+/// A builder for TextLine objects.
+class TextLineBuilder {
+    var text: String
+    var attributes: [NSAttributedStringKey: AnyObject]
+    var fgSpans: [ColorSpan] = []
+
+    init(_ text: String, font: CTFont) {
+        attributes = [
+            NSAttributedStringKey.font: font,
+            ]
+        self.text = text
+    }
+
+    /// Add a foreground color span to the text line. This method assumes that such spans
+    /// are added in sorted order and do not overlap.
+    func addFgSpan(colorSpan: ColorSpan) {
+        if !colorSpan.range.isEmpty {
+            fgSpans.append(colorSpan)
+        }
+    }
+
+    func argbToFloats(argb: UInt32) -> (GLfloat, GLfloat, GLfloat, GLfloat) {
+        return (GLfloat((argb >> 16) & 0xff),
+                GLfloat((argb >> 8) & 0xff),
+                GLfloat(argb & 0xff),
+                GLfloat(argb >> 24))
+    }
+
+    func build(fontCache: FontCache) -> TextLine {
+        let attrString = NSMutableAttributedString(string: text, attributes: attributes)
+        let ctLine = CTLineCreateWithAttributedString(attrString)
+
+        var fgSpanIx = 0
+        let argb: UInt32 = 0xffffffff
+        var fgColor = argbToFloats(argb: argb)
+        var glyphs: [GlyphInstance] = []
         let runs = CTLineGetGlyphRuns(ctLine) as [AnyObject] as! [CTRun]
         for run in runs {
             let count = CTRunGetGlyphCount(run)
             let attributes: NSDictionary = CTRunGetAttributes(run)
+            // TODO: deal with these being nil, as warned by doc
+            let glyphsPtr = CTRunGetGlyphsPtr(run)
+            let posPtr = CTRunGetPositionsPtr(run)
+            let indicesPtr = CTRunGetStringIndicesPtr(run)
             let font = attributes[kCTFontAttributeName] as! CTFont
             let fr = fontCache.getFontRef(font: font)
             for i in 0..<count {
-                var glyph = CGGlyph()
-                var pos = CGPoint()
-                let range = CFRange(location: i, length: 1)
-                CTRunGetGlyphs(run, range, &glyph)
-                CTRunGetPositions(run, range, &pos)
+                let glyph = glyphsPtr![i]
+                let pos = posPtr![i]
+                let ix = indicesPtr![i]
+                if fgSpanIx < fgSpans.count && ix >= fgSpans[fgSpanIx].range.endIndex {
+                    fgSpanIx += 1
+                }
+                if fgSpanIx < fgSpans.count && fgSpans[fgSpanIx].range.contains(ix) {
+                    // TODO: maybe could reduce the amount of conversion
+                    fgColor = argbToFloats(argb: fgSpans[fgSpanIx].argb)
+                } else {
+                    fgColor = argbToFloats(argb: argb)
+                }
                 glyphs.append(GlyphInstance(fontRef: fr, glyph: glyph, x: GLfloat(pos.x), y: GLfloat(pos.y), fgColor: fgColor))
             }
         }
+        return TextLine(glyphs: glyphs)
     }
+}
+
+/// A line of text with attributes that is ready for drawing.
+struct TextLine {
+    var glyphs: [GlyphInstance]
 }
 
 struct GlyphInstance {
@@ -51,4 +92,9 @@ struct GlyphInstance {
     var x: GLfloat
     var y: GLfloat
     var fgColor: (GLfloat, GLfloat, GLfloat, GLfloat)
+}
+
+struct ColorSpan {
+    var range: CountableRange<Int>
+    var argb: UInt32
 }
