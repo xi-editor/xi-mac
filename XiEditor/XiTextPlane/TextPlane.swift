@@ -54,27 +54,27 @@ class TextPlaneDemo: NSView, TextPlaneDelegate {
         return true
     }
 
-    func render(_ renderer: Renderer) {
+    func render(_ renderer: Renderer, dirtyRect: NSRect) {
         renderer.drawSolidRect(x: 200, y: 200, width: 600, height: 600, argb: 0xffff8080)
         renderer.drawSolidRect(x: 500, y: 100, width: 100, height: 400, argb: 0x808080ff)
+        renderer.drawSolidRect(x: GLfloat(dirtyRect.maxX - 10), y: GLfloat(dirtyRect.maxY - 10), width: 10, height: 10, argb: 0xff00ff00)
 
         let text = "Now is the time for all good people to come to the aid of their country. This is a very long string because I really want to fill up the window and see if we can get 60Hz"
-        let font = NSFont(name: "InconsolataGo", size: 28)!
+        let font = NSFont(name: "InconsolataGo", size: 14)!
         let builder = TextLineBuilder(text, font: font)
         builder.addFgSpan(colorSpan: ColorSpan(range: 7..<10, argb: 0xffff0000))
         let tl = builder.build(fontCache: renderer.atlas.fontCache)
         //textInstances.removeAll()
         //textInstances.append(contentsOf: [10, 100, 256, 256,  192.0, 192.0, 192.0, 255.0,  0.0, 0.0, 1.0, 1.0])
         for j in 0..<60 {
-            renderer.drawLine(line: tl, x0: 10, y0: GLfloat(30 + j * 30))
+            renderer.drawLine(line: tl, x0: 10, y0: GLfloat(15 + j * 15))
         }
     }
 
 }
 
-protocol TextPlaneDelegate: NSObjectProtocol {
-    /// TODO: add bounding box, to help cull
-    func render(_ renderer: Renderer)
+protocol TextPlaneDelegate: class {
+    func render(_ renderer: Renderer, dirtyRect: NSRect)
 }
 
 /// A layer that efficiently renders text content. It is a subclass of NSOpenGLLayer,
@@ -84,13 +84,17 @@ class TextPlaneLayer : NSOpenGLLayer {
     weak var textDelegate: TextPlaneDelegate?
     var last: Double = 0
     var count = 0
-    
+
     override init() {
         super.init()
         // TODO: consider upgrading minimum version to 10.12
         if #available(OSX 10.12, *) {
             colorspace = CGColorSpace(name: CGColorSpace.linearSRGB)
         }
+    }
+
+    override init(layer: Any) {
+        super.init(layer: layer)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -118,13 +122,16 @@ class TextPlaneLayer : NSOpenGLLayer {
         glClearColor(0.0, 0.0, 0.0, 1.0)
         glClear(GLbitfield(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT))
         renderer!.beginDraw(size: frame.size)
-        textDelegate?.render(renderer!)
+        textDelegate?.render(renderer!, dirtyRect: frame)
         renderer!.endDraw()
+
+        /*
         let now = NSDate().timeIntervalSince1970
         let elapsed = now - last
         last = now
-        //print("\(count) \(elapsed)")
+        print("\(count) \(elapsed)")
         count += 1
+        */
     }
 }
 

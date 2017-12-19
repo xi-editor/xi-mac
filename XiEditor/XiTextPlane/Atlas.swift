@@ -125,10 +125,17 @@ class Atlas {
             fontInstance.map[glyph] = result
             return result
         }
+        // TODO: get this from correct source
+        let dpiScale: CGFloat = 2.0
+        let invDpiScale = 1 / dpiScale
         // TODO: this can get more precise, and should take subpixel position into account
-        let rectIntegral = rect.integral.insetBy(dx: -1, dy: -1)
-        let widthInt = Int(rectIntegral.width)
-        let heightInt = Int(rectIntegral.height)
+        print("rect: \(rect)")
+        let x0 = rect.origin.x * dpiScale
+        let x1 = x0 + rect.size.width * dpiScale
+        let y0 = rect.origin.y * dpiScale
+        let y1 = y0 + rect.size.height * dpiScale
+        let widthInt = 2 + Int(ceil(x1) - floor(x0))
+        let heightInt = 2 + Int(ceil(y1) - floor(y0))
         let origin = allocRect(w: widthInt, h: heightInt)
         if origin == nil {
             // atlas is full
@@ -141,19 +148,22 @@ class Atlas {
         
         let ctx = CGContext(data: &data, width: widthInt, height: heightInt, bitsPerComponent: 8, bytesPerRow: widthInt * 4, space: colorspace, bitmapInfo: bitmapInfo)!
         ctx.setFillColor(gray: 1.0, alpha: 1.0)
-        ctx.fill(CGRect(x: 0, y: 0, width: width, height: height))
+        ctx.fill(CGRect(x: 0, y: 0, width: widthInt, height: heightInt))
         ctx.setFillColor(gray: 0.0, alpha: 1.0)
-        var point = CGPoint(x: 1 - rect.origin.x, y: 1 - rect.origin.y)
+        ctx.scaleBy(x: dpiScale, y: dpiScale)
+        let xoff = 1 - floor(x0)
+        let yoff = 1 - floor(y0)
+        var point = CGPoint(x: xoff * invDpiScale, y: yoff * invDpiScale)
         CTFontDrawGlyphs(fontInstance.ctFont, &glyphInOut, &point, 1, ctx)
         glTexSubImage2D(GLenum(GL_TEXTURE_2D), 0, GLint(origin!.0), GLint(origin!.1), GLsizei(widthInt), GLsizei(heightInt), GLenum(GL_BGRA), GLenum(GL_UNSIGNED_BYTE), &data)
         let result = CachedGlyph(uvCoords: [GLfloat(origin!.0) * uvScale,
                                             GLfloat(origin!.1) * uvScale,
                                             GLfloat(widthInt) * uvScale,
                                             GLfloat(heightInt) * uvScale],
-                                 xoff: GLfloat(floor(rect.origin.x) - 1),
-                                 yoff: GLfloat(floor(-rect.origin.y) - 1) - GLfloat(heightInt),
-                                 width: GLfloat(widthInt),
-                                 height: GLfloat(heightInt))
+                                 xoff: GLfloat(-xoff * invDpiScale),
+                                 yoff: GLfloat((yoff - CGFloat(heightInt)) * invDpiScale),
+                                 width: GLfloat(CGFloat(widthInt) * invDpiScale),
+                                 height: GLfloat(CGFloat(heightInt) * invDpiScale))
         fontInstance.map[glyph] = result
         return result
     }

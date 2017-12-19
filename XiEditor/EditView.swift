@@ -71,7 +71,7 @@ func colorFromArgb(_ argb: UInt32) -> NSColor {
         alpha: CGFloat((argb >> 24) & 0xff) * 1.0/255)
 }
 
-class EditView: NSView, NSTextInputClient {
+class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     var dataSource: EditViewDataSource!
 
     var lastDragLineCol: (Int, Int)?
@@ -118,10 +118,16 @@ class EditView: NSView, NSTextInputClient {
     }
 
     required init?(coder: NSCoder) {
-        
         _selectedRange = NSMakeRange(NSNotFound, 0)
         _markedRange = NSMakeRange(NSNotFound, 0)
         super.init(coder: coder)
+
+        wantsLayer = true
+        wantsBestResolutionOpenGLSurface = true
+        let glLayer = TextPlaneLayer()
+        glLayer.textDelegate = self
+        glLayer.frame = CGRect(x: 0, y: 0, width: 800, height: 600)
+        layer = glLayer
     }
 
     let x0: CGFloat = 2;
@@ -264,7 +270,7 @@ class EditView: NSView, NSTextInputClient {
     }
 
     override var isOpaque: Bool {
-        return true
+        return false
     }
 
     override var preservesContentDuringLiveResize: Bool {
@@ -501,6 +507,26 @@ class EditView: NSView, NSTextInputClient {
             let y = CGFloat(start + 1) * dataSource.textMetrics.linespace - dataSource.textMetrics.ascent
             let h = CGFloat(height) * dataSource.textMetrics.linespace
             setNeedsDisplay(NSRect(x: 0, y: y, width: frame.width, height: h))
+        }
+    }
+
+    // Rendering using TextPlane
+    func render(_ renderer: Renderer, dirtyRect: NSRect) {
+        let topPad = dataSource.textMetrics.linespace - dataSource.textMetrics.ascent
+        let first = max(0, Int((floor(dirtyRect.origin.y - topPad) / dataSource.textMetrics.linespace)))
+        let lastVisible = Int(ceil((dirtyRect.origin.y + dirtyRect.size.height - topPad) / dataSource.textMetrics.linespace))
+        
+        let totalLines = dataSource.lines.height
+        let last = min(totalLines, lastVisible)
+        let lines = dataSource.lines.blockingGet(lines: first..<last)
+        let font = dataSource.textMetrics.font as CTFont
+        for lineIx in first..<last {
+            let relLineIx = lineIx - first
+            guard let line = lines[relLineIx] else { continue }
+            let builder = TextLineBuilder(line.text, font: font)
+            let textLine = builder.build(fontCache: renderer.fontCache)
+            let y = topPad + dataSource.textMetrics.ascent + dataSource.textMetrics.linespace * CGFloat(lineIx)
+            renderer.drawLine(line: textLine, x0: GLfloat(x0), y0: GLfloat(y))
         }
     }
 }

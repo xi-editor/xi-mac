@@ -179,14 +179,14 @@ class Renderer {
             switch drawState {
             case .solid:
                 solidProgram.use()
-                glBlendFunc(GLenum(GL_SRC_ALPHA), GLenum(GL_ONE_MINUS_SRC_ALPHA))
+                glBlendFuncSeparate(GLenum(GL_SRC_ALPHA), GLenum(GL_ONE_MINUS_SRC_ALPHA), GLenum(GL_ZERO), GLenum(GL_ONE))
                 glBindVertexArray(vertexArrayIds[0])
                 glUniform2f(GLint(solid_u_scale), u_x_scale, u_y_scale)
                 // array element element buffer really only needs to be bound once globally
                 glBindBuffer(GLenum(GL_ELEMENT_ARRAY_BUFFER), bufferIds[elementIndexBufId])
             case .text:
                 textProgram.use()
-                glBlendFunc(GLenum(GL_SRC1_COLOR), GLenum(GL_ONE_MINUS_SRC1_COLOR))
+                glBlendFuncSeparate(GLenum(GL_SRC1_COLOR), GLenum(GL_ONE_MINUS_SRC1_COLOR), GLenum(GL_ZERO), GLenum(GL_ONE))
                 glBindVertexArray(vertexArrayIds[1])
                 glUniform2f(GLint(text_u_scale), u_x_scale, u_y_scale)
                 glBindBuffer(GLenum(GL_ELEMENT_ARRAY_BUFFER), bufferIds[elementIndexBufId])
@@ -206,12 +206,10 @@ class Renderer {
     func drawGlyphInstance(glyph: GlyphInstance, x0: GLfloat, y0: GLfloat) {
         // TODO: deal with texture atlas overflow
         let cachedGlyph = atlas.getGlyph(fr: glyph.fontRef, glyph: glyph.glyph)
-        // TODO: dpi scaling should probably be somewhere else, and the value should be dynamic
-        let dpiScale: GLfloat = 0.5
-        textInstances[textInstanceIx + 0] = (x0 + glyph.x + cachedGlyph!.xoff) * dpiScale
-        textInstances[textInstanceIx + 1] = (y0 + glyph.y + cachedGlyph!.yoff) * dpiScale
-        textInstances[textInstanceIx + 2] = cachedGlyph!.width * dpiScale
-        textInstances[textInstanceIx + 3] = cachedGlyph!.height * dpiScale
+        textInstances[textInstanceIx + 0] = x0 + glyph.x + cachedGlyph!.xoff
+        textInstances[textInstanceIx + 1] = y0 + glyph.y + cachedGlyph!.yoff
+        textInstances[textInstanceIx + 2] = cachedGlyph!.width
+        textInstances[textInstanceIx + 3] = cachedGlyph!.height
         textInstances[textInstanceIx + 4] = glyph.fgColor.0
         textInstances[textInstanceIx + 5] = glyph.fgColor.1
         textInstances[textInstanceIx + 6] = glyph.fgColor.2
