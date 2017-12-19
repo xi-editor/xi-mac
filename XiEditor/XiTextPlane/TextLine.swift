@@ -35,13 +35,6 @@ class TextLineBuilder {
         }
     }
 
-    func argbToFloats(argb: UInt32) -> (GLfloat, GLfloat, GLfloat, GLfloat) {
-        return (GLfloat((argb >> 16) & 0xff),
-                GLfloat((argb >> 8) & 0xff),
-                GLfloat(argb & 0xff),
-                GLfloat(argb >> 24))
-    }
-
     func build(fontCache: FontCache) -> TextLine {
         let attrString = NSMutableAttributedString(string: text, attributes: attributes)
         let ctLine = CTLineCreateWithAttributedString(attrString)
@@ -97,4 +90,12 @@ struct GlyphInstance {
 struct ColorSpan {
     var range: CountableRange<Int>
     var argb: UInt32
+}
+
+/// Converts color value in argb format to tuple of 4 floats.
+func argbToFloats(argb: UInt32) -> (GLfloat, GLfloat, GLfloat, GLfloat) {
+    return (GLfloat((argb >> 16) & 0xff),
+            GLfloat((argb >> 8) & 0xff),
+            GLfloat(argb & 0xff),
+            GLfloat(argb >> 24))
 }
