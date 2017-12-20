@@ -74,25 +74,32 @@ class TextLineBuilder {
                 glyphs.append(GlyphInstance(fontRef: fr, glyph: glyph, x: GLfloat(pos.x), y: GLfloat(pos.y), fgColor: fgColor))
             }
         }
-        return TextLine(glyphs: glyphs)
+        return TextLine(glyphs: glyphs, ctLine: ctLine)
     }
 }
 
 /// A line of text with attributes that is ready for drawing.
 struct TextLine {
     var glyphs: [GlyphInstance]
+    // The CTLine is kept mostly for caret queries
+    var ctLine: CTLine
+    
+    func offsetForIndex(utf16Ix: Int) -> CGFloat {
+        return CTLineGetOffsetForStringIndex(ctLine, utf16Ix, nil)
+    }
 }
 
 struct GlyphInstance {
     var fontRef: FontRef
     var glyph: CGGlyph
-    // next 4 values are in pixels
+    // next 2 values are in pixels
     var x: GLfloat
     var y: GLfloat
     var fgColor: (GLfloat, GLfloat, GLfloat, GLfloat)
 }
 
 struct ColorSpan {
+    // The range is in units of UTF-16 code units
     var range: CountableRange<Int>
     var argb: UInt32
 }

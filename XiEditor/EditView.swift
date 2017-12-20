@@ -526,23 +526,57 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     func render(_ renderer: Renderer, dirtyRect: NSRect) {
         renderer.clear(dataSource.theme.background)
         if dataSource.document.coreViewIdentifier == nil { return }
-        let topPad = dataSource.textMetrics.linespace - dataSource.textMetrics.ascent
-        let first = max(0, Int((floor(dirtyRect.origin.y - topPad) / dataSource.textMetrics.linespace)))
-        let lastVisible = Int(ceil((dirtyRect.origin.y + dirtyRect.size.height - topPad) / dataSource.textMetrics.linespace))
+        let linespace = dataSource.textMetrics.linespace
+        let topPad = linespace - dataSource.textMetrics.ascent
+        let first = max(0, Int((floor(dirtyRect.origin.y - topPad) / linespace)))
+        let lastVisible = Int(ceil((dirtyRect.origin.y + dirtyRect.size.height - topPad) / linespace))
         
         let totalLines = dataSource.lines.height
         let last = min(totalLines, lastVisible)
         let lines = dataSource.lines.blockingGet(lines: first..<last)
         let font = dataSource.textMetrics.font as CTFont
+        var textLines: [TextLine?] = []
+
+        // The actual drawing is split into passes for correct visual presentation and
+        // also to improve batching of the OpenGL draw calls.
+
+        // first pass: create TextLine objects and also draw background rects
         for lineIx in first..<last {
             let relLineIx = lineIx - first
-            guard let line = lines[relLineIx] else { continue }
+            guard let line = lines[relLineIx] else {
+                textLines.append(nil)
+                continue
+            }
             let builder = TextLineBuilder(line.text, font: font)
             builder.setFgColor(argb: colorToArgb(dataSource.theme.foreground))
             dataSource.styleMap.applyStyles(builder: builder, styles: line.styles)
             let textLine = builder.build(fontCache: renderer.fontCache)
-            let y = topPad + dataSource.textMetrics.ascent + dataSource.textMetrics.linespace * CGFloat(lineIx)
-            renderer.drawLine(line: textLine, x0: GLfloat(x0), y0: GLfloat(y))
+            textLines.append(textLine)
+        }
+
+        // second pass: draw text
+        for lineIx in first..<last {
+            if let textLine = textLines[lineIx - first] {
+                let y = topPad + dataSource.textMetrics.ascent + linespace * CGFloat(lineIx)
+                renderer.drawLine(line: textLine, x0: GLfloat(x0), y0: GLfloat(y))
+            }
+        }
+        
+        // third pass: draw carets
+        if showBlinkingCursor && _cursorStateOn {
+            let cursorArgb = colorToArgb(cursorColor)
+            for lineIx in first..<last {
+                let relLineIx = lineIx - first
+                if let textLine = textLines[relLineIx], let line = lines[relLineIx] {
+                    for cursor in line.cursor {
+                        let utf16Ix = utf8_offset_to_utf16(line.text, cursor)
+                        let x = textLine.offsetForIndex(utf16Ix: utf16Ix)
+                        let y0 = topPad + dataSource.textMetrics.linespace * CGFloat(lineIx)
+                        let cursorWidth: GLfloat = 1.0
+                        renderer.drawSolidRect(x: GLfloat(x0 + x) - 0.5 * cursorWidth, y: GLfloat(y0), width: cursorWidth, height: GLfloat(linespace), argb: cursorArgb)
+                    }
+                }
+            }
         }
     }
 }
