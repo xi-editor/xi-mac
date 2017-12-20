@@ -71,6 +71,18 @@ func colorFromArgb(_ argb: UInt32) -> NSColor {
         alpha: CGFloat((argb >> 24) & 0xff) * 1.0/255)
 }
 
+/// Convert color to ARGB format. Note: we should do less conversion
+/// back and forth to NSColor; this is a convenience so we don't have
+/// to change as much code.
+func colorToArgb(_ color: NSColor) -> UInt32 {
+    let ciColor = CIColor(color: color)!
+    let a = UInt32(round(ciColor.alpha * 255.0))
+    let r = UInt32(round(ciColor.red * 255.0))
+    let g = UInt32(round(ciColor.green * 255.0))
+    let b = UInt32(round(ciColor.blue * 255.0))
+    return (a << 24) | (r << 16) | (g << 8) | b
+}
+
 class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     var dataSource: EditViewDataSource!
 
@@ -526,6 +538,8 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             let relLineIx = lineIx - first
             guard let line = lines[relLineIx] else { continue }
             let builder = TextLineBuilder(line.text, font: font)
+            builder.setFgColor(argb: colorToArgb(dataSource.theme.foreground))
+            dataSource.styleMap.applyStyles(builder: builder, styles: line.styles)
             let textLine = builder.build(fontCache: renderer.fontCache)
             let y = topPad + dataSource.textMetrics.ascent + dataSource.textMetrics.linespace * CGFloat(lineIx)
             renderer.drawLine(line: textLine, x0: GLfloat(x0), y0: GLfloat(y))

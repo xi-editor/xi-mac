@@ -19,12 +19,18 @@ class TextLineBuilder {
     var text: String
     var attributes: [NSAttributedStringKey: AnyObject]
     var fgSpans: [ColorSpan] = []
+    var defaultFgColor: UInt32 = 0xff000000
 
     init(_ text: String, font: CTFont) {
         attributes = [
             NSAttributedStringKey.font: font,
             ]
         self.text = text
+    }
+
+    /// Sets the default color of the text not covered by spans.
+    func setFgColor(argb: UInt32) {
+        defaultFgColor = argb
     }
 
     /// Add a foreground color span to the text line. This method assumes that such spans
@@ -40,8 +46,7 @@ class TextLineBuilder {
         let ctLine = CTLineCreateWithAttributedString(attrString)
 
         var fgSpanIx = 0
-        let argb: UInt32 = 0xff000000
-        var fgColor = argbToFloats(argb: argb)
+        var fgColor = argbToFloats(argb: defaultFgColor)
         var glyphs: [GlyphInstance] = []
         let runs = CTLineGetGlyphRuns(ctLine) as [AnyObject] as! [CTRun]
         for run in runs {
@@ -64,7 +69,7 @@ class TextLineBuilder {
                     // TODO: maybe could reduce the amount of conversion
                     fgColor = argbToFloats(argb: fgSpans[fgSpanIx].argb)
                 } else {
-                    fgColor = argbToFloats(argb: argb)
+                    fgColor = argbToFloats(argb: defaultFgColor)
                 }
                 glyphs.append(GlyphInstance(fontRef: fr, glyph: glyph, x: GLfloat(pos.x), y: GLfloat(pos.y), fgColor: fgColor))
             }

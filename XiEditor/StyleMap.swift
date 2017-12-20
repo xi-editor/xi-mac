@@ -178,6 +178,21 @@ class StyleMap {
         }
     }
 
+    func applyStyle(builder: TextLineBuilder, id: Int, range: NSRange) {
+        if id >= styles.count { return }
+        guard let style = styles[id] else { return }
+        if let fgColor = style.fgColor {
+            builder.addFgSpan(colorSpan: ColorSpan(range: convertRange(range), argb: colorToArgb(fgColor)))
+        }
+    }
+    
+    /// Applies the styles to the text line builder.
+    func applyStyles(builder: TextLineBuilder, styles: [StyleSpan]) {
+        for styleSpan in styles {
+            applyStyle(builder: builder, id: styleSpan.style, range: styleSpan.range)
+        }
+    }
+
     func updateFont(to font: NSFont) {
         self.font = font
         styles = styles.map { $0.map {
@@ -199,4 +214,8 @@ func closestMatch(of font: NSFont, traits: NSFontTraitMask, weight: Int) -> NSFo
         weight += direction
     }
     return nil
+}
+
+func convertRange(_ range: NSRange) -> CountableRange<Int> {
+    return range.location ..< (range.location + range.length)
 }
