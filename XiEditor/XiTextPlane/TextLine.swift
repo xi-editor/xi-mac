@@ -40,7 +40,7 @@ class TextLineBuilder {
         let ctLine = CTLineCreateWithAttributedString(attrString)
 
         var fgSpanIx = 0
-        let argb: UInt32 = 0xffffffff
+        let argb: UInt32 = 0xff000000
         var fgColor = argbToFloats(argb: argb)
         var glyphs: [GlyphInstance] = []
         let runs = CTLineGetGlyphRuns(ctLine) as [AnyObject] as! [CTRun]

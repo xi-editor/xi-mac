@@ -55,6 +55,7 @@ class TextPlaneDemo: NSView, TextPlaneDelegate {
     }
 
     func render(_ renderer: Renderer, dirtyRect: NSRect) {
+        renderer.clear(NSColor.white)
         renderer.drawSolidRect(x: 200, y: 200, width: 600, height: 600, argb: 0xffff8080)
         renderer.drawSolidRect(x: 500, y: 100, width: 100, height: 400, argb: 0x808080ff)
         renderer.drawSolidRect(x: GLfloat(dirtyRect.maxX - 10), y: GLfloat(dirtyRect.maxY - 10), width: 10, height: 10, argb: 0xff00ff00)
@@ -82,6 +83,7 @@ protocol TextPlaneDelegate: class {
 class TextPlaneLayer : NSOpenGLLayer {
     var renderer: Renderer?
     weak var textDelegate: TextPlaneDelegate?
+
     var last: Double = 0
     var count = 0
 
@@ -119,8 +121,6 @@ class TextPlaneLayer : NSOpenGLLayer {
             glEnable(GLenum(GL_BLEND))
             glEnable(GLenum(GL_FRAMEBUFFER_SRGB))
         }
-        glClearColor(0.0, 0.0, 0.0, 1.0)
-        glClear(GLbitfield(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT))
         renderer!.beginDraw(size: frame.size)
         textDelegate?.render(renderer!, dirtyRect: frame)
         renderer!.endDraw()
@@ -133,5 +133,6 @@ class TextPlaneLayer : NSOpenGLLayer {
         count += 1
         */
     }
+
 }
 

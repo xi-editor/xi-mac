@@ -512,6 +512,8 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
 
     // Rendering using TextPlane
     func render(_ renderer: Renderer, dirtyRect: NSRect) {
+        renderer.clear(dataSource.theme.background)
+        if dataSource.document.coreViewIdentifier == nil { return }
         let topPad = dataSource.textMetrics.linespace - dataSource.textMetrics.ascent
         let first = max(0, Int((floor(dirtyRect.origin.y - topPad) / dataSource.textMetrics.linespace)))
         let lastVisible = Int(ceil((dirtyRect.origin.y + dirtyRect.size.height - topPad) / dataSource.textMetrics.linespace))

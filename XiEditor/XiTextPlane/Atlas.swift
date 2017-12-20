@@ -129,7 +129,7 @@ class Atlas {
         let dpiScale: CGFloat = 2.0
         let invDpiScale = 1 / dpiScale
         // TODO: this can get more precise, and should take subpixel position into account
-        print("rect: \(rect)")
+        //print("rect: \(rect)")
         let x0 = rect.origin.x * dpiScale
         let x1 = x0 + rect.size.width * dpiScale
         let y0 = rect.origin.y * dpiScale

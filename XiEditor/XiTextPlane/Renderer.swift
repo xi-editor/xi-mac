@@ -79,7 +79,7 @@ class Renderer {
         glBindBuffer(GLenum(GL_ARRAY_BUFFER), bufferIds[solidInstanceBufId])
         let solidInstanceBytes = GLsizei(MemoryLayout<Float>.size * solidInstanceSize)
         solidInstances = [GLfloat](repeating: 0.0, count: solidInstanceSize * maxSolidInstances)
-        glBufferData(GLenum(GL_ARRAY_BUFFER), GLsizeiptr(MemoryLayout<Float>.size * solidInstances.count), solidInstances, GLenum(GL_DYNAMIC_DRAW))
+        glBufferData(GLenum(GL_ARRAY_BUFFER), GLsizeiptr(MemoryLayout<Float>.size * solidInstances.count), solidInstances, GLenum(GL_STREAM_DRAW))
         // rectOrigin
         glEnableVertexAttribArray(1)
         glVertexAttribPointer(1, 2, GLenum(GL_FLOAT), GLboolean(GL_FALSE), solidInstanceBytes, nil)
@@ -109,7 +109,7 @@ class Renderer {
         glBindBuffer(GLenum(GL_ARRAY_BUFFER), bufferIds[textInstanceBufId])
         let textInstanceBytes = GLsizei(MemoryLayout<Float>.size * textInstanceSize)
         textInstances = [GLfloat](repeating: 0.0, count: textInstanceSize * maxTextInstances)
-        glBufferData(GLenum(GL_ARRAY_BUFFER), GLsizeiptr(MemoryLayout<Float>.size * textInstances.count), textInstances, GLenum(GL_DYNAMIC_DRAW))
+        glBufferData(GLenum(GL_ARRAY_BUFFER), GLsizeiptr(MemoryLayout<Float>.size * textInstances.count), textInstances, GLenum(GL_STREAM_DRAW))
         // rectOrigin
         glEnableVertexAttribArray(1)
         glVertexAttribPointer(1, 2, GLenum(GL_FLOAT), GLboolean(GL_FALSE), textInstanceBytes, nil)
@@ -149,6 +149,14 @@ class Renderer {
     /// Finish drawing.
     func endDraw() {
         prepareForDraw(.none)
+    }
+
+    func clear(_ color: NSColor) {
+        // Convert to ciColor because original might not be in RGB colorspace
+        let ciColor = CIColor(color: color)!
+        glClearColor(sRgbToLinear(ciColor.red), sRgbToLinear(ciColor.green), sRgbToLinear(ciColor.blue), 1.0)
+        glClear(GLbitfield(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT))
+
     }
 
     func flushDraw() {
@@ -245,5 +253,14 @@ class Renderer {
     /// The renderer's font cache. Useful for building text lines.
     var fontCache: FontCache {
         return atlas.fontCache
+    }
+}
+
+/// Convert 0..1 sRGB value to linear
+func sRgbToLinear(_ csrgb: CGFloat) -> GLfloat {
+    if csrgb < 0.04045 {
+        return GLfloat(csrgb * (1.0 / 12.92))
+    } else {
+        return powf(Float((csrgb + 0.055) * (1.0 / (1.0 + 0.055))), 2.4)
     }
 }
