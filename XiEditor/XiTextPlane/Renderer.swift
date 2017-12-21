@@ -152,7 +152,7 @@ class Renderer {
     }
 
     func clear(_ color: NSColor) {
-        // Convert to ciColor because original might not be in RGB colorspace
+        // Convert to CIColor because original might not be in RGB colorspace
         let ciColor = CIColor(color: color)!
         glClearColor(sRgbToLinear(ciColor.red), sRgbToLinear(ciColor.green), sRgbToLinear(ciColor.blue), 1.0)
         glClear(GLbitfield(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT))
@@ -204,6 +204,8 @@ class Renderer {
         }
     }
 
+    /// Draw the main contents of the line. This method doesn't draw the background or
+    /// underlines, to help with batching.
     func drawLine(line: TextLine, x0: GLfloat, y0: GLfloat) {
         prepareForDraw(.text)
         for glyph in line.glyphs {
@@ -229,6 +231,16 @@ class Renderer {
         textInstanceIx += textInstanceSize
         if textInstanceIx == maxTextInstances * textInstanceSize {
             flushDraw()
+        }
+    }
+
+    /// Draw line background.
+    func drawLineBg(line: TextLine, x0: GLfloat, yRange: Range<GLfloat>, selColor: UInt32) {
+        for selRange in line.selRanges {
+            drawSolidRect(x: x0 + selRange.lowerBound, y: yRange.lowerBound,
+                          width: selRange.upperBound - selRange.lowerBound,
+                          height: yRange.upperBound - yRange.lowerBound,
+                          argb: selColor)
         }
     }
 

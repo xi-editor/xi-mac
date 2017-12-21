@@ -180,9 +180,15 @@ class StyleMap {
 
     func applyStyle(builder: TextLineBuilder, id: Int, range: NSRange) {
         if id >= styles.count { return }
-        guard let style = styles[id] else { return }
-        if let fgColor = style.fgColor {
-            builder.addFgSpan(colorSpan: ColorSpan(range: convertRange(range), argb: colorToArgb(fgColor)))
+        if id == 0 {
+            builder.addSelSpan(selSpan: SelSpan(range: convertRange(range)))
+        } else if id == 1 {
+            () // TODO: handle find span - perhaps this should just be a regular bg span tho
+        } else {
+            guard let style = styles[id] else { return }
+            if let fgColor = style.fgColor {
+                builder.addFgSpan(colorSpan: ColorSpan(range: convertRange(range), argb: colorToArgb(fgColor)))
+            }
         }
     }
     

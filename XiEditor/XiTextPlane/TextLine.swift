@@ -18,8 +18,9 @@ import Cocoa
 class TextLineBuilder {
     var text: String
     var attributes: [NSAttributedStringKey: AnyObject]
-    var fgSpans: [ColorSpan] = []
     var defaultFgColor: UInt32 = 0xff000000
+    var fgSpans: [ColorSpan] = []
+    var selSpans: [SelSpan] = []
 
     init(_ text: String, font: CTFont) {
         attributes = [
@@ -38,6 +39,12 @@ class TextLineBuilder {
     func addFgSpan(colorSpan: ColorSpan) {
         if !colorSpan.range.isEmpty {
             fgSpans.append(colorSpan)
+        }
+    }
+
+    func addSelSpan(selSpan: SelSpan) {
+        if !selSpan.range.isEmpty {
+            selSpans.append(selSpan)
         }
     }
 
@@ -74,7 +81,14 @@ class TextLineBuilder {
                 glyphs.append(GlyphInstance(fontRef: fr, glyph: glyph, x: GLfloat(pos.x), y: GLfloat(pos.y), fgColor: fgColor))
             }
         }
-        return TextLine(glyphs: glyphs, ctLine: ctLine)
+        var selRanges: [Range<GLfloat>] = []
+        for selSpan in selSpans {
+            // TODO: make bidi-aware
+            let selStart = GLfloat(CTLineGetOffsetForStringIndex(ctLine, selSpan.range.startIndex, nil))
+            let selEnd = GLfloat(CTLineGetOffsetForStringIndex(ctLine, selSpan.range.endIndex, nil))
+            selRanges.append(selStart..<selEnd)
+        }
+        return TextLine(glyphs: glyphs, ctLine: ctLine, selRanges: selRanges)
     }
 }
 
@@ -83,6 +97,7 @@ struct TextLine {
     var glyphs: [GlyphInstance]
     // The CTLine is kept mostly for caret queries
     var ctLine: CTLine
+    var selRanges: [Range<GLfloat>]
     
     func offsetForIndex(utf16Ix: Int) -> CGFloat {
         return CTLineGetOffsetForStringIndex(ctLine, utf16Ix, nil)
@@ -98,10 +113,15 @@ struct GlyphInstance {
     var fgColor: (GLfloat, GLfloat, GLfloat, GLfloat)
 }
 
+// Possible refactor: have Span<T> so range is separated from payload
 struct ColorSpan {
     // The range is in units of UTF-16 code units
     var range: CountableRange<Int>
     var argb: UInt32
+}
+
+struct SelSpan {
+    var range: CountableRange<Int>
 }
 
 /// Converts color value in argb format to tuple of 4 floats.

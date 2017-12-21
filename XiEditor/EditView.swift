@@ -541,6 +541,8 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         // also to improve batching of the OpenGL draw calls.
 
         // first pass: create TextLine objects and also draw background rects
+        let selectionColor = self.isFrontmostView ? dataSource.theme.selection : dataSource.theme.inactiveSelection ?? dataSource.theme.selection
+        let selArgb = colorToArgb(selectionColor)
         for lineIx in first..<last {
             let relLineIx = lineIx - first
             guard let line = lines[relLineIx] else {
@@ -552,6 +554,8 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             dataSource.styleMap.applyStyles(builder: builder, styles: line.styles)
             let textLine = builder.build(fontCache: renderer.fontCache)
             textLines.append(textLine)
+            let y0 = topPad + dataSource.textMetrics.linespace * CGFloat(lineIx)
+            renderer.drawLineBg(line: textLine, x0: GLfloat(x0), yRange: GLfloat(y0)..<GLfloat(y0 + linespace), selColor: selArgb)
         }
 
         // second pass: draw text
