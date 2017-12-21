@@ -63,7 +63,7 @@ class TextPlaneDemo: NSView, TextPlaneDelegate {
         let text = "Now is the time for all good people to come to the aid of their country. This is a very long string because I really want to fill up the window and see if we can get 60Hz"
         let font = NSFont(name: "InconsolataGo", size: 14)!
         let builder = TextLineBuilder(text, font: font)
-        builder.addFgSpan(colorSpan: ColorSpan(range: 7..<10, argb: 0xffff0000))
+        builder.addFgSpan(range: 7..<10, argb: 0xffff0000)
         let tl = builder.build(fontCache: renderer.atlas.fontCache)
         //textInstances.removeAll()
         //textInstances.append(contentsOf: [10, 100, 256, 256,  192.0, 192.0, 192.0, 255.0,  0.0, 0.0, 1.0, 1.0])

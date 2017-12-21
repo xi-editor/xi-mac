@@ -135,7 +135,7 @@ class Renderer {
         let font = CTFontCreateWithName("InconsolataGo" as CFString, 28, nil)
         let fr = atlas.fontCache.getFontRef(font: font)
         for i in 0..<256 {
-            let _ = atlas.getGlyph(fr: fr, glyph: CGGlyph(i))
+            let _ = atlas.getGlyph(fr: fr, glyph: CGGlyph(i), flags: 0)
         }
     }
 
@@ -214,8 +214,15 @@ class Renderer {
     }
 
     func drawGlyphInstance(glyph: GlyphInstance, x0: GLfloat, y0: GLfloat) {
-        // TODO: deal with texture atlas overflow
-        let cachedGlyph = atlas.getGlyph(fr: glyph.fontRef, glyph: glyph.glyph)
+        var cachedGlyph = atlas.getGlyph(fr: glyph.fontRef, glyph: glyph.glyph, flags: glyph.flags)
+        if cachedGlyph == nil {
+            flushDraw()
+            atlas.flushCache()
+            cachedGlyph = atlas.getGlyph(fr: glyph.fontRef, glyph: glyph.glyph, flags: glyph.flags)
+            if cachedGlyph == nil {
+                print("glyph \(glyph) is not renderable")
+            }
+        }
         textInstances[textInstanceIx + 0] = x0 + glyph.x + cachedGlyph!.xoff
         textInstances[textInstanceIx + 1] = y0 + glyph.y + cachedGlyph!.yoff
         textInstances[textInstanceIx + 2] = cachedGlyph!.width

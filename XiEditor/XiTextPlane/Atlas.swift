@@ -39,6 +39,12 @@ class FontCache {
         }
         return fr!
     }
+    
+    func flush() {
+        for fontInstance in fonts {
+            fontInstance.map.removeAll()
+        }
+    }
 }
 
 /// This is an instance of a font in the font cache, which contains enough information
@@ -46,11 +52,15 @@ class FontCache {
 class FontInstance {
     var ctFont: CTFont
     // glyph indices are dense/small, don't need a hashmap, but we're keeping it simple
-    var map: [CGGlyph: CachedGlyph] = [:]
+    var map: [UInt32: CachedGlyph] = [:]
 
     init(ctFont: CTFont) {
         self.ctFont = ctFont
     }
+}
+
+func fontMapKey(glyph: CGGlyph, flags: UInt32) -> UInt32 {
+    return flags | UInt32(glyph)
 }
 
 typealias FontRef = Int
@@ -111,9 +121,11 @@ class Atlas {
         return coords
     }
 
-    func getGlyph(fr: FontRef, glyph: CGGlyph) -> CachedGlyph? {
+    func getGlyph(fr: FontRef, glyph: CGGlyph, flags: UInt32) -> CachedGlyph? {
+        let fakeItalic = (flags & FLAG_FAKE_ITALIC) != 0
         let fontInstance = fontCache.fonts[fr]
-        let probe = fontInstance.map[glyph]
+        let key = fontMapKey(glyph: glyph, flags: flags)
+        let probe = fontInstance.map[key]
         if probe != nil {
             return probe
         }
@@ -122,7 +134,7 @@ class Atlas {
         CTFontGetBoundingRectsForGlyphs(fontInstance.ctFont, .horizontal, &glyphInOut, &rect, 1)
         if rect.isEmpty {
             let result = CachedGlyph(uvCoords: [0, 0, 0, 0], xoff: 0, yoff: 0, width: 0, height: 0)
-            fontInstance.map[glyph] = result
+            fontInstance.map[key] = result
             return result
         }
         // TODO: get this from correct source
@@ -130,6 +142,11 @@ class Atlas {
         let invDpiScale = 1 / dpiScale
         // TODO: this can get more precise, and should take subpixel position into account
         //print("rect: \(rect)")
+        let oblique: CGFloat = 0.2
+        if fakeItalic {
+            rect.origin.x += oblique * rect.origin.y
+            rect.size.width += oblique * rect.size.height
+        }
         let x0 = rect.origin.x * dpiScale
         let x1 = x0 + rect.size.width * dpiScale
         let y0 = rect.origin.y * dpiScale
@@ -151,6 +168,9 @@ class Atlas {
         ctx.fill(CGRect(x: 0, y: 0, width: widthInt, height: heightInt))
         ctx.setFillColor(gray: 0.0, alpha: 1.0)
         ctx.scaleBy(x: dpiScale, y: dpiScale)
+        if fakeItalic {
+            ctx.concatenate(CGAffineTransform(a: 1.0, b: 0.0, c: oblique, d: 1.0, tx: 0, ty: 0))
+        }
         let xoff = 1 - floor(x0)
         let yoff = 1 - floor(y0)
         var point = CGPoint(x: xoff * invDpiScale, y: yoff * invDpiScale)
@@ -164,7 +184,13 @@ class Atlas {
                                  yoff: GLfloat((yoff - CGFloat(heightInt)) * invDpiScale),
                                  width: GLfloat(CGFloat(widthInt) * invDpiScale),
                                  height: GLfloat(CGFloat(heightInt) * invDpiScale))
-        fontInstance.map[glyph] = result
+        fontInstance.map[key] = result
         return result
+    }
+
+    func flushCache() {
+        fontCache.flush()
+        strips.removeAll()
+        nextStrip = 0
     }
 }

@@ -16,17 +16,17 @@ import Cocoa
 
 /// A builder for TextLine objects.
 class TextLineBuilder {
-    var text: String
-    var attributes: [NSAttributedStringKey: AnyObject]
+    var attrString: NSMutableAttributedString
     var defaultFgColor: UInt32 = 0xff000000
     var fgSpans: [ColorSpan] = []
     var selSpans: [SelSpan] = []
+    var fakeItalicSpans: [FakeItalicSpan] = []
 
     init(_ text: String, font: CTFont) {
-        attributes = [
+        let attributes = [
             NSAttributedStringKey.font: font,
             ]
-        self.text = text
+        self.attrString = NSMutableAttributedString(string: text, attributes: attributes)
     }
 
     /// Sets the default color of the text not covered by spans.
@@ -36,24 +36,35 @@ class TextLineBuilder {
 
     /// Add a foreground color span to the text line. This method assumes that such spans
     /// are added in sorted order and do not overlap.
-    func addFgSpan(colorSpan: ColorSpan) {
-        if !colorSpan.range.isEmpty {
-            fgSpans.append(colorSpan)
+    func addFgSpan(range: CountableRange<Int>, argb: UInt32) {
+        if !range.isEmpty {
+            fgSpans.append(ColorSpan(range: range, argb: argb))
         }
     }
 
-    func addSelSpan(selSpan: SelSpan) {
-        if !selSpan.range.isEmpty {
-            selSpans.append(selSpan)
+    func addSelSpan(range: CountableRange<Int>) {
+        if !range.isEmpty {
+            selSpans.append(SelSpan(range: range))
         }
+    }
+
+    func addFakeItalicSpan(range: CountableRange<Int>) {
+        if !range.isEmpty {
+            fakeItalicSpans.append(FakeItalicSpan(range: range))
+        }
+    }
+
+    func addFontSpan(range: CountableRange<Int>, font: CTFont) {
+        let attrs = [NSAttributedStringKey.font: font]
+        attrString.addAttributes(attrs, range: NSRange(range))
     }
 
     func build(fontCache: FontCache) -> TextLine {
-        let attrString = NSMutableAttributedString(string: text, attributes: attributes)
         let ctLine = CTLineCreateWithAttributedString(attrString)
 
-        var fgSpanIx = 0
         var fgColor = argbToFloats(argb: defaultFgColor)
+        var fgSpanIx = 0
+        var fakeItalicSpanIx = 0
         var glyphs: [GlyphInstance] = []
         let runs = CTLineGetGlyphRuns(ctLine) as [AnyObject] as! [CTRun]
         for run in runs {
@@ -78,7 +89,12 @@ class TextLineBuilder {
                 } else {
                     fgColor = argbToFloats(argb: defaultFgColor)
                 }
-                glyphs.append(GlyphInstance(fontRef: fr, glyph: glyph, x: GLfloat(pos.x), y: GLfloat(pos.y), fgColor: fgColor))
+                if fakeItalicSpanIx < fakeItalicSpans.count && ix >= fakeItalicSpans[fakeItalicSpanIx].range.endIndex {
+                    fakeItalicSpanIx += 1
+                }
+                let fakeItalic = fakeItalicSpanIx < fakeItalicSpans.count && fakeItalicSpans[fakeItalicSpanIx].range.contains(ix)
+                let flags = fakeItalic ? FLAG_FAKE_ITALIC : 0
+                glyphs.append(GlyphInstance(fontRef: fr, glyph: glyph, x: GLfloat(pos.x), y: GLfloat(pos.y), fgColor: fgColor, flags: flags))
             }
         }
         var selRanges: [Range<GLfloat>] = []
@@ -98,7 +114,7 @@ struct TextLine {
     // The CTLine is kept mostly for caret queries
     var ctLine: CTLine
     var selRanges: [Range<GLfloat>]
-    
+
     func offsetForIndex(utf16Ix: Int) -> CGFloat {
         return CTLineGetOffsetForStringIndex(ctLine, utf16Ix, nil)
     }
@@ -111,7 +127,11 @@ struct GlyphInstance {
     var x: GLfloat
     var y: GLfloat
     var fgColor: (GLfloat, GLfloat, GLfloat, GLfloat)
+    // Currently, flags are for fake italic, but will also have subpixel position
+    var flags: UInt32
 }
+
+let FLAG_FAKE_ITALIC: UInt32 = 1 << 16
 
 // Possible refactor: have Span<T> so range is separated from payload
 struct ColorSpan {
@@ -121,6 +141,10 @@ struct ColorSpan {
 }
 
 struct SelSpan {
+    var range: CountableRange<Int>
+}
+
+struct FakeItalicSpan {
     var range: CountableRange<Int>
 }
 

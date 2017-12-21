@@ -25,6 +25,7 @@ struct Style {
     var italic: Bool
     var weight: Int?
     var attributes: [NSAttributedStringKey: Any] = [:]
+    var fakeItalic = false
 
     init(font fromFont: NSFont, fgColor: NSColor?, bgColor: NSColor?, underline: Bool, italic: Bool, weight: Int?) {
         if let fgColor = fgColor {
@@ -49,6 +50,7 @@ struct Style {
                 font = f
             } else {
                 attributes[NSAttributedStringKey.obliqueness] = 0.2
+                fakeItalic = true
             }
         }
 
@@ -181,13 +183,19 @@ class StyleMap {
     func applyStyle(builder: TextLineBuilder, id: Int, range: NSRange) {
         if id >= styles.count { return }
         if id == 0 {
-            builder.addSelSpan(selSpan: SelSpan(range: convertRange(range)))
+            builder.addSelSpan(range: convertRange(range))
         } else if id == 1 {
             () // TODO: handle find span - perhaps this should just be a regular bg span tho
         } else {
             guard let style = styles[id] else { return }
             if let fgColor = style.fgColor {
-                builder.addFgSpan(colorSpan: ColorSpan(range: convertRange(range), argb: colorToArgb(fgColor)))
+                builder.addFgSpan(range: convertRange(range), argb: colorToArgb(fgColor))
+            }
+            if let font = style.font {
+                builder.addFontSpan(range: convertRange(range), font: font)
+            }
+            if style.fakeItalic {
+                builder.addFakeItalicSpan(range: convertRange(range))
             }
         }
     }
