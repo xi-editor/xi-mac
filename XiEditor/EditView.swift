@@ -84,6 +84,12 @@ func colorToArgb(_ color: NSColor) -> UInt32 {
 }
 
 class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
+    var scrollOrigin: NSPoint {
+        didSet {
+            needsDisplay = true
+        }
+    }
+
     var dataSource: EditViewDataSource!
 
     var lastDragLineCol: (Int, Int)?
@@ -132,13 +138,14 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     required init?(coder: NSCoder) {
         _selectedRange = NSMakeRange(NSNotFound, 0)
         _markedRange = NSMakeRange(NSNotFound, 0)
+        scrollOrigin = NSPoint()
         super.init(coder: coder)
 
         wantsLayer = true
         wantsBestResolutionOpenGLSurface = true
         let glLayer = TextPlaneLayer()
         glLayer.textDelegate = self
-        glLayer.frame = CGRect(x: 0, y: 0, width: 800, height: 600)
+        //glLayer.frame = CGRect(x: 0, y: 0, width: 800, height: 600)
         layer = glLayer
     }
 
@@ -161,10 +168,11 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         */
 
         let topPad = dataSource.textMetrics.linespace - dataSource.textMetrics.ascent
-        let first = max(0, Int((floor(dirtyRect.origin.y - topPad) / dataSource.textMetrics.linespace)))
+        let firstVisible = max(0, Int((floor(dirtyRect.origin.y - topPad) / dataSource.textMetrics.linespace)))
         let lastVisible = Int(ceil((dirtyRect.origin.y + dirtyRect.size.height - topPad) / dataSource.textMetrics.linespace))
 
         let totalLines = dataSource.lines.height
+        let first = min(totalLines, firstVisible)
         let last = min(totalLines, lastVisible)
         let lines = dataSource.lines.blockingGet(lines: first..<last)
 
@@ -528,8 +536,8 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         if dataSource.document.coreViewIdentifier == nil { return }
         let linespace = dataSource.textMetrics.linespace
         let topPad = linespace - dataSource.textMetrics.ascent
-        let first = max(0, Int((floor(dirtyRect.origin.y - topPad) / linespace)))
-        let lastVisible = Int(ceil((dirtyRect.origin.y + dirtyRect.size.height - topPad) / linespace))
+        let first = max(0, Int((floor(dirtyRect.origin.y - topPad + scrollOrigin.y) / linespace)))
+        let lastVisible = Int(ceil((dirtyRect.origin.y + dirtyRect.size.height - topPad + scrollOrigin.y) / linespace))
         
         let totalLines = dataSource.lines.height
         let last = min(totalLines, lastVisible)
@@ -554,14 +562,14 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             dataSource.styleMap.applyStyles(builder: builder, styles: line.styles)
             let textLine = builder.build(fontCache: renderer.fontCache)
             textLines.append(textLine)
-            let y0 = topPad + dataSource.textMetrics.linespace * CGFloat(lineIx)
+            let y0 = topPad + dataSource.textMetrics.linespace * CGFloat(lineIx) - scrollOrigin.y
             renderer.drawLineBg(line: textLine, x0: GLfloat(x0), yRange: GLfloat(y0)..<GLfloat(y0 + linespace), selColor: selArgb)
         }
 
         // second pass: draw text
         for lineIx in first..<last {
             if let textLine = textLines[lineIx - first] {
-                let y = topPad + dataSource.textMetrics.ascent + linespace * CGFloat(lineIx)
+                let y = topPad + dataSource.textMetrics.ascent + linespace * CGFloat(lineIx) - scrollOrigin.y
                 renderer.drawLine(line: textLine, x0: GLfloat(x0), y0: GLfloat(y))
             }
         }
@@ -575,7 +583,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                     for cursor in line.cursor {
                         let utf16Ix = utf8_offset_to_utf16(line.text, cursor)
                         let x = textLine.offsetForIndex(utf16Ix: utf16Ix)
-                        let y0 = topPad + dataSource.textMetrics.linespace * CGFloat(lineIx)
+                        let y0 = topPad + dataSource.textMetrics.linespace * CGFloat(lineIx) - scrollOrigin.y
                         let cursorWidth: GLfloat = 1.0
                         renderer.drawSolidRect(x: GLfloat(x0 + x) - 0.5 * cursorWidth, y: GLfloat(y0), width: cursorWidth, height: GLfloat(linespace), argb: cursorArgb)
                     }

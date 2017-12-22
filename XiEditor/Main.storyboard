@@ -32,70 +32,57 @@
         <scene sceneID="LEm-46-qP4">
             <objects>
                 <viewController id="K7o-qN-T9e" customClass="EditViewController" customModule="XiEditor" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" id="3ye-5b-Ab2">
+                    <view key="view" wantsLayer="YES" id="3ye-5b-Ab2">
                         <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="Qwv-ci-fVA" customClass="XiScrollView" customModule="XiEditor" customModuleProvider="target">
+                            <customView wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="q1P-kd-995" customClass="EditView" customModule="XiEditor" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
-                                <clipView key="contentView" id="1wJ-s5-kVO" customClass="XiClipView" customModule="XiEditor" customModuleProvider="target">
+                            </customView>
+                            <scrollView wantsLayer="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="Qwv-ci-fVA">
+                                <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
+                                <clipView key="contentView" wantsLayer="YES" drawsBackground="NO" id="1wJ-s5-kVO" customClass="XiClipView" customModule="XiEditor" customModuleProvider="target">
                                     <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="rTT-RO-I3T" customClass="EditContainerView" customModule="XiEditor" customModuleProvider="target">
+                                        <customView wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rTT-RO-I3T" customClass="EditContainerView" customModule="XiEditor" customModuleProvider="target">
                                             <rect key="frame" x="0.0" y="2" width="480" height="268"/>
-                                            <subviews>
-                                                <customView translatesAutoresizingMaskIntoConstraints="NO" id="3Js-0o-jqZ" customClass="GutterView" customModule="XiEditor" customModuleProvider="target">
-                                                    <rect key="frame" x="0.0" y="0.0" width="20" height="268"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" constant="20" id="Smj-nI-f5r"/>
-                                                    </constraints>
-                                                </customView>
-                                                <customView translatesAutoresizingMaskIntoConstraints="NO" id="q1P-kd-995" customClass="EditView" customModule="XiEditor" customModuleProvider="target">
-                                                    <rect key="frame" x="20" y="0.0" width="460" height="268"/>
-                                                </customView>
-                                            </subviews>
                                             <constraints>
-                                                <constraint firstItem="q1P-kd-995" firstAttribute="leading" secondItem="3Js-0o-jqZ" secondAttribute="trailing" id="LH9-Tc-TcJ"/>
-                                                <constraint firstAttribute="height" priority="900" constant="268" id="Saf-eA-IEJ"/>
-                                                <constraint firstAttribute="bottom" secondItem="q1P-kd-995" secondAttribute="bottom" id="anp-0j-jCG"/>
-                                                <constraint firstAttribute="trailing" secondItem="q1P-kd-995" secondAttribute="trailing" id="dC4-sm-7Xf"/>
-                                                <constraint firstItem="3Js-0o-jqZ" firstAttribute="leading" secondItem="rTT-RO-I3T" secondAttribute="leading" id="f7L-vN-ABi"/>
-                                                <constraint firstItem="q1P-kd-995" firstAttribute="top" secondItem="rTT-RO-I3T" secondAttribute="top" id="gJj-bF-tAE"/>
-                                                <constraint firstAttribute="bottom" secondItem="3Js-0o-jqZ" secondAttribute="bottom" id="kjU-1n-2Y5"/>
-                                                <constraint firstItem="3Js-0o-jqZ" firstAttribute="top" secondItem="rTT-RO-I3T" secondAttribute="top" id="ycq-Wi-XAC"/>
+                                                <constraint firstAttribute="height" priority="900" constant="268" id="dVF-N3-gwQ"/>
                                             </constraints>
                                         </customView>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstAttribute="trailing" secondItem="rTT-RO-I3T" secondAttribute="trailing" id="Q9O-Xi-2fY"/>
-                                        <constraint firstItem="rTT-RO-I3T" firstAttribute="leading" secondItem="1wJ-s5-kVO" secondAttribute="leading" id="uaQ-li-gxJ"/>
-                                        <constraint firstItem="rTT-RO-I3T" firstAttribute="top" secondItem="1wJ-s5-kVO" secondAttribute="top" id="x4R-Ox-BgW"/>
+                                        <constraint firstAttribute="trailing" secondItem="rTT-RO-I3T" secondAttribute="trailing" id="6lr-25-Z5i"/>
+                                        <constraint firstItem="rTT-RO-I3T" firstAttribute="leading" secondItem="1wJ-s5-kVO" secondAttribute="leading" id="AaV-pl-YnC"/>
+                                        <constraint firstItem="rTT-RO-I3T" firstAttribute="top" secondItem="1wJ-s5-kVO" secondAttribute="top" id="BTR-DU-CLt"/>
                                     </constraints>
                                 </clipView>
                                 <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="hEG-a6-BYd">
-                                    <rect key="frame" x="1" y="253" width="478" height="16"/>
+                                    <rect key="frame" x="0.0" y="255" width="465" height="15"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="O02-Lc-5gg">
-                                    <rect key="frame" x="465" y="1" width="16" height="268"/>
+                                    <rect key="frame" x="465" y="0.0" width="15" height="255"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                             </scrollView>
                         </subviews>
                         <constraints>
-                            <constraint firstItem="Qwv-ci-fVA" firstAttribute="leading" secondItem="3ye-5b-Ab2" secondAttribute="leading" id="0TL-x0-ZpR"/>
-                            <constraint firstAttribute="bottom" secondItem="Qwv-ci-fVA" secondAttribute="bottom" id="2oP-pv-WbK"/>
-                            <constraint firstAttribute="trailing" secondItem="Qwv-ci-fVA" secondAttribute="trailing" id="YVP-Fu-Kqv"/>
-                            <constraint firstItem="Qwv-ci-fVA" firstAttribute="top" secondItem="3ye-5b-Ab2" secondAttribute="top" id="hcS-Ds-4hI"/>
+                            <constraint firstAttribute="trailing" secondItem="q1P-kd-995" secondAttribute="trailing" id="5IG-vx-2rb"/>
+                            <constraint firstItem="Qwv-ci-fVA" firstAttribute="leading" secondItem="q1P-kd-995" secondAttribute="leading" id="Pyq-kX-0wa"/>
+                            <constraint firstItem="Qwv-ci-fVA" firstAttribute="top" secondItem="q1P-kd-995" secondAttribute="top" id="Qwh-xz-kUZ"/>
+                            <constraint firstItem="Qwv-ci-fVA" firstAttribute="bottom" secondItem="q1P-kd-995" secondAttribute="bottom" id="Sdy-8S-2NP"/>
+                            <constraint firstItem="q1P-kd-995" firstAttribute="top" secondItem="3ye-5b-Ab2" secondAttribute="top" id="gHb-9s-5Ki"/>
+                            <constraint firstItem="q1P-kd-995" firstAttribute="leading" secondItem="3ye-5b-Ab2" secondAttribute="leading" id="kaS-IB-LV9"/>
+                            <constraint firstAttribute="bottom" secondItem="q1P-kd-995" secondAttribute="bottom" id="ngA-1s-M67"/>
+                            <constraint firstItem="Qwv-ci-fVA" firstAttribute="trailing" secondItem="q1P-kd-995" secondAttribute="trailing" id="w93-aW-WKu"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="editContainerView" destination="rTT-RO-I3T" id="V33-lc-vP3"/>
                         <outlet property="editView" destination="q1P-kd-995" id="Dhz-gl-7Ut"/>
-                        <outlet property="editViewHeight" destination="Saf-eA-IEJ" id="oOC-Nd-tqI"/>
-                        <outlet property="gutterView" destination="3Js-0o-jqZ" id="BLh-Gh-ebk"/>
-                        <outlet property="gutterViewWidth" destination="Smj-nI-f5r" id="kjP-so-JhO"/>
+                        <outlet property="editViewHeight" destination="dVF-N3-gwQ" id="izi-zu-iyl"/>
                         <outlet property="scrollView" destination="Qwv-ci-fVA" id="4cE-10-pSP"/>
                         <segue destination="9Ak-VM-8lJ" kind="modal" identifier="UserInputSegue" id="GqW-PV-ZCy"/>
                     </connections>

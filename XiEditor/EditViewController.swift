@@ -113,7 +113,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     override func viewDidLoad() {
         super.viewDidLoad()
         editView.dataSource = self
-        gutterView.dataSource = self
+        //gutterView.dataSource = self
         scrollView.contentView.documentCursor = NSCursor.iBeam;
         scrollView.automaticallyAdjustsContentInsets = false
         (scrollView.contentView as? XiClipView)?.delegate = self
@@ -129,7 +129,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     func updateGutterWidth() {
         let gutterColumns = "\(lineCount)".count
         let chWidth = NSString(string: "9").size(withAttributes: textMetrics.attributes).width
-        gutterViewWidth.constant = chWidth * max(2, CGFloat(gutterColumns)) + 2 * gutterView.xPadding
+        //gutterViewWidth.constant = chWidth * max(2, CGFloat(gutterColumns)) + 2 * gutterView.xPadding
     }
     
     @objc func frameDidChangeNotification(_ notification: Notification) {
@@ -140,6 +140,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     /// Can be called manually with the current visible origin in order to ensure the line cache
     /// is up to date.
     func willScroll(to newOrigin: NSPoint) {
+        editView.scrollOrigin = newOrigin
+        // TODO: this calculation doesn't take into account toppad; do in EditView in DRY fashion
         let first = Int(floor(newOrigin.y / textMetrics.linespace))
         let height = Int(ceil((scrollView.contentView.bounds.size.height) / textMetrics.linespace)) + 1
         let last = first + height
@@ -156,7 +158,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         updateEditViewHeight()
         willScroll(to: scrollView.contentView.bounds.origin)
         editView.needsDisplay = true
-        editView.needsDisplay = true
+        editView.needsDisplay = true  // TODO: probably meant to be gutterview, but that's going away
     }
 
     fileprivate func updateEditViewHeight() {
@@ -181,7 +183,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             self?.updateEditViewHeight()
             self?.editView.showBlinkingCursor = self?.editView.isFrontmostView ?? false
             self?.editView.partialInvalidate(invalid: inval)
-            self?.gutterView.needsDisplay = true
+            //self?.gutterView.needsDisplay = true
         }
 
     }
