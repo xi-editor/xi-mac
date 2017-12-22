@@ -492,12 +492,14 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     /// Note: - The returned position is not guaruanteed to be an existing line. For instance, if a buffer does not fill the current window, a point below the last line will return a buffer position with a line number exceeding the number of lines in the file. In this case position.column will always be zero.
     func bufferPositionFromPoint(_ point: NSPoint) -> BufferPosition {
         let point = self.convert(point, from: nil)
-        let lineIx = yToLine(point.y)
+        let x = point.x + scrollOrigin.x
+        let y = point.y + scrollOrigin.y
+        let lineIx = yToLine(y)
         if let line = getLine(lineIx) {
             let s = line.text
             let attrString = NSAttributedString(string: s, attributes: dataSource.textMetrics.attributes)
             let ctline = CTLineCreateWithAttributedString(attrString)
-            let relPos = NSPoint(x: point.x - x0, y: lineIxToBaseline(lineIx) - point.y)
+            let relPos = NSPoint(x: x - x0, y: lineIxToBaseline(lineIx) - y)
             let utf16_ix = CTLineGetStringIndexForPosition(ctline, relPos)
             if utf16_ix != kCFNotFound {
                 let col = utf16_offset_to_utf8(s, utf16_ix)
@@ -536,6 +538,8 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         if dataSource.document.coreViewIdentifier == nil { return }
         let linespace = dataSource.textMetrics.linespace
         let topPad = linespace - dataSource.textMetrics.ascent
+        let xOff = x0 - scrollOrigin.x
+        let yOff = topPad - scrollOrigin.y
         let first = max(0, Int((floor(dirtyRect.origin.y - topPad + scrollOrigin.y) / linespace)))
         let lastVisible = Int(ceil((dirtyRect.origin.y + dirtyRect.size.height - topPad + scrollOrigin.y) / linespace))
         
@@ -562,15 +566,15 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             dataSource.styleMap.applyStyles(builder: builder, styles: line.styles)
             let textLine = builder.build(fontCache: renderer.fontCache)
             textLines.append(textLine)
-            let y0 = topPad + dataSource.textMetrics.linespace * CGFloat(lineIx) - scrollOrigin.y
-            renderer.drawLineBg(line: textLine, x0: GLfloat(x0), yRange: GLfloat(y0)..<GLfloat(y0 + linespace), selColor: selArgb)
+            let y0 = yOff + dataSource.textMetrics.linespace * CGFloat(lineIx)
+            renderer.drawLineBg(line: textLine, x0: GLfloat(xOff), yRange: GLfloat(y0)..<GLfloat(y0 + linespace), selColor: selArgb)
         }
 
         // second pass: draw text
         for lineIx in first..<last {
             if let textLine = textLines[lineIx - first] {
-                let y = topPad + dataSource.textMetrics.ascent + linespace * CGFloat(lineIx) - scrollOrigin.y
-                renderer.drawLine(line: textLine, x0: GLfloat(x0), y0: GLfloat(y))
+                let y = yOff + dataSource.textMetrics.ascent + linespace * CGFloat(lineIx)
+                renderer.drawLine(line: textLine, x0: GLfloat(xOff), y0: GLfloat(y))
             }
         }
         
@@ -583,9 +587,9 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                     for cursor in line.cursor {
                         let utf16Ix = utf8_offset_to_utf16(line.text, cursor)
                         let x = textLine.offsetForIndex(utf16Ix: utf16Ix)
-                        let y0 = topPad + dataSource.textMetrics.linespace * CGFloat(lineIx) - scrollOrigin.y
+                        let y0 = yOff + dataSource.textMetrics.linespace * CGFloat(lineIx)
                         let cursorWidth: GLfloat = 1.0
-                        renderer.drawSolidRect(x: GLfloat(x0 + x) - 0.5 * cursorWidth, y: GLfloat(y0), width: cursorWidth, height: GLfloat(linespace), argb: cursorArgb)
+                        renderer.drawSolidRect(x: GLfloat(xOff + x) - 0.5 * cursorWidth, y: GLfloat(y0), width: cursorWidth, height: GLfloat(linespace), argb: cursorArgb)
                     }
                 }
             }
