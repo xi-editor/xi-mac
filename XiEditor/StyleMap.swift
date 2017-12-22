@@ -192,9 +192,12 @@ func closestMatch(of font: NSFont, traits: NSFontTraitMask, weight: Int) -> NSFo
     var weight = weight
     let fromWeight = fm.weight(of: font)
     let direction = fromWeight > weight ? 1 : -1
-    while weight != fromWeight {
+    while true {
         if let f = fm.font(withFamily: font.familyName ?? font.fontName, traits: traits, weight: weight, size: font.pointSize) {
             return f
+        }
+        if weight == fromWeight || weight + direction == fromWeight {
+            break
         }
         weight += direction
     }
