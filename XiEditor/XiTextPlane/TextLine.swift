@@ -118,6 +118,10 @@ struct TextLine {
     func offsetForIndex(utf16Ix: Int) -> CGFloat {
         return CTLineGetOffsetForStringIndex(ctLine, utf16Ix, nil)
     }
+    
+    var width: Double {
+        return CTLineGetTypographicBounds(ctLine, nil, nil, nil)
+    }
 }
 
 struct GlyphInstance {

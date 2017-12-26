@@ -89,6 +89,8 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             needsDisplay = true
         }
     }
+    var gutterXPad: CGFloat = 8
+    var gutterWidth: CGFloat = 0
 
     var dataSource: EditViewDataSource!
 
@@ -538,7 +540,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         if dataSource.document.coreViewIdentifier == nil { return }
         let linespace = dataSource.textMetrics.linespace
         let topPad = linespace - dataSource.textMetrics.ascent
-        let xOff = x0 - scrollOrigin.x
+        let xOff = gutterWidth + x0 - scrollOrigin.x
         let yOff = topPad - scrollOrigin.y
         let first = max(0, Int((floor(dirtyRect.origin.y - topPad + scrollOrigin.y) / linespace)))
         let lastVisible = Int(ceil((dirtyRect.origin.y + dirtyRect.size.height - topPad + scrollOrigin.y) / linespace))
@@ -555,6 +557,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         // first pass: create TextLine objects and also draw background rects
         let selectionColor = self.isFrontmostView ? dataSource.theme.selection : dataSource.theme.inactiveSelection ?? dataSource.theme.selection
         let selArgb = colorToArgb(selectionColor)
+        let foregroundArgb = colorToArgb(dataSource.theme.foreground)
         for lineIx in first..<last {
             let relLineIx = lineIx - first
             guard let line = lines[relLineIx] else {
@@ -562,11 +565,11 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                 continue
             }
             let builder = TextLineBuilder(line.text, font: font)
-            builder.setFgColor(argb: colorToArgb(dataSource.theme.foreground))
+            builder.setFgColor(argb: foregroundArgb)
             dataSource.styleMap.applyStyles(builder: builder, styles: line.styles)
             let textLine = builder.build(fontCache: renderer.fontCache)
             textLines.append(textLine)
-            let y0 = yOff + dataSource.textMetrics.linespace * CGFloat(lineIx)
+            let y0 = yOff + linespace * CGFloat(lineIx)
             renderer.drawLineBg(line: textLine, x0: GLfloat(xOff), yRange: GLfloat(y0)..<GLfloat(y0 + linespace), selColor: selArgb)
         }
 
@@ -587,12 +590,29 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                     for cursor in line.cursor {
                         let utf16Ix = utf8_offset_to_utf16(line.text, cursor)
                         let x = textLine.offsetForIndex(utf16Ix: utf16Ix)
-                        let y0 = yOff + dataSource.textMetrics.linespace * CGFloat(lineIx)
+                        let y0 = yOff + linespace * CGFloat(lineIx)
                         let cursorWidth: GLfloat = 1.0
                         renderer.drawSolidRect(x: GLfloat(xOff + x) - 0.5 * cursorWidth, y: GLfloat(y0), width: cursorWidth, height: GLfloat(linespace), argb: cursorArgb)
                     }
                 }
             }
+        }
+        
+        // gutter drawing
+        // Note: drawing the gutter background after the text effectively clips the text. This
+        // is a bit of a hack, and some optimization might be possible with real clipping
+        // (especially if the gutter background is the same as the theme background).
+        renderer.drawSolidRect(x: 0, y: GLfloat(dirtyRect.origin.x), width: GLfloat(gutterWidth), height: GLfloat(dirtyRect.height), argb: colorToArgb(dataSource.theme.gutter))
+        let gutterArgb = colorToArgb(dataSource.theme.gutterForeground)
+        for lineIx in first..<last {
+            let hasCursor = dataSource.lines.get(lineIx)?.containsCursor ?? false
+            let gutterText = "\(lineIx + 1)"
+            let builder = TextLineBuilder(gutterText, font: font)
+            builder.setFgColor(argb: hasCursor ? foregroundArgb: gutterArgb)
+            let textLine = builder.build(fontCache: renderer.fontCache)
+            let x = gutterWidth - (gutterXPad + CGFloat(textLine.width))
+            let y0 = yOff + dataSource.textMetrics.ascent + linespace * CGFloat(lineIx)
+            renderer.drawLine(line: textLine, x0: GLfloat(x), y0: GLfloat(y0))
         }
     }
 }
