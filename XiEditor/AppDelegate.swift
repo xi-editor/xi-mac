@@ -19,7 +19,7 @@ let XI_CONFIG_DIR = "XI_CONFIG_DIR";
 let PREFERENCES_FILE_NAME = "preferences.xiconfig"
 
 @NSApplicationMain
-class AppDelegate: NSObject, NSApplicationDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
 
     var dispatcher: Dispatcher?
 
@@ -49,8 +49,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             .first!
             .appendingPathComponent("XiEditor")
 
-        // create application support directory and copy preferences
-        // file on first run
+        // create application support directory and copy preferences file on first run
         if !FileManager.default.fileExists(atPath: applicationDirectory.path) {
             do {
 
@@ -83,15 +82,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             else { fatalError("Xi bundle missing expected resouces") }
 
         let dispatcher: Dispatcher = {
-            let coreConnection = CoreConnection(path: corePath,
-                                                updateCallback: {
-                                                    [weak self] (update) in
-                                                    self?.handleAsyncUpdate(update)
-                },
-                                                callback: {
-                                                    [weak self] (json: Any) -> Any? in
-                                                    return self?.handleCoreCmd(json)
-                })
+            let coreConnection = CoreConnection(path: corePath)
+            coreConnection.client = self
             return Dispatcher(coreConnection: coreConnection)
         }()
 
@@ -107,141 +99,97 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         dispatcher.coreConnection.sendRpcAsync(req.method, params: req.params!)
     }
 
-    /// returns the NSDocument corresponding to the given viewIdentifier
-    private func documentForViewIdentifier(viewIdentifier: ViewIdentifier) -> Document? {
-        for doc in NSApplication.shared.orderedDocuments {
-            guard let doc = doc as? Document else { continue }
-            if doc.coreViewIdentifier == viewIdentifier {
-                return doc
-            }
-        }
-        return nil
-    }
+    // MARK: XiClient protocol
 
-    func handleAsyncUpdate(_ json: [String: AnyObject]) {
-        let update = json["update"] as! [String: AnyObject]
-        let viewIdentifier = json["view_id"] as! String
+    func update(viewIdentifier: String, update: [String: AnyObject], rev: UInt64?) {
         let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
         if document == nil { print("document missing for view id \(viewIdentifier)") }
         document?.updateAsync(update: update)
     }
 
-    func handleCoreCmd(_ json: Any) -> Any? {
-        guard let obj = json as? [String : Any],
-            let method = obj["method"] as? String,
-            let params = obj["params"]
-            else { print("unknown json from core:", json); return nil }
-
-        return handleRpc(method, params: params)
+    func scroll(viewIdentifier: String, line: Int, column: Int) {
+        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
+        DispatchQueue.main.async {
+            document?.editViewController?.scrollTo(line, column)
+        }
     }
 
-    func handleRpc(_ method: String, params: Any) -> Any? {
-        switch method {
-        case "update":
-            fatalError("update RPC must be handled off the main thread")
+    func defineStyle(style: [String: AnyObject]) {
+        DispatchQueue.main.async { [weak self] in
+            self?.styleMap.defStyle(json: style)
+        }
+    }
 
-        case "scroll_to":
-            if let obj = params as? [String : AnyObject], let line = obj["line"] as? Int, let col = obj["col"] as? Int {
-                guard let viewIdentifier = obj["view_id"] as? String, let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
-                    else { print("view_id or document missing for update event: ", obj); return nil }
-                    document.editViewController?.scrollTo(line, col)
-            }
-        case "def_style":
-            if let obj = params as? [String : AnyObject] {
-                styleMap.defStyle(json: obj)
-            }
-
-        case "plugin_started":
-            guard let obj = params as? [String : AnyObject] else { print("bad params \(params)"); return nil }
-                  let view_id = obj["view_id"] as! String
-                  let plugin = obj["plugin"] as! String
-            documentForViewIdentifier(viewIdentifier: view_id)?.editViewController?.pluginStarted(plugin)
-
-        case "plugin_stopped":
-            guard let obj = params as? [String : AnyObject],
-                let view_id = obj["view_id"] as? String,
-                let document = documentForViewIdentifier(viewIdentifier: view_id),
-                let plugin = obj["plugin"] as? String else { print("missing plugin field in \(params)"); return nil }
-            document.editViewController?.pluginStopped(plugin)
-
-        case "available_themes":
-            guard let obj = params as? [String : AnyObject],
-                let themes = obj["themes"] as? [String] else {
-                    print("invalid 'available_themes' rpc: \(params)");
-                    return nil
-            }
-            for doc in NSApplication.shared.orderedDocuments {
-                guard let doc = doc as? Document else { continue }
-                doc.editViewController?.availableThemesChanged(themes)
-            }
-        case "theme_changed":
-            guard let obj = params as? [String : AnyObject],
-                let name = obj["name"] as? String,
-                let themeJson = obj["theme"] as? [String: AnyObject] else {
-                    print("invalid 'theme_changed' rpc \(params)");
-                    return nil
-            }
+    func themeChanged(name: String, theme: Theme) {
+        DispatchQueue.main.async { [weak self] in
             UserDefaults.standard.set(name, forKey: USER_DEFAULTS_THEME_KEY)
-            self.theme = Theme(jsonObject: themeJson)
+            self?.theme = theme
             for doc in NSApplication.shared.orderedDocuments {
                 guard let doc = doc as? Document else { continue }
                 doc.editViewController?.themeChanged(name)
             }
-        case "available_plugins":
-            guard let obj = params as? [String : AnyObject],
-                let view_id = obj["view_id"] as? String,
-                let document = documentForViewIdentifier(viewIdentifier: view_id),
-                let response = obj["plugins"] as? [[String: AnyObject]] else {
-                    print("failed to parse available_plugins rpc \(params)")
-                    return nil
-            }
-            var available: [String: Bool] = [:]
-            for item in response {
-                available[item["name"] as! String] = item["running"] as? Bool
-            }
-            document.editViewController?.availablePlugins = available
-        case "update_cmds":
-            guard let obj = params as? [String : AnyObject],
-                let view_id = obj["view_id"] as? String,
-                let document = documentForViewIdentifier(viewIdentifier: view_id),
-                let cmds = obj["cmds"] as? [[String: AnyObject]],
-                let plugin = obj["plugin"] as? String else { print("missing plugin field in \(params)"); return nil }
-            let parsedCommands = cmds.map { Command(jsonObject: $0) }
-                .filter { $0 != nil }
-                .map { $0! }
-
-            document.editViewController?.updateCommands(plugin: plugin, commands: parsedCommands)
-        
-        case "config_changed":
-            guard let obj = params as? [String : AnyObject],
-                let changes = obj["changes"] as? [String: AnyObject] else {
-                    print("failed to parse config_changed \(params)");
-                    return nil
-            }
-
-            if let view_id = obj["view_id"] as? String {
-                let document = documentForViewIdentifier(viewIdentifier: view_id)
-                document?.editViewController?.configChanged(changes: changes)
-            } else {
-                // this might be for global settings or something?
-                print("config_changes unhandled, no view_id")
-            }
-
-
-        case "alert":
-            if let obj = params as? [String : AnyObject], let msg = obj["msg"] as? String {
-                let alert =  NSAlert.init()
-                alert.alertStyle = .informational
-                alert.messageText = msg
-                alert.runModal()
-            }
-        default:
-            print("unknown method from core:", method)
         }
-
-        return nil
     }
 
+    func availableThemes(themes: [String]) {
+        DispatchQueue.main.async {
+            for doc in NSApplication.shared.orderedDocuments {
+                guard let doc = doc as? Document else { continue }
+                doc.editViewController?.availableThemesChanged(themes)
+            }
+        }
+    }
+
+    func pluginStarted(viewIdentifier: String, pluginName: String) {
+        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
+        DispatchQueue.main.async {
+            document?.editViewController?.pluginStarted(pluginName)
+        }
+    }
+
+    func pluginStopped(viewIdentifier: String, pluginName: String) {
+        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
+        DispatchQueue.main.async {
+            document?.editViewController?.pluginStopped(pluginName)
+        }
+    }
+
+    func availablePlugins(viewIdentifier: String, plugins: [[String: AnyObject]]) {
+        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
+        var available: [String: Bool] = [:]
+        for item in plugins {
+            available[item["name"] as! String] = item["running"] as? Bool
+        }
+        DispatchQueue.main.async {
+            document?.editViewController?.availablePlugins = available
+        }
+    }
+
+    func updateCommands(viewIdentifier: String, plugin: String, commands: [Command]) {
+        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
+        DispatchQueue.main.async {
+            document?.editViewController?.updateCommands(plugin: plugin,
+                                                         commands: commands)
+        }
+    }
+
+    func alert(text: String) {
+        DispatchQueue.main.async {
+            let alert =  NSAlert.init()
+            alert.alertStyle = .informational
+            alert.messageText = text
+            alert.runModal()
+        }
+    }
+
+    func configChanged(viewIdentifier: ViewIdentifier, changes: [String : AnyObject]) {
+        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
+        DispatchQueue.main.async {
+            document?.editViewController?.configChanged(changes: changes)
+        }
+    }
+
+    //MARK: top-level interactions
     @IBAction func openPreferences(_ sender: NSMenuItem) {
         let delegate = (NSApplication.shared.delegate as? AppDelegate)
         if let preferencesPath = delegate?.defaultConfigDirectory.appendingPathComponent(PREFERENCES_FILE_NAME) {
@@ -254,6 +202,21 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     }
             });
         }
+    }
+
+    //MARK: helpers
+
+    /// returns the NSDocument corresponding to the given viewIdentifier
+    private func documentForViewIdentifier(viewIdentifier: ViewIdentifier) -> Document? {
+        //TODO: move this to use a hashmap; we will have to do some manual bookkeeping,
+        // but this is a noticeable (small) bottleneck in some scenarios
+        for doc in NSApplication.shared.orderedDocuments {
+            guard let doc = doc as? Document else { continue }
+            if doc.coreViewIdentifier == viewIdentifier {
+                return doc
+            }
+        }
+        return nil
     }
 
     /// Redraws all open document views, as on a font or theme change.

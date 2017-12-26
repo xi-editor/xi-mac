@@ -49,8 +49,7 @@ class CoreConnection {
 
     var inHandle: FileHandle  // stdin of core process
     var recvBuf: Data
-    var callback: (Any) -> Any?
-    var updateCallback: ([String: AnyObject]) -> ()
+    weak var client: XiClient?
     let rpcLogWriter: FileWriter?
     
     // RPC state
@@ -58,7 +57,7 @@ class CoreConnection {
     var rpcIndex = 0
     var pending = Dictionary<Int, (Any?) -> ()>()
 
-    init(path: String, updateCallback: @escaping ([String: AnyObject]) -> (), callback: @escaping (Any) -> Any?) {
+    init(path: String) {
         if let rpcLogPath = ProcessInfo.processInfo.environment[XI_RPC_LOG] {
             self.rpcLogWriter = FileWriter(path: rpcLogPath)
             if self.rpcLogWriter != nil {
@@ -76,8 +75,6 @@ class CoreConnection {
         task.standardInput = inPipe
         inHandle = inPipe.fileHandleForWriting
         recvBuf = Data()
-        self.updateCallback = updateCallback
-        self.callback = callback
 
         outPipe.fileHandleForReading.readabilityHandler = { handle in
             let data = handle.availableData
@@ -132,8 +129,7 @@ class CoreConnection {
     func handleRaw(_ data: Data) {
         do {
             let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
-//            print("got \(json)")
-            handleRpc(json as Any)
+            handleRpc(json)
         } catch {
             print("json error \(error.localizedDescription)")
         }
@@ -150,25 +146,82 @@ class CoreConnection {
                     callback = self.pending.removeValue(forKey: index)
                 }
                 callback?(result)
-            } else { // is request
-                DispatchQueue.main.async {
-                    let result = self.callback(json as AnyObject)
-                    let resp = ["id": index, "result": result] as [String : Any?]
-                    self.sendJson(resp as Any)
-                }
-            }
-            // is notification
-        } else {
-            // updates get their own codepath, staying on this thread; the main thread may be blocked
-            // waiting for this update
-            if obj["method"] as? String == "update", let params = obj["params"] as? [String: AnyObject] {
-                self.updateCallback(params)
             } else {
-            // other notifications go on the main thread
-                DispatchQueue.main.async {
-                    let _ = self.callback(json as AnyObject)
-                }
+                self.handleRequest(json: obj)
             }
+        } else {
+            self.handleNotification(json: obj)
+        }
+    }
+
+    func handleRequest(json: [String: AnyObject]) {
+        // there are currently no core -> client requests in the protocol
+        print("Unexpected RPC Request: \(json)")
+    }
+
+    func handleNotification(json: [String: AnyObject]) {
+        guard let method = json["method"] as? String, let params = json["params"]
+            else {
+                print("unknown json from core: \(json)")
+                return
+        }
+        let viewIdentifier = params["view_id"] as? ViewIdentifier
+
+        switch method {
+        case "update":
+            let update = params["update"] as! [String: AnyObject]
+            self.client?.update(viewIdentifier: viewIdentifier!, update: update, rev: nil)
+
+        case "scroll_to":
+            let line = params["line"] as! Int
+            let col = params["col"] as! Int
+            self.client?.scroll(viewIdentifier: viewIdentifier!, line: line, column: col)
+
+        case "def_style":
+            client?.defineStyle(style: params as! [String: AnyObject])
+
+        case "plugin_started":
+            let plugin = params["plugin"] as! String
+            client?.pluginStarted(viewIdentifier: viewIdentifier!, pluginName: plugin)
+
+        case "plugin_stopped":
+            let plugin = params["plugin"] as! String
+            client?.pluginStopped(viewIdentifier: viewIdentifier!, pluginName: plugin)
+
+        case "available_themes":
+            let themes = params["themes"] as! [String]
+            client?.availableThemes(themes: themes)
+
+        case "theme_changed":
+            let name = params["name"] as! String
+            let themeJson = params["theme"] as! [String: AnyObject]
+            let theme = Theme(jsonObject: themeJson)
+            client?.themeChanged(name: name, theme: theme)
+
+        case "available_plugins":
+            let plugins = params["plugins"] as! [[String: AnyObject]]
+            client?.availablePlugins(viewIdentifier: viewIdentifier!, plugins: plugins)
+
+        case "update_cmds":
+            let plugin = params["plugin"] as! String
+            let cmdsJson = params["cmds"] as! [[String: AnyObject]]
+            let cmds = cmdsJson.map { Command(jsonObject: $0) }
+                .filter { $0 != nil }
+                .map { $0! }
+
+            client?.updateCommands(viewIdentifier: viewIdentifier!,
+                                   plugin: plugin, commands: cmds)
+
+        case "config_changed":
+            let changes = params["changes"] as! [String: AnyObject]
+            client?.configChanged(viewIdentifier: viewIdentifier!, changes: changes)
+
+        case "alert":
+            let message = params["message"] as! String
+            client?.alert(text: message)
+
+        default:
+            print("unknown notification \(method)")
         }
     }
 
