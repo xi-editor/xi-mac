@@ -218,6 +218,7 @@ class Renderer {
             cachedGlyph = atlas.getGlyph(fr: glyph.fontRef, glyph: glyph.glyph, flags: glyph.flags, scale: dpiScale)
             if cachedGlyph == nil {
                 print("glyph \(glyph) is not renderable")
+                return
             }
         }
         textInstances[textInstanceIx + 0] = x0 + glyph.x + cachedGlyph!.xoff
@@ -246,6 +247,23 @@ class Renderer {
                           height: yRange.upperBound - yRange.lowerBound,
                           argb: selColor)
         }
+    }
+
+    /// Draw decorations (currently underline, but could expand in future).
+    func drawLineDecorations(line: TextLine, x0: GLfloat, y0: GLfloat) {
+        for underlineRange in line.underlineRanges {
+            drawSolidRect(x: x0 + underlineRange.range.lowerBound, y: y0 + underlineRange.y.lowerBound,
+                          width: underlineRange.range.upperBound - underlineRange.range.lowerBound,
+                          height: underlineRange.y.upperBound - underlineRange.y.lowerBound,
+                          argb: underlineRange.argb)
+
+        }
+    }
+
+    /// Draw a rectangle for the given y range and the range of text (utf-16) offsets
+    func drawRectForRange(line: TextLine, x0: GLfloat, yRange: Range<GLfloat>, utf16Range: CountableRange<Int>, argb: UInt32) {
+        let xRange = getCtLineRange(line.ctLine, utf16Range)
+        drawSolidRect(x: x0 + xRange.lowerBound, y: yRange.lowerBound, width: xRange.upperBound - xRange.lowerBound, height: yRange.upperBound - yRange.lowerBound, argb: argb)
     }
 
     func drawSolidRect(x: GLfloat, y: GLfloat, width: GLfloat, height: GLfloat, argb: UInt32) {

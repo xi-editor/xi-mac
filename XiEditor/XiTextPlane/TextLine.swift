@@ -21,11 +21,15 @@ class TextLineBuilder {
     var fgSpans: [ColorSpan] = []
     var selSpans: [SelSpan] = []
     var fakeItalicSpans: [FakeItalicSpan] = []
+    var underlineSpans: [UnderlineSpan] = []
+    // Note: the font here is used only to get underline metrics, this may change.
+    var font: CTFont
 
     init(_ text: String, font: CTFont) {
         let attributes = [
             NSAttributedStringKey.font: font,
             ]
+        self.font = font
         self.attrString = NSMutableAttributedString(string: text, attributes: attributes)
     }
 
@@ -51,6 +55,12 @@ class TextLineBuilder {
     func addFakeItalicSpan(range: CountableRange<Int>) {
         if !range.isEmpty {
             fakeItalicSpans.append(FakeItalicSpan(range: range))
+        }
+    }
+
+    func addUnderlineSpan(range: CountableRange<Int>, style: UnderlineStyle) {
+        if !range.isEmpty {
+            underlineSpans.append(UnderlineSpan(range: range, style: style))
         }
     }
 
@@ -99,12 +109,30 @@ class TextLineBuilder {
         }
         var selRanges: [Range<GLfloat>] = []
         for selSpan in selSpans {
-            // TODO: make bidi-aware
-            let selStart = GLfloat(CTLineGetOffsetForStringIndex(ctLine, selSpan.range.startIndex, nil))
-            let selEnd = GLfloat(CTLineGetOffsetForStringIndex(ctLine, selSpan.range.endIndex, nil))
-            selRanges.append(selStart..<selEnd)
+            selRanges.append(getCtLineRange(ctLine, selSpan.range))
         }
-        return TextLine(glyphs: glyphs, ctLine: ctLine, selRanges: selRanges)
+        var underlineRanges: [UnderlineRange] = []
+        if !underlineSpans.isEmpty {
+            // TODO: not sure these metrics are high-quality. Also, when we do rich text,
+            // might want to use actual font (if overriden by span).
+            let ulPos = CTFontGetUnderlinePosition(font)
+            let ulThickness = CTFontGetUnderlineThickness(font)
+            for underlineSpan in underlineSpans {
+                let range = getCtLineRange(ctLine, underlineSpan.range)
+                // TODO: the underline should probably match the actual color
+                let argb = defaultFgColor
+                var thickness = ulThickness
+                switch underlineSpan.style {
+                case .single:
+                    ()
+                case .thick:
+                    thickness *= 2
+                }
+                let y = GLfloat(-ulPos - 0.5 * thickness) ..< GLfloat(-ulPos + 0.5 * thickness)
+                underlineRanges.append(UnderlineRange(range: range, y: y, argb: argb))
+            }
+        }
+        return TextLine(glyphs: glyphs, ctLine: ctLine, selRanges: selRanges, underlineRanges: underlineRanges)
     }
 }
 
@@ -114,6 +142,7 @@ struct TextLine {
     // The CTLine is kept mostly for caret queries
     var ctLine: CTLine
     var selRanges: [Range<GLfloat>]
+    var underlineRanges: [UnderlineRange]
 
     func offsetForIndex(utf16Ix: Int) -> CGFloat {
         return CTLineGetOffsetForStringIndex(ctLine, utf16Ix, nil)
@@ -135,6 +164,14 @@ struct GlyphInstance {
     var flags: UInt32
 }
 
+struct UnderlineRange {
+    // Having separate ranges for x and y is maybe silly (it defines a rect), but makes it
+    // more similar to selection ranges etc.
+    var range: Range<GLfloat>
+    var y: Range<GLfloat>
+    var argb: UInt32
+}
+
 let FLAG_FAKE_ITALIC: UInt32 = 1 << 16
 let FLAG_HI_DPI: UInt32 = 1 << 17
 
@@ -153,10 +190,27 @@ struct FakeItalicSpan {
     var range: CountableRange<Int>
 }
 
+struct UnderlineSpan {
+    var range: CountableRange<Int>
+    var style: UnderlineStyle
+}
+
+enum UnderlineStyle {
+    case single
+    case thick
+}
+
 /// Converts color value in argb format to tuple of 4 floats.
 func argbToFloats(argb: UInt32) -> (GLfloat, GLfloat, GLfloat, GLfloat) {
     return (GLfloat((argb >> 16) & 0xff),
             GLfloat((argb >> 8) & 0xff),
             GLfloat(argb & 0xff),
             GLfloat(argb >> 24))
+}
+
+// TODO: make bidi-aware (signature changes to returning list of ranges)
+func getCtLineRange(_ ctLine: CTLine, _ range: CountableRange<Int>) -> Range<GLfloat> {
+    let start = GLfloat(CTLineGetOffsetForStringIndex(ctLine, range.startIndex, nil))
+    let end = GLfloat(CTLineGetOffsetForStringIndex(ctLine, range.endIndex, nil))
+    return start ..< end
 }

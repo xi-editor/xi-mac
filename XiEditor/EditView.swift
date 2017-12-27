@@ -581,16 +581,47 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             }
         }
         
-        // third pass: draw carets
-        if showBlinkingCursor && _cursorStateOn {
-            let cursorArgb = colorToArgb(cursorColor)
-            for lineIx in first..<last {
-                let relLineIx = lineIx - first
-                if let textLine = textLines[relLineIx], let line = lines[relLineIx] {
-                    for cursor in line.cursor {
-                        let utf16Ix = utf8_offset_to_utf16(line.text, cursor)
+        // third pass: draw text decorations
+        for lineIx in first..<last {
+            if let textLine = textLines[lineIx - first] {
+                let y = yOff + dataSource.textMetrics.ascent + linespace * CGFloat(lineIx)
+                renderer.drawLineDecorations(line: textLine, x0: GLfloat(xOff), y0: GLfloat(y))
+            }
+        }
+
+        // fourth pass: draw carets
+        let cursorArgb = colorToArgb(cursorColor)
+        for lineIx in first..<last {
+            let relLineIx = lineIx - first
+            if let textLine = textLines[relLineIx], let line = lines[relLineIx] {
+                let y0 = yOff + linespace * CGFloat(lineIx)
+                for cursor in line.cursor {
+                    let utf16Ix = utf8_offset_to_utf16(line.text, cursor)
+                    // Note: It's ugly that cursorPos is set as a side-effect
+                    // TODO: disabled until firstRect logic is fixed
+                    //self.cursorPos = (lineIx, utf16Ix)
+                    if (markedRange().location != NSNotFound) {
+                        let markRangeStart = utf16Ix - markedRange().length
+                        if markRangeStart >= 0 {
+                            let yBaseline = y0 + dataSource.textMetrics.ascent
+                            // TODO: perhaps this shouldn't be hardcoded
+                            let yRange = GLfloat(yBaseline + 2) ..< GLfloat(yBaseline + 3)
+                            let utf16Range = markRangeStart ..< utf16Ix
+                            renderer.drawRectForRange(line: textLine, x0: GLfloat(xOff), yRange: yRange, utf16Range: utf16Range, argb: colorToArgb(dataSource.theme.foreground))
+                        }
+                    }
+                    if (selectedRange().location != NSNotFound) {
+                        let selectedRangeStart = utf16Ix - markedRange().length + selectedRange().location
+                        if selectedRangeStart >= 0 {
+                            let yBaseline = y0 + dataSource.textMetrics.ascent
+                            // TODO: perhaps this shouldn't be hardcoded
+                            let yRange = GLfloat(yBaseline + 2) ..< GLfloat(yBaseline + 4)
+                            let utf16Range = selectedRangeStart ..< selectedRangeStart + selectedRange().length
+                            renderer.drawRectForRange(line: textLine, x0: GLfloat(xOff), yRange: yRange, utf16Range: utf16Range, argb: colorToArgb(dataSource.theme.foreground))
+                        }
+                    }
+                    if showBlinkingCursor && _cursorStateOn {
                         let x = textLine.offsetForIndex(utf16Ix: utf16Ix)
-                        let y0 = yOff + linespace * CGFloat(lineIx)
                         let cursorWidth: GLfloat = 1.0
                         renderer.drawSolidRect(x: GLfloat(xOff + x) - 0.5 * cursorWidth, y: GLfloat(y0), width: cursorWidth, height: GLfloat(linespace), argb: cursorArgb)
                     }

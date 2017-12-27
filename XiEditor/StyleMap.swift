@@ -197,6 +197,9 @@ class StyleMap {
             if style.fakeItalic {
                 builder.addFakeItalicSpan(range: convertRange(range))
             }
+            if style.underline {
+                builder.addUnderlineSpan(range: convertRange(range), style: .single)
+            }
         }
     }
     
