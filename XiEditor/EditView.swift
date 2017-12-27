@@ -494,7 +494,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     /// Note: - The returned position is not guaruanteed to be an existing line. For instance, if a buffer does not fill the current window, a point below the last line will return a buffer position with a line number exceeding the number of lines in the file. In this case position.column will always be zero.
     func bufferPositionFromPoint(_ point: NSPoint) -> BufferPosition {
         let point = self.convert(point, from: nil)
-        let x = point.x + scrollOrigin.x
+        let x = point.x + scrollOrigin.x - gutterWidth
         let y = point.y + scrollOrigin.y
         let lineIx = yToLine(y)
         if let line = getLine(lineIx) {

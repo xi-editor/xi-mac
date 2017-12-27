@@ -121,10 +121,15 @@ class Atlas {
         return coords
     }
 
-    func getGlyph(fr: FontRef, glyph: CGGlyph, flags: UInt32) -> CachedGlyph? {
-        let fakeItalic = (flags & FLAG_FAKE_ITALIC) != 0
+    func getGlyph(fr: FontRef, glyph: CGGlyph, flags: UInt32, scale: CGFloat) -> CachedGlyph? {
+        // Some discussion about this approach: the correctness condition is that we never
+        // use the same key for two different scale factors. A more robust approach would
+        // be to generate a unique flag value for each scale factor, but this will work in
+        // the common case of two monitors, one low-dpi (1.0) and the other retina (2.0).
+        // It will also work on devices with a single scaling factor, no matter the value.
+        let flagsForKey = flags | (scale > 1.0 ? FLAG_HI_DPI : 0)
         let fontInstance = fontCache.fonts[fr]
-        let key = fontMapKey(glyph: glyph, flags: flags)
+        let key = fontMapKey(glyph: glyph, flags: flagsForKey)
         let probe = fontInstance.map[key]
         if probe != nil {
             return probe
@@ -137,20 +142,19 @@ class Atlas {
             fontInstance.map[key] = result
             return result
         }
-        // TODO: get this from correct source
-        let dpiScale: CGFloat = 2.0
-        let invDpiScale = 1 / dpiScale
+        let invScale = 1 / scale
         // TODO: this can get more precise, and should take subpixel position into account
         //print("rect: \(rect)")
         let oblique: CGFloat = 0.2
+        let fakeItalic = (flagsForKey & FLAG_FAKE_ITALIC) != 0
         if fakeItalic {
             rect.origin.x += oblique * rect.origin.y
             rect.size.width += oblique * rect.size.height
         }
-        let x0 = rect.origin.x * dpiScale
-        let x1 = x0 + rect.size.width * dpiScale
-        let y0 = rect.origin.y * dpiScale
-        let y1 = y0 + rect.size.height * dpiScale
+        let x0 = rect.origin.x * scale
+        let x1 = x0 + rect.size.width * scale
+        let y0 = rect.origin.y * scale
+        let y1 = y0 + rect.size.height * scale
         let widthInt = 2 + Int(ceil(x1) - floor(x0))
         let heightInt = 2 + Int(ceil(y1) - floor(y0))
         let origin = allocRect(w: widthInt, h: heightInt)
@@ -167,23 +171,23 @@ class Atlas {
         ctx.setFillColor(gray: 1.0, alpha: 1.0)
         ctx.fill(CGRect(x: 0, y: 0, width: widthInt, height: heightInt))
         ctx.setFillColor(gray: 0.0, alpha: 1.0)
-        ctx.scaleBy(x: dpiScale, y: dpiScale)
+        ctx.scaleBy(x: scale, y: scale)
         if fakeItalic {
             ctx.concatenate(CGAffineTransform(a: 1.0, b: 0.0, c: oblique, d: 1.0, tx: 0, ty: 0))
         }
         let xoff = 1 - floor(x0)
         let yoff = 1 - floor(y0)
-        var point = CGPoint(x: xoff * invDpiScale, y: yoff * invDpiScale)
+        var point = CGPoint(x: xoff * invScale, y: yoff * invScale)
         CTFontDrawGlyphs(fontInstance.ctFont, &glyphInOut, &point, 1, ctx)
         glTexSubImage2D(GLenum(GL_TEXTURE_2D), 0, GLint(origin!.0), GLint(origin!.1), GLsizei(widthInt), GLsizei(heightInt), GLenum(GL_BGRA), GLenum(GL_UNSIGNED_BYTE), &data)
         let result = CachedGlyph(uvCoords: [GLfloat(origin!.0) * uvScale,
                                             GLfloat(origin!.1) * uvScale,
                                             GLfloat(widthInt) * uvScale,
                                             GLfloat(heightInt) * uvScale],
-                                 xoff: GLfloat(-xoff * invDpiScale),
-                                 yoff: GLfloat((yoff - CGFloat(heightInt)) * invDpiScale),
-                                 width: GLfloat(CGFloat(widthInt) * invDpiScale),
-                                 height: GLfloat(CGFloat(heightInt) * invDpiScale))
+                                 xoff: GLfloat(-xoff * invScale),
+                                 yoff: GLfloat((yoff - CGFloat(heightInt)) * invScale),
+                                 width: GLfloat(CGFloat(widthInt) * invScale),
+                                 height: GLfloat(CGFloat(heightInt) * invScale))
         fontInstance.map[key] = result
         return result
     }

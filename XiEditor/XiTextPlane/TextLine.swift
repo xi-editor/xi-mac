@@ -136,6 +136,7 @@ struct GlyphInstance {
 }
 
 let FLAG_FAKE_ITALIC: UInt32 = 1 << 16
+let FLAG_HI_DPI: UInt32 = 1 << 17
 
 // Possible refactor: have Span<T> so range is separated from payload
 struct ColorSpan {

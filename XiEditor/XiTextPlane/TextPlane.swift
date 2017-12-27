@@ -121,7 +121,7 @@ class TextPlaneLayer : NSOpenGLLayer {
             glEnable(GLenum(GL_BLEND))
             glEnable(GLenum(GL_FRAMEBUFFER_SRGB))
         }
-        renderer!.beginDraw(size: frame.size)
+        renderer!.beginDraw(size: frame.size, scale: contentsScale)
         textDelegate?.render(renderer!, dirtyRect: frame)
         renderer!.endDraw()
 

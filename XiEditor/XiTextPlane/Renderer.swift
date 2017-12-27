@@ -49,6 +49,7 @@ class Renderer {
     var drawState: DrawState = .none
     var u_x_scale: GLfloat = 0
     var u_y_scale: GLfloat = 0
+    var dpiScale: CGFloat = 0
 
     init() {
         // solid rectangle rendering
@@ -130,20 +131,16 @@ class Renderer {
         glEnableVertexAttribArray(5)
         glVertexAttribPointer(5, 2, GLenum(GL_FLOAT), GLboolean(GL_FALSE), textInstanceBytes, UnsafeRawPointer(bitPattern: MemoryLayout<Float>.size * 10))
         glVertexAttribDivisor(5, 1)
-        
+
         atlas = Atlas()
-        let font = CTFontCreateWithName("InconsolataGo" as CFString, 28, nil)
-        let fr = atlas.fontCache.getFontRef(font: font)
-        for i in 0..<256 {
-            let _ = atlas.getGlyph(fr: fr, glyph: CGGlyph(i), flags: 0)
-        }
     }
 
     /// Prepare for drawing a surface of the given size.
-    func beginDraw(size: CGSize) {
+    func beginDraw(size: CGSize, scale: CGFloat) {
         // Note: could move this computation so it only happens on size change
         u_x_scale = 2.0 / GLfloat(size.width)
         u_y_scale = -2.0 / GLfloat(size.height)
+        dpiScale = scale
     }
 
     /// Finish drawing.
@@ -214,11 +211,11 @@ class Renderer {
     }
 
     func drawGlyphInstance(glyph: GlyphInstance, x0: GLfloat, y0: GLfloat) {
-        var cachedGlyph = atlas.getGlyph(fr: glyph.fontRef, glyph: glyph.glyph, flags: glyph.flags)
+        var cachedGlyph = atlas.getGlyph(fr: glyph.fontRef, glyph: glyph.glyph, flags: glyph.flags, scale: dpiScale)
         if cachedGlyph == nil {
             flushDraw()
             atlas.flushCache()
-            cachedGlyph = atlas.getGlyph(fr: glyph.fontRef, glyph: glyph.glyph, flags: glyph.flags)
+            cachedGlyph = atlas.getGlyph(fr: glyph.fontRef, glyph: glyph.glyph, flags: glyph.flags, scale: dpiScale)
             if cachedGlyph == nil {
                 print("glyph \(glyph) is not renderable")
             }
