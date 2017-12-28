@@ -208,10 +208,10 @@ class LineCache {
 
     /// A semaphore we use to wake up the main thread if it is blocking missing lines
     fileprivate let waitingForLines = DispatchSemaphore(value: 0)
-    /// A dispatch queue used to synchronize access to the underlying state
-    fileprivate let queue = DispatchQueue(label: "io.xi-editor.cache-sync-queue")
-    /// A marker used to indicate if the main thread is blocked.
-    fileprivate let syncLock = Mutex()
+    /// A lock for synchronizing semaphore waits
+    fileprivate let syncLock = UnfairLock()
+    /// A lock used to serialize access to the cache state
+    fileprivate let accessLock = UnfairLock()
     /// The underlying cache state
     fileprivate let state = LineCacheState()
 
@@ -222,22 +222,30 @@ class LineCache {
     /// - Note: An empty line cache will still contain a single empty line, this
     /// is sent as an update from the core after a new document is created.
     var isEmpty: Bool {
-        return queue.sync { state.isEmpty }
+        accessLock.lock()
+        defer { accessLock.unlock() }
+        return state.isEmpty
     }
 
     /// The number of lines in the underlying document.
     var height: Int {
-        return queue.sync { state.height }
+        accessLock.lock()
+        defer { accessLock.unlock() }
+        return state.height
     }
 
     /// Set of lines that need to be invalidated to blink the cursor
     var cursorInval: InvalSet {
-        return queue.sync { state.cursorInval }
+        accessLock.lock()
+        defer { accessLock.unlock() }
+        return state.cursorInval
     }
 
     /// Returns the line for the given index, if it exists in the cache.
     func get(_ ix: Int) -> Line? {
-        return queue.sync { state._get(ix) }
+        accessLock.lock()
+        defer { accessLock.unlock() }
+        return state._get(ix)
     }
 
     /**
@@ -248,7 +256,9 @@ class LineCache {
      contained in the next received update.
      */
     func blockingGet(lines lineRange: LineRange) -> [Line?] {
-        let lines = queue.sync { state.linesForRange(range: lineRange) }
+        accessLock.lock()
+        let lines = state.linesForRange(range: lineRange)
+        accessLock.unlock()
         let missingLines = lineRange.enumerated()
             .filter( { lines.count > $0.offset && lines[$0.offset] == nil })
             .map( { $0.element })
@@ -270,14 +280,20 @@ class LineCache {
                 print("finished waiting: \(elapsed / 1000)us")
                 waitingForLines.signal()
             }
-        }
 
-        return queue.sync { state.linesForRange(range: lineRange) }
+            accessLock.lock()
+            defer { accessLock.unlock() }
+            return state.linesForRange(range: lineRange)
+        } else {
+            return lines
+        }
     }
 
     /// Returns range of lines that have been invalidated
     func applyUpdate(update: [String: AnyObject]) -> InvalSet {
-        let inval = queue.sync { state.applyUpdate(update: update) }
+        accessLock.lock()
+        let inval = state.applyUpdate(update: update)
+        accessLock.unlock()
         waitingForLines.signal()
         syncLock.lock()
         waitingForLines.wait()
@@ -308,31 +324,50 @@ class InvalSet {
     }
 }
 
-//TODO: use os_unfair_lock_t on 10.12+ ?
-//TODO: this should go in some 'utils' file?
 
 /// A safe wrapper around a system lock.
-class Mutex {
-    fileprivate var mutex = pthread_mutex_t()
+class UnfairLock {
+    fileprivate var _lock = os_unfair_lock_s()
+    fileprivate var _fallback = pthread_mutex_t()
 
     init() {
-        pthread_mutex_init(&mutex, nil)
+        if #available(OSX 10.12, *) {
+            // noop
+        } else {
+            pthread_mutex_init(&_fallback, nil)
+        }
     }
 
     deinit {
-        pthread_mutex_destroy(&mutex)
+        if #available(OSX 10.12, *) {
+            // noop
+        } else {
+            pthread_mutex_destroy(&_fallback)
+        }
     }
 
     func lock() {
-        pthread_mutex_lock(&mutex)
+        if #available(OSX 10.12, *) {
+            os_unfair_lock_lock(&_lock)
+        } else {
+            pthread_mutex_lock(&_fallback)
+        }
     }
 
     func unlock() {
-        pthread_mutex_unlock(&mutex)
+        if #available(OSX 10.12, *) {
+            os_unfair_lock_unlock(&_lock)
+        } else {
+            pthread_mutex_unlock(&_fallback)
+        }
     }
 
     /// Tries to take the lock. Returns `true` if succesful.
     func tryLock() -> Bool {
-        return pthread_mutex_trylock(&mutex) == 0
+        if #available(OSX 10.12, *) {
+            return os_unfair_lock_trylock(&_lock)
+        } else {
+            return pthread_mutex_trylock(&_fallback) == 0
+        }
     }
 }
