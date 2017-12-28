@@ -59,7 +59,7 @@ struct Line {
 }
 
 /// The underlying state of the cache, with methods for applying update deltas.
-class LineCacheState: Mutex {
+class LineCacheState: UnfairLock {
     /// A semaphore we use to wake up the main thread if it is blocking missing lines
     let waitingForLines = DispatchSemaphore(value: 0)
     /// Whether the main thread is waiting on the semaphore
@@ -197,12 +197,10 @@ class LineCacheState: Mutex {
         }
         return inval
     }
-
-    func lockGuard() -> LineCacheLocked {
-        return LineCacheLocked(self)
-    }
 }
 
+/// An object that provides safe mutable access to the line cache state, as
+/// it holds an associated mutex during its lifetime.
 class LineCacheLocked: MutexGuard<LineCacheState> {
     /// The maximum time (in milliseconds) to block when missing lines.
     let MAX_BLOCK_MS = 15;
@@ -277,28 +275,34 @@ class LineCacheLocked: MutexGuard<LineCacheState> {
 class LineCache {
 
     /// The underlying cache state
-    fileprivate let state = LineCacheState()
+    private let state = LineCacheState()
 
+    /// Lock the mutex protecting the linecache state and return an object giving
+    /// safe mutable access to that state.
+    func locked() -> LineCacheLocked {
+        return LineCacheLocked(state)
+    }
+    
     /// A boolean value indicating whether or not the linecache contains any text.
     /// - Note: An empty line cache will still contain a single empty line, this
     /// is sent as an update from the core after a new document is created.
     var isEmpty: Bool {
-        return state.lockGuard().isEmpty
+        return locked().isEmpty
     }
 
     /// The number of lines in the underlying document.
     var height: Int {
-        return state.lockGuard().height
+        return locked().height
     }
 
     /// Set of lines that need to be invalidated to blink the cursor
     var cursorInval: InvalSet {
-        return state.lockGuard().cursorInval
+        return locked().cursorInval
     }
 
     /// Returns the line for the given index, if it exists in the cache.
     func get(_ ix: Int) -> Line? {
-        return state.lockGuard().get(ix)
+        return locked().get(ix)
     }
 
     /**
@@ -309,12 +313,12 @@ class LineCache {
      contained in the next received update.
      */
     func blockingGet(lines lineRange: LineRange) -> [Line?] {
-        return state.lockGuard().blockingGet(lines: lineRange)
+        return locked().blockingGet(lines: lineRange)
     }
 
     /// Returns range of lines that have been invalidated
     func applyUpdate(update: [String: AnyObject]) -> InvalSet {
-        return state.lockGuard().applyUpdate(update: update)
+        return locked().applyUpdate(update: update)
     }
 }
 
@@ -340,39 +344,62 @@ class InvalSet {
     }
 }
 
-//TODO: use os_unfair_lock_t on 10.12+ ?
-//TODO: this should go in some 'utils' file?
 
-/// A safe wrapper around a system lock.
-class Mutex {
-    private var mutex = pthread_mutex_t()
+/// A safe wrapper around a system lock, also suitable as a superclass
+/// for objects that hold state protected by the lock.
+class UnfairLock {
+    fileprivate var _lock = os_unfair_lock_s()
+    fileprivate var _fallback = pthread_mutex_t()
 
     init() {
-        pthread_mutex_init(&mutex, nil)
+        if #available(OSX 10.12, *) {
+            // noop
+        } else {
+            pthread_mutex_init(&_fallback, nil)
+        }
     }
 
     deinit {
-        pthread_mutex_destroy(&mutex)
+        if #available(OSX 10.12, *) {
+            // noop
+        } else {
+            pthread_mutex_destroy(&_fallback)
+        }
     }
 
     func lock() {
-        pthread_mutex_lock(&mutex)
+        if #available(OSX 10.12, *) {
+            os_unfair_lock_lock(&_lock)
+        } else {
+            pthread_mutex_lock(&_fallback)
+        }
     }
 
     func unlock() {
-        pthread_mutex_unlock(&mutex)
+        if #available(OSX 10.12, *) {
+            os_unfair_lock_unlock(&_lock)
+        } else {
+            pthread_mutex_unlock(&_fallback)
+        }
     }
 
     /// Tries to take the lock. Returns `true` if successful.
     func tryLock() -> Bool {
-        return pthread_mutex_trylock(&mutex) == 0
+        if #available(OSX 10.12, *) {
+            return os_unfair_lock_trylock(&_lock)
+        } else {
+            return pthread_mutex_trylock(&_fallback) == 0
+        }
     }
 }
 
-/// An object that holds a lock during its lifetime, so a useful superclass
-/// for accessing mutex-protected state.
-class MutexGuard<T: Mutex> {
-    var inner: T
+/// An object that holds a lock during its lifetime, also suitable as a
+/// superclass for accessing mutex-protected state.
+/// - Note: This is basically the translation of Rust's
+/// [MutexGuard](https://doc.rust-lang.org/std/sync/struct.MutexGuard.html)
+/// into Swift.
+class MutexGuard<T: UnfairLock> {
+    fileprivate var inner: T
 
     init(_ mutex: T) {
         inner = mutex
