@@ -403,7 +403,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         return Substring(s.utf16.prefix(ix)).utf8.count
     }
 
-    func getLine(_ lineNum: Int) -> Line? {
+    func getLine(_ lineNum: Int) -> Line<LineAssoc>? {
         return dataSource.lines.get(lineNum)
     }
 
@@ -427,10 +427,12 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         let yOff = topPad - scrollOrigin.y
         let first = max(0, Int((floor(dirtyRect.origin.y - topPad + scrollOrigin.y) / linespace)))
         let lastVisible = Int(ceil((dirtyRect.origin.y + dirtyRect.size.height - topPad + scrollOrigin.y) / linespace))
-        
-        let totalLines = dataSource.lines.height
+
+        // Note: this locks the line cache for the duration of the render
+        let lineCache = dataSource.lines.locked()
+        let totalLines = lineCache.height
         let last = min(totalLines, lastVisible)
-        let lines = dataSource.lines.blockingGet(lines: first..<last)
+        let lines = lineCache.blockingGet(lines: first..<last)
         let font = dataSource.textMetrics.font as CTFont
         let styleMap = dataSource.styleMap.locked()
         var textLines: [TextLine?] = []
@@ -448,11 +450,18 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                 textLines.append(nil)
                 continue
             }
-            let builder = TextLineBuilder(line.text, font: font)
-            builder.setFgColor(argb: foregroundArgb)
-            styleMap.applyStyles(builder: builder, styles: line.styles)
-            let textLine = builder.build(fontCache: renderer.fontCache)
-            textLines.append(textLine)
+            let textLine: TextLine
+            if let assoc = lineCache.get(lineIx)?.assoc {
+                textLine = assoc.textLine
+                textLines.append(assoc.textLine)
+            } else {
+                let builder = TextLineBuilder(line.text, font: font)
+                builder.setFgColor(argb: foregroundArgb)
+                styleMap.applyStyles(builder: builder, styles: line.styles)
+                textLine = builder.build(fontCache: renderer.fontCache)
+                lineCache.setAssoc(lineIx, assoc: LineAssoc(textLine: textLine))
+                textLines.append(textLine)
+            }
             let y0 = yOff + linespace * CGFloat(lineIx)
             renderer.drawLineBg(line: textLine, x0: GLfloat(xOff), yRange: GLfloat(y0)..<GLfloat(y0 + linespace), selColor: selArgb)
         }
@@ -521,7 +530,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         renderer.drawSolidRect(x: 0, y: GLfloat(dirtyRect.origin.x), width: GLfloat(gutterWidth), height: GLfloat(dirtyRect.height), argb: colorToArgb(dataSource.theme.gutter))
         let gutterArgb = colorToArgb(dataSource.theme.gutterForeground)
         for lineIx in first..<last {
-            let hasCursor = dataSource.lines.get(lineIx)?.containsCursor ?? false
+            let hasCursor = lineCache.get(lineIx)?.containsCursor ?? false
             let gutterText = "\(lineIx + 1)"
             let builder = TextLineBuilder(gutterText, font: font)
             builder.setFgColor(argb: hasCursor ? foregroundArgb: gutterArgb)

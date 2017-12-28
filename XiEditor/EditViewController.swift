@@ -16,11 +16,16 @@ import Cocoa
 
 /// The EditViewDataSource protocol describes the properties that an editView uses to determine how to render its contents.
 protocol EditViewDataSource {
-    var lines: LineCache { get }
+    var lines: LineCache<LineAssoc> { get }
     var styleMap: StyleMap { get }
     var theme: Theme { get }
     var textMetrics: TextDrawingMetrics { get }
     var document: Document! { get }
+}
+
+/// Associated data stored per line in the line cache
+struct LineAssoc {
+    var textLine: TextLine
 }
 
 protocol FindDelegate {
@@ -62,7 +67,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         }
     }
     
-    var lines: LineCache = LineCache()
+    var lines = LineCache<LineAssoc>()
 
     var textMetrics: TextDrawingMetrics {
         return (NSApplication.shared.delegate as! AppDelegate).textMetrics
