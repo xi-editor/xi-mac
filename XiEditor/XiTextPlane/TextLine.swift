@@ -80,10 +80,27 @@ class TextLineBuilder {
         for run in runs {
             let count = CTRunGetGlyphCount(run)
             let attributes: NSDictionary = CTRunGetAttributes(run)
-            // TODO: deal with these being nil, as warned by doc
-            let glyphsPtr = CTRunGetGlyphsPtr(run)
-            let posPtr = CTRunGetPositionsPtr(run)
-            let indicesPtr = CTRunGetStringIndicesPtr(run)
+            var glyphsPtr = CTRunGetGlyphsPtr(run)
+            var glyphsBuf: [CGGlyph] = []
+            if glyphsPtr == nil {
+                glyphsBuf = [CGGlyph](repeating: 0, count: count)
+                CTRunGetGlyphs(run, CFRangeMake(0, count), &glyphsBuf)
+                glyphsPtr = UnsafePointer<CGGlyph>(glyphsBuf)
+            }
+            var posPtr = CTRunGetPositionsPtr(run)
+            var posBuf: [CGPoint] = []
+            if posPtr == nil {
+                posBuf = [CGPoint](repeating: CGPoint(), count: count)
+                CTRunGetPositions(run, CFRangeMake(0, count), &posBuf)
+                posPtr = UnsafePointer<CGPoint>(posBuf)
+            }
+            var indicesPtr = CTRunGetStringIndicesPtr(run)
+            var indicesBuf: [CFIndex] = []
+            if indicesPtr == nil {
+                indicesBuf = [CFIndex](repeating: 0, count: count)
+                CTRunGetStringIndices(run, CFRangeMake(0, count), &indicesBuf)
+                indicesPtr = UnsafePointer<CFIndex>(indicesBuf)
+            }
             let font = attributes[kCTFontAttributeName] as! CTFont
             let fr = fontCache.getFontRef(font: font)
             for i in 0..<count {

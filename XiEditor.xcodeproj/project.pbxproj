@@ -9,8 +9,6 @@
 /* Begin PBXBuildFile section */
 		28F1ED4A1EC4C735008839BE /* Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F1ED491EC4C735008839BE /* Search.swift */; };
 		50370A2B1D4209F300EA1B18 /* Dispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50370A2A1D4209F300EA1B18 /* Dispatcher.swift */; };
-		60E4727E1FE0C0D90048A89C /* XiScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E4727D1FE0C0D90048A89C /* XiScrollView.swift */; };
-		6B0DCDD41E8196D0007C14A3 /* GutterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0DCDD31E8196D0007C14A3 /* GutterView.swift */; };
 		6B0DCDD61E832101007C14A3 /* EditContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0DCDD51E832101007C14A3 /* EditContainerView.swift */; };
 		6B1D39101FC53F5C008CCA35 /* client_example.toml in Resources */ = {isa = PBXBuildFile; fileRef = 6B1D390F1FC53F5C008CCA35 /* client_example.toml */; };
 		6B53F5F21EF963EB00A4C664 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B53F5F11EF963EB00A4C664 /* Theme.swift */; };
@@ -68,8 +66,6 @@
 /* Begin PBXFileReference section */
 		28F1ED491EC4C735008839BE /* Search.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
 		50370A2A1D4209F300EA1B18 /* Dispatcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dispatcher.swift; sourceTree = "<group>"; };
-		60E4727D1FE0C0D90048A89C /* XiScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiScrollView.swift; sourceTree = "<group>"; };
-		6B0DCDD31E8196D0007C14A3 /* GutterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GutterView.swift; sourceTree = "<group>"; };
 		6B0DCDD51E832101007C14A3 /* EditContainerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = EditContainerView.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		6B1D390F1FC53F5C008CCA35 /* client_example.toml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = client_example.toml; path = "xi-editor/rust/core-lib/assets/client_example.toml"; sourceTree = "<group>"; };
 		6B53F5F11EF963EB00A4C664 /* Theme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
@@ -158,9 +154,7 @@
 			children = (
 				AED22D741FE8366D0096E7C3 /* XiTextPlane */,
 				6BA1873A1FDDD7B6008220DA /* XiClipView.swift */,
-				60E4727D1FE0C0D90048A89C /* XiScrollView.swift */,
 				F53EA2AE1DCAAA170071ACFD /* EditViewController.swift */,
-				6B0DCDD31E8196D0007C14A3 /* GutterView.swift */,
 				6B0DCDD51E832101007C14A3 /* EditContainerView.swift */,
 				AE499DCF1C82BB2B002D68AF /* AppDelegate.swift */,
 				AED23F171C83CBEC002246CE /* EditView.swift */,
@@ -400,8 +394,6 @@
 				50370A2B1D4209F300EA1B18 /* Dispatcher.swift in Sources */,
 				AED23F181C83CBED002246CE /* EditView.swift in Sources */,
 				AE499DD01C82BB2B002D68AF /* AppDelegate.swift in Sources */,
-				60E4727E1FE0C0D90048A89C /* XiScrollView.swift in Sources */,
-				6B0DCDD41E8196D0007C14A3 /* GutterView.swift in Sources */,
 				28F1ED4A1EC4C735008839BE /* Search.swift in Sources */,
 				F5BDBF371DCA9D2C0042430B /* Document.swift in Sources */,
 				6B90DD221F14110B00DF3CE2 /* UserInputPromptController.swift in Sources */,
