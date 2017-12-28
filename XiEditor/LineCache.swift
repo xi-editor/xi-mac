@@ -59,7 +59,7 @@ struct Line {
 }
 
 /// The underlying state of the cache, with methods for applying update deltas.
-class LineCacheState: UnfairLock {
+fileprivate class LineCacheState: UnfairLock {
     /// A semaphore we use to wake up the main thread if it is blocking missing lines
     let waitingForLines = DispatchSemaphore(value: 0)
     /// Whether the main thread is waiting on the semaphore
@@ -77,7 +77,7 @@ class LineCacheState: UnfairLock {
         return  lines.count == 0 || (lines.count == 1 && lines[0]?.text  == "")
     }
 
-    fileprivate func _get(_ ix: Int) -> Line? {
+    func _get(_ ix: Int) -> Line? {
         if ix < nInvalidBefore { return nil }
         let ix = ix - nInvalidBefore
         if ix < lines.count {
@@ -86,13 +86,13 @@ class LineCacheState: UnfairLock {
         return nil
     }
 
-    fileprivate func linesForRange(range: LineRange) -> [Line?] {
+    func linesForRange(range: LineRange) -> [Line?] {
         return range.map( { _get($0) } )
     }
 
     /// Updates the state by applying a delta. The update format is detailed in the
     /// [xi-core docs](https://github.com/google/xi-editor/blob/master/doc/update.md).
-    fileprivate func applyUpdate(update: [String: AnyObject]) -> InvalSet {
+    func applyUpdate(update: [String: AnyObject]) -> InvalSet {
         let inval = InvalSet()
         guard let ops = update["ops"] else { return inval }
         let oldHeight = height
@@ -201,7 +201,25 @@ class LineCacheState: UnfairLock {
 
 /// An object that provides safe mutable access to the line cache state, as
 /// it holds an associated mutex during its lifetime.
-class LineCacheLocked: MutexGuard<LineCacheState> {
+/// - Note: This uses a pattern that is very similar to Rust's
+/// [MutexGuard](https://doc.rust-lang.org/std/sync/struct.MutexGuard.html).
+class LineCacheLocked {
+    private var inner: LineCacheState
+    var shouldSignal = false
+
+    fileprivate init(_ mutex: LineCacheState) {
+        inner = mutex
+        inner.lock()
+    }
+    
+    deinit {
+        inner.unlock()
+        if shouldSignal {
+            inner.waitingForLines.signal()
+            shouldSignal = false
+        }
+    }
+
     /// The maximum time (in milliseconds) to block when missing lines.
     let MAX_BLOCK_MS = 15;
 
@@ -254,9 +272,7 @@ class LineCacheLocked: MutexGuard<LineCacheState> {
     func applyUpdate(update: [String: AnyObject]) -> InvalSet {
         let inval = inner.applyUpdate(update: update)
         if inner.isWaiting {
-            // Note: signalling here could cause an extra context switch, a better
-            // strategy would be to signal right after lock release.
-            inner.waitingForLines.signal()
+            shouldSignal = true
             inner.isWaiting = false
         }
         return inval
@@ -393,20 +409,3 @@ class UnfairLock {
     }
 }
 
-/// An object that holds a lock during its lifetime, also suitable as a
-/// superclass for accessing mutex-protected state.
-/// - Note: This is basically the translation of Rust's
-/// [MutexGuard](https://doc.rust-lang.org/std/sync/struct.MutexGuard.html)
-/// into Swift.
-class MutexGuard<T: UnfairLock> {
-    fileprivate var inner: T
-
-    init(_ mutex: T) {
-        inner = mutex
-        inner.lock()
-    }
-
-    deinit {
-        inner.unlock()
-    }
-}
