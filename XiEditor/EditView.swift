@@ -504,6 +504,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                         }
                     }
                     if showBlinkingCursor && _cursorStateOn {
+                        // TODO: the caret positions should be saved in TextLine
                         let x = textLine.offsetForIndex(utf16Ix: utf16Ix)
                         let cursorWidth: GLfloat = 1.0
                         renderer.drawSolidRect(x: GLfloat(xOff + x) - 0.5 * cursorWidth, y: GLfloat(y0), width: cursorWidth, height: GLfloat(linespace), argb: cursorArgb)

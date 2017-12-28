@@ -81,7 +81,11 @@ protocol TextPlaneDelegate: class {
 /// A layer that efficiently renders text content. It is a subclass of NSOpenGLLayer,
 /// and is the main top-level integration point.
 class TextPlaneLayer : NSOpenGLLayer {
-    var renderer: Renderer?
+    lazy var renderer: Renderer = {
+        glEnable(GLenum(GL_BLEND))
+        glEnable(GLenum(GL_FRAMEBUFFER_SRGB))
+        return Renderer()
+    }()
     weak var textDelegate: TextPlaneDelegate?
 
     var last: Double = 0
@@ -116,14 +120,9 @@ class TextPlaneLayer : NSOpenGLLayer {
     }
     
     override func draw(in context: NSOpenGLContext, pixelFormat: NSOpenGLPixelFormat, forLayerTime t: CFTimeInterval, displayTime ts: UnsafePointer<CVTimeStamp>) {
-        if renderer == nil {
-            renderer = Renderer()
-            glEnable(GLenum(GL_BLEND))
-            glEnable(GLenum(GL_FRAMEBUFFER_SRGB))
-        }
-        renderer!.beginDraw(size: frame.size, scale: contentsScale)
-        textDelegate?.render(renderer!, dirtyRect: frame)
-        renderer!.endDraw()
+        renderer.beginDraw(size: frame.size, scale: contentsScale)
+        textDelegate?.render(renderer, dirtyRect: frame)
+        renderer.endDraw()
 
         /*
         let now = NSDate().timeIntervalSince1970

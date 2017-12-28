@@ -27,14 +27,14 @@ struct CachedGlyph {
 /// any font that has ever been seen, so callers should be careful to reuse fonts
 /// as much as possible.
 class FontCache {
-    var fonts: [FontInstance] = []
+    var fonts: [CachedFont] = []
     var fontMap: [CTFont: Int] = [:]
 
     func getFontRef(font: CTFont) -> FontRef {
         var fr = fontMap[font]
         if fr == nil {
             fr = fonts.count
-            fonts.append(FontInstance(ctFont: font))
+            fonts.append(CachedFont(ctFont: font))
             fontMap[font] = fr
         }
         return fr!
@@ -49,7 +49,7 @@ class FontCache {
 
 /// This is an instance of a font in the font cache, which contains enough information
 /// to retrieve glyphs from the texture atlas, and also render them on demand.
-class FontInstance {
+class CachedFont {
     var ctFont: CTFont
     // glyph indices are dense/small, don't need a hashmap, but we're keeping it simple
     var map: [UInt32: CachedGlyph] = [:]
