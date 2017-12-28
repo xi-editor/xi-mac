@@ -95,6 +95,12 @@ fileprivate class LineCacheState<T>: UnfairLock {
         lines[ix]!.assoc = assoc
     }
 
+    func flushAssoc() {
+        for ix in 0..<lines.count {
+            lines[ix]?.assoc = nil
+        }
+    }
+
     func linesForRange(range: LineRange) -> [Line<T>?] {
         return range.map( { _get($0) } )
     }
@@ -252,6 +258,11 @@ class LineCacheLocked<T> {
     /// Sets the associated data for a line. The line _must_ be valid.
     func setAssoc(_ ix: Int, assoc: T) {
         inner.setAssoc(ix, assoc)
+    }
+
+    /// Flushes all associated data, necessary on theme change.
+    func flushAssoc() {
+        inner.flushAssoc()
     }
 
     func blockingGet(lines lineRange: LineRange) -> [Line<T>?] {

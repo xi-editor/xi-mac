@@ -162,6 +162,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     func redrawEverything() {
         updateGutterWidth()
         updateEditViewHeight()
+        lines.locked().flushAssoc()
         willScroll(to: scrollView.contentView.bounds.origin)
         editView.needsDisplay = true
     }
