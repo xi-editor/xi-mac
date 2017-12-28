@@ -59,7 +59,11 @@ struct Line {
 }
 
 /// The underlying state of the cache, with methods for applying update deltas.
-class LineCacheState {
+class LineCacheState: Mutex {
+    /// A semaphore we use to wake up the main thread if it is blocking missing lines
+    let waitingForLines = DispatchSemaphore(value: 0)
+    /// Whether the main thread is waiting on the semaphore
+    var isWaiting = false
 
     var nInvalidBefore = 0;
     var lines: [Line?] = []
@@ -193,6 +197,72 @@ class LineCacheState {
         }
         return inval
     }
+
+    func lockGuard() -> LineCacheLocked {
+        return LineCacheLocked(self)
+    }
+}
+
+class LineCacheLocked: MutexGuard<LineCacheState> {
+    /// The maximum time (in milliseconds) to block when missing lines.
+    let MAX_BLOCK_MS = 15;
+
+    var isEmpty: Bool {
+        return inner.isEmpty
+    }
+
+    var height: Int {
+        return inner.height
+    }
+
+    var cursorInval: InvalSet {
+        return inner.cursorInval
+    }
+
+    func get(_ ix: Int) -> Line? {
+        return inner._get(ix)
+    }
+
+    func blockingGet(lines lineRange: LineRange) -> [Line?] {
+        let lines = inner.linesForRange(range: lineRange)
+        let missingLines = lineRange.enumerated()
+            .filter( { lines.count > $0.offset && lines[$0.offset] == nil })
+            .map( { $0.element })
+        if !missingLines.isEmpty {
+            // TODO: should we send request to core?
+            print("waiting for lines: (\(missingLines.first!), \(missingLines.last!))")
+            //TODO: this timing + printing code can come out
+            // when we're comfortable with the performance and
+            // the timeout duration
+            let blockTime = mach_absolute_time()
+            inner.isWaiting = true
+            inner.unlock()
+            let _ = inner.waitingForLines.wait(timeout: .now() + .milliseconds(MAX_BLOCK_MS))
+            inner.lock()
+
+            let elapsed = mach_absolute_time() - blockTime
+
+            if inner.isWaiting {
+                print("semaphore timeout \(elapsed / 1000)us")
+                inner.isWaiting = false
+            } else {
+                print("finished waiting: \(elapsed / 1000)us")
+            }
+        }
+
+        return inner.linesForRange(range: lineRange)
+    }
+
+    func applyUpdate(update: [String: AnyObject]) -> InvalSet {
+        let inval = inner.applyUpdate(update: update)
+        if inner.isWaiting {
+            // Note: signalling here could cause an extra context switch, a better
+            // strategy would be to signal right after lock release.
+            inner.waitingForLines.signal()
+            inner.isWaiting = false
+        }
+        return inval
+    }
 }
 
 /**
@@ -201,43 +271,34 @@ class LineCacheState {
 
  - Note: To facilitate smooth scrolling, updates to the LineCache are expected
  to arrive on a dedicated thread. When drawing, lines are fetched through the
- `blockingGet(lines:)` method, which will block for some maximum ammount of time
+ `blockingGet(lines:)` method, which will block for some maximum amount of time
  waiting for the lines to arrive from xi-core.
  */
 class LineCache {
 
-    /// A semaphore we use to wake up the main thread if it is blocking missing lines
-    fileprivate let waitingForLines = DispatchSemaphore(value: 0)
-    /// A dispatch queue used to synchronize access to the underlying state
-    fileprivate let queue = DispatchQueue(label: "io.xi-editor.cache-sync-queue")
-    /// A marker used to indicate if the main thread is blocked.
-    fileprivate let syncLock = Mutex()
     /// The underlying cache state
     fileprivate let state = LineCacheState()
-
-    /// The maximum time (in milliseconds) to block when missing lines.
-    let MAX_BLOCK_MS = 15;
 
     /// A boolean value indicating whether or not the linecache contains any text.
     /// - Note: An empty line cache will still contain a single empty line, this
     /// is sent as an update from the core after a new document is created.
     var isEmpty: Bool {
-        return queue.sync { state.isEmpty }
+        return state.lockGuard().isEmpty
     }
 
     /// The number of lines in the underlying document.
     var height: Int {
-        return queue.sync { state.height }
+        return state.lockGuard().height
     }
 
     /// Set of lines that need to be invalidated to blink the cursor
     var cursorInval: InvalSet {
-        return queue.sync { state.cursorInval }
+        return state.lockGuard().cursorInval
     }
 
     /// Returns the line for the given index, if it exists in the cache.
     func get(_ ix: Int) -> Line? {
-        return queue.sync { state._get(ix) }
+        return state.lockGuard().get(ix)
     }
 
     /**
@@ -248,41 +309,12 @@ class LineCache {
      contained in the next received update.
      */
     func blockingGet(lines lineRange: LineRange) -> [Line?] {
-        let lines = queue.sync { state.linesForRange(range: lineRange) }
-        let missingLines = lineRange.enumerated()
-            .filter( { lines.count > $0.offset && lines[$0.offset] == nil })
-            .map( { $0.element })
-        if !missingLines.isEmpty {
-            print("waiting for lines: (\(missingLines.first!), \(missingLines.last!))")
-            //TODO: this timing + printing code can come out
-            // when we're comfortable with the performance and
-            // the timeout duration
-            let blockTime = mach_absolute_time()
-            syncLock.lock()
-            let waitResult = waitingForLines.wait(timeout: .now() + .milliseconds(MAX_BLOCK_MS))
-            syncLock.unlock()
-
-            let elapsed = mach_absolute_time() - blockTime
-
-            if waitResult == .timedOut {
-                print("semaphore timeout \(elapsed / 1000)us")
-            } else {
-                print("finished waiting: \(elapsed / 1000)us")
-                waitingForLines.signal()
-            }
-        }
-
-        return queue.sync { state.linesForRange(range: lineRange) }
+        return state.lockGuard().blockingGet(lines: lineRange)
     }
 
     /// Returns range of lines that have been invalidated
     func applyUpdate(update: [String: AnyObject]) -> InvalSet {
-        let inval = queue.sync { state.applyUpdate(update: update) }
-        waitingForLines.signal()
-        syncLock.lock()
-        waitingForLines.wait()
-        syncLock.unlock()
-        return inval
+        return state.lockGuard().applyUpdate(update: update)
     }
 }
 
@@ -313,7 +345,7 @@ class InvalSet {
 
 /// A safe wrapper around a system lock.
 class Mutex {
-    fileprivate var mutex = pthread_mutex_t()
+    private var mutex = pthread_mutex_t()
 
     init() {
         pthread_mutex_init(&mutex, nil)
@@ -331,8 +363,23 @@ class Mutex {
         pthread_mutex_unlock(&mutex)
     }
 
-    /// Tries to take the lock. Returns `true` if succesful.
+    /// Tries to take the lock. Returns `true` if successful.
     func tryLock() -> Bool {
         return pthread_mutex_trylock(&mutex) == 0
+    }
+}
+
+/// An object that holds a lock during its lifetime, so a useful superclass
+/// for accessing mutex-protected state.
+class MutexGuard<T: Mutex> {
+    var inner: T
+
+    init(_ mutex: T) {
+        inner = mutex
+        inner.lock()
+    }
+
+    deinit {
+        inner.unlock()
     }
 }
