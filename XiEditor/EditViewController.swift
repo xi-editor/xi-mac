@@ -26,6 +26,7 @@ protocol EditViewDataSource {
 /// Associated data stored per line in the line cache
 struct LineAssoc {
     var textLine: TextLine
+    var gutterTL: TextLine
 }
 
 protocol FindDelegate {

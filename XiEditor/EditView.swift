@@ -444,6 +444,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         let selectionColor = self.isFrontmostView ? dataSource.theme.selection : dataSource.theme.inactiveSelection ?? dataSource.theme.selection
         let selArgb = colorToArgb(selectionColor)
         let foregroundArgb = colorToArgb(dataSource.theme.foreground)
+        let gutterArgb = colorToArgb(dataSource.theme.gutterForeground)
         for lineIx in first..<last {
             let relLineIx = lineIx - first
             guard let line = lines[relLineIx] else {
@@ -459,7 +460,14 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                 builder.setFgColor(argb: foregroundArgb)
                 styleMap.applyStyles(builder: builder, styles: line.styles)
                 textLine = builder.build(fontCache: renderer.fontCache)
-                lineCache.setAssoc(lineIx, assoc: LineAssoc(textLine: textLine))
+
+                let gutterText = "\(lineIx + 1)"
+                let gBuilder = TextLineBuilder(gutterText, font: font)
+                gBuilder.setFgColor(argb: line.containsCursor ? foregroundArgb: gutterArgb)
+                let gutterTL = gBuilder.build(fontCache: renderer.fontCache)
+
+                let assoc = LineAssoc(textLine: textLine, gutterTL: gutterTL)
+                lineCache.setAssoc(lineIx, assoc: assoc)
                 textLines.append(textLine)
             }
             let y0 = yOff + linespace * CGFloat(lineIx)
@@ -528,16 +536,12 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         // is a bit of a hack, and some optimization might be possible with real clipping
         // (especially if the gutter background is the same as the theme background).
         renderer.drawSolidRect(x: 0, y: GLfloat(dirtyRect.origin.x), width: GLfloat(gutterWidth), height: GLfloat(dirtyRect.height), argb: colorToArgb(dataSource.theme.gutter))
-        let gutterArgb = colorToArgb(dataSource.theme.gutterForeground)
         for lineIx in first..<last {
-            let hasCursor = lineCache.get(lineIx)?.containsCursor ?? false
-            let gutterText = "\(lineIx + 1)"
-            let builder = TextLineBuilder(gutterText, font: font)
-            builder.setFgColor(argb: hasCursor ? foregroundArgb: gutterArgb)
-            let textLine = builder.build(fontCache: renderer.fontCache)
-            let x = gutterWidth - (gutterXPad + CGFloat(textLine.width))
-            let y0 = yOff + dataSource.textMetrics.ascent + linespace * CGFloat(lineIx)
-            renderer.drawLine(line: textLine, x0: GLfloat(x), y0: GLfloat(y0))
+            if let assoc = lineCache.get(lineIx)?.assoc {
+                let x = gutterWidth - (gutterXPad + CGFloat(assoc.gutterTL.width))
+                let y0 = yOff + dataSource.textMetrics.ascent + linespace * CGFloat(lineIx)
+                renderer.drawLine(line: assoc.gutterTL, x0: GLfloat(x), y0: GLfloat(y0))
+            }
         }
     }
 }
