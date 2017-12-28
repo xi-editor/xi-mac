@@ -20,7 +20,6 @@ protocol EditViewDataSource {
     var styleMap: StyleMap { get }
     var theme: Theme { get }
     var textMetrics: TextDrawingMetrics { get }
-    var gutterWidth: CGFloat { get }
     var document: Document! { get }
 }
 
@@ -32,14 +31,13 @@ protocol FindDelegate {
 }
 
 class EditViewController: NSViewController, EditViewDataSource, FindDelegate, ScrollInterested {
+    
 
     
     @IBOutlet var scrollView: NSScrollView!
     @IBOutlet weak var editContainerView: EditContainerView!
     @IBOutlet var editView: EditView!
-    @IBOutlet weak var gutterView: GutterView!
     
-    @IBOutlet weak var gutterViewWidth: NSLayoutConstraint!
     @IBOutlet weak var editViewHeight: NSLayoutConstraint!
 
     lazy var findViewController: FindViewController! = {
@@ -69,10 +67,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     var theme: Theme {
         return (NSApplication.shared.delegate as! AppDelegate).theme
-    }
-
-    var gutterWidth: CGFloat {
-        return gutterViewWidth.constant
     }
 
     /// A mapping of available plugins to activation status.
@@ -113,7 +107,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     override func viewDidLoad() {
         super.viewDidLoad()
         editView.dataSource = self
-        gutterView.dataSource = self
         scrollView.contentView.documentCursor = NSCursor.iBeam;
         scrollView.automaticallyAdjustsContentInsets = false
         (scrollView.contentView as? XiClipView)?.delegate = self
@@ -129,7 +122,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     func updateGutterWidth() {
         let gutterColumns = "\(lineCount)".count
         let chWidth = NSString(string: "9").size(withAttributes: textMetrics.attributes).width
-        gutterViewWidth.constant = chWidth * max(2, CGFloat(gutterColumns)) + 2 * gutterView.xPadding
+        editView.gutterWidth = chWidth * max(2, CGFloat(gutterColumns)) + 2 * editView.gutterXPad
     }
     
     @objc func frameDidChangeNotification(_ notification: Notification) {
@@ -140,6 +133,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     /// Can be called manually with the current visible origin in order to ensure the line cache
     /// is up to date.
     func willScroll(to newOrigin: NSPoint) {
+        editView.scrollOrigin = newOrigin
+        // TODO: this calculation doesn't take into account toppad; do in EditView in DRY fashion
         let first = Int(floor(newOrigin.y / textMetrics.linespace))
         let height = Int(ceil((scrollView.contentView.bounds.size.height) / textMetrics.linespace)) + 1
         let last = first + height
@@ -155,7 +150,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         updateGutterWidth()
         updateEditViewHeight()
         willScroll(to: scrollView.contentView.bounds.origin)
-        editView.needsDisplay = true
         editView.needsDisplay = true
     }
 
@@ -181,7 +175,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             self?.updateEditViewHeight()
             self?.editView.showBlinkingCursor = self?.editView.isFrontmostView ?? false
             self?.editView.partialInvalidate(invalid: inval)
-            self?.gutterView.needsDisplay = true
         }
 
     }

@@ -9,8 +9,6 @@
 /* Begin PBXBuildFile section */
 		28F1ED4A1EC4C735008839BE /* Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F1ED491EC4C735008839BE /* Search.swift */; };
 		50370A2B1D4209F300EA1B18 /* Dispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50370A2A1D4209F300EA1B18 /* Dispatcher.swift */; };
-		60E4727E1FE0C0D90048A89C /* XiScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E4727D1FE0C0D90048A89C /* XiScrollView.swift */; };
-		6B0DCDD41E8196D0007C14A3 /* GutterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0DCDD31E8196D0007C14A3 /* GutterView.swift */; };
 		6B0DCDD61E832101007C14A3 /* EditContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0DCDD51E832101007C14A3 /* EditContainerView.swift */; };
 		6B1D39101FC53F5C008CCA35 /* client_example.toml in Resources */ = {isa = PBXBuildFile; fileRef = 6B1D390F1FC53F5C008CCA35 /* client_example.toml */; };
 		6B53F5F21EF963EB00A4C664 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B53F5F11EF963EB00A4C664 /* Theme.swift */; };
@@ -26,6 +24,15 @@
 		AE499DE01C82BB2B002D68AF /* XiEditorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE499DDF1C82BB2B002D68AF /* XiEditorTests.swift */; };
 		AE499DEB1C82BB2B002D68AF /* XiEditorUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE499DEA1C82BB2B002D68AF /* XiEditorUITests.swift */; };
 		AE499DF91C82C835002D68AF /* CoreConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE499DF81C82C835002D68AF /* CoreConnection.swift */; };
+		AED22D761FE836880096E7C3 /* TextPlane.swift in Sources */ = {isa = PBXBuildFile; fileRef = AED22D751FE836880096E7C3 /* TextPlane.swift */; };
+		AED22D781FE8404D0096E7C3 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AED22D771FE8404D0096E7C3 /* Renderer.swift */; };
+		AED22D7A1FE8418A0096E7C3 /* Atlas.swift in Sources */ = {isa = PBXBuildFile; fileRef = AED22D791FE8418A0096E7C3 /* Atlas.swift */; };
+		AED22D7C1FE8428D0096E7C3 /* ShaderProgram.swift in Sources */ = {isa = PBXBuildFile; fileRef = AED22D7B1FE8428D0096E7C3 /* ShaderProgram.swift */; };
+		AED22D811FE84B4B0096E7C3 /* solid.f.glsl in Resources */ = {isa = PBXBuildFile; fileRef = AED22D7D1FE84B4B0096E7C3 /* solid.f.glsl */; };
+		AED22D821FE84B4B0096E7C3 /* solid.v.glsl in Resources */ = {isa = PBXBuildFile; fileRef = AED22D7E1FE84B4B0096E7C3 /* solid.v.glsl */; };
+		AED22D831FE84B4B0096E7C3 /* text.v.glsl in Resources */ = {isa = PBXBuildFile; fileRef = AED22D7F1FE84B4B0096E7C3 /* text.v.glsl */; };
+		AED22D841FE84B4B0096E7C3 /* text.f.glsl in Resources */ = {isa = PBXBuildFile; fileRef = AED22D801FE84B4B0096E7C3 /* text.f.glsl */; };
+		AED22D861FE877000096E7C3 /* TextLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AED22D851FE877000096E7C3 /* TextLine.swift */; };
 		AED23F181C83CBED002246CE /* EditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AED23F171C83CBEC002246CE /* EditView.swift */; };
 		F53EA2AD1DCAA8110071ACFD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F53EA2AC1DCAA8110071ACFD /* Main.storyboard */; };
 		F53EA2AF1DCAAA170071ACFD /* EditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53EA2AE1DCAAA170071ACFD /* EditViewController.swift */; };
@@ -59,8 +66,6 @@
 /* Begin PBXFileReference section */
 		28F1ED491EC4C735008839BE /* Search.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
 		50370A2A1D4209F300EA1B18 /* Dispatcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dispatcher.swift; sourceTree = "<group>"; };
-		60E4727D1FE0C0D90048A89C /* XiScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiScrollView.swift; sourceTree = "<group>"; };
-		6B0DCDD31E8196D0007C14A3 /* GutterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GutterView.swift; sourceTree = "<group>"; };
 		6B0DCDD51E832101007C14A3 /* EditContainerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = EditContainerView.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		6B1D390F1FC53F5C008CCA35 /* client_example.toml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = client_example.toml; path = "xi-editor/rust/core-lib/assets/client_example.toml"; sourceTree = "<group>"; };
 		6B53F5F11EF963EB00A4C664 /* Theme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
@@ -83,6 +88,15 @@
 		AE499DEA1C82BB2B002D68AF /* XiEditorUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiEditorUITests.swift; sourceTree = "<group>"; };
 		AE499DEC1C82BB2B002D68AF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AE499DF81C82C835002D68AF /* CoreConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreConnection.swift; sourceTree = "<group>"; };
+		AED22D751FE836880096E7C3 /* TextPlane.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextPlane.swift; sourceTree = "<group>"; };
+		AED22D771FE8404D0096E7C3 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
+		AED22D791FE8418A0096E7C3 /* Atlas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Atlas.swift; sourceTree = "<group>"; };
+		AED22D7B1FE8428D0096E7C3 /* ShaderProgram.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderProgram.swift; sourceTree = "<group>"; };
+		AED22D7D1FE84B4B0096E7C3 /* solid.f.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = solid.f.glsl; sourceTree = "<group>"; };
+		AED22D7E1FE84B4B0096E7C3 /* solid.v.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = solid.v.glsl; sourceTree = "<group>"; };
+		AED22D7F1FE84B4B0096E7C3 /* text.v.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = text.v.glsl; sourceTree = "<group>"; };
+		AED22D801FE84B4B0096E7C3 /* text.f.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = text.f.glsl; sourceTree = "<group>"; };
+		AED22D851FE877000096E7C3 /* TextLine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextLine.swift; sourceTree = "<group>"; };
 		AED23F171C83CBEC002246CE /* EditView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditView.swift; sourceTree = "<group>"; };
 		F53EA2AC1DCAA8110071ACFD /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		F53EA2AE1DCAAA170071ACFD /* EditViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = EditViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -138,10 +152,9 @@
 		AE499DCE1C82BB2B002D68AF /* XiEditor */ = {
 			isa = PBXGroup;
 			children = (
+				AED22D741FE8366D0096E7C3 /* XiTextPlane */,
 				6BA1873A1FDDD7B6008220DA /* XiClipView.swift */,
-				60E4727D1FE0C0D90048A89C /* XiScrollView.swift */,
 				F53EA2AE1DCAAA170071ACFD /* EditViewController.swift */,
-				6B0DCDD31E8196D0007C14A3 /* GutterView.swift */,
 				6B0DCDD51E832101007C14A3 /* EditContainerView.swift */,
 				AE499DCF1C82BB2B002D68AF /* AppDelegate.swift */,
 				AED23F171C83CBEC002246CE /* EditView.swift */,
@@ -177,6 +190,22 @@
 				AE499DEC1C82BB2B002D68AF /* Info.plist */,
 			);
 			path = XiEditorUITests;
+			sourceTree = "<group>";
+		};
+		AED22D741FE8366D0096E7C3 /* XiTextPlane */ = {
+			isa = PBXGroup;
+			children = (
+				AED22D7D1FE84B4B0096E7C3 /* solid.f.glsl */,
+				AED22D7E1FE84B4B0096E7C3 /* solid.v.glsl */,
+				AED22D801FE84B4B0096E7C3 /* text.f.glsl */,
+				AED22D7F1FE84B4B0096E7C3 /* text.v.glsl */,
+				AED22D751FE836880096E7C3 /* TextPlane.swift */,
+				AED22D771FE8404D0096E7C3 /* Renderer.swift */,
+				AED22D791FE8418A0096E7C3 /* Atlas.swift */,
+				AED22D7B1FE8428D0096E7C3 /* ShaderProgram.swift */,
+				AED22D851FE877000096E7C3 /* TextLine.swift */,
+			);
+			path = XiTextPlane;
 			sourceTree = "<group>";
 		};
 		D023DA021CD071B40087EC0A /* xicore */ = {
@@ -321,7 +350,11 @@
 			files = (
 				F53EA2AD1DCAA8110071ACFD /* Main.storyboard in Resources */,
 				AE228F5D1C897CE7000E9B0F /* xi-core in Resources */,
+				AED22D841FE84B4B0096E7C3 /* text.f.glsl in Resources */,
 				6B1D39101FC53F5C008CCA35 /* client_example.toml in Resources */,
+				AED22D811FE84B4B0096E7C3 /* solid.f.glsl in Resources */,
+				AED22D831FE84B4B0096E7C3 /* text.v.glsl in Resources */,
+				AED22D821FE84B4B0096E7C3 /* solid.v.glsl in Resources */,
 				AE041BA61D4327EB0069AB8B /* plugins in Resources */,
 				AE499DD21C82BB2B002D68AF /* Assets.xcassets in Resources */,
 			);
@@ -349,8 +382,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				F53EA2AF1DCAAA170071ACFD /* EditViewController.swift in Sources */,
+				AED22D7C1FE8428D0096E7C3 /* ShaderProgram.swift in Sources */,
+				AED22D861FE877000096E7C3 /* TextLine.swift in Sources */,
 				6B0DCDD61E832101007C14A3 /* EditContainerView.swift in Sources */,
 				AE0243F61E4BDF8A00641BDA /* StyleMap.swift in Sources */,
+				AED22D761FE836880096E7C3 /* TextPlane.swift in Sources */,
 				AE168C5C1E4AD87B008249AE /* LineCache.swift in Sources */,
 				6B90DD1C1F129C1A00DF3CE2 /* PluginCommand.swift in Sources */,
 				6B53F5F21EF963EB00A4C664 /* Theme.swift in Sources */,
@@ -358,12 +394,12 @@
 				50370A2B1D4209F300EA1B18 /* Dispatcher.swift in Sources */,
 				AED23F181C83CBED002246CE /* EditView.swift in Sources */,
 				AE499DD01C82BB2B002D68AF /* AppDelegate.swift in Sources */,
-				60E4727E1FE0C0D90048A89C /* XiScrollView.swift in Sources */,
-				6B0DCDD41E8196D0007C14A3 /* GutterView.swift in Sources */,
 				28F1ED4A1EC4C735008839BE /* Search.swift in Sources */,
 				F5BDBF371DCA9D2C0042430B /* Document.swift in Sources */,
 				6B90DD221F14110B00DF3CE2 /* UserInputPromptController.swift in Sources */,
+				AED22D781FE8404D0096E7C3 /* Renderer.swift in Sources */,
 				6BA1873B1FDDD7B6008220DA /* XiClipView.swift in Sources */,
+				AED22D7A1FE8418A0096E7C3 /* Atlas.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

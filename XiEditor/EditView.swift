@@ -71,7 +71,27 @@ func colorFromArgb(_ argb: UInt32) -> NSColor {
         alpha: CGFloat((argb >> 24) & 0xff) * 1.0/255)
 }
 
-class EditView: NSView, NSTextInputClient {
+/// Convert color to ARGB format. Note: we should do less conversion
+/// back and forth to NSColor; this is a convenience so we don't have
+/// to change as much code.
+func colorToArgb(_ color: NSColor) -> UInt32 {
+    let ciColor = CIColor(color: color)!
+    let a = UInt32(round(ciColor.alpha * 255.0))
+    let r = UInt32(round(ciColor.red * 255.0))
+    let g = UInt32(round(ciColor.green * 255.0))
+    let b = UInt32(round(ciColor.blue * 255.0))
+    return (a << 24) | (r << 16) | (g << 8) | b
+}
+
+class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
+    var scrollOrigin: NSPoint {
+        didSet {
+            needsDisplay = true
+        }
+    }
+    var gutterXPad: CGFloat = 8
+    var gutterWidth: CGFloat = 0
+
     var dataSource: EditViewDataSource!
 
     var lastDragLineCol: (Int, Int)?
@@ -118,129 +138,20 @@ class EditView: NSView, NSTextInputClient {
     }
 
     required init?(coder: NSCoder) {
-        
         _selectedRange = NSMakeRange(NSNotFound, 0)
         _markedRange = NSMakeRange(NSNotFound, 0)
+        scrollOrigin = NSPoint()
         super.init(coder: coder)
+
+        wantsLayer = true
+        wantsBestResolutionOpenGLSurface = true
+        let glLayer = TextPlaneLayer()
+        glLayer.textDelegate = self
+        //glLayer.frame = CGRect(x: 0, y: 0, width: 800, height: 600)
+        layer = glLayer
     }
 
     let x0: CGFloat = 2;
-
-    override func draw(_ dirtyRect: NSRect) {
-        if dataSource.document.coreViewIdentifier == nil { return }
-        super.draw(dirtyRect)
-
-        // draw the background
-        let context = NSGraphicsContext.current!.cgContext
-        dataSource.theme.background.setFill()
-        dirtyRect.fill()
-
-        // uncomment this to visualize dirty rects
-        /*
-        let path = NSBezierPath(ovalIn: dirtyRect)
-        NSColor(red: CGFloat(drand48()), green: CGFloat(drand48()), blue: CGFloat(drand48()), alpha: 0.25).setFill()
-        path.fill()
-        */
-
-        let topPad = dataSource.textMetrics.linespace - dataSource.textMetrics.ascent
-        let first = max(0, Int((floor(dirtyRect.origin.y - topPad) / dataSource.textMetrics.linespace)))
-        let lastVisible = Int(ceil((dirtyRect.origin.y + dirtyRect.size.height - topPad) / dataSource.textMetrics.linespace))
-
-        let totalLines = dataSource.lines.height
-        let last = min(totalLines, lastVisible)
-        let lines = dataSource.lines.blockingGet(lines: first..<last)
-
-        let missing = lines.enumerated().filter( { $0.element == nil } )
-            .map( { $0.offset + first } )
-        if !missing.isEmpty {
-            print("draw missing lines: \(missing)")
-        }
-
-        // first pass, for drawing background selections and search highlights
-        for lineIx in first..<last {
-            let relLineIx = lineIx - first
-            guard let line = lines[relLineIx], line.containsReservedStyle == true else { continue }
-            let attrString = NSMutableAttributedString(string: line.text, attributes: dataSource.textMetrics.attributes)
-            let ctline = CTLineCreateWithAttributedString(attrString)
-            let y = dataSource.textMetrics.linespace * CGFloat(lineIx + 1)
-            //TODO: also draw line highlight, as dictated by theme
-            let selectionColor = self.isFrontmostView ? dataSource.theme.selection : dataSource.theme.inactiveSelection ?? dataSource.theme.selection
-            selectionColor.setFill()
-            let selections = line.styles.filter { $0.style == 0 }
-            for selection in selections {
-                let selStart = CTLineGetOffsetForStringIndex(ctline, selection.range.location, nil)
-                let selEnd = CTLineGetOffsetForStringIndex(ctline, selection.range.location + selection.range.length, nil)
-                context.fill(CGRect(x: x0 + selStart, y: y - dataSource.textMetrics.ascent,
-                                    width: selEnd - selStart, height: dataSource.textMetrics.linespace))
-            }
-
-            dataSource.theme.findHighlight.setFill()
-            let highlights = line.styles.filter { $0.style == 1 }
-            for highlight in highlights {
-                let selStart = CTLineGetOffsetForStringIndex(ctline, highlight.range.location, nil)
-                let selEnd = CTLineGetOffsetForStringIndex(ctline, highlight.range.location + highlight.range.length, nil)
-                context.fill(CGRect(x: x0 + selStart, y: y - dataSource.textMetrics.ascent,
-                                    width: selEnd - selStart, height: dataSource.textMetrics.linespace))
-            }
-        }
-        // second pass, for actually rendering text.
-        for lineIx in first..<last {
-            let relLineIx = lineIx - first
-            guard relLineIx < lines.count, let line = lines[relLineIx] else { continue }
-            let s = line.text
-            var attrString = NSMutableAttributedString(string: s, attributes: dataSource.textMetrics.attributes)
-            /*
-            let randcolor = NSColor(colorLiteralRed: Float(drand48()), green: Float(drand48()), blue: Float(drand48()), alpha: 1.0)
-            attrString.addAttribute(NSForegroundColorAttributeName, value: randcolor, range: NSMakeRange(0, s.utf16.count))
-            */
-            dataSource.styleMap.applyStyles(text: s, string: &attrString, styles: line.styles)
-            for c in line.cursor {
-                let cix = utf8_offset_to_utf16(s, c)
-
-                self.cursorPos = (lineIx, cix)
-                if (markedRange().location != NSNotFound) {
-                    let markRangeStart = cix - markedRange().length
-                    if (markRangeStart >= 0) {
-                        attrString.addAttribute(NSAttributedStringKey.underlineStyle,
-                                                value: NSUnderlineStyle.styleSingle.rawValue,
-                                                range: NSMakeRange(markRangeStart, markedRange().length))
-                    }
-                }
-                if (selectedRange().location != NSNotFound) {
-                    let selectedRangeStart = cix - markedRange().length + selectedRange().location
-                    if (selectedRangeStart >= 0) {
-                        attrString.addAttribute(NSAttributedStringKey.underlineStyle,
-                                                value: NSUnderlineStyle.styleThick.rawValue,
-                                                range: NSMakeRange(selectedRangeStart, selectedRange().length))
-                    }
-                }
-            }
-
-            let y = dataSource.textMetrics.linespace * CGFloat(lineIx + 1);
-            attrString.draw(with: NSRect(x: x0, y: y, width: dirtyRect.origin.x + dirtyRect.width - x0, height: 14), options: [])
-            if showBlinkingCursor && _cursorStateOn {
-                for cursor in line.cursor {
-                    let ctline = CTLineCreateWithAttributedString(attrString)
-                    /*
-                    CGContextSetTextMatrix(context, CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: x0, ty: y))
-                    CTLineDraw(ctline, context)
-                    */
-                    var pos = CGFloat(0)
-                    // special case because measurement is so expensive; might have to rethink in rtl
-                    if cursor != 0 {
-                        let utf16_ix = utf8_offset_to_utf16(s, cursor)
-                        pos = CTLineGetOffsetForStringIndex(ctline, CFIndex(utf16_ix), nil)
-                    }
-                    cursorColor.setStroke()
-                    context.setShouldAntialias(false)
-                    context.move(to: CGPoint(x: x0 + pos, y: y + dataSource.textMetrics.descent))
-                    context.addLine(to: CGPoint(x: x0 + pos, y: y - dataSource.textMetrics.ascent))
-                    context.strokePath()
-                    context.setShouldAntialias(true)
-                }
-            }
-        }
-    }
 
     override var acceptsFirstResponder: Bool {
         return true;
@@ -466,12 +377,14 @@ class EditView: NSView, NSTextInputClient {
     /// Note: - The returned position is not guaruanteed to be an existing line. For instance, if a buffer does not fill the current window, a point below the last line will return a buffer position with a line number exceeding the number of lines in the file. In this case position.column will always be zero.
     func bufferPositionFromPoint(_ point: NSPoint) -> BufferPosition {
         let point = self.convert(point, from: nil)
-        let lineIx = yToLine(point.y)
+        let x = point.x + scrollOrigin.x - gutterWidth
+        let y = point.y + scrollOrigin.y
+        let lineIx = yToLine(y)
         if let line = getLine(lineIx) {
             let s = line.text
             let attrString = NSAttributedString(string: s, attributes: dataSource.textMetrics.attributes)
             let ctline = CTLineCreateWithAttributedString(attrString)
-            let relPos = NSPoint(x: point.x - x0, y: lineIxToBaseline(lineIx) - point.y)
+            let relPos = NSPoint(x: x - x0, y: lineIxToBaseline(lineIx) - y)
             let utf16_ix = CTLineGetStringIndexForPosition(ctline, relPos)
             if utf16_ix != kCFNotFound {
                 let col = utf16_offset_to_utf8(s, utf16_ix)
@@ -501,6 +414,120 @@ class EditView: NSView, NSTextInputClient {
             let y = CGFloat(start + 1) * dataSource.textMetrics.linespace - dataSource.textMetrics.ascent
             let h = CGFloat(height) * dataSource.textMetrics.linespace
             setNeedsDisplay(NSRect(x: 0, y: y, width: frame.width, height: h))
+        }
+    }
+
+    // Rendering using TextPlane
+    func render(_ renderer: Renderer, dirtyRect: NSRect) {
+        renderer.clear(dataSource.theme.background)
+        if dataSource.document.coreViewIdentifier == nil { return }
+        let linespace = dataSource.textMetrics.linespace
+        let topPad = linespace - dataSource.textMetrics.ascent
+        let xOff = gutterWidth + x0 - scrollOrigin.x
+        let yOff = topPad - scrollOrigin.y
+        let first = max(0, Int((floor(dirtyRect.origin.y - topPad + scrollOrigin.y) / linespace)))
+        let lastVisible = Int(ceil((dirtyRect.origin.y + dirtyRect.size.height - topPad + scrollOrigin.y) / linespace))
+        
+        let totalLines = dataSource.lines.height
+        let last = min(totalLines, lastVisible)
+        let lines = dataSource.lines.blockingGet(lines: first..<last)
+        let font = dataSource.textMetrics.font as CTFont
+        var textLines: [TextLine?] = []
+
+        // The actual drawing is split into passes for correct visual presentation and
+        // also to improve batching of the OpenGL draw calls.
+
+        // first pass: create TextLine objects and also draw background rects
+        let selectionColor = self.isFrontmostView ? dataSource.theme.selection : dataSource.theme.inactiveSelection ?? dataSource.theme.selection
+        let selArgb = colorToArgb(selectionColor)
+        let foregroundArgb = colorToArgb(dataSource.theme.foreground)
+        for lineIx in first..<last {
+            let relLineIx = lineIx - first
+            guard let line = lines[relLineIx] else {
+                textLines.append(nil)
+                continue
+            }
+            let builder = TextLineBuilder(line.text, font: font)
+            builder.setFgColor(argb: foregroundArgb)
+            dataSource.styleMap.applyStyles(builder: builder, styles: line.styles)
+            let textLine = builder.build(fontCache: renderer.fontCache)
+            textLines.append(textLine)
+            let y0 = yOff + linespace * CGFloat(lineIx)
+            renderer.drawLineBg(line: textLine, x0: GLfloat(xOff), yRange: GLfloat(y0)..<GLfloat(y0 + linespace), selColor: selArgb)
+        }
+
+        // second pass: draw text
+        for lineIx in first..<last {
+            if let textLine = textLines[lineIx - first] {
+                let y = yOff + dataSource.textMetrics.ascent + linespace * CGFloat(lineIx)
+                renderer.drawLine(line: textLine, x0: GLfloat(xOff), y0: GLfloat(y))
+            }
+        }
+        
+        // third pass: draw text decorations
+        for lineIx in first..<last {
+            if let textLine = textLines[lineIx - first] {
+                let y = yOff + dataSource.textMetrics.ascent + linespace * CGFloat(lineIx)
+                renderer.drawLineDecorations(line: textLine, x0: GLfloat(xOff), y0: GLfloat(y))
+            }
+        }
+
+        // fourth pass: draw carets
+        let cursorArgb = colorToArgb(cursorColor)
+        for lineIx in first..<last {
+            let relLineIx = lineIx - first
+            if let textLine = textLines[relLineIx], let line = lines[relLineIx] {
+                let y0 = yOff + linespace * CGFloat(lineIx)
+                for cursor in line.cursor {
+                    let utf16Ix = utf8_offset_to_utf16(line.text, cursor)
+                    // Note: It's ugly that cursorPos is set as a side-effect
+                    // TODO: disabled until firstRect logic is fixed
+                    //self.cursorPos = (lineIx, utf16Ix)
+                    if (markedRange().location != NSNotFound) {
+                        let markRangeStart = utf16Ix - markedRange().length
+                        if markRangeStart >= 0 {
+                            let yBaseline = y0 + dataSource.textMetrics.ascent
+                            // TODO: perhaps this shouldn't be hardcoded
+                            let yRange = GLfloat(yBaseline + 2) ..< GLfloat(yBaseline + 3)
+                            let utf16Range = markRangeStart ..< utf16Ix
+                            renderer.drawRectForRange(line: textLine, x0: GLfloat(xOff), yRange: yRange, utf16Range: utf16Range, argb: colorToArgb(dataSource.theme.foreground))
+                        }
+                    }
+                    if (selectedRange().location != NSNotFound) {
+                        let selectedRangeStart = utf16Ix - markedRange().length + selectedRange().location
+                        if selectedRangeStart >= 0 {
+                            let yBaseline = y0 + dataSource.textMetrics.ascent
+                            // TODO: perhaps this shouldn't be hardcoded
+                            let yRange = GLfloat(yBaseline + 2) ..< GLfloat(yBaseline + 4)
+                            let utf16Range = selectedRangeStart ..< selectedRangeStart + selectedRange().length
+                            renderer.drawRectForRange(line: textLine, x0: GLfloat(xOff), yRange: yRange, utf16Range: utf16Range, argb: colorToArgb(dataSource.theme.foreground))
+                        }
+                    }
+                    if showBlinkingCursor && _cursorStateOn {
+                        // TODO: the caret positions should be saved in TextLine
+                        let x = textLine.offsetForIndex(utf16Ix: utf16Ix)
+                        let cursorWidth: GLfloat = 1.0
+                        renderer.drawSolidRect(x: GLfloat(xOff + x) - 0.5 * cursorWidth, y: GLfloat(y0), width: cursorWidth, height: GLfloat(linespace), argb: cursorArgb)
+                    }
+                }
+            }
+        }
+        
+        // gutter drawing
+        // Note: drawing the gutter background after the text effectively clips the text. This
+        // is a bit of a hack, and some optimization might be possible with real clipping
+        // (especially if the gutter background is the same as the theme background).
+        renderer.drawSolidRect(x: 0, y: GLfloat(dirtyRect.origin.x), width: GLfloat(gutterWidth), height: GLfloat(dirtyRect.height), argb: colorToArgb(dataSource.theme.gutter))
+        let gutterArgb = colorToArgb(dataSource.theme.gutterForeground)
+        for lineIx in first..<last {
+            let hasCursor = dataSource.lines.get(lineIx)?.containsCursor ?? false
+            let gutterText = "\(lineIx + 1)"
+            let builder = TextLineBuilder(gutterText, font: font)
+            builder.setFgColor(argb: hasCursor ? foregroundArgb: gutterArgb)
+            let textLine = builder.build(fontCache: renderer.fontCache)
+            let x = gutterWidth - (gutterXPad + CGFloat(textLine.width))
+            let y0 = yOff + dataSource.textMetrics.ascent + linespace * CGFloat(lineIx)
+            renderer.drawLine(line: textLine, x0: GLfloat(x), y0: GLfloat(y0))
         }
     }
 }

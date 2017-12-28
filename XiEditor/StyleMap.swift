@@ -25,6 +25,7 @@ struct Style {
     var italic: Bool
     var weight: Int?
     var attributes: [NSAttributedStringKey: Any] = [:]
+    var fakeItalic = false
 
     init(font fromFont: NSFont, fgColor: NSColor?, bgColor: NSColor?, underline: Bool, italic: Bool, weight: Int?) {
         if let fgColor = fgColor {
@@ -49,6 +50,7 @@ struct Style {
                 font = f
             } else {
                 attributes[NSAttributedStringKey.obliqueness] = 0.2
+                fakeItalic = true
             }
         }
 
@@ -178,6 +180,36 @@ class StyleMap {
         }
     }
 
+    func applyStyle(builder: TextLineBuilder, id: Int, range: NSRange) {
+        if id >= styles.count { return }
+        if id == 0 {
+            builder.addSelSpan(range: convertRange(range))
+        } else if id == 1 {
+            () // TODO: handle find span - perhaps this should just be a regular bg span tho
+        } else {
+            guard let style = styles[id] else { return }
+            if let fgColor = style.fgColor {
+                builder.addFgSpan(range: convertRange(range), argb: colorToArgb(fgColor))
+            }
+            if let font = style.font {
+                builder.addFontSpan(range: convertRange(range), font: font)
+            }
+            if style.fakeItalic {
+                builder.addFakeItalicSpan(range: convertRange(range))
+            }
+            if style.underline {
+                builder.addUnderlineSpan(range: convertRange(range), style: .single)
+            }
+        }
+    }
+    
+    /// Applies the styles to the text line builder.
+    func applyStyles(builder: TextLineBuilder, styles: [StyleSpan]) {
+        for styleSpan in styles {
+            applyStyle(builder: builder, id: styleSpan.style, range: styleSpan.range)
+        }
+    }
+
     func updateFont(to font: NSFont) {
         self.font = font
         styles = styles.map { $0.map {
@@ -202,4 +234,8 @@ func closestMatch(of font: NSFont, traits: NSFontTraitMask, weight: Int) -> NSFo
         weight += direction
     }
     return nil
+}
+
+func convertRange(_ range: NSRange) -> CountableRange<Int> {
+    return range.location ..< (range.location + range.length)
 }
