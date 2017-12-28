@@ -244,6 +244,7 @@ class LineCacheLocked<T> {
         return inner.cursorInval
     }
 
+    /// Returns the line for the given index, if it exists in the cache.
     func get(_ ix: Int) -> Line<T>? {
         return inner._get(ix)
     }
@@ -328,11 +329,6 @@ class LineCache<T> {
     /// Set of lines that need to be invalidated to blink the cursor
     var cursorInval: InvalSet {
         return locked().cursorInval
-    }
-
-    /// Returns the line for the given index, if it exists in the cache.
-    func get(_ ix: Int) -> Line<T>? {
-        return locked().get(ix)
     }
 
     /**

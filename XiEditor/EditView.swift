@@ -404,7 +404,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     }
 
     func getLine(_ lineNum: Int) -> Line<LineAssoc>? {
-        return dataSource.lines.get(lineNum)
+        return dataSource.lines.locked().get(lineNum)
     }
 
     func partialInvalidate(invalid: InvalSet) {
