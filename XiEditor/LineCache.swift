@@ -253,16 +253,21 @@ class LineCacheLocked {
             let blockTime = mach_absolute_time()
             inner.isWaiting = true
             inner.unlock()
-            let _ = inner.waitingForLines.wait(timeout: .now() + .milliseconds(MAX_BLOCK_MS))
+            let waitResult = inner.waitingForLines.wait(timeout: .now() + .milliseconds(MAX_BLOCK_MS))
             inner.lock()
 
             let elapsed = mach_absolute_time() - blockTime
 
             if inner.isWaiting {
-                print("semaphore timeout \(elapsed / 1000)us")
+                print("semaphore timeout \(elapsed / 1000)us \(waitResult)")
                 inner.isWaiting = false
             } else {
-                print("finished waiting: \(elapsed / 1000)us")
+                if waitResult == .timedOut {
+                    // Semaphore was signalled after the wait timed out but before the
+                    // lock was re-acquired.
+                    inner.waitingForLines.wait()
+                }
+                print("finished waiting: \(elapsed / 1000)us \(waitResult)")
             }
         }
 
