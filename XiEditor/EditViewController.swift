@@ -134,6 +134,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     
     @objc func frameDidChangeNotification(_ notification: Notification) {
         updateEditViewHeight()
+        willScroll(to: scrollView.contentView.bounds.origin)
     }
 
     /// Called by `XiClipView`; this gives us early notice of an incoming scroll event.

@@ -147,11 +147,16 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         wantsBestResolutionOpenGLSurface = true
         let glLayer = TextPlaneLayer()
         glLayer.textDelegate = self
-        //glLayer.frame = CGRect(x: 0, y: 0, width: 800, height: 600)
         layer = glLayer
     }
 
     let x0: CGFloat = 2;
+
+    // This needs to be implemented, even though it seems to never be called, to preserve
+    // updating on live window resize.
+    override func draw(_ dirtyRect: NSRect) {
+        ()
+    }
 
     override var acceptsFirstResponder: Bool {
         return true;
