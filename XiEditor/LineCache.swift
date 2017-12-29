@@ -240,30 +240,20 @@ class LineCacheLocked {
     }
 
     func blockingGet(lines lineRange: LineRange) -> [Line?] {
-        var deadline: DispatchTime? = nil
-        var lines = inner.linesForRange(range: lineRange)
-        var count = 0
-        while true {
-            let missingLines = lineRange.enumerated()
-                .filter( { lines.count > $0.offset && lines[$0.offset] == nil })
-                .map( { $0.element })
-            if missingLines.isEmpty {
-                break
-            }
-            if deadline == nil {
-                deadline = .now() + .milliseconds(MAX_BLOCK_MS)
-            } else if .now() > deadline! {
-                break
-            }
+        let lines = inner.linesForRange(range: lineRange)
+        let missingLines = lineRange.enumerated()
+            .filter( { lines.count > $0.offset && lines[$0.offset] == nil })
+            .map( { $0.element })
+        if !missingLines.isEmpty {
             // TODO: should we send request to core?
-            print("waiting for lines: (\(missingLines.first!), \(missingLines.last!)) \(count)")
+            print("waiting for lines: (\(missingLines.first!), \(missingLines.last!))")
             //TODO: this timing + printing code can come out
             // when we're comfortable with the performance and
             // the timeout duration
             let blockTime = mach_absolute_time()
             inner.isWaiting = true
             inner.unlock()
-            let waitResult = inner.waitingForLines.wait(timeout: deadline!)
+            let waitResult = inner.waitingForLines.wait(timeout: .now() + .milliseconds(MAX_BLOCK_MS))
             inner.lock()
 
             let elapsed = mach_absolute_time() - blockTime
@@ -279,11 +269,9 @@ class LineCacheLocked {
                 }
                 print("finished waiting: \(elapsed / 1000)us \(waitResult)")
             }
-            lines = inner.linesForRange(range: lineRange)
-            count += 1
         }
 
-        return lines
+        return inner.linesForRange(range: lineRange)
     }
 
     func applyUpdate(update: [String: AnyObject]) -> InvalSet {
