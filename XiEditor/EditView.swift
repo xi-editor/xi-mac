@@ -432,6 +432,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         let last = min(totalLines, lastVisible)
         let lines = dataSource.lines.blockingGet(lines: first..<last)
         let font = dataSource.textMetrics.font as CTFont
+        let styleMap = dataSource.styleMap.locked()
         var textLines: [TextLine?] = []
 
         // The actual drawing is split into passes for correct visual presentation and
@@ -449,7 +450,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             }
             let builder = TextLineBuilder(line.text, font: font)
             builder.setFgColor(argb: foregroundArgb)
-            dataSource.styleMap.applyStyles(builder: builder, styles: line.styles)
+            styleMap.applyStyles(builder: builder, styles: line.styles)
             let textLine = builder.build(fontCache: renderer.fontCache)
             textLines.append(textLine)
             let y0 = yOff + linespace * CGFloat(lineIx)

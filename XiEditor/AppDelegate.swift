@@ -35,7 +35,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         set {
             _textMetrics = newValue
-            styleMap.updateFont(to: newValue.font)
+            styleMap.locked().updateFont(to: newValue.font)
             self.updateAllViews()
         }
     }
@@ -85,8 +85,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let dispatcher: Dispatcher = {
             let coreConnection = CoreConnection(path: corePath,
                                                 updateCallback: {
-                                                    [weak self] (update) in
-                                                    self?.handleAsyncUpdate(update)
+                                                    [weak self] (method, update) in
+                                                    self?.handleAsyncUpdate(method, update)
                 },
                                                 callback: {
                                                     [weak self] (json: Any) -> Any? in
@@ -118,12 +118,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return nil
     }
 
-    func handleAsyncUpdate(_ json: [String: AnyObject]) {
-        let update = json["update"] as! [String: AnyObject]
-        let viewIdentifier = json["view_id"] as! String
-        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
-        if document == nil { print("document missing for view id \(viewIdentifier)") }
-        document?.updateAsync(update: update)
+    func handleAsyncUpdate(_ method: String, _ json: [String: AnyObject]) {
+        switch method {
+        case "update":
+            let update = json["update"] as! [String: AnyObject]
+            let viewIdentifier = json["view_id"] as! String
+            let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
+            if document == nil { print("document missing for view id \(viewIdentifier)") }
+            document?.updateAsync(update: update)
+        case "def_style":
+            styleMap.locked().defStyle(json: json)
+        default:
+            print("unexpected method \(method) in handleAsyncUpdate")
+        }
     }
 
     func handleCoreCmd(_ json: Any) -> Any? {
@@ -146,10 +153,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     else { print("view_id or document missing for update event: ", obj); return nil }
                     document.editViewController?.scrollTo(line, col)
             }
+
         case "def_style":
-            if let obj = params as? [String : AnyObject] {
-                styleMap.defStyle(json: obj)
-            }
+            fatalError("def_style RPC must be handled off the main thread")
 
         case "plugin_started":
             guard let obj = params as? [String : AnyObject] else { print("bad params \(params)"); return nil }

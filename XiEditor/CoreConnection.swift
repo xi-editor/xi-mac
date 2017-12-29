@@ -50,7 +50,7 @@ class CoreConnection {
     var inHandle: FileHandle  // stdin of core process
     var recvBuf: Data
     var callback: (Any) -> Any?
-    var updateCallback: ([String: AnyObject]) -> ()
+    var updateCallback: (String, [String: AnyObject]) -> ()
     let rpcLogWriter: FileWriter?
     
     // RPC state
@@ -58,7 +58,7 @@ class CoreConnection {
     var rpcIndex = 0
     var pending = Dictionary<Int, (Any?) -> ()>()
 
-    init(path: String, updateCallback: @escaping ([String: AnyObject]) -> (), callback: @escaping (Any) -> Any?) {
+    init(path: String, updateCallback: @escaping (String, [String: AnyObject]) -> (), callback: @escaping (Any) -> Any?) {
         if let rpcLogPath = ProcessInfo.processInfo.environment[XI_RPC_LOG] {
             self.rpcLogWriter = FileWriter(path: rpcLogPath)
             if self.rpcLogWriter != nil {
@@ -159,15 +159,19 @@ class CoreConnection {
             }
             // is notification
         } else {
-            // updates get their own codepath, staying on this thread; the main thread may be blocked
-            // waiting for this update
-            if obj["method"] as? String == "update", let params = obj["params"] as? [String: AnyObject] {
-                self.updateCallback(params)
-            } else {
-            // other notifications go on the main thread
-                DispatchQueue.main.async {
-                    let _ = self.callback(json as AnyObject)
+            // updates and style defs get their own codepath, staying on this thread;
+            // the main thread may be blocked waiting for this update
+            if let method = obj["method"] as? String {
+                if method == "update" || method == "def_style", let params = obj["params"] as? [String: AnyObject] {
+                    self.updateCallback(method, params)
+                } else {
+                    // other notifications go on the main thread
+                    DispatchQueue.main.async {
+                        let _ = self.callback(json as AnyObject)
+                    }
                 }
+            } else {
+                print("malformed json-rpc notification \(json)")
             }
         }
     }

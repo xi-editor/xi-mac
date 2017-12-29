@@ -106,7 +106,7 @@ func utf8_offset_to_utf16(_ s: String, _ ix: Int) -> Int {
 }
 
 /// A store of text styles, indexable by id.
-class StyleMap {
+class StyleMapState: UnfairLock {
     private var font: NSFont
     private var styles: [Style?] = []
 
@@ -164,24 +164,11 @@ class StyleMap {
         }
     }
 
-    /// applies a given style to the AttributedString
-    private func applyStyle(string: NSMutableAttributedString, id: Int, range: NSRange) {
-        if id >= styles.count { return }
-        guard let style = styles[id] else { return }
-
-        string.addAttributes(style.attributes, range: range)
-    }
-
-    /// Given style information, applies the appropriate text attributes to the passed NSAttributedString
-    func applyStyles(text: String, string: inout NSMutableAttributedString, styles: [StyleSpan]) {
-        // we handle the 0 (selection) and 1 (search highlight) styles in EditView.drawRect
-        for styleSpan in styles.filter({ $0.style >= N_RESERVED_STYLES }) {
-                applyStyle(string: string, id: styleSpan.style, range: styleSpan.range)
-        }
-    }
-
     func applyStyle(builder: TextLineBuilder, id: Int, range: NSRange) {
-        if id >= styles.count { return }
+        if id >= styles.count {
+            print("stylemap can't resolve \(id)")
+            return
+        }
         if id == 0 {
             builder.addSelSpan(range: convertRange(range))
         } else if id == 1 {
@@ -203,7 +190,6 @@ class StyleMap {
         }
     }
     
-    /// Applies the styles to the text line builder.
     func applyStyles(builder: TextLineBuilder, styles: [StyleSpan]) {
         for styleSpan in styles {
             applyStyle(builder: builder, id: styleSpan.style, range: styleSpan.range)
@@ -216,6 +202,46 @@ class StyleMap {
             Style(font: font, fgColor: $0.fgColor, bgColor: $0.bgColor,
                   underline: $0.underline, italic: $0.italic, weight: $0.weight)
         } }
+    }
+}
+
+/// Safe access to the style map, holding a lock
+class StyleMapLocked {
+    private var inner: StyleMapState
+
+    fileprivate init(_ mutex: StyleMapState) {
+        inner = mutex
+        inner.lock()
+    }
+
+    deinit {
+        inner.unlock()
+    }
+
+    /// Defines a style that can then be referred to by index.
+    func defStyle(json: [String: AnyObject]) {
+        inner.defStyle(json: json)
+    }
+
+    /// Applies the styles to the text line builder.
+    func applyStyles(builder: TextLineBuilder, styles: [StyleSpan]) {
+        inner.applyStyles(builder: builder, styles: styles)
+    }
+
+    func updateFont(to font: NSFont) {
+        inner.updateFont(to: font)
+    }
+}
+
+class StyleMap {
+    private let state: StyleMapState
+
+    init(font: NSFont) {
+        state = StyleMapState(font: font)
+    }
+
+    func locked() -> StyleMapLocked {
+        return StyleMapLocked(state)
     }
 }
 
