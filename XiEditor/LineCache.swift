@@ -236,7 +236,7 @@ class LineCacheLocked<T> {
     }
 
     /// The maximum time (in milliseconds) to block when missing lines.
-    let MAX_BLOCK_MS = 15;
+    let MAX_BLOCK_MS = 30;
 
     var isEmpty: Bool {
         return inner.isEmpty
