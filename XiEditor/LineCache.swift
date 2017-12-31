@@ -18,10 +18,12 @@ import Foundation
 typealias LineRange = CountableRange<Int>
 
 /// Represents a single line, including rendering information.
-struct Line {
+struct Line<T> {
     var text: String
     var cursor: [Int]
     var styles: [StyleSpan]
+    /// Associated data, to be managed by client
+    var assoc: T?
 
     /// A Boolean value representing whether this line contains selected/highlighted text.
     /// This is used to determine whether we should pre-draw its background.
@@ -59,14 +61,14 @@ struct Line {
 }
 
 /// The underlying state of the cache, with methods for applying update deltas.
-fileprivate class LineCacheState: UnfairLock {
+fileprivate class LineCacheState<T>: UnfairLock {
     /// A semaphore we use to wake up the main thread if it is blocking missing lines
     let waitingForLines = DispatchSemaphore(value: 0)
     /// Whether the main thread is waiting on the semaphore
     var isWaiting = false
 
     var nInvalidBefore = 0;
-    var lines: [Line?] = []
+    var lines: [Line<T>?] = []
     var nInvalidAfter = 0;
 
     var height: Int {
@@ -77,7 +79,7 @@ fileprivate class LineCacheState: UnfairLock {
         return  lines.count == 0 || (lines.count == 1 && lines[0]?.text  == "")
     }
 
-    func _get(_ ix: Int) -> Line? {
+    func _get(_ ix: Int) -> Line<T>? {
         if ix < nInvalidBefore { return nil }
         let ix = ix - nInvalidBefore
         if ix < lines.count {
@@ -86,7 +88,20 @@ fileprivate class LineCacheState: UnfairLock {
         return nil
     }
 
-    func linesForRange(range: LineRange) -> [Line?] {
+    func setAssoc(_ ix: Int, _ assoc: T?) {
+        assert(ix >= nInvalidBefore)
+        let ix = ix - nInvalidBefore
+        assert(ix < lines.count)
+        lines[ix]!.assoc = assoc
+    }
+
+    func flushAssoc() {
+        for ix in 0..<lines.count {
+            lines[ix]?.assoc = nil
+        }
+    }
+
+    func linesForRange(range: LineRange) -> [Line<T>?] {
         return range.map( { _get($0) } )
     }
 
@@ -97,7 +112,7 @@ fileprivate class LineCacheState: UnfairLock {
         guard let ops = update["ops"] else { return inval }
         let oldHeight = height
         var newInvalidBefore = 0
-        var newLines: [Line?] = []
+        var newLines: [Line<T>?] = []
         var newInvalidAfter = 0
         var oldIx = 0;
         for op in ops as! [[String: AnyObject]] {
@@ -203,11 +218,11 @@ fileprivate class LineCacheState: UnfairLock {
 /// it holds an associated mutex during its lifetime.
 /// - Note: This uses a pattern that is very similar to Rust's
 /// [MutexGuard](https://doc.rust-lang.org/std/sync/struct.MutexGuard.html).
-class LineCacheLocked {
-    private var inner: LineCacheState
+class LineCacheLocked<T> {
+    private var inner: LineCacheState<T>
     var shouldSignal = false
 
-    fileprivate init(_ mutex: LineCacheState) {
+    fileprivate init(_ mutex: LineCacheState<T>) {
         inner = mutex
         inner.lock()
     }
@@ -221,7 +236,7 @@ class LineCacheLocked {
     }
 
     /// The maximum time (in milliseconds) to block when missing lines.
-    let MAX_BLOCK_MS = 15;
+    let MAX_BLOCK_MS = 30;
 
     var isEmpty: Bool {
         return inner.isEmpty
@@ -235,11 +250,22 @@ class LineCacheLocked {
         return inner.cursorInval
     }
 
-    func get(_ ix: Int) -> Line? {
+    /// Returns the line for the given index, if it exists in the cache.
+    func get(_ ix: Int) -> Line<T>? {
         return inner._get(ix)
     }
 
-    func blockingGet(lines lineRange: LineRange) -> [Line?] {
+    /// Sets the associated data for a line. The line _must_ be valid.
+    func setAssoc(_ ix: Int, assoc: T) {
+        inner.setAssoc(ix, assoc)
+    }
+
+    /// Flushes all associated data, necessary on theme change.
+    func flushAssoc() {
+        inner.flushAssoc()
+    }
+
+    func blockingGet(lines lineRange: LineRange) -> [Line<T>?] {
         let lines = inner.linesForRange(range: lineRange)
         let missingLines = lineRange.enumerated()
             .filter( { lines.count > $0.offset && lines[$0.offset] == nil })
@@ -293,14 +319,14 @@ class LineCacheLocked {
  `blockingGet(lines:)` method, which will block for some maximum amount of time
  waiting for the lines to arrive from xi-core.
  */
-class LineCache {
+class LineCache<T> {
 
     /// The underlying cache state
-    private let state = LineCacheState()
+    private let state = LineCacheState<T>()
 
     /// Lock the mutex protecting the linecache state and return an object giving
     /// safe mutable access to that state.
-    func locked() -> LineCacheLocked {
+    func locked() -> LineCacheLocked<T> {
         return LineCacheLocked(state)
     }
     
@@ -321,11 +347,6 @@ class LineCache {
         return locked().cursorInval
     }
 
-    /// Returns the line for the given index, if it exists in the cache.
-    func get(_ ix: Int) -> Line? {
-        return locked().get(ix)
-    }
-
     /**
      Returns the lines in `lineRange`, waiting for an update if necessary.
 
@@ -333,7 +354,7 @@ class LineCache {
      will block the calling thread for a short time, to see if the missing lines are
      contained in the next received update.
      */
-    func blockingGet(lines lineRange: LineRange) -> [Line?] {
+    func blockingGet(lines lineRange: LineRange) -> [Line<T>?] {
         return locked().blockingGet(lines: lineRange)
     }
 
