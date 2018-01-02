@@ -77,6 +77,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationWillFinishLaunching(_ aNotification: Notification) {
+        globalTrace.trace("appWillLaunch", .main, .begin)
 
         guard let corePath = Bundle.main.path(forResource: "xi-core", ofType: ""),
         let bundledPluginPath = Bundle.main.path(forResource: "plugins", ofType: "")
@@ -105,6 +106,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let preferredTheme = UserDefaults.standard.string(forKey: USER_DEFAULTS_THEME_KEY) ?? "InspiredGitHub"
         let req = Events.SetTheme(themeName: preferredTheme)
         dispatcher.coreConnection.sendRpcAsync(req.method, params: req.params!)
+        globalTrace.trace("appWillLaunch", .main, .end)
     }
 
     /// returns the NSDocument corresponding to the given viewIdentifier
@@ -297,7 +299,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         testWindow?.makeKeyAndOrderFront(self)
         testWindow?.contentView = TextPlaneDemo(frame: frame)
     }
-    
+
     @IBAction func writeTrace(_ sender: AnyObject) {
         globalTrace.write()
     }

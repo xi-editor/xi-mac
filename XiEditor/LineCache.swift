@@ -306,7 +306,7 @@ class LineCacheLocked<T> {
         globalTrace.trace("applyUpdate", .main, .begin)
         let inval = inner.applyUpdate(update: update)
         globalTrace.trace("applyUpdate", .main, .end)
-       if inner.isWaiting {
+        if inner.isWaiting {
             shouldSignal = true
             inner.isWaiting = false
         }
