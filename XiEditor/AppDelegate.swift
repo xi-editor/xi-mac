@@ -123,7 +123,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         case "update":
             let update = json["update"] as! [String: AnyObject]
             let viewIdentifier = json["view_id"] as! String
+            globalTrace.trace("dfvi", .main, .begin)
             let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
+            globalTrace.trace("dfvi", .main, .end)
             if document == nil { print("document missing for view id \(viewIdentifier)") }
             document?.updateAsync(update: update)
         case "def_style":
@@ -294,5 +296,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         testWindow = NSWindow(contentRect: frame, styleMask: [.titled, .closable, .resizable, .miniaturizable], backing: .buffered, defer: false)
         testWindow?.makeKeyAndOrderFront(self)
         testWindow?.contentView = TextPlaneDemo(frame: frame)
+    }
+    
+    @IBAction func writeTrace(_ sender: AnyObject) {
+        globalTrace.write()
     }
 }

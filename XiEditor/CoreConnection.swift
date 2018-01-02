@@ -130,6 +130,7 @@ class CoreConnection {
     }
 
     func handleRaw(_ data: Data) {
+        globalTrace.trace("handleRaw", .rpc, .begin)
         do {
             let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
 //            print("got \(json)")
@@ -137,6 +138,7 @@ class CoreConnection {
         } catch {
             print("json error \(error.localizedDescription)")
         }
+        globalTrace.trace("handleRaw", .rpc, .end)
     }
 
     /// handle a JSON RPC call. Determines whether it is a request, response or notifcation
@@ -163,11 +165,15 @@ class CoreConnection {
             // the main thread may be blocked waiting for this update
             if let method = obj["method"] as? String {
                 if method == "update" || method == "def_style", let params = obj["params"] as? [String: AnyObject] {
+                    globalTrace.trace(method, .rpc, .begin)
                     self.updateCallback(method, params)
+                    globalTrace.trace(method, .rpc, .end)
                 } else {
                     // other notifications go on the main thread
                     DispatchQueue.main.async {
+                        globalTrace.trace(method, .rpc, .begin)
                         let _ = self.callback(json as AnyObject)
+                        globalTrace.trace(method, .rpc, .end)
                     }
                 }
             } else {
@@ -179,6 +185,7 @@ class CoreConnection {
     /// send an RPC request, returning immediately. The callback will be called when the
     /// response comes in, likely from a different thread
     func sendRpcAsync(_ method: String, params: Any, callback: ((Any?) -> ())? = nil) {
+        globalTrace.trace("send \(method)", .rpc, .begin)
         var req = ["method": method, "params": params] as [String : Any]
         if let callback = callback {
             queue.sync {
@@ -189,6 +196,7 @@ class CoreConnection {
             }
         }
         sendJson(req as Any)
+        globalTrace.trace("send \(method)", .rpc, .end)
     }
 
     /// send RPC synchronously, blocking until return. Note: there is no ordering guarantee on

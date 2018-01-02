@@ -863,6 +863,12 @@ Gw
                                                 <action selector="textPlaneTest:" target="7er-QZ-amI" id="JPq-cw-4Il"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem title="Write Trace" keyEquivalent="" id="2Bz-a3-hNc">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="writeTrace:" target="7er-QZ-amI" id="rFd-ai-H9o"/>
+                                            </connections>
+                                        </menuItem>
                                     </items>
                                 </menu>
                             </menuItem>
