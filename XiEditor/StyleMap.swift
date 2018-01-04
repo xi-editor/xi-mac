@@ -25,6 +25,7 @@ struct Style {
     var italic: Bool
     var weight: Int?
     var attributes: [NSAttributedStringKey: Any] = [:]
+    var fakeItalic = false
 
     init(font fromFont: NSFont, fgColor: NSColor?, bgColor: NSColor?, underline: Bool, italic: Bool, weight: Int?) {
         if let fgColor = fgColor {
@@ -49,6 +50,7 @@ struct Style {
                 font = f
             } else {
                 attributes[NSAttributedStringKey.obliqueness] = 0.2
+                fakeItalic = true
             }
         }
 
@@ -104,7 +106,7 @@ func utf8_offset_to_utf16(_ s: String, _ ix: Int) -> Int {
 }
 
 /// A store of text styles, indexable by id.
-class StyleMap {
+class StyleMapState: UnfairLock {
     private var font: NSFont
     private var styles: [Style?] = []
 
@@ -162,19 +164,35 @@ class StyleMap {
         }
     }
 
-    /// applies a given style to the AttributedString
-    private func applyStyle(string: NSMutableAttributedString, id: Int, range: NSRange) {
-        if id >= styles.count { return }
-        guard let style = styles[id] else { return }
-
-        string.addAttributes(style.attributes, range: range)
+    func applyStyle(builder: TextLineBuilder, id: Int, range: NSRange) {
+        if id >= styles.count {
+            print("stylemap can't resolve \(id)")
+            return
+        }
+        if id == 0 {
+            builder.addSelSpan(range: convertRange(range))
+        } else if id == 1 {
+            () // TODO: handle find span - perhaps this should just be a regular bg span tho
+        } else {
+            guard let style = styles[id] else { return }
+            if let fgColor = style.fgColor {
+                builder.addFgSpan(range: convertRange(range), argb: colorToArgb(fgColor))
+            }
+            if let font = style.font {
+                builder.addFontSpan(range: convertRange(range), font: font)
+            }
+            if style.fakeItalic {
+                builder.addFakeItalicSpan(range: convertRange(range))
+            }
+            if style.underline {
+                builder.addUnderlineSpan(range: convertRange(range), style: .single)
+            }
+        }
     }
-
-    /// Given style information, applies the appropriate text attributes to the passed NSAttributedString
-    func applyStyles(text: String, string: inout NSMutableAttributedString, styles: [StyleSpan]) {
-        // we handle the 0 (selection) and 1 (search highlight) styles in EditView.drawRect
-        for styleSpan in styles.filter({ $0.style >= N_RESERVED_STYLES }) {
-                applyStyle(string: string, id: styleSpan.style, range: styleSpan.range)
+    
+    func applyStyles(builder: TextLineBuilder, styles: [StyleSpan]) {
+        for styleSpan in styles {
+            applyStyle(builder: builder, id: styleSpan.style, range: styleSpan.range)
         }
     }
 
@@ -184,6 +202,46 @@ class StyleMap {
             Style(font: font, fgColor: $0.fgColor, bgColor: $0.bgColor,
                   underline: $0.underline, italic: $0.italic, weight: $0.weight)
         } }
+    }
+}
+
+/// Safe access to the style map, holding a lock
+class StyleMapLocked {
+    private var inner: StyleMapState
+
+    fileprivate init(_ mutex: StyleMapState) {
+        inner = mutex
+        inner.lock()
+    }
+
+    deinit {
+        inner.unlock()
+    }
+
+    /// Defines a style that can then be referred to by index.
+    func defStyle(json: [String: AnyObject]) {
+        inner.defStyle(json: json)
+    }
+
+    /// Applies the styles to the text line builder.
+    func applyStyles(builder: TextLineBuilder, styles: [StyleSpan]) {
+        inner.applyStyles(builder: builder, styles: styles)
+    }
+
+    func updateFont(to font: NSFont) {
+        inner.updateFont(to: font)
+    }
+}
+
+class StyleMap {
+    private let state: StyleMapState
+
+    init(font: NSFont) {
+        state = StyleMapState(font: font)
+    }
+
+    func locked() -> StyleMapLocked {
+        return StyleMapLocked(state)
     }
 }
 
@@ -202,4 +260,8 @@ func closestMatch(of font: NSFont, traits: NSFontTraitMask, weight: Int) -> NSFo
         weight += direction
     }
     return nil
+}
+
+func convertRange(_ range: NSRange) -> CountableRange<Int> {
+    return range.location ..< (range.location + range.length)
 }

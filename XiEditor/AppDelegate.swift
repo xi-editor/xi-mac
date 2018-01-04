@@ -35,7 +35,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         }
         set {
             _textMetrics = newValue
-            styleMap.updateFont(to: newValue.font)
+            styleMap.locked().updateFont(to: newValue.font)
             self.updateAllViews()
         }
     }
@@ -115,9 +115,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
     }
 
     func defineStyle(style: [String: AnyObject]) {
-        DispatchQueue.main.async { [weak self] in
-            self?.styleMap.defStyle(json: style)
-        }
+        // defineStyle, like update, is handled on the read thread.
+        styleMap.locked().defStyle(json: style)
     }
 
     func themeChanged(name: String, theme: Theme) {
@@ -242,5 +241,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         } else {
             return defaultConfigDirectory.path
         }
+    }
+
+    // This is test code for the new text plane and will be deleted when it's wired up to the actual EditView.
+    var testWindow: NSWindow?
+    @IBAction func textPlaneTest(_ sender: AnyObject) {
+        let frame = NSRect(x: 100, y: 100, width: 800, height: 600)
+        testWindow = NSWindow(contentRect: frame, styleMask: [.titled, .closable, .resizable, .miniaturizable], backing: .buffered, defer: false)
+        testWindow?.makeKeyAndOrderFront(self)
+        testWindow?.contentView = TextPlaneDemo(frame: frame)
     }
 }
