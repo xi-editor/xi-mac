@@ -99,7 +99,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         dispatcher.coreConnection.sendRpcAsync(req.method, params: req.params!)
     }
 
-    // MARK: XiClient protocol
+    // MARK: - XiClient protocol
 
     func update(viewIdentifier: String, update: [String: AnyObject], rev: UInt64?) {
         let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
@@ -188,7 +188,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         }
     }
 
-    //MARK: top-level interactions
+    //MARK: - top-level interactions
     @IBAction func openPreferences(_ sender: NSMenuItem) {
         let delegate = (NSApplication.shared.delegate as? AppDelegate)
         if let preferencesPath = delegate?.defaultConfigDirectory.appendingPathComponent(PREFERENCES_FILE_NAME) {
@@ -203,12 +203,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         }
     }
 
-    //MARK: helpers
+    //- MARK: - helpers
 
     /// returns the NSDocument corresponding to the given viewIdentifier
     private func documentForViewIdentifier(viewIdentifier: ViewIdentifier) -> Document? {
         //TODO: move this to use a hashmap; we will have to do some manual bookkeeping,
-        // but this is a noticeable (small) bottleneck in some scenarios
+        // but this is a noticeable (small) bottleneck in some scenarios.
+        // NOTE: any future implementation of this function will have to be threadsafe,
+        // as is it is called from the async update method.
         for doc in NSApplication.shared.orderedDocuments {
             guard let doc = doc as? Document else { continue }
             if doc.coreViewIdentifier == viewIdentifier {
