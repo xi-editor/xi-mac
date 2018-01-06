@@ -139,6 +139,17 @@ class Document: NSDocument {
         self.editViewController = windowController.contentViewController as? EditViewController
         editViewController?.document = self
         windowController.window?.delegate = editViewController
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(Document.windowChangedNotification(_:)),
+            name: NSWindow.didMoveNotification, object: nil)
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(Document.windowChangedNotification(_:)),
+            name: NSWindow.didResizeNotification, object: nil)
+
         self.addWindowController(windowController)
     }
 
@@ -249,5 +260,13 @@ class Document: NSDocument {
         }
         Document._lastWindowFrame = nextFrame
         return nextFrame
+    }
+    
+    /// Updates the location used for creating new windows on launch
+    @objc func windowChangedNotification(_ notification: Notification) {
+        if let window = notification.object as? NSWindow {
+            let frameString = NSStringFromRect(window.frame)
+            UserDefaults.standard.setValue(frameString, forKey: USER_DEFAULTS_NEW_WINDOW_FRAME)
+        }
     }
 }
