@@ -37,6 +37,15 @@ class Document: NSDocument {
     /// if set, should be used as the tabbingIdentifier of new documents' windows.
     static var preferredTabbingIdentifier: String?
 
+    /// Used to determine initial locations for new windows.
+    fileprivate static var _lastWindowFrame: NSRect = {
+        if let saved = UserDefaults.standard.string(forKey: USER_DEFAULTS_NEW_WINDOW_FRAME) {
+            return NSRectFromString(saved)
+        } else {
+            return NSRect(x: 200, y: 200, width: 600, height: 600)
+        }
+    }()
+    
     var dispatcher: Dispatcher!
     /// coreViewIdentifier is the name used to identify this document when communicating with the Core.
     var coreViewIdentifier: ViewIdentifier? {
@@ -124,11 +133,7 @@ class Document: NSDocument {
                     windowController.window?.tabbingMode = .preferred
                 }
             }
-            //FIXME: some saner way of positioning new windows. maybe based on current window size, with some checks to not completely obscure an existing window?
-            // also awareness of multiple screens (prefer to open on currently active screen)
-            let screenHeight = windowController.window?.screen?.frame.height ?? 800
-            let windowHeight: CGFloat = 800
-            windowController.window?.setFrame(NSRect(x: 200, y: screenHeight - windowHeight - 200, width: 700, height: 800), display: true)
+            windowController.window?.setFrame(frameForNewWindow(), display: true)
         }
 
         self.editViewController = windowController.contentViewController as? EditViewController
@@ -223,5 +228,26 @@ class Document: NSDocument {
         if let editVC = editViewController {
             editVC.updateAsync(update: update)
         }
+    }
+    
+    /// Returns the frame to be used for the next new window.
+    /// - Note: This attempts to replicate the behaviour of native macOS applications.
+    /// On launch, an initial location is chosen, generally based on the position of
+    /// the last manually moved view during the application's last run; subsequent
+    /// windows are offset from this by approximately thie width of the title bar.
+    /// If a window clips the screen, the position starts again from the beggining
+    /// of the clipped axis.
+    func frameForNewWindow() -> NSRect {
+        let offsetSize: CGFloat = 22
+        let screenBounds = NSScreen.main!.visibleFrame
+        var nextFrame = NSOffsetRect(Document._lastWindowFrame, offsetSize, -offsetSize)
+        if nextFrame.maxX > screenBounds.maxX {
+            nextFrame.origin.x = screenBounds.minX + offsetSize
+        }
+        if nextFrame.minY <= 0 {
+            nextFrame.origin.y = screenBounds.maxY - nextFrame.height
+        }
+        Document._lastWindowFrame = nextFrame
+        return nextFrame
     }
 }

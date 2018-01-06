@@ -15,6 +15,7 @@
 import Cocoa
 
 let USER_DEFAULTS_THEME_KEY = "io.xi-editor.settings.theme"
+let USER_DEFAULTS_NEW_WINDOW_FRAME = "io.xi-editor.settings.preferredWindowFrame"
 let XI_CONFIG_DIR = "XI_CONFIG_DIR";
 let PREFERENCES_FILE_NAME = "preferences.xiconfig"
 
