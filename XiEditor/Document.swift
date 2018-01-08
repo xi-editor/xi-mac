@@ -245,8 +245,8 @@ class Document: NSDocument {
     /// - Note: This attempts to replicate the behaviour of native macOS applications.
     /// On launch, an initial location is chosen, generally based on the position of
     /// the last manually moved view during the application's last run; subsequent
-    /// windows are offset from this by approximately thie width of the title bar.
-    /// If a window clips the screen, the position starts again from the beggining
+    /// windows are offset from this by approximately the width of the title bar.
+    /// If a window clips the screen, the position starts again from the beginning
     /// of the clipped axis.
     func frameForNewWindow() -> NSRect {
         let offsetSize: CGFloat = 22
