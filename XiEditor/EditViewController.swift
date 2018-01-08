@@ -112,7 +112,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     var scrollPastEnd = false {
         didSet {
             if scrollPastEnd != oldValue {
-                redrawEverything()
+                updateEditViewHeight()
             }
         }
     }
