@@ -109,8 +109,13 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     // visible scroll region
     var visibleLines: LineRange = 0..<0
 
-    // TODO: should be an option in the user preferences
-    var scrollPastEnd = false
+    var scrollPastEnd = false {
+        didSet {
+            if scrollPastEnd != oldValue {
+                updateEditViewHeight()
+            }
+        }
+    }
 
     private var lastDragPosition: BufferPosition?
     /// handles autoscrolling when a drag gesture exists the window
@@ -393,6 +398,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             case "font_size", "font_face":
                 self.handleFontChange(fontName: changes["font_face"] as? String,
                                       fontSize: changes["font_size"] as? CGFloat)
+            case "scroll_past_end":
+                self.scrollPastEnd = changes["scroll_past_end"] as! Bool
                 
             default:
                 break
