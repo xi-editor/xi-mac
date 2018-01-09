@@ -51,6 +51,9 @@ class Document: NSDocument {
     var coreViewIdentifier: ViewIdentifier? {
         didSet {
             guard coreViewIdentifier != nil else { return }
+            (NSDocumentController.shared as! XiDocumentController)
+                .setIdentifier(coreViewIdentifier!, forDocument: self)
+            
             // apply initial updates when coreViewIdentifier is set
             for pending in self.pendingNotifications {
                 self.sendRpcAsync(pending.method, params: pending.params, callback: pending.callback)
