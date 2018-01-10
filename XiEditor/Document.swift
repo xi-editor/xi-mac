@@ -42,15 +42,13 @@ class Document: NSDocument {
             return NSRect(x: 200, y: 200, width: 600, height: 600)
         }
     }()
-    
+
     var dispatcher: Dispatcher!
+    
     /// coreViewIdentifier is the name used to identify this document when communicating with the Core.
     var coreViewIdentifier: ViewIdentifier? {
         didSet {
             guard coreViewIdentifier != nil else { return }
-            (NSDocumentController.shared as! XiDocumentController)
-                .setIdentifier(coreViewIdentifier!, forDocument: self)
-            
             // apply initial updates when coreViewIdentifier is set
             for pending in self.pendingNotifications {
                 self.sendRpcAsync(pending.method, params: pending.params, callback: pending.callback)
@@ -72,37 +70,6 @@ class Document: NSDocument {
     /// Returns `true` if this document contains no data.
     var isEmpty: Bool {
         return editViewController?.lines.isEmpty ?? false
-    }
-
-    // called only when creating a _new_ document
-    convenience init(type: String) throws {
-        self.init()
-        self.fileType = type
-        Events.NewView(path: nil).dispatchWithCallback(dispatcher!) { (response) in
-            // this is a sync request because we need the id in place before we receive updates
-            // (updates are handled on the read thread, so may be processed before the response)
-            DispatchQueue.main.sync {
-                self.coreViewIdentifier = response
-            }
-        }
-    }
-    
-    // called when opening a document
-    convenience init(contentsOf url: URL, ofType typeName: String) throws {
-        self.init()
-        self.fileURL = url
-        self.fileType = typeName
-        Events.NewView(path: url.path).dispatchWithCallback(dispatcher!) { (response) in
-            DispatchQueue.main.sync {
-                self.coreViewIdentifier = response
-            }
-        }
-        try self.read(from: url, ofType: typeName)
-    }
-    
-    // called when NSDocument reopens documents on launch
-    convenience init(for urlOrNil: URL?, withContentsOf contentsURL: URL, ofType typeName: String) throws {
-        try self.init(contentsOf: contentsURL, ofType: typeName)
     }
     
     override init() {
