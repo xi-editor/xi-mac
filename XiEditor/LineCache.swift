@@ -279,9 +279,9 @@ class LineCacheLocked<T> {
             let blockTime = mach_absolute_time()
             inner.isWaiting = true
             inner.unlock()
-            globalTrace.trace("blockingGet", .main, .begin)
+            Trace.shared.trace("blockingGet", .main, .begin)
             let waitResult = inner.waitingForLines.wait(timeout: .now() + .milliseconds(MAX_BLOCK_MS))
-            globalTrace.trace("blockingGet", .main, .end)
+            Trace.shared.trace("blockingGet", .main, .end)
             inner.lock()
 
             let elapsed = mach_absolute_time() - blockTime
@@ -303,9 +303,9 @@ class LineCacheLocked<T> {
     }
 
     func applyUpdate(update: [String: AnyObject]) -> InvalSet {
-        globalTrace.trace("applyUpdate", .main, .begin)
+        Trace.shared.trace("applyUpdate", .main, .begin)
         let inval = inner.applyUpdate(update: update)
-        globalTrace.trace("applyUpdate", .main, .end)
+        Trace.shared.trace("applyUpdate", .main, .end)
         if inner.isWaiting {
             shouldSignal = true
             inner.isWaiting = false

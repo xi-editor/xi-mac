@@ -17,13 +17,15 @@
 
 import Foundation
 
-var globalTrace = Trace()
-
+/// Collect trace events so they can be output in Chrome tracing format.
 class Trace {
     let mutex = UnfairLock()
     let BUF_SIZE = 100_000
     var buf: [TraceEntry]
     var n_entries = 0
+
+    /// Shared instance, most uses should call this.
+    static var shared = Trace()
 
     init() {
         buf = [TraceEntry](repeating: TraceEntry(), count: BUF_SIZE)
@@ -45,7 +47,7 @@ class Trace {
     func write() {
         let pid = getpid()
         let path = "/tmp/xi-trace-\(pid)"
-        if !FileManager().createFile(atPath: path, contents: nil, attributes: nil) {
+        if !FileManager.default.createFile(atPath: path, contents: nil, attributes: nil) {
             print("error creating trace file")
             return
         }

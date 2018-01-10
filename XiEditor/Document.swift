@@ -200,23 +200,23 @@ class Document: NSDocument {
     /// Send a notification specific to the tab. If the tab name hasn't been set, then the
     /// notification is queued, and sent when the tab name arrives.
     func sendRpcAsync(_ method: String, params: Any, callback: ((Any?) -> ())? = nil) {
-        globalTrace.trace(method, .rpc, .begin)
+        Trace.shared.trace(method, .rpc, .begin)
         if let coreViewIdentifier = coreViewIdentifier {
             let inner = ["method": method, "params": params, "view_id": coreViewIdentifier] as [String : Any]
             dispatcher?.coreConnection.sendRpcAsync("edit", params: inner, callback: callback)
         } else {
             pendingNotifications.append(PendingNotification(method: method, params: params, callback: callback))
         }
-        globalTrace.trace(method, .rpc, .end)
+        Trace.shared.trace(method, .rpc, .end)
     }
 
     /// Note: this is a blocking call, and will also fail if the tab name hasn't been set yet.
     /// We should try to migrate users to either fully async or callback based approaches.
     func sendRpc(_ method: String, params: Any) -> Any? {
-        globalTrace.trace(method, .rpc, .begin)
+        Trace.shared.trace(method, .rpc, .begin)
         let inner = ["method": method as AnyObject, "params": params, "view_id": coreViewIdentifier as AnyObject] as [String : Any]
         let result = dispatcher?.coreConnection.sendRpc("edit", params: inner)
-        globalTrace.trace(method, .rpc, .end)
+        Trace.shared.trace(method, .rpc, .end)
         return result
     }
 
