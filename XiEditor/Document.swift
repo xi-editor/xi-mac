@@ -51,6 +51,9 @@ class Document: NSDocument {
     var coreViewIdentifier: ViewIdentifier? {
         didSet {
             guard coreViewIdentifier != nil else { return }
+            (NSDocumentController.shared as! XiDocumentController)
+                .setIdentifier(coreViewIdentifier!, forDocument: self)
+            
             // apply initial updates when coreViewIdentifier is set
             for pending in self.pendingNotifications {
                 self.sendRpcAsync(pending.method, params: pending.params, callback: pending.callback)
@@ -173,7 +176,6 @@ class Document: NSDocument {
     // Document.close() can be called multiple times (on window close and application terminate)
     override func close() {
         if let identifier = self.coreViewIdentifier {
-            self.coreViewIdentifier = nil
             Events.CloseView(viewIdentifier: identifier).dispatch(dispatcher!)
             super.close()
         }

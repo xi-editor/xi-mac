@@ -23,6 +23,7 @@ let PREFERENCES_FILE_NAME = "preferences.xiconfig"
 class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
 
     var dispatcher: Dispatcher?
+    var documentController: XiDocumentController!
 
     // This is set to 'InconsolataGo' in the user preferences; this value is a fallback.
     let fallbackFont = CTFontCreateWithName(("Menlo" as CFString?)!, 14, nil)
@@ -98,6 +99,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         let preferredTheme = UserDefaults.standard.string(forKey: USER_DEFAULTS_THEME_KEY) ?? "InspiredGitHub"
         let req = Events.SetTheme(themeName: preferredTheme)
         dispatcher.coreConnection.sendRpcAsync(req.method, params: req.params!)
+        documentController = XiDocumentController()
     }
 
     // MARK: - XiClient protocol
@@ -208,17 +210,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
 
     /// returns the NSDocument corresponding to the given viewIdentifier
     private func documentForViewIdentifier(viewIdentifier: ViewIdentifier) -> Document? {
-        //TODO: move this to use a hashmap; we will have to do some manual bookkeeping,
-        // but this is a noticeable (small) bottleneck in some scenarios.
-        // NOTE: any future implementation of this function will have to be threadsafe,
-        // as is it is called from the async update method.
-        for doc in NSApplication.shared.orderedDocuments {
-            guard let doc = doc as? Document else { continue }
-            if doc.coreViewIdentifier == viewIdentifier {
-                return doc
-            }
-        }
-        return nil
+        return (NSDocumentController.shared as! XiDocumentController)
+            .documentForViewIdentifier(viewIdentifier)
     }
 
     /// Redraws all open document views, as on a font or theme change.
