@@ -176,7 +176,6 @@ class Document: NSDocument {
     // Document.close() can be called multiple times (on window close and application terminate)
     override func close() {
         if let identifier = self.coreViewIdentifier {
-            self.coreViewIdentifier = nil
             Events.CloseView(viewIdentifier: identifier).dispatch(dispatcher!)
             super.close()
         }

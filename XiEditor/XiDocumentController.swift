@@ -35,12 +35,17 @@ class XiDocumentController: NSDocumentController {
         openViews[viewIdentifier] = document
         lock.unlock()
     }
-    
+
     override func removeDocument(_ document: NSDocument) {
         let doc = document as! Document
-        lock.lock()
-        openViews.removeValue(forKey: doc.coreViewIdentifier!)
-        lock.unlock()
+        if let viewIdentifier = doc.coreViewIdentifier {
+            lock.lock()
+            openViews.removeValue(forKey: viewIdentifier)
+            doc.coreViewIdentifier = nil
+            lock.unlock()
+        } else {
+            print("removed document with no identifier \(document)")
+        }
         super.removeDocument(document)
     }
 }
