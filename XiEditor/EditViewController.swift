@@ -57,15 +57,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         return controller
     }()
     
-    var document: Document! {
-        didSet {
-            if oldValue != nil {
-                self.visibleLines = 0..<0
-                self.redrawEverything()
-            }
-        }
-    }
-    
+    var document: Document!
+
     var lines = LineCache<LineAssoc>()
 
     var textMetrics: TextDrawingMetrics {
