@@ -78,6 +78,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
     }
 
     func applicationWillFinishLaunching(_ aNotification: Notification) {
+        Trace.shared.trace("appWillLaunch", .main, .begin)
 
         guard let corePath = Bundle.main.path(forResource: "xi-core", ofType: ""),
         let bundledPluginPath = Bundle.main.path(forResource: "plugins", ofType: "")
@@ -99,6 +100,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         let preferredTheme = UserDefaults.standard.string(forKey: USER_DEFAULTS_THEME_KEY) ?? "InspiredGitHub"
         let req = Events.SetTheme(themeName: preferredTheme)
         dispatcher.coreConnection.sendRpcAsync(req.method, params: req.params!)
+        Trace.shared.trace("appWillLaunch", .main, .end)
         documentController = XiDocumentController()
     }
 
@@ -246,5 +248,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         testWindow = NSWindow(contentRect: frame, styleMask: [.titled, .closable, .resizable, .miniaturizable], backing: .buffered, defer: false)
         testWindow?.makeKeyAndOrderFront(self)
         testWindow?.contentView = TextPlaneDemo(frame: frame)
+    }
+
+    @IBAction func writeTrace(_ sender: AnyObject) {
+        Trace.shared.write()
     }
 }

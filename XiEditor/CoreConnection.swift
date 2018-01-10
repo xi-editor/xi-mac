@@ -127,15 +127,17 @@ class CoreConnection {
     }
 
     func handleRaw(_ data: Data) {
+        Trace.shared.trace("handleRaw", .rpc, .begin)
         do {
             let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
             handleRpc(json)
         } catch {
             print("json error \(error.localizedDescription)")
         }
+        Trace.shared.trace("handleRaw", .rpc, .end)
     }
 
-    /// handle a JSON RPC call. Determines whether it is a request, response or notifcation
+    /// handle a JSON RPC call. Determines whether it is a request, response or notification
     /// and executes/responds accordingly
     func handleRpc(_ json: Any) {
         guard let obj = json as? [String: AnyObject] else { fatalError("malformed json \(json)") }
@@ -228,6 +230,7 @@ class CoreConnection {
     /// send an RPC request, returning immediately. The callback will be called when the
     /// response comes in, likely from a different thread
     func sendRpcAsync(_ method: String, params: Any, callback: ((Any?) -> ())? = nil) {
+        Trace.shared.trace("send \(method)", .rpc, .begin)
         var req = ["method": method, "params": params] as [String : Any]
         if let callback = callback {
             queue.sync {
@@ -238,6 +241,7 @@ class CoreConnection {
             }
         }
         sendJson(req as Any)
+        Trace.shared.trace("send \(method)", .rpc, .end)
     }
 
     /// send RPC synchronously, blocking until return. Note: there is no ordering guarantee on

@@ -424,8 +424,12 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
 
     // Rendering using TextPlane
     func render(_ renderer: Renderer, dirtyRect: NSRect) {
+        Trace.shared.trace("EditView render", .main, .begin)
         renderer.clear(dataSource.theme.background)
-        if dataSource.document.coreViewIdentifier == nil { return }
+        if dataSource.document.coreViewIdentifier == nil {
+            Trace.shared.trace("EditView render", .main, .end)
+            return
+        }
         let linespace = dataSource.textMetrics.linespace
         let topPad = linespace - dataSource.textMetrics.ascent
         let xOff = gutterWidth + x0 - scrollOrigin.x
@@ -549,5 +553,6 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                 renderer.drawLine(line: assoc.gutterTL, x0: GLfloat(x), y0: GLfloat(y0))
             }
         }
+        Trace.shared.trace("EditView render", .main, .end)
     }
 }

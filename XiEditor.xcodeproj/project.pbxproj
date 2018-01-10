@@ -27,6 +27,7 @@
 		AE499DEB1C82BB2B002D68AF /* XiEditorUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE499DEA1C82BB2B002D68AF /* XiEditorUITests.swift */; };
 		AE499DF91C82C835002D68AF /* CoreConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE499DF81C82C835002D68AF /* CoreConnection.swift */; };
 		AEC4F6B31FF5AF130060E10E /* UnfairLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEC4F6B21FF5AF130060E10E /* UnfairLock.swift */; };
+		AEC4F6CA1FFB02F10060E10E /* Trace.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEC4F6C91FFB02F10060E10E /* Trace.swift */; };
 		AED22D761FE836880096E7C3 /* TextPlane.swift in Sources */ = {isa = PBXBuildFile; fileRef = AED22D751FE836880096E7C3 /* TextPlane.swift */; };
 		AED22D781FE8404D0096E7C3 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AED22D771FE8404D0096E7C3 /* Renderer.swift */; };
 		AED22D7A1FE8418A0096E7C3 /* Atlas.swift in Sources */ = {isa = PBXBuildFile; fileRef = AED22D791FE8418A0096E7C3 /* Atlas.swift */; };
@@ -94,6 +95,7 @@
 		AE499DEC1C82BB2B002D68AF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AE499DF81C82C835002D68AF /* CoreConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreConnection.swift; sourceTree = "<group>"; };
 		AEC4F6B21FF5AF130060E10E /* UnfairLock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnfairLock.swift; sourceTree = "<group>"; };
+		AEC4F6C91FFB02F10060E10E /* Trace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Trace.swift; sourceTree = "<group>"; };
 		AED22D751FE836880096E7C3 /* TextPlane.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextPlane.swift; sourceTree = "<group>"; };
 		AED22D771FE8404D0096E7C3 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
 		AED22D791FE8418A0096E7C3 /* Atlas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Atlas.swift; sourceTree = "<group>"; };
@@ -172,6 +174,7 @@
 				AE168C5B1E4AD87B008249AE /* LineCache.swift */,
 				AE0243F51E4BDF8A00641BDA /* StyleMap.swift */,
 				AEC4F6B21FF5AF130060E10E /* UnfairLock.swift */,
+				AEC4F6C91FFB02F10060E10E /* Trace.swift */,
 				6B90DD1B1F129C1A00DF3CE2 /* PluginCommand.swift */,
 				6B53F5F11EF963EB00A4C664 /* Theme.swift */,
 				6B90DD211F14110B00DF3CE2 /* UserInputPromptController.swift */,
@@ -401,6 +404,7 @@
 				6B53F5F21EF963EB00A4C664 /* Theme.swift in Sources */,
 				AE499DF91C82C835002D68AF /* CoreConnection.swift in Sources */,
 				50370A2B1D4209F300EA1B18 /* Dispatcher.swift in Sources */,
+				AEC4F6CA1FFB02F10060E10E /* Trace.swift in Sources */,
 				6BF9575B1FD70C420010BAE6 /* Client.swift in Sources */,
 				AED23F181C83CBED002246CE /* EditView.swift in Sources */,
 				AE499DD01C82BB2B002D68AF /* AppDelegate.swift in Sources */,
