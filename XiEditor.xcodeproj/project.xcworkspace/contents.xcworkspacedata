@@ -2,9 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:../xi-editor/rust/core-lib/assets/defaults.toml">
-   </FileRef>
-   <FileRef
       location = "self:">
    </FileRef>
 </Workspace>

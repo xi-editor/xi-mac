@@ -434,12 +434,13 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         let topPad = linespace - dataSource.textMetrics.ascent
         let xOff = gutterWidth + x0 - scrollOrigin.x
         let yOff = topPad - scrollOrigin.y
-        let first = max(0, Int((floor(dirtyRect.origin.y - topPad + scrollOrigin.y) / linespace)))
+        let firstVisible = max(0, Int((floor(dirtyRect.origin.y - topPad + scrollOrigin.y) / linespace)))
         let lastVisible = Int(ceil((dirtyRect.origin.y + dirtyRect.size.height - topPad + scrollOrigin.y) / linespace))
 
         // Note: this locks the line cache for the duration of the render
         let lineCache = dataSource.lines.locked()
         let totalLines = lineCache.height
+        let first = min(totalLines, firstVisible)
         let last = min(totalLines, lastVisible)
         let lines = lineCache.blockingGet(lines: first..<last)
         let font = dataSource.textMetrics.font as CTFont
