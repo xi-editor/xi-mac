@@ -66,6 +66,8 @@ fileprivate class LineCacheState<T>: UnfairLock {
     let waitingForLines = DispatchSemaphore(value: 0)
     /// Whether the main thread is waiting on the semaphore
     var isWaiting = false
+    /// A revision count used for suppressing duplicated drawing; guaranteed nonzero
+    var revision = 1
 
     var nInvalidBefore = 0;
     var lines: [Line<T>?] = []
@@ -195,6 +197,7 @@ fileprivate class LineCacheState<T>: UnfairLock {
         nInvalidBefore = newInvalidBefore
         lines = newLines
         nInvalidAfter = newInvalidAfter
+        revision += 1
 
         if height < oldHeight {
             inval.addRange(start: height, end: oldHeight)
@@ -250,6 +253,10 @@ class LineCacheLocked<T> {
         return inner.cursorInval
     }
 
+    var revision: Int {
+        return inner.revision
+    }
+
     /// Returns the line for the given index, if it exists in the cache.
     func get(_ ix: Int) -> Line<T>? {
         return inner._get(ix)
@@ -265,6 +272,13 @@ class LineCacheLocked<T> {
         inner.flushAssoc()
     }
 
+    /**
+     Returns the lines in `lineRange`, waiting for an update if necessary.
+
+     - Note: If any of the lines in `lineRange` are absent in the cache, this method
+     will block the calling thread for a short time, to see if the missing lines are
+     contained in the next received update.
+     */
     func blockingGet(lines lineRange: LineRange) -> [Line<T>?] {
         let lines = inner.linesForRange(range: lineRange)
         let missingLines = lineRange.enumerated()
@@ -302,6 +316,7 @@ class LineCacheLocked<T> {
         return inner.linesForRange(range: lineRange)
     }
 
+    /// Returns range of lines that have been invalidated
     func applyUpdate(update: [String: AnyObject]) -> InvalSet {
         Trace.shared.trace("applyUpdate", .main, .begin)
         let inval = inner.applyUpdate(update: update)
@@ -349,22 +364,6 @@ class LineCache<T> {
     /// Set of lines that need to be invalidated to blink the cursor
     var cursorInval: InvalSet {
         return locked().cursorInval
-    }
-
-    /**
-     Returns the lines in `lineRange`, waiting for an update if necessary.
-
-     - Note: If any of the lines in `lineRange` are absent in the cache, this method
-     will block the calling thread for a short time, to see if the missing lines are
-     contained in the next received update.
-     */
-    func blockingGet(lines lineRange: LineRange) -> [Line<T>?] {
-        return locked().blockingGet(lines: lineRange)
-    }
-
-    /// Returns range of lines that have been invalidated
-    func applyUpdate(update: [String: AnyObject]) -> InvalSet {
-        return locked().applyUpdate(update: update)
     }
 }
 

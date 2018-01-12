@@ -186,15 +186,19 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     /// handles the `update` RPC. This is called from a dedicated thread.
     func updateAsync(update: [String: AnyObject]) {
-        let inval = lines.applyUpdate(update: update)
+        let lineCache = lines.locked()
+        let inval = lineCache.applyUpdate(update: update)
         let hasNoUnsavedChanges = update["pristine"] as? Bool ?? false
+        let revision = lineCache.revision
         
         DispatchQueue.main.async { [weak self] in
             self?.document.updateChangeCount(hasNoUnsavedChanges ? .changeCleared : .changeDone)
             self?.lineCount = self?.lines.height ?? 0
             self?.updateEditViewHeight()
             self?.editView.showBlinkingCursor = self?.editView.isFrontmostView ?? false
-            self?.editView.partialInvalidate(invalid: inval)
+            if let lastRev = self?.editView.lastRevisionRendered, lastRev < revision {
+                self?.editView.partialInvalidate(invalid: inval)
+            }
         }
 
     }

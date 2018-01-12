@@ -89,6 +89,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             needsDisplay = true
         }
     }
+    var lastRevisionRendered = 0
     var gutterXPad: CGFloat = 8
     var gutterWidth: CGFloat = 0
 
@@ -553,6 +554,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                 renderer.drawLine(line: assoc.gutterTL, x0: GLfloat(x), y0: GLfloat(y0))
             }
         }
+        lastRevisionRendered = lineCache.revision
         Trace.shared.trace("EditView render", .main, .end)
     }
 }
