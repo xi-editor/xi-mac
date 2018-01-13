@@ -33,7 +33,6 @@ class Trace {
         buf = [TraceEntry](repeating: TraceEntry(), count: BUF_SIZE)
         var info = mach_timebase_info(numer: 0, denom: 0)
         mach_timebase_info(&info)
-        print(info.numer, info.denom)
         mach_time_numer = UInt64(info.numer)
         // the 1000 is because mach time is ns, and chrome tracing time is us
         mach_time_denom = UInt64(info.denom) * 1000
