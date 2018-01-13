@@ -23,12 +23,20 @@ class Trace {
     let BUF_SIZE = 100_000
     var buf: [TraceEntry]
     var n_entries = 0
+    let mach_time_numer: UInt64
+    let mach_time_denom: UInt64
 
     /// Shared instance, most uses should call this.
     static var shared = Trace()
 
     init() {
         buf = [TraceEntry](repeating: TraceEntry(), count: BUF_SIZE)
+        var info = mach_timebase_info(numer: 0, denom: 0)
+        mach_timebase_info(&info)
+        print(info.numer, info.denom)
+        mach_time_numer = UInt64(info.numer)
+        // the 1000 is because mach time is ns, and chrome tracing time is us
+        mach_time_denom = UInt64(info.denom) * 1000
     }
 
     func trace(_ name: String, _ cat: TraceCategory, _ ph: TracePhase) {
@@ -58,7 +66,7 @@ class Trace {
         fh.write(Data("[\n".utf8))
         for entry_num in max(0, n_entries - BUF_SIZE) ..< n_entries {
             let i = entry_num % BUF_SIZE
-            let ts = buf[i].abstime / 1000
+            let ts = buf[i].abstime * mach_time_numer / mach_time_denom
             let comma = entry_num == n_entries - 1 ? "" : ","
             fh.write(Data("""
                   {"name": "\(buf[i].name)", "cat": "\(buf[i].cat)", "ph": "\(buf[i].ph.rawValue)", \
