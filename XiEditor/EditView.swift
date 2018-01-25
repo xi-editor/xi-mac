@@ -39,7 +39,7 @@ struct TextDrawingMetrics {
     var baseline: CGFloat
     var linespace: CGFloat
     var fontWidth: CGFloat
-    
+
     init(font: NSFont, textColor: NSColor) {
         self.font = font
         ascent = font.ascender
@@ -53,6 +53,45 @@ struct TextDrawingMetrics {
         // which means they get drawn as black. With this we default to drawing them like plaintext.
         // BUT: why are spans missing?
         attributes[NSAttributedStringKey.foregroundColor] = textColor
+    }
+}
+
+/// The pre-renderered cache of the digits 0-9 for display in the gutter.
+/// These can be scatter-gathered to quickly construct any sequence of digits.
+struct GutterCache {
+    private let font: CTFont
+    /// Scatter-gather from here for the gutter for lines without a cursor.
+    private let noCursorCache: TextLine
+    /// Scatter-gather from here for the gutter for lines containing a cursor.
+    private let cursorCache: TextLine
+
+    /// Initializes the cache with the given font & the requested colors for
+    /// when the line has a cursor or not (has cursor = foreground).
+    init(cursorArgb foregroundArgb: UInt32, noCursorArgb backgroundArgb: UInt32,
+         font: CTFont, fontCache: FontCache) {
+        self.font = font
+
+        let tlBuilder = TextLineBuilder("0123456789", font: font)
+        tlBuilder.setFgColor(argb: foregroundArgb)
+        self.cursorCache = tlBuilder.build(fontCache: fontCache)
+
+        tlBuilder.setFgColor(argb: backgroundArgb)
+        self.noCursorCache = tlBuilder.build(fontCache: fontCache)
+    }
+
+    func lookupLineNumber(lineIdx: UInt, hasCursor: Bool) -> TextLine {
+        let cache = hasCursor ? cursorCache : noCursorCache
+        // build up the indices of the characters.  results in little-endian
+        // ordering.
+        var glyphIndices : [Int] = []
+        var n = lineIdx
+        while n != 0 {
+            glyphIndices.append(Int(n % 10))
+            n /= 10
+        }
+        // reverse the glyph ordering to get the correct big-endian ordering
+        // of the indices.
+        return cache.scatterGather(indices: glyphIndices.reversed(), font: self.font)
     }
 }
 
@@ -92,6 +131,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     var lastRevisionRendered = 0
     var gutterXPad: CGFloat = 8
     var gutterWidth: CGFloat = 0
+    var gutterCache: GutterCache?
 
     var dataSource: EditViewDataSource!
 
@@ -111,7 +151,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             self.needsDisplay = true
         }
     }
-    
+
     /*  Insertion point blinking.
      Only the frontmost ('key') window should have a blinking insertion point.
      A new 'on' cycle starts every time the window comes to the front, or the text changes, or the ins. point moves.
@@ -131,7 +171,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             }
         }
     }
-    
+
     private var cursorColor: NSColor {
         // using foreground instead of caret because caret looks weird in the default
         // theme, and seems to be ignored by sublime text anyway?
@@ -193,11 +233,11 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         self.removeMarkedText()
         let _ = self.replaceCharactersInRange(replacementRange, withText: aString as AnyObject)
     }
-    
+
     public func characterIndex(for point: NSPoint) -> Int {
         return 0
     }
-    
+
     func replacementMarkedRange(_ replacementRange: NSRange) -> NSRange {
         var markedRange = _markedRange
 
@@ -304,7 +344,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     }
 
     /// MARK: - System Events
-    
+
     // Mapping of selectors to simple no-parameter commands.
     static let selectorToCommand = [
         "deleteBackward:": "delete_backward",
@@ -363,7 +403,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             }
         }
     }
-    
+
     /// timer callback to toggle the blink state
     @objc func _blinkInsertionPoint() {
         _cursorStateOn = !_cursorStateOn
@@ -404,7 +444,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         // String(s.utf8.prefix(ix)).utf16.count
         return s.utf8.index(s.utf8.startIndex, offsetBy: ix).encodedOffset
     }
-    
+
     private func utf16_offset_to_utf8(_ s: String, _ ix: Int) -> Int {
         return Substring(s.utf16.prefix(ix)).utf8.count
     }
@@ -456,6 +496,13 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         let selArgb = colorToArgb(selectionColor)
         let foregroundArgb = colorToArgb(dataSource.theme.foreground)
         let gutterArgb = colorToArgb(dataSource.theme.gutterForeground)
+
+        if gutterCache == nil {
+            gutterCache = GutterCache(cursorArgb: foregroundArgb,
+                                      noCursorArgb: gutterArgb,
+                                      font: font, fontCache: renderer.fontCache)
+        }
+
         for lineIx in first..<last {
             let relLineIx = lineIx - first
             guard let line = lines[relLineIx] else {
@@ -487,7 +534,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                 renderer.drawLine(line: textLine, x0: GLfloat(xOff), y0: GLfloat(y))
             }
         }
-        
+
         // third pass: draw text decorations
         for lineIx in first..<last {
             if let textLine = textLines[lineIx - first] {
@@ -536,7 +583,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                 }
             }
         }
-        
+
         // gutter drawing
         // Note: drawing the gutter background after the text effectively clips the text. This
         // is a bit of a hack, and some optimization might be possible with real clipping
@@ -548,10 +595,8 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
               continue
             }
 
-            let gutterText = "\(lineIx + 1)"
-            let gBuilder = TextLineBuilder(gutterText, font: font)
-            gBuilder.setFgColor(argb: line.containsCursor ? foregroundArgb: gutterArgb)
-            let gutterTL = gBuilder.build(fontCache: renderer.fontCache)
+            let gutterNumber = UInt(lineIx) + 1
+            let gutterTL = gutterCache!.lookupLineNumber(lineIdx: gutterNumber, hasCursor: line.containsCursor)
 
             let x = gutterWidth - (gutterXPad + CGFloat(gutterTL.width))
             let y0 = yOff + dataSource.textMetrics.ascent + linespace * CGFloat(lineIx)

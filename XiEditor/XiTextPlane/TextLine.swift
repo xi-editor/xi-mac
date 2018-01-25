@@ -168,6 +168,32 @@ struct TextLine {
     var width: Double {
         return CTLineGetTypographicBounds(ctLine, nil, nil, nil)
     }
+
+    /// Fast approach to build a new string out of an atlast of glyphs.  This
+    /// only works properly (i.e. rendered correctly) for monospace fonts
+    /// although non-monospace fonts will still produce some output.
+    func scatterGather<C: Collection>(indices glyphIndices: C, font: CTFont)
+            -> TextLine where C.Element == Int, C.IndexDistance == Int {
+        var newGlyphs = Array<GlyphInstance>()
+        newGlyphs.reserveCapacity(glyphIndices.count)
+
+        var glyphPosition = 0
+        var newWidth = 0.0;
+        for i in glyphIndices {
+            newGlyphs.append(self.glyphs[i])
+            newGlyphs[glyphPosition].x = self.glyphs[glyphPosition].x
+            newGlyphs[glyphPosition].y = self.glyphs[glyphPosition].y
+            if glyphPosition + 1 < self.glyphs.count {
+                newWidth += Double(self.glyphs[glyphPosition + 1].x - self.glyphs[glyphPosition].x)
+            } else {
+                newWidth += self.width - Double(self.glyphs[glyphPosition].x)
+            }
+            glyphPosition += 1
+        }
+
+        let newLine = CTLineCreateTruncatedLine(ctLine, newWidth, CTLineTruncationType.start, nil)!
+        return TextLine(glyphs: newGlyphs, ctLine: newLine, selRanges: [], underlineRanges: [])
+    }
 }
 
 struct GlyphInstance {
