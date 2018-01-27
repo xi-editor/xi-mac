@@ -48,4 +48,60 @@ class XiDocumentController: NSDocumentController {
         }
         super.removeDocument(document)
     }
+    
+    override func openDocument(withContentsOf url: URL,
+                               display displayDocument: Bool,
+                               completionHandler: @escaping (NSDocument?, Bool, Error?) -> Void) {
+        // reuse empty view if foremost
+        if let currentDocument = self.currentDocument as? Document, currentDocument.isEmpty,
+            self.document(for: url) == nil {
+            // close the existing view before reusing
+            if let oldId = currentDocument.coreViewIdentifier {
+                Events.CloseView(viewIdentifier: oldId).dispatch(currentDocument.dispatcher!)
+            }
+
+            Events.NewView(path: url.path).dispatchWithCallback(currentDocument.dispatcher!) { (response) in
+                DispatchQueue.main.sync {
+                    currentDocument.coreViewIdentifier = response
+                    currentDocument.editViewController?.visibleLines = 0..<0
+                    currentDocument.fileURL = url
+                    self.setIdentifier(response, forDocument: currentDocument)
+                    completionHandler(currentDocument, false, nil)
+                }
+            }
+        } else {
+            super.openDocument(withContentsOf: url,
+                               display: displayDocument,
+                               completionHandler: completionHandler)
+        }
+    }
+
+    override func makeUntitledDocument(ofType typeName: String) throws -> NSDocument {
+        let document = try Document(type: typeName)
+        setupDocument(document, forUrl: nil)
+        return document
+    }
+
+    override func makeDocument(withContentsOf url: URL, ofType typeName: String) throws -> NSDocument {
+        let document = try Document(contentsOf: url, ofType: typeName)
+        setupDocument(document, forUrl: url)
+        return document
+    }
+
+    // this is called when documents are restored on startup
+    override func makeDocument(for urlOrNil: URL?, withContentsOf contentsURL: URL, ofType typeName: String) throws -> NSDocument {
+        if urlOrNil == contentsURL {
+            return try self.makeDocument(withContentsOf: contentsURL, ofType: typeName)
+        }
+        fatalError("Xi does not currently support document duplication")
+    }
+
+    func setupDocument(_ document: Document, forUrl url: URL?) {
+        Events.NewView(path: url?.path).dispatchWithCallback(document.dispatcher!) { (response) in
+            DispatchQueue.main.sync {
+                self.setIdentifier(response, forDocument: document)
+                document.coreViewIdentifier = response
+            }
+        }
+    }
 }

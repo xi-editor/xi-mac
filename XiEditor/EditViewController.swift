@@ -37,9 +37,7 @@ protocol FindDelegate {
 }
 
 class EditViewController: NSViewController, EditViewDataSource, FindDelegate, ScrollInterested {
-    
 
-    
     @IBOutlet var scrollView: NSScrollView!
     @IBOutlet weak var editContainerView: EditContainerView!
     @IBOutlet var editView: EditView!
@@ -59,15 +57,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         return controller
     }()
     
-    var document: Document! {
-        didSet {
-            if oldValue != nil {
-                self.visibleLines = 0..<0
-                self.redrawEverything()
-            }
-        }
-    }
-    
+    var document: Document!
+
     var lines = LineCache<LineAssoc>()
 
     var textMetrics: TextDrawingMetrics {
@@ -200,7 +191,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
                 self?.editView.partialInvalidate(invalid: inval)
             }
         }
-
     }
 
     func scrollTo(_ line: Int, _ col: Int) {
@@ -279,15 +269,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         }
         // pass the message to the intended recipient
         NSDocumentController.shared.newDocument(sender)
-    }
-
-    // we override this to see if our view is empty, and should be reused for this open call
-    @objc func openDocument(_ sender: Any?) {
-        if self.lines.isEmpty {
-            Document._documentForNextOpenCall = self.document
-        }
-        Document.preferredTabbingIdentifier = nil
-        NSDocumentController.shared.openDocument(sender)
     }
     
     // disable the New Tab menu item when running in 10.12
