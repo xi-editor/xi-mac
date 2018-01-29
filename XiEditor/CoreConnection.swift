@@ -219,7 +219,7 @@ class CoreConnection {
             client?.configChanged(viewIdentifier: viewIdentifier!, changes: changes)
 
         case "alert":
-            let message = params["message"] as! String
+            let message = params["msg"] as! String
             client?.alert(text: message)
 
         default:
