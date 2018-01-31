@@ -28,7 +28,7 @@ struct Theme {
     /// Color of the caret.
     let caret: NSColor
     /// Color of the line the caret is in.
-    /// Only used when the `higlight_line` setting is set to `true`.
+    /// Only used when the `highlight_line` setting is set to `true`.
     let lineHighlight: NSColor?
 
 
