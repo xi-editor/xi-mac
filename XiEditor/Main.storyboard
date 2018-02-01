@@ -887,6 +887,12 @@ Gw
                                                 </binding>
                                             </connections>
                                         </menuItem>
+                                        <menuItem title="Benchmark Scrolling" id="QAT-w6-S4U">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="toggleScrollBenchmark:" target="azf-ih-6fI" id="HRQ-K7-rN1"/>
+                                            </connections>
+                                        </menuItem>
                                     </items>
                                 </menu>
                             </menuItem>

@@ -43,6 +43,39 @@ extension NSValueTransformerName {
     static let boolToControlStateValueTransformerName = NSValueTransformerName(rawValue: "BoolToControlStateValueTransformer")
 }
 
+class ScrollTester {
+    private let timer : Timer?
+
+    init(_ document: Document) {
+        if #available(OSX 10.12, *) {
+            // 200 hz timer
+            var line = Int(0)
+            var direction = 1
+            let scrollSize = 50
+
+            timer = Timer.scheduledTimer(withTimeInterval: 0.005, repeats: true, block: { (_) in
+                let height = document.editViewController?.lines.height ?? 0
+
+                line += scrollSize * direction
+                if line >= height {
+                    line = height
+                    direction = -1
+                } else if line < 0 {
+                    line = 0
+                    direction = 1
+                }
+                document.editViewController?.scrollTo(line, 0)
+            });
+        } else {
+            timer = nil
+        }
+    }
+
+    deinit {
+        self.timer?.invalidate()
+    }
+}
+
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
 
@@ -305,6 +338,22 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         testWindow = NSWindow(contentRect: frame, styleMask: [.titled, .closable, .resizable, .miniaturizable], backing: .buffered, defer: false)
         testWindow?.makeKeyAndOrderFront(self)
         testWindow?.contentView = TextPlaneDemo(frame: frame)
+    }
+
+    var scrollTesters = [Document: ScrollTester]()
+    @IBAction func toggleScrollBenchmark(_ sender: AnyObject) {
+        var maybeTopmostDocument : Document?
+        for doc in NSApplication.shared.orderedDocuments {
+            guard let doc = doc as? Document else { continue }
+            maybeTopmostDocument = doc
+        }
+        guard let topmostDocument = maybeTopmostDocument else { return }
+
+        if scrollTesters.keys.contains(topmostDocument) {
+            scrollTesters.removeValue(forKey: topmostDocument)
+        } else {
+            scrollTesters.updateValue(ScrollTester(topmostDocument), forKey: topmostDocument)
+        }
     }
     
     func updateRpcTracingConfig(_ enabled: Bool) {
