@@ -59,13 +59,14 @@ class XiDocumentController: NSDocumentController {
             if let oldId = currentDocument.coreViewIdentifier {
                 Events.CloseView(viewIdentifier: oldId).dispatch(currentDocument.dispatcher!)
             }
+            currentDocument.coreViewIdentifier = nil;
 
             Events.NewView(path: url.path).dispatchWithCallback(currentDocument.dispatcher!) { (response) in
                 DispatchQueue.main.sync {
                     currentDocument.coreViewIdentifier = response
-                    currentDocument.editViewController?.visibleLines = 0..<0
                     currentDocument.fileURL = url
                     self.setIdentifier(response, forDocument: currentDocument)
+                    currentDocument.editViewController!.redrawEverything()
                     completionHandler(currentDocument, false, nil)
                 }
             }

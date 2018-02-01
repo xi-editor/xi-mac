@@ -157,6 +157,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     /// If font size or theme changes, we invalidate all views.
     func redrawEverything() {
+        visibleLines = 0..<0
         updateGutterWidth()
         updateEditViewHeight()
         lines.locked().flushAssoc()

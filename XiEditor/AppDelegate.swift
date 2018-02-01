@@ -225,7 +225,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
     }
 
     func handleFontChange(fontName: String?, fontSize: CGFloat?) {
-        guard textMetrics.font.fontName != fontName || textMetrics.font.pointSize != fontSize else { return }
+        guard (textMetrics.font.fontName != fontName && textMetrics.font.familyName != fontName)
+            || textMetrics.font.pointSize != fontSize else { return }
 
         if let newFont = NSFont(name: fontName ?? textMetrics.font.fontName,
                                 size: fontSize ?? textMetrics.font.pointSize) {
