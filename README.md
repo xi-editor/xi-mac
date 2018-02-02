@@ -50,7 +50,7 @@ as a subdirectory.
 > open build/Release/XiEditor.app
 ```
 
-Or `open XiEditor.xcodeproj` and hit the Run button.
+Or `open XiEditor.xcodeproj` and hit the `Run` button.
 
 ### Troubleshooting
 
@@ -63,7 +63,7 @@ If you've installed with rustup, make sure Rust is up to date by running
 
 User settings are currently stored in files; the general preferences are
 located at `~/Library/Application Support/XiEditor/preferences.xiconfig`.
-This file can be opened from File > Preferences (⌘ + ,).
+This file can be opened from `File` > `Preferences` (⌘ + ,).
 
 Users are encouraged to try out
 [Inconsolata](http://levien.com/type/myfonts/inconsolata.html), with which
@@ -72,7 +72,7 @@ Xi is principally tested.
 ### Theme
 
 A few theme files are bundled with the application. A theme can be selected
-from the Debug > Theme menu. There is not yet a mechanism for including
+from the `Debug` > `Theme` menu. There is not yet a mechanism for including
 custom themes.
 
 
