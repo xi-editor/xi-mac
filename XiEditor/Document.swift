@@ -25,7 +25,8 @@ class Document: NSDocument {
     /// used internally to keep track of groups of tabs
     static fileprivate var _nextTabbingIdentifier = 0
 
-    /// returns the next available tab group identifer. When we create a new window, if it is not part of an existing tab group it is assigned a new one.
+    /// returns the next available tab group identifer. When we create a new window,
+    /// if it is not part of an existing tab group it is assigned a new one.
     static private func nextTabbingIdentifier() -> String {
         _nextTabbingIdentifier += 1
         return "tab-group-\(_nextTabbingIdentifier)"
@@ -33,15 +34,6 @@ class Document: NSDocument {
 
     /// if set, should be used as the tabbingIdentifier of new documents' windows.
     static var preferredTabbingIdentifier: String?
-
-    /// Used to determine initial locations for new windows.
-    fileprivate static var _lastWindowFrame: NSRect = {
-        if let saved = UserDefaults.standard.string(forKey: USER_DEFAULTS_NEW_WINDOW_FRAME) {
-            return NSRectFromString(saved)
-        } else {
-            return NSRect(x: 200, y: 200, width: 600, height: 600)
-        }
-    }()
 
     var dispatcher: Dispatcher!
     
@@ -81,6 +73,8 @@ class Document: NSDocument {
     }
  
     override func makeWindowControllers() {
+        // save this before instantiating because instantiating overwrites with the default position
+        let newFrame = frameForNewWindow()
         var windowController: NSWindowController!
         let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
         windowController = storyboard.instantiateController(
@@ -93,22 +87,12 @@ class Document: NSDocument {
                 windowController.window?.tabbingMode = .preferred
             }
         }
-        windowController.window?.setFrame(frameForNewWindow(), display: true)
+        
+        windowController.window?.setFrame(newFrame, display: true)
 
         self.editViewController = windowController.contentViewController as? EditViewController
         editViewController?.document = self
         windowController.window?.delegate = editViewController
-
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(Document.windowChangedNotification(_:)),
-            name: NSWindow.didMoveNotification, object: nil)
-
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(Document.windowChangedNotification(_:)),
-            name: NSWindow.didResizeNotification, object: nil)
-
         self.addWindowController(windowController)
     }
 
@@ -195,31 +179,23 @@ class Document: NSDocument {
     }
     
     /// Returns the frame to be used for the next new window.
-    /// - Note: This attempts to replicate the behaviour of native macOS applications.
-    /// On launch, an initial location is chosen, generally based on the position of
-    /// the last manually moved view during the application's last run; subsequent
-    /// windows are offset from this by approximately the width of the title bar.
-    /// If a window clips the screen, the position starts again from the beginning
-    /// of the clipped axis.
+    ///
+    /// - Note: This is the position of the last active window, offset
+    /// down and to the right by a constant factor.
     func frameForNewWindow() -> NSRect {
         let offsetSize: CGFloat = 22
         let screenBounds = NSScreen.main!.visibleFrame
-        var nextFrame = NSOffsetRect(Document._lastWindowFrame, offsetSize, -offsetSize)
+        let lastFrame = UserDefaults.standard.string(forKey: USER_DEFAULTS_NEW_WINDOW_FRAME)!
+        var nextFrame = NSOffsetRect(NSRectFromString(lastFrame), offsetSize, -offsetSize)
+
         if nextFrame.maxX > screenBounds.maxX {
             nextFrame.origin.x = screenBounds.minX + offsetSize
         }
+
         if nextFrame.minY <= 0 {
             nextFrame.origin.y = screenBounds.maxY - nextFrame.height
         }
-        Document._lastWindowFrame = nextFrame
+
         return nextFrame
-    }
-    
-    /// Updates the location used for creating new windows on launch
-    @objc func windowChangedNotification(_ notification: Notification) {
-        if let window = notification.object as? NSWindow {
-            let frameString = NSStringFromRect(window.frame)
-            UserDefaults.standard.setValue(frameString, forKey: USER_DEFAULTS_NEW_WINDOW_FRAME)
-        }
     }
 }

@@ -95,9 +95,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
                            "config_dir": getUserConfigDirectory()]
         dispatcher.coreConnection.sendRpcAsync("client_started",
                                                params: params)
+        
+        // fallback values used by NSUserDefaults
+        let defaultDefaults: [String: Any] = [
+            USER_DEFAULTS_THEME_KEY: "InspiredGitHub",
+            USER_DEFAULTS_NEW_WINDOW_FRAME: NSStringFromRect(NSRect(x: 200, y: 200, width: 600, height: 600))
+        ]
+        UserDefaults.standard.register(defaults: defaultDefaults)
 
         // For legacy reasons, we currently treat themes distinctly than other preferences.
-        let preferredTheme = UserDefaults.standard.string(forKey: USER_DEFAULTS_THEME_KEY) ?? "InspiredGitHub"
+        let preferredTheme = UserDefaults.standard.string(forKey: USER_DEFAULTS_THEME_KEY)!
         let req = Events.SetTheme(themeName: preferredTheme)
         dispatcher.coreConnection.sendRpcAsync(req.method, params: req.params!)
         Trace.shared.trace("appWillLaunch", .main, .end)
