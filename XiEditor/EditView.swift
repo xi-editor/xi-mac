@@ -472,12 +472,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                 styleMap.applyStyles(builder: builder, styles: line.styles)
                 textLine = builder.build(fontCache: renderer.fontCache)
 
-                let gutterText = "\(lineIx + 1)"
-                let gBuilder = TextLineBuilder(gutterText, font: font)
-                gBuilder.setFgColor(argb: line.containsCursor ? foregroundArgb: gutterArgb)
-                let gutterTL = gBuilder.build(fontCache: renderer.fontCache)
-
-                let assoc = LineAssoc(textLine: textLine, gutterTL: gutterTL)
+                let assoc = LineAssoc(textLine: textLine)
                 lineCache.setAssoc(lineIx, assoc: assoc)
                 textLines.append(textLine)
             }
@@ -548,11 +543,19 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         // (especially if the gutter background is the same as the theme background).
         renderer.drawSolidRect(x: 0, y: GLfloat(dirtyRect.origin.x), width: GLfloat(gutterWidth), height: GLfloat(dirtyRect.height), argb: colorToArgb(dataSource.theme.gutter))
         for lineIx in first..<last {
-            if let assoc = lineCache.get(lineIx)?.assoc {
-                let x = gutterWidth - (gutterXPad + CGFloat(assoc.gutterTL.width))
-                let y0 = yOff + dataSource.textMetrics.ascent + linespace * CGFloat(lineIx)
-                renderer.drawLine(line: assoc.gutterTL, x0: GLfloat(x), y0: GLfloat(y0))
+            let relLineIx = lineIx - first
+            guard let line = lines[relLineIx] else {
+              continue
             }
+
+            let gutterText = "\(lineIx + 1)"
+            let gBuilder = TextLineBuilder(gutterText, font: font)
+            gBuilder.setFgColor(argb: line.containsCursor ? foregroundArgb: gutterArgb)
+            let gutterTL = gBuilder.build(fontCache: renderer.fontCache)
+
+            let x = gutterWidth - (gutterXPad + CGFloat(gutterTL.width))
+            let y0 = yOff + dataSource.textMetrics.ascent + linespace * CGFloat(lineIx)
+            renderer.drawLine(line: gutterTL, x0: GLfloat(x), y0: GLfloat(y0))
         }
         lastRevisionRendered = lineCache.revision
         Trace.shared.trace("EditView render", .main, .end)
