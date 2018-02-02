@@ -19,6 +19,30 @@ let USER_DEFAULTS_NEW_WINDOW_FRAME = "io.xi-editor.settings.preferredWindowFrame
 let XI_CONFIG_DIR = "XI_CONFIG_DIR";
 let PREFERENCES_FILE_NAME = "preferences.xiconfig"
 
+class BoolToControlStateValueTransformer: ValueTransformer {
+    override class func transformedValueClass() -> AnyClass {
+        return NSNumber.self
+    }
+    
+    override class func allowsReverseTransformation() -> Bool {
+        return false
+    }
+    
+    override func transformedValue(_ value: Any?) -> Any? {
+        guard let boolValue = value as? Bool else { return NSControl.StateValue.mixed }
+        return boolValue ? NSControl.StateValue.on : NSControl.StateValue.off
+    }
+    
+    override func reverseTransformedValue(_ value: Any?) -> Any? {
+        guard let type = value as? NSControl.StateValue else { return false }
+        return type == NSControl.StateValue.on ? true : false
+    }
+}
+
+extension NSValueTransformerName {
+    static let boolToControlStateValueTransformerName = NSValueTransformerName(rawValue: "BoolToControlStateValueTransformer")
+}
+
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
 
@@ -30,6 +54,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
 
     lazy fileprivate var _textMetrics = TextDrawingMetrics(font: self.fallbackFont,
                                                            textColor: self.theme.foreground)
+
+    @objc dynamic var collectTracingSamplesEnabled : Bool {
+        get {
+            return Trace.shared.isEnabled()
+        }
+        set {
+            Trace.shared.setEnabled(newValue)
+            updateRpcTracingConfig(newValue)
+        }
+    }
 
     var textMetrics: TextDrawingMetrics {
         get {
@@ -76,8 +110,17 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
                                                   textColor: theme.foreground)
         }
     }
+    
+    override init() {
+        ValueTransformer.setValueTransformer(
+            BoolToControlStateValueTransformer(),
+            forName: .boolToControlStateValueTransformerName)
+    }
 
     func applicationWillFinishLaunching(_ aNotification: Notification) {
+        let collectSamplesOnBoot = true
+        
+        self.collectTracingSamplesEnabled = collectSamplesOnBoot
         Trace.shared.trace("appWillLaunch", .main, .begin)
 
         guard let corePath = Bundle.main.path(forResource: "xi-core", ofType: ""),
@@ -91,6 +134,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         }()
 
         self.dispatcher = dispatcher
+        updateRpcTracingConfig(collectSamplesOnBoot)
+
         let params = ["client_extras_dir": bundledPluginPath,
                            "config_dir": getUserConfigDirectory()]
         dispatcher.coreConnection.sendRpcAsync("client_started",
@@ -257,8 +302,33 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         testWindow?.makeKeyAndOrderFront(self)
         testWindow?.contentView = TextPlaneDemo(frame: frame)
     }
+    
+    func updateRpcTracingConfig(_ enabled: Bool) {
+        guard let dispatcher = self.dispatcher else { return }
+        Events.TracingConfig(enabled: enabled).dispatch(dispatcher)
+    }
 
     @IBAction func writeTrace(_ sender: AnyObject) {
-        Trace.shared.write()
+        let pid = getpid()
+
+        let saveDialog = NSSavePanel.init()
+        saveDialog.nameFieldStringValue = "xi-trace-\(pid)"
+        if #available(OSX 10.12, *) {
+            saveDialog.directoryURL = FileManager.default.temporaryDirectory
+        }
+        saveDialog.begin { (response) in
+            guard response == .OK else { return }
+            if !(saveDialog.url?.isFileURL ?? false) {
+                return
+            }
+            guard let destinationUrl = saveDialog.url?.absoluteString else { return }
+            let schemeEndIdx = destinationUrl.index(destinationUrl.startIndex, offsetBy: 7)
+            let destination = String(destinationUrl.suffix(from: schemeEndIdx))
+
+            // TODO: have UI start showing that the trace is saving & then clear
+            // that in a callback (or make it synchronous on a global dispatch
+            // queue).
+            Events.SaveTrace(destination: destination, frontendSamples: Trace.shared.snapshot()).dispatch(self.dispatcher!)
+        }
     }
 }
