@@ -169,7 +169,7 @@ struct TextLine {
         return CTLineGetTypographicBounds(ctLine, nil, nil, nil)
     }
 
-    /// Fast approach to build a new string out of an atlast of glyphs.  This
+    /// Fast approach to build a new string out of an atlas of glyphs.  This
     /// only works properly (i.e. rendered correctly) for monospace fonts
     /// although non-monospace fonts will still produce some output.
     func scatterGather<C: Collection>(indices glyphIndices: C, font: CTFont)
