@@ -160,6 +160,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         updateEditViewHeight()
         lines.locked().flushAssoc()
         willScroll(to: scrollView.contentView.bounds.origin)
+        editView.gutterCache = nil
         editView.needsDisplay = true
     }
 
