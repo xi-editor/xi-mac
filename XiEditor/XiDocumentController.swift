@@ -98,6 +98,9 @@ class XiDocumentController: NSDocumentController {
     }
 
     func setupDocument(_ document: Document, forUrl url: URL?) {
+        // we nil out this field to opt out of having NSDocument check for changes on disk when saving;
+        // we (theoretically) do that check in xi-core.
+        document.fileModificationDate = nil
         Events.NewView(path: url?.path).dispatchWithCallback(document.dispatcher!) { (response) in
             DispatchQueue.main.sync {
                 self.setIdentifier(response, forDocument: document)
