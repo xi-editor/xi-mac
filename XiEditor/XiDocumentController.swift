@@ -21,6 +21,41 @@ class XiDocumentController: NSDocumentController {
     /// Lookup used when routing RPCs to views.
     fileprivate var openViews = [ViewIdentifier: Document]()
     
+    override init() {
+        super.init()
+        self.setup()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        self.setup()
+    }
+    
+    func setup() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(XiDocumentController.windowChangedNotification(_:)),
+            name: NSWindow.didMoveNotification, object: nil)
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(XiDocumentController.windowChangedNotification(_:)),
+            name: NSWindow.didEndLiveResizeNotification, object: nil)
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(XiDocumentController.windowChangedNotification(_:)),
+            name: NSWindow.didBecomeKeyNotification, object: nil)
+    }
+    
+    /// Updates the location used for creating new windows on launch
+    @objc func windowChangedNotification(_ notification: Notification) {
+        if let window = notification.object as? NSWindow {
+            let frameString = NSStringFromRect(window.frame)
+            UserDefaults.standard.setValue(frameString, forKey: USER_DEFAULTS_NEW_WINDOW_FRAME)
+        }
+    }
+
     /// Returns the document corresponding to this `ViewIdentifier`, if it exists.
     func documentForViewIdentifier(_ viewIdentifier: ViewIdentifier) -> Document? {
         lock.lock()
