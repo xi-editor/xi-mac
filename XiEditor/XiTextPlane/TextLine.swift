@@ -178,7 +178,7 @@ struct TextLine {
         newGlyphs.reserveCapacity(glyphIndices.count)
 
         var glyphPosition = 0
-        var newWidth = 0.0;
+        var newWidth = 0.0
         for i in glyphIndices {
             newGlyphs.append(self.glyphs[i])
             newGlyphs[glyphPosition].x = self.glyphs[glyphPosition].x
@@ -191,8 +191,25 @@ struct TextLine {
             glyphPosition += 1
         }
 
-        let newLine = CTLineCreateTruncatedLine(ctLine, newWidth, CTLineTruncationType.start, nil)!
-        return TextLine(glyphs: newGlyphs, ctLine: newLine, selRanges: [], underlineRanges: [])
+        var newLine: CTLine?
+
+        // VL: sometimes the floating point math doesn't quite work out for
+        // CTLine to be able to hold the required number of digits (e.g. Fira
+        // Mono @ 11pt has this problem where the width of a digit is 6.5999999
+        // but CTLine truncated math thinks it's too small (my uneducated guess
+        // is that internally they accidentally convert to single-precision
+        // floating point somewhere).  Thus we just keep increasing the size by
+        // a bit until it's OK.  Might have substandard performance on some fonts
+        // that we need a better solution for but at least now it won't crash.
+        while true {
+            newLine = CTLineCreateTruncatedLine(ctLine, Double(newWidth), CTLineTruncationType.start, nil)
+            if newLine != nil {
+                break
+            }
+            newWidth += 0.1
+        }
+
+        return TextLine(glyphs: newGlyphs, ctLine: newLine!, selRanges: [], underlineRanges: [])
     }
 }
 
