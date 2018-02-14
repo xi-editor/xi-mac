@@ -11,7 +11,7 @@
         <scene sceneID="Tpb-cp-du8">
             <objects>
                 <windowController storyboardIdentifier="Document Window Controller" id="6dc-ME-In2" sceneMemberID="viewController">
-                    <window key="window" title="xi" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="xi-editor-dev-01" animationBehavior="default" id="CKU-dr-YUa">
+                    <window key="window" title="xi" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="xi-editor-dev-01" animationBehavior="default" id="CKU-dr-YUa" customClass="XiWindow" customModule="XiEditor" customModuleProvider="target">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
                         <rect key="contentRect" x="163" y="199" width="480" height="270"/>
@@ -182,7 +182,7 @@ Gw
                                 <rect key="frame" x="8" y="0.0" width="464" height="38"/>
                                 <subviews>
                                     <searchField wantsLayer="YES" focusRingType="none" verticalHuggingPriority="750" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yjF-1R-sp7" customClass="FindSearchField" customModule="XiEditor" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="8" width="365" height="22"/>
+                                        <rect key="frame" x="0.0" y="8" width="363" height="22"/>
                                         <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" focusRingType="none" bezelStyle="round" recentsAutosaveName="xi-editor-find" id="4a0-aC-Kre">
                                             <font key="font" metaFont="system"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -198,7 +198,7 @@ Gw
                                         </connections>
                                     </searchField>
                                     <segmentedControl verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="usm-aH-bgF">
-                                        <rect key="frame" x="372" y="9" width="41" height="20"/>
+                                        <rect key="frame" x="370" y="9" width="43" height="20"/>
                                         <segmentedCell key="cell" borderStyle="border" alignment="left" style="roundRect" trackingMode="momentary" id="53c-PL-hc5">
                                             <font key="font" metaFont="cellTitle"/>
                                             <segments>
