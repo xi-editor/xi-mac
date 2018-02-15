@@ -17,6 +17,6 @@ import Cocoa
 
 class XiWindow: NSWindow {
     /// True if this window is currently displaying fullscreen.
-    /// Note: We set this manually set in XiDocumentController.
+    /// Note: We set this manually in XiDocumentController.
     var isFullscreen = false
 }

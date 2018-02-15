@@ -60,7 +60,7 @@ class XiDocumentController: NSDocumentController {
 
     /// Updates the location used for creating new windows on launch
     @objc func windowChangedNotification(_ notification: Notification) {
-        if let window = notification.object as? XiWindow, window.isFullscreen == false {
+        if let window = notification.object as? XiWindow, !window.isFullscreen {
             let frameString = NSStringFromRect(window.frame)
             UserDefaults.standard.setValue(frameString, forKey: USER_DEFAULTS_NEW_WINDOW_FRAME)
         }
