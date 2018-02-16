@@ -259,6 +259,14 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         editView.inputContext?.discardMarkedText()
         document.sendRpcAsync("select_all", params: [])
     }
+    
+    override func uppercaseWord(_ sender: Any?) {
+        document.sendRpcAsync("uppercase", params: [])
+    }
+    
+    override func lowercaseWord(_ sender: Any?) {
+        document.sendRpcAsync("lowercase", params: [])
+    }
 
     // we intercept this method to check if we should open a new tab
     @objc func newDocument(_ sender: NSMenuItem?) {
@@ -384,6 +392,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             case "font_size", "font_face":
                 self.handleFontChange(fontName: changes["font_face"] as? String,
                                       fontSize: changes["font_size"] as? CGFloat)
+
             case "scroll_past_end":
                 self.scrollPastEnd = changes["scroll_past_end"] as! Bool
                 
