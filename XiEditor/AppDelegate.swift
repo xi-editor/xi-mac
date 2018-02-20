@@ -55,6 +55,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
     lazy fileprivate var _textMetrics = TextDrawingMetrics(font: self.fallbackFont,
                                                            textColor: self.theme.foreground)
 
+    // This is connected via Cocoa bindings to the selection state
+    // of the collecting menu item (i.e. whether or not there's a checkbox)
+    // + the enabled state of the write trace menu item (greyed out when not
+    // collecting samples).
     @objc dynamic var collectTracingSamplesEnabled : Bool {
         get {
             return Trace.shared.isEnabled()
