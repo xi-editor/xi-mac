@@ -102,26 +102,6 @@ class Trace {
 
         return result
     }
-
-    func write(_ destination: Writeable) {
-        mutex.lock()
-        defer {
-            mutex.unlock()
-        }
-
-        let pid = getpid()
-        destination.write(Data("[\n".utf8))
-        for entry_num in max(0, n_entries - BUF_SIZE) ..< n_entries {
-            let i = entry_num % BUF_SIZE
-            let ts = buf[i].abstime * mach_time_numer / mach_time_denom
-            let comma = entry_num == n_entries - 1 ? "" : ","
-            destination.write(Data("""
-                {"name": "\(buf[i].name)", "cat": "\(buf[i].cat)", "ph": "\(buf[i].ph.rawValue)", \
-                "pid": \(pid), "tid": \(buf[i].tid), "ts": \(ts)}\(comma)\n
-                """.utf8))
-        }
-        destination.write(Data("]\n".utf8))
-    }
 }
 
 enum TraceCategory: String {
