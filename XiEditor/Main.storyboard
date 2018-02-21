@@ -867,6 +867,24 @@ Gw
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="writeTrace:" target="7er-QZ-amI" id="rFd-ai-H9o"/>
+                                                <binding destination="azf-ih-6fI" name="enabled" keyPath="self.collectTracingSamplesEnabled" id="RqQ-74-fY3">
+                                                    <dictionary key="options">
+                                                        <string key="NSValueTransformerName">BoolToControlStateValueTransformer</string>
+                                                    </dictionary>
+                                                </binding>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Tracing Enabled" state="on" keyEquivalent="" id="sMv-IU-fc4">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <binding destination="azf-ih-6fI" name="value" keyPath="self.collectTracingSamplesEnabled" id="4jc-m2-79c">
+                                                    <dictionary key="options">
+                                                        <bool key="NSAllowsEditingMultipleValuesSelection" value="NO"/>
+                                                        <bool key="NSConditionallySetsEnabled" value="NO"/>
+                                                        <bool key="NSValidatesImmediately" value="YES"/>
+                                                        <string key="NSValueTransformerName">BoolToControlStateValueTransformer</string>
+                                                    </dictionary>
+                                                </binding>
                                             </connections>
                                         </menuItem>
                                     </items>
@@ -893,6 +911,7 @@ Gw
                 <customObject id="7er-QZ-amI" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
                 <customObject id="o5o-AY-Tmr" customClass="NSFontManager"/>
                 <customObject id="azf-ih-6fI" customClass="AppDelegate" customModule="XiEditor" customModuleProvider="target"/>
+                <userDefaultsController id="yco-8S-n0A"/>
             </objects>
             <point key="canvasLocation" x="-295" y="-593"/>
         </scene>

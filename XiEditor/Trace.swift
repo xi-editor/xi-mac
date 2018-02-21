@@ -17,6 +17,10 @@
 
 import Foundation
 
+protocol Writeable {
+    func write(_ data: Data)
+}
+
 /// Collect trace events so they can be output in Chrome tracing format.
 class Trace {
     let mutex = UnfairLock()
@@ -25,6 +29,7 @@ class Trace {
     var n_entries = 0
     let mach_time_numer: UInt64
     let mach_time_denom: UInt64
+    var enabled = false
 
     /// Shared instance, most uses should call this.
     static var shared = Trace()
@@ -37,9 +42,33 @@ class Trace {
         // the 1000 is because mach time is ns, and chrome tracing time is us
         mach_time_denom = UInt64(info.denom) * 1000
     }
+    
+    func isEnabled() -> Bool {
+        mutex.lock()
+        defer {
+            mutex.unlock()
+        }
+        return self.enabled
+    }
+
+    func setEnabled(_ enabled: Bool) {
+        mutex.lock()
+        defer {
+            mutex.unlock()
+        }
+        self.enabled = enabled
+        self.n_entries = 0
+    }
 
     func trace(_ name: String, _ cat: TraceCategory, _ ph: TracePhase) {
         mutex.lock()
+        defer {
+            mutex.unlock()
+        }
+
+        if !self.enabled {
+            return
+        }
         let i = n_entries % BUF_SIZE
         buf[i].name = name
         buf[i].cat = cat
@@ -47,32 +76,31 @@ class Trace {
         buf[i].abstime = mach_absolute_time()
         pthread_threadid_np(nil, &buf[i].tid)
         n_entries += 1
-        mutex.unlock()
     }
 
-    // TODO: more control over where this gets saved
-    func write() {
+    func snapshot() -> [[String: AnyObject]] {
+        mutex.lock()
+        defer {
+            mutex.unlock()
+        }
+
+        var result : [[String: AnyObject]] = []
+        
         let pid = getpid()
-        let path = "/tmp/xi-trace-\(pid)"
-        if !FileManager.default.createFile(atPath: path, contents: nil, attributes: nil) {
-            print("error creating trace file")
-            return
-        }
-        guard let fh = FileHandle(forWritingAtPath: path) else {
-            print("error opening trace file for writing")
-            return
-        }
-        fh.write(Data("[\n".utf8))
+
         for entry_num in max(0, n_entries - BUF_SIZE) ..< n_entries {
             let i = entry_num % BUF_SIZE
             let ts = buf[i].abstime * mach_time_numer / mach_time_denom
-            let comma = entry_num == n_entries - 1 ? "" : ","
-            fh.write(Data("""
-                  {"name": "\(buf[i].name)", "cat": "\(buf[i].cat)", "ph": "\(buf[i].ph.rawValue)", \
-                "pid": \(pid), "tid": \(buf[i].tid), "ts": \(ts)}\(comma)\n
-                """.utf8))
+            result.append([
+                "name": buf[i].name as NSString,
+                "cat": buf[i].cat.rawValue as NSString,
+                "ph": buf[i].ph.rawValue as NSString,
+                "pid": NSNumber(value: pid) as AnyObject,
+                "tid": NSNumber(value: buf[i].tid) as AnyObject,
+                "ts": NSNumber(value: ts) as AnyObject])
         }
-        fh.write(Data("]\n".utf8))
+
+        return result
     }
 }
 
