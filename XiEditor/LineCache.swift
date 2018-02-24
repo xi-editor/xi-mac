@@ -286,11 +286,13 @@ class LineCacheLocked<T> {
             .map( { $0.element })
         if !missingLines.isEmpty {
             // TODO: should we send request to core?
+#if DEBUG
             print("waiting for lines: (\(missingLines.first!), \(missingLines.last!))")
+#endif
             //TODO: this timing + printing code can come out
             // when we're comfortable with the performance and
             // the timeout duration
-            let blockTime = mach_absolute_time()
+            let blockTime = DispatchTime.now()
             inner.isWaiting = true
             inner.unlock()
             Trace.shared.trace("blockingGet", .main, .begin)
@@ -298,7 +300,7 @@ class LineCacheLocked<T> {
             Trace.shared.trace("blockingGet", .main, .end)
             inner.lock()
 
-            let elapsed = mach_absolute_time() - blockTime
+            let elapsed = DispatchTime.now().uptimeNanoseconds - blockTime.uptimeNanoseconds
 
             if inner.isWaiting {
                 print("semaphore timeout \(elapsed / 1000)us \(waitResult)")
@@ -309,7 +311,9 @@ class LineCacheLocked<T> {
                     // lock was re-acquired.
                     inner.waitingForLines.wait()
                 }
+#if DEBUG
                 print("finished waiting: \(elapsed / 1000)us \(waitResult)")
+#endif
             }
         }
 
