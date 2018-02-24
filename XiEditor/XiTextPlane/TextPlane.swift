@@ -121,11 +121,19 @@ class TextPlaneLayer : NSOpenGLLayer, FpsObserver {
     }
 
     func changed(fps: Double) {
-        // print("Fps \(fps), ms/frame = \(1000.0 / fps)")
+        // TODO: use a view/text label overlay within the document to show this
+        // controllable via a debug menu instead of a compile-time flag.
+#if FPS_RAW
+        print("Fps \(fps), ms/frame = \(1000.0 / fps)")
+#endif
     }
 
     func changed(fpsStats stats: FpsSnapshot) {
+        // TODO: use a view/text label overlay within the document to show this
+        // controllable via a debug menu instead of a compile-time flag.
+#if FPS_STATS
         print("Fps mean: \(stats.meanFps()), 99%: \(stats.fps(percentile: 0.01)), min: \(stats.minFps()), max: \(stats.maxFps())")
+#endif
     }
     
     var previousFrame : FpsTimer?
@@ -144,14 +152,6 @@ class TextPlaneLayer : NSOpenGLLayer, FpsObserver {
         renderer.beginDraw(size: frame.size, scale: contentsScale)
         textDelegate?.render(renderer, dirtyRect: frame)
         renderer.endDraw()
-
-        /*
-        let now = NSDate().timeIntervalSince1970
-        let elapsed = now - last
-        last = now
-        print("\(count) \(elapsed)")
-        count += 1
-        */
     }
 
 }
