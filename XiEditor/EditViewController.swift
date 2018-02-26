@@ -489,7 +489,10 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         alert.beginSheetModal(for: window) { response in
             if (response == NSApplication.ModalResponse.alertFirstButtonReturn) {
                 let line = text.intValue
-                self.document.sendRpcAsync("goto_line", params: ["line": line - 1])
+                
+                if line > 0 {
+                    self.document.sendRpcAsync("goto_line", params: ["line": line - 1])
+                }
             }
         }
     }
