@@ -46,13 +46,35 @@ class XiDocumentController: NSDocumentController {
             self,
             selector: #selector(XiDocumentController.windowChangedNotification(_:)),
             name: NSWindow.didBecomeKeyNotification, object: nil)
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(XiDocumentController.willEnterFullscreen(_:)),
+            name: NSWindow.willEnterFullScreenNotification, object: nil)
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(XiDocumentController.didLeaveFullscreen(_:)),
+            name: NSWindow.didExitFullScreenNotification, object: nil)
     }
-    
+
     /// Updates the location used for creating new windows on launch
     @objc func windowChangedNotification(_ notification: Notification) {
-        if let window = notification.object as? NSWindow {
+        if let window = notification.object as? XiWindow, !window.isFullscreen {
             let frameString = NSStringFromRect(window.frame)
             UserDefaults.standard.setValue(frameString, forKey: USER_DEFAULTS_NEW_WINDOW_FRAME)
+        }
+    }
+
+    @objc func willEnterFullscreen(_ notification: Notification) {
+        if let window = notification.object as? XiWindow {
+            window.isFullscreen = true
+        }
+    }
+
+    @objc func didLeaveFullscreen(_ notification: Notification) {
+        if let window = notification.object as? XiWindow {
+            window.isFullscreen = false
         }
     }
 
@@ -62,7 +84,7 @@ class XiDocumentController: NSDocumentController {
         defer { lock.unlock() }
         return openViews[viewIdentifier]
     }
-    
+
     /// Associates the given view with the given identifier. Should only be called when
     /// the `ViewIdentifier` is first set.
     func setIdentifier(_ viewIdentifier: ViewIdentifier, forDocument document: Document) {

@@ -196,6 +196,17 @@ class Document: NSDocument {
             nextFrame.origin.y = screenBounds.maxY - nextFrame.height
         }
 
+        let minNewWindowHeight: CGFloat = 160
+        let minNewWindowWidth: CGFloat = 240
+
+        nextFrame.size.width = max(nextFrame.width, minNewWindowWidth)
+        // the origin is in the bottom left so a height change changes it too:
+        if nextFrame.size.height < minNewWindowHeight {
+            let oldHeight = nextFrame.size.height
+            nextFrame.size.height = minNewWindowHeight
+            nextFrame.origin.y = nextFrame.origin.y - (minNewWindowHeight - oldHeight)
+        }
+
         return nextFrame
     }
 }
