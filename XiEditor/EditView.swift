@@ -389,6 +389,8 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         "transpose:": "transpose",
         "yank:": "yank",
         "cancelOperation:": "cancel_operation",
+        "uppercaseWord:": "uppercase",
+        "lowercaseWord:": "lowercase",
     ]
 
     override func doCommand(by aSelector: Selector) {
