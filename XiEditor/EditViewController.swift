@@ -267,7 +267,60 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             }
         }
     }
+    
+    //MARK: Default menu items
+    override func selectAll(_ sender: Any?) {
+        editView.unmarkText()
+        editView.inputContext?.discardMarkedText()
+        document.sendRpcAsync("select_all", params: [])
+    }
+    
+    override func uppercaseWord(_ sender: Any?) {
+        document.sendRpcAsync("uppercase", params: [])
+    }
+    
+    override func lowercaseWord(_ sender: Any?) {
+        document.sendRpcAsync("lowercase", params: [])
+    }
+    
+    @objc func undo(_ sender: AnyObject?) {
+        document.sendRpcAsync("undo", params: [])
+    }
+    
+    @objc func redo(_ sender: AnyObject?) {
+        document.sendRpcAsync("redo", params: [])
+    }
+    
+    @objc func cut(_ sender: AnyObject?) {
+        cutCopy("cut")
+    }
+    
+    @objc func copy(_ sender: AnyObject?) {
+        cutCopy("copy")
+    }
+    
+    fileprivate func cutCopy(_ method: String) {
+        let text = document?.sendRpc(method, params: [])
+        if let text = text as? String {
+            let pasteboard = NSPasteboard.general
+            pasteboard.clearContents()
+            pasteboard.writeObjects([text as NSPasteboardWriting])
+        }
+    }
+    
+    @objc func paste(_ sender: AnyObject?) {
+        let pasteboard = NSPasteboard.general
+        if let items = pasteboard.pasteboardItems {
+            for element in items {
+                if let str = element.string(forType: NSPasteboard.PasteboardType(rawValue: "public.utf8-plain-text")) {
+                    insertText(str)
+                    break
+                }
+            }
+        }
+    }
 
+    //MARK: Other system events
     override func keyDown(with theEvent: NSEvent) {
         self.editView.inputContext?.handleEvent(theEvent);
     }
@@ -315,23 +368,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         }
     }
     
-    // NSResponder (used mostly for paste)
+    // used mostly for paste
     override func insertText(_ insertString: Any) {
         document.sendRpcAsync("insert", params: insertedStringToJson(insertString as! NSString))
-    }
-
-    override func selectAll(_ sender: Any?) {
-        editView.unmarkText()
-        editView.inputContext?.discardMarkedText()
-        document.sendRpcAsync("select_all", params: [])
-    }
-    
-    override func uppercaseWord(_ sender: Any?) {
-        document.sendRpcAsync("uppercase", params: [])
-    }
-    
-    override func lowercaseWord(_ sender: Any?) {
-        document.sendRpcAsync("lowercase", params: [])
     }
 
     // we intercept this method to check if we should open a new tab
@@ -346,51 +385,13 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         NSDocumentController.shared.newDocument(sender)
     }
     
-    // disable the New Tab menu item when running in 10.12
     override func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
+        // disable the New Tab menu item when running in 10.12
         if menuItem.tag == 10 {
             if #available(OSX 10.12, *) { return true }
             return false
         }
         return true
-    }
-    
-    // MARK: - Menu Items
-    fileprivate func cutCopy(_ method: String) {
-        let text = document?.sendRpc(method, params: [])
-        if let text = text as? String {
-            let pasteboard = NSPasteboard.general
-            pasteboard.clearContents()
-            pasteboard.writeObjects([text as NSPasteboardWriting])
-        }
-    }
-    
-    @objc func cut(_ sender: AnyObject?) {
-        cutCopy("cut")
-    }
-    
-    @objc func copy(_ sender: AnyObject?) {
-        cutCopy("copy")
-    }
-    
-    @objc func paste(_ sender: AnyObject?) {
-        let pasteboard = NSPasteboard.general
-        if let items = pasteboard.pasteboardItems {
-            for element in items {
-                if let str = element.string(forType: NSPasteboard.PasteboardType(rawValue: "public.utf8-plain-text")) {
-                    insertText(str)
-                    break
-                }
-            }
-        }
-    }
-    
-    @objc func undo(_ sender: AnyObject?) {
-        document.sendRpcAsync("undo", params: [])
-    }
-    
-    @objc func redo(_ sender: AnyObject?) {
-        document.sendRpcAsync("redo", params: [])
     }
 
     // MARK: - Debug Methods
