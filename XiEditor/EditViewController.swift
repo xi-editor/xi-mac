@@ -204,6 +204,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     // MARK: - System Events
 
     /// Mapping of selectors to simple no-parameter commands.
+    /// This map contains all commands that are *not* exposed via application menus.
+    /// Commands which have menu items must be implemented individually, to play nicely
+    /// With menu activation.
     static let selectorToCommand = [
         "deleteBackward:": "delete_backward",
         "deleteForward:": "delete_forward",
@@ -247,13 +250,14 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         "transpose:": "transpose",
         "yank:": "yank",
         "cancelOperation:": "cancel_operation",
-        "uppercaseWord:": "uppercase",
-        "lowercaseWord:": "lowercase",
         ]
     
     override func doCommand(by aSelector: Selector) {
+        // Although this function is only called when a command originates in a keyboard event,
+        // several commands (such as uppercaseWord:) are accessible from both a system binding
+        // _and_ a menu; if there's a concrete implementation of such a method we just call it directly.
         if (self.responds(to: aSelector)) {
-            super.doCommand(by: aSelector);
+            self.perform(aSelector)
         } else {
             if let commandName = EditViewController.selectorToCommand[aSelector.description] {
                 document.sendRpcAsync(commandName, params: []);
