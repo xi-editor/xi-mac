@@ -202,6 +202,125 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
     
     // MARK: - System Events
+
+    /// Mapping of selectors to simple no-parameter commands.
+    /// This map contains all commands that are *not* exposed via application menus.
+    /// Commands which have menu items must be implemented individually, to play nicely
+    /// With menu activation.
+    static let selectorToCommand = [
+        "deleteBackward:": "delete_backward",
+        "deleteForward:": "delete_forward",
+        "deleteToBeginningOfLine:": "delete_to_beginning_of_line",
+        "deleteToEndOfParagraph:": "delete_to_end_of_paragraph",
+        "deleteWordBackward:": "delete_word_backward",
+        "deleteWordForward:": "delete_word_forward",
+        "insertNewline:": "insert_newline",
+        "insertTab:": "insert_tab",
+        "moveBackward:": "move_backward",
+        "moveDown:": "move_down",
+        "moveDownAndModifySelection:": "move_down_and_modify_selection",
+        "moveForward:": "move_forward",
+        "moveLeft:": "move_left",
+        "moveLeftAndModifySelection:": "move_left_and_modify_selection",
+        "moveRight:": "move_right",
+        "moveRightAndModifySelection:": "move_right_and_modify_selection",
+        "moveToBeginningOfDocument:": "move_to_beginning_of_document",
+        "moveToBeginningOfDocumentAndModifySelection:": "move_to_beginning_of_document_and_modify_selection",
+        "moveToBeginningOfParagraph:": "move_to_beginning_of_paragraph",
+        "moveToEndOfDocument:": "move_to_end_of_document",
+        "moveToEndOfDocumentAndModifySelection:": "move_to_end_of_document_and_modify_selection",
+        "moveToEndOfParagraph:": "move_to_end_of_paragraph",
+        "moveToLeftEndOfLine:": "move_to_left_end_of_line",
+        "moveToLeftEndOfLineAndModifySelection:": "move_to_left_end_of_line_and_modify_selection",
+        "moveToRightEndOfLine:": "move_to_right_end_of_line",
+        "moveToRightEndOfLineAndModifySelection:": "move_to_right_end_of_line_and_modify_selection",
+        "moveUp:": "move_up",
+        "moveUpAndModifySelection:": "move_up_and_modify_selection",
+        "moveWordLeft:": "move_word_left",
+        "moveWordLeftAndModifySelection:": "move_word_left_and_modify_selection",
+        "moveWordRight:": "move_word_right",
+        "moveWordRightAndModifySelection:": "move_word_right_and_modify_selection",
+        "pageDownAndModifySelection:": "page_down_and_modify_selection",
+        "pageUpAndModifySelection:": "page_up_and_modify_selection",
+        "scrollPageDown:": "scroll_page_down",
+        "scrollPageUp:": "scroll_page_up",
+        // Note: these next two are mappings. Possible TODO to fix if core provides distinct behaviors
+        "scrollToBeginningOfDocument:": "move_to_beginning_of_document",
+        "scrollToEndOfDocument:": "move_to_end_of_document",
+        "transpose:": "transpose",
+        "yank:": "yank",
+        "cancelOperation:": "cancel_operation",
+        ]
+    
+    override func doCommand(by aSelector: Selector) {
+        // Although this function is only called when a command originates in a keyboard event,
+        // several commands (such as uppercaseWord:) are accessible from both a system binding
+        // _and_ a menu; if there's a concrete implementation of such a method we just call it directly.
+        if (self.responds(to: aSelector)) {
+            self.perform(aSelector)
+        } else {
+            if let commandName = EditViewController.selectorToCommand[aSelector.description] {
+                document.sendRpcAsync(commandName, params: []);
+            } else {
+                Swift.print("Unhandled selector: \(aSelector.description)")
+                NSSound.beep()
+            }
+        }
+    }
+    
+    //MARK: Default menu items
+    override func selectAll(_ sender: Any?) {
+        editView.unmarkText()
+        editView.inputContext?.discardMarkedText()
+        document.sendRpcAsync("select_all", params: [])
+    }
+    
+    override func uppercaseWord(_ sender: Any?) {
+        document.sendRpcAsync("uppercase", params: [])
+    }
+    
+    override func lowercaseWord(_ sender: Any?) {
+        document.sendRpcAsync("lowercase", params: [])
+    }
+    
+    @objc func undo(_ sender: AnyObject?) {
+        document.sendRpcAsync("undo", params: [])
+    }
+    
+    @objc func redo(_ sender: AnyObject?) {
+        document.sendRpcAsync("redo", params: [])
+    }
+    
+    @objc func cut(_ sender: AnyObject?) {
+        cutCopy("cut")
+    }
+    
+    @objc func copy(_ sender: AnyObject?) {
+        cutCopy("copy")
+    }
+    
+    fileprivate func cutCopy(_ method: String) {
+        let text = document?.sendRpc(method, params: [])
+        if let text = text as? String {
+            let pasteboard = NSPasteboard.general
+            pasteboard.clearContents()
+            pasteboard.writeObjects([text as NSPasteboardWriting])
+        }
+    }
+    
+    @objc func paste(_ sender: AnyObject?) {
+        let pasteboard = NSPasteboard.general
+        if let items = pasteboard.pasteboardItems {
+            for element in items {
+                if let str = element.string(forType: NSPasteboard.PasteboardType(rawValue: "public.utf8-plain-text")) {
+                    insertText(str)
+                    break
+                }
+            }
+        }
+    }
+
+    //MARK: Other system events
     override func keyDown(with theEvent: NSEvent) {
         self.editView.inputContext?.handleEvent(theEvent);
     }
@@ -249,23 +368,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         }
     }
     
-    // NSResponder (used mostly for paste)
+    // used mostly for paste
     override func insertText(_ insertString: Any) {
         document.sendRpcAsync("insert", params: insertedStringToJson(insertString as! NSString))
-    }
-
-    override func selectAll(_ sender: Any?) {
-        editView.unmarkText()
-        editView.inputContext?.discardMarkedText()
-        document.sendRpcAsync("select_all", params: [])
-    }
-    
-    override func uppercaseWord(_ sender: Any?) {
-        document.sendRpcAsync("uppercase", params: [])
-    }
-    
-    override func lowercaseWord(_ sender: Any?) {
-        document.sendRpcAsync("lowercase", params: [])
     }
 
     // we intercept this method to check if we should open a new tab
@@ -280,51 +385,13 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         NSDocumentController.shared.newDocument(sender)
     }
     
-    // disable the New Tab menu item when running in 10.12
     override func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
+        // disable the New Tab menu item when running in 10.12
         if menuItem.tag == 10 {
             if #available(OSX 10.12, *) { return true }
             return false
         }
         return true
-    }
-    
-    // MARK: - Menu Items
-    fileprivate func cutCopy(_ method: String) {
-        let text = document?.sendRpc(method, params: [])
-        if let text = text as? String {
-            let pasteboard = NSPasteboard.general
-            pasteboard.clearContents()
-            pasteboard.writeObjects([text as NSPasteboardWriting])
-        }
-    }
-    
-    @objc func cut(_ sender: AnyObject?) {
-        cutCopy("cut")
-    }
-    
-    @objc func copy(_ sender: AnyObject?) {
-        cutCopy("copy")
-    }
-    
-    @objc func paste(_ sender: AnyObject?) {
-        let pasteboard = NSPasteboard.general
-        if let items = pasteboard.pasteboardItems {
-            for element in items {
-                if let str = element.string(forType: NSPasteboard.PasteboardType(rawValue: "public.utf8-plain-text")) {
-                    insertText(str)
-                    break
-                }
-            }
-        }
-    }
-    
-    @objc func undo(_ sender: AnyObject?) {
-        document.sendRpcAsync("undo", params: [])
-    }
-    
-    @objc func redo(_ sender: AnyObject?) {
-        document.sendRpcAsync("redo", params: [])
     }
 
     // MARK: - Debug Methods
