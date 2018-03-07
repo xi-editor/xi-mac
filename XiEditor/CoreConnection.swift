@@ -51,11 +51,15 @@ class CoreConnection {
     var recvBuf: Data
     weak var client: XiClient?
     let rpcLogWriter: FileWriter?
+    let errLogWriter: FileWriter?
+    let errLogPath = "/var/log/xi_mac.err"
     
     // RPC state
     var queue = DispatchQueue(label: "com.levien.xi.CoreConnection", attributes: [])
     var rpcIndex = 0
     var pending = Dictionary<Int, (Any?) -> ()>()
+
+    var errOutput = ""
 
     init(path: String) {
         if let rpcLogPath = ProcessInfo.processInfo.environment[XI_RPC_LOG] {
@@ -66,6 +70,7 @@ class CoreConnection {
         } else {
             self.rpcLogWriter = nil
         }
+        self.errLogWriter = FileWriter(path: errLogPath)
         let task = Process()
         task.launchPath = path
         task.arguments = []
@@ -73,6 +78,8 @@ class CoreConnection {
         task.standardOutput = outPipe
         let inPipe = Pipe()
         task.standardInput = inPipe
+        let errPipe = Pipe()
+        task.standardError = errPipe
         inHandle = inPipe.fileHandleForWriting
         recvBuf = Data()
 
@@ -80,6 +87,21 @@ class CoreConnection {
             let data = handle.availableData
             self.recvHandler(data)
         }
+
+        errPipe.fileHandleForReading.readabilityHandler = { handle in
+            let data = handle.availableData
+            self.errLogWriter?.write(bytes: data)
+
+            if let errString = String(data: data, encoding: String.Encoding.utf8) {
+                self.errOutput += errString
+            }
+
+            if self.errOutput.hasSuffix("\n") {
+                print(self.errOutput)
+                self.errOutput = ""
+            }
+        }
+
         task.launch()
     }
 
