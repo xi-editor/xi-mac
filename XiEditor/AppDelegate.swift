@@ -140,6 +140,28 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         } 
         return applicationDirectory
     }()
+    
+    lazy var errorLogDirectory: URL = {
+        let logDirectory = FileManager.default.urls(
+        for: .libraryDirectory,
+        in: .userDomainMask)
+        .first!
+        .appendingPathComponent("Logs")
+        .appendingPathComponent("XiEditor")
+        
+        // create XiEditor log folder on first run
+        if !FileManager.default.fileExists(atPath: logDirectory.path) {
+            do {
+                try FileManager.default.createDirectory(at: logDirectory,
+                                                        withIntermediateDirectories: true,
+                                                        attributes: nil)
+            } catch let err as NSError {
+                print("failed to create error log directory. \(err)")
+            }
+        }
+        
+        return logDirectory
+    }()
 
     var theme = Theme.defaultTheme() {
         didSet {
@@ -193,15 +215,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         documentController = XiDocumentController()
     }
     
+    // Clean up temporary Xi stderr log
     func applicationWillTerminate(_ notification: Notification) {
-        let libraryDirectory = FileManager.default.urls(for: .libraryDirectory,
-                                                        in: .userDomainMask).first!
         
-        let tmpErrLogPath = libraryDirectory.appendingPathComponent("Logs").appendingPathComponent("xi_mac.err")
+        let tmpErrLogFile = errorLogDirectory.appendingPathComponent("xi_tmp.err")
         do {
-            try FileManager.default.removeItem(at: tmpErrLogPath)
+            try FileManager.default.removeItem(at: tmpErrLogFile)
         } catch let err as NSError {
-            print("No temporary log found. \(err)")
+            print("Failed to remove temporary file. \(err)")
         }
     }
 
@@ -395,5 +416,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
             // queue).
             Events.SaveTrace(destination: destination, frontendSamples: Trace.shared.snapshot()).dispatch(self.dispatcher!)
         }
+    }
+    @IBAction func openErrorLogFolder(_ sender: Any) {
+        NSWorkspace.shared.selectFile(nil, inFileViewerRootedAtPath: errorLogDirectory.path)
     }
 }

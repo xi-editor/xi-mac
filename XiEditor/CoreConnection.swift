@@ -54,10 +54,14 @@ class CoreConnection {
     weak var client: XiClient?
     let rpcLogWriter: FileWriter?
     let errLogWriter: FileWriter?
-    let logDirectory = FileManager.default.urls(for: .libraryDirectory,
-                                                in: .userDomainMask)
-                                                .first!
-                                                .appendingPathComponent("Logs") // default log directory on MacOS (/Library/Logs)
+    
+    // default log directory on MacOS is /Library/Logs
+    let logDirectory = FileManager.default.urls(
+        for: .libraryDirectory,
+        in: .userDomainMask)
+        .first!
+        .appendingPathComponent("Logs")
+        .appendingPathComponent("XiEditor")
     
     // RPC state
     var queue = DispatchQueue(label: "com.levien.xi.CoreConnection", attributes: [])
@@ -76,10 +80,11 @@ class CoreConnection {
             self.rpcLogWriter = nil
         }
         
-        let tmpErrLogPath = logDirectory.appendingPathComponent("xi_mac.err").path
-        self.errLogWriter = FileWriter(path: tmpErrLogPath)
+        let tmpErrLog = logDirectory.appendingPathComponent("xi_tmp.err").path
+        
+        self.errLogWriter = FileWriter(path: tmpErrLog)
         if self.errLogWriter != nil {
-            print("logging stderr to \(tmpErrLogPath)")
+            print("logging stderr to \(tmpErrLog)")
         }
           
         task.launchPath = path
@@ -133,11 +138,11 @@ class CoreConnection {
                     dateFormatter.dateFormat = "yyyy-MM-dd-HHMMSS"
                     let timeStamp = dateFormatter.string(from: currentTime)
                     
-                    let tmpErrLogPath = self.logDirectory.appendingPathComponent("xi_mac.err")
-                    let timestampedLogPath = self.logDirectory.appendingPathComponent("XiEditor_\(timeStamp).err")
+                    let tmpErrLog = self.logDirectory.appendingPathComponent("xi_tmp.err")
+                    let timestampedLog = self.logDirectory.appendingPathComponent("XiEditor_\(timeStamp).err")
                     
                     do {
-                        try FileManager.default.moveItem(at: tmpErrLogPath, to: timestampedLogPath)
+                        try FileManager.default.moveItem(at: tmpErrLog, to: timestampedLog)
                     } catch let error as NSError {
                         print("failed to rename file with error: \(error)")
                     }
