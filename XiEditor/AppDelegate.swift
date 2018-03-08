@@ -192,6 +192,18 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         Trace.shared.trace("appWillLaunch", .main, .end)
         documentController = XiDocumentController()
     }
+    
+    func applicationWillTerminate(_ notification: Notification) {
+        let libraryDirectory = FileManager.default.urls(for: .libraryDirectory,
+                                                        in: .userDomainMask).first!
+        
+        let tmpErrLogPath = libraryDirectory.appendingPathComponent("Logs").appendingPathComponent("xi_mac.err")
+        do {
+            try FileManager.default.removeItem(at: tmpErrLogPath)
+        } catch let err as NSError {
+            print("No temporary log found. \(err)")
+        }
+    }
 
     // MARK: - XiClient protocol
 
