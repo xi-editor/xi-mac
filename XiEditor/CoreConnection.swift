@@ -47,12 +47,14 @@ struct FileWriter {
 
 class CoreConnection {
 
+    let task = Process()
+    var timer: Timer?
     var inHandle: FileHandle  // stdin of core process
     var recvBuf: Data
     weak var client: XiClient?
     let rpcLogWriter: FileWriter?
     let errLogWriter: FileWriter?
-    let errLogPath = "/var/log/xi_mac.err"
+    let errLogPath = "/tmp/xi_mac.err"
     
     // RPC state
     var queue = DispatchQueue(label: "com.levien.xi.CoreConnection", attributes: [])
@@ -71,7 +73,10 @@ class CoreConnection {
             self.rpcLogWriter = nil
         }
         self.errLogWriter = FileWriter(path: errLogPath)
-        let task = Process()
+        if errLogWriter != nil {
+            print("logging stderr to \(errLogPath)")
+        }
+        
         task.launchPath = path
         task.arguments = []
         let outPipe = Pipe()
@@ -90,9 +95,9 @@ class CoreConnection {
 
         errPipe.fileHandleForReading.readabilityHandler = { handle in
             let data = handle.availableData
-            self.errLogWriter?.write(bytes: data)
-
+            
             if let errString = String(data: data, encoding: String.Encoding.utf8) {
+                self.errLogWriter?.write(bytes: errString.data(using: String.Encoding.utf8)!)
                 self.errOutput += errString
             }
 
@@ -101,8 +106,23 @@ class CoreConnection {
                 self.errOutput = ""
             }
         }
-
+        
         task.launch()
+        runErrLogTimer()
+    }
+    
+    func runErrLogTimer() {
+        if #available(OSX 10.12, *) {
+            // Write to file on crash
+            timer = Timer.scheduledTimer(withTimeInterval: 0.005, repeats: true, block: { (_) in
+                if !self.task.isRunning {
+                    print(self.errOutput)
+                    self.errLogWriter?.write(bytes: self.errOutput.data(using: String.Encoding.utf8)!)
+                }
+            });
+        } else {
+            timer = nil
+        }
     }
 
     func recvHandler(_ data: Data) {
