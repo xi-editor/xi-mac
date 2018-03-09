@@ -80,7 +80,7 @@ class CoreConnection {
             self.rpcLogWriter = nil
         }
         
-        let tmpErrLog = logDirectory.appendingPathComponent("xi_tmp.err").path
+        let tmpErrLog = logDirectory.appendingPathComponent("xi_tmp.log").path
         
         self.errLogWriter = FileWriter(path: tmpErrLog)
         if self.errLogWriter != nil {
@@ -107,8 +107,6 @@ class CoreConnection {
             let data = handle.availableData
             var lineCount = 1
             
-            self.errLogWriter?.write(bytes: data)
-            
             if let errString = String(data: data, encoding: String.Encoding.utf8) {
                 print(errString, terminator: "")
                 self.errOutput += errString
@@ -116,7 +114,6 @@ class CoreConnection {
             
             if self.errOutput.hasSuffix("\n") {
                 lineCount += 1
-                
                 if lineCount >= 100 {
                     self.errOutput = ""
                     lineCount = 1
@@ -132,8 +129,8 @@ class CoreConnection {
             dateFormatter.dateFormat = "yyyy-MM-dd-HHMMSS"
             let timeStamp = dateFormatter.string(from: currentTime)
             
-            let tmpErrLog = self.logDirectory.appendingPathComponent("xi_tmp.err")
-            let timestampedLog = self.logDirectory.appendingPathComponent("XiEditor_\(timeStamp).err")
+            let tmpErrLog = self.logDirectory.appendingPathComponent("xi_tmp.log")
+            let timestampedLog = self.logDirectory.appendingPathComponent("XiEditor_\(timeStamp).log")
             
             do {
                 try FileManager.default.moveItem(at: tmpErrLog, to: timestampedLog)
@@ -141,7 +138,7 @@ class CoreConnection {
                 print("failed to rename file with error: \(error)")
             }
             
-            print("xi-core has closed, writing to log at XiEditor_\(timeStamp).err")
+            print("xi-core has closed, writing to log at XiEditor_\(timeStamp).log")
             self.errLogWriter?.write(bytes: self.errOutput.data(using: String.Encoding.utf8)!)
         }
         
