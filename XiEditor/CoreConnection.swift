@@ -107,6 +107,8 @@ class CoreConnection {
             let data = handle.availableData
             var lineCount = 1
             
+            self.errLogWriter?.write(bytes: data)
+            
             if let errString = String(data: data, encoding: String.Encoding.utf8) {
                 print(errString, terminator: "")
                 self.errOutput += errString
@@ -122,40 +124,28 @@ class CoreConnection {
             }
         }
         
-        task.launch()
-        runErrLogTimer()
-    }
-    
-    func runErrLogTimer() {
-        if #available(OSX 10.12, *) {
-            // Write to file on crash
-            timer = Timer.scheduledTimer(withTimeInterval: 0.005, repeats: true, block: { (_) in
-                if !self.task.isRunning {
-                    
-                    // get current date to use as timestamp
-                    let dateFormatter = DateFormatter()
-                    let currentTime = Date.init()
-                    dateFormatter.dateFormat = "yyyy-MM-dd-HHMMSS"
-                    let timeStamp = dateFormatter.string(from: currentTime)
-                    
-                    let tmpErrLog = self.logDirectory.appendingPathComponent("xi_tmp.err")
-                    let timestampedLog = self.logDirectory.appendingPathComponent("XiEditor_\(timeStamp).err")
-                    
-                    do {
-                        try FileManager.default.moveItem(at: tmpErrLog, to: timestampedLog)
-                    } catch let error as NSError {
-                        print("failed to rename file with error: \(error)")
-                    }
-                    
-                    print(self.errOutput)
-                    self.errLogWriter?.write(bytes: self.errOutput.data(using: String.Encoding.utf8)!)
-                    
-                    self.timer?.invalidate()
-                }
-            });
-        } else {
-            timer = nil
+        // write to log on xi-core crash
+        task.terminationHandler = { _ in
+            // get current date to use as timestamp
+            let dateFormatter = DateFormatter()
+            let currentTime = Date.init()
+            dateFormatter.dateFormat = "yyyy-MM-dd-HHMMSS"
+            let timeStamp = dateFormatter.string(from: currentTime)
+            
+            let tmpErrLog = self.logDirectory.appendingPathComponent("xi_tmp.err")
+            let timestampedLog = self.logDirectory.appendingPathComponent("XiEditor_\(timeStamp).err")
+            
+            do {
+                try FileManager.default.moveItem(at: tmpErrLog, to: timestampedLog)
+            } catch let error as NSError {
+                print("failed to rename file with error: \(error)")
+            }
+            
+            print(self.errOutput)
+            self.errLogWriter?.write(bytes: self.errOutput.data(using: String.Encoding.utf8)!)
         }
+        
+        task.launch()
     }
     
     func recvHandler(_ data: Data) {

@@ -217,7 +217,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
     
     // Clean up temporary Xi stderr log
     func applicationWillTerminate(_ notification: Notification) {
-        
         let tmpErrLogFile = errorLogDirectory.appendingPathComponent("xi_tmp.err")
         do {
             try FileManager.default.removeItem(at: tmpErrLogFile)
