@@ -141,7 +141,7 @@ class CoreConnection {
                 print("failed to rename file with error: \(error)")
             }
             
-            print(self.errOutput)
+            print("xi-core has closed, writing to log at XiEditor_\(timeStamp).err")
             self.errLogWriter?.write(bytes: self.errOutput.data(using: String.Encoding.utf8)!)
         }
         
