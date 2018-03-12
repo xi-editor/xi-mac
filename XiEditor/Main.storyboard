@@ -48,12 +48,12 @@
                                         <customView wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rTT-RO-I3T" customClass="EditContainerView" customModule="XiEditor" customModuleProvider="target">
                                             <rect key="frame" x="0.0" y="2" width="480" height="268"/>
                                             <constraints>
+                                                <constraint firstAttribute="width" priority="900" constant="480" id="1Gd-zC-FVY"/>
                                                 <constraint firstAttribute="height" priority="900" constant="268" id="dVF-N3-gwQ"/>
                                             </constraints>
                                         </customView>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstAttribute="trailing" secondItem="rTT-RO-I3T" secondAttribute="trailing" id="6lr-25-Z5i"/>
                                         <constraint firstItem="rTT-RO-I3T" firstAttribute="leading" secondItem="1wJ-s5-kVO" secondAttribute="leading" id="AaV-pl-YnC"/>
                                         <constraint firstItem="rTT-RO-I3T" firstAttribute="top" secondItem="1wJ-s5-kVO" secondAttribute="top" id="BTR-DU-CLt"/>
                                     </constraints>
@@ -83,6 +83,7 @@
                         <outlet property="editContainerView" destination="rTT-RO-I3T" id="V33-lc-vP3"/>
                         <outlet property="editView" destination="q1P-kd-995" id="Dhz-gl-7Ut"/>
                         <outlet property="editViewHeight" destination="dVF-N3-gwQ" id="izi-zu-iyl"/>
+                        <outlet property="editViewWidth" destination="1Gd-zC-FVY" id="DtT-d0-KdH"/>
                         <outlet property="scrollView" destination="Qwv-ci-fVA" id="4cE-10-pSP"/>
                         <segue destination="9Ak-VM-8lJ" kind="modal" identifier="UserInputSegue" id="GqW-PV-ZCy"/>
                     </connections>

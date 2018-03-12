@@ -21,6 +21,8 @@ protocol EditViewDataSource {
     var theme: Theme { get }
     var textMetrics: TextDrawingMetrics { get }
     var document: Document! { get }
+    var gutterWidth: CGFloat { get }
+    func maxWidthChanged(toWidth: Double)
 }
 
 /// Associated data stored per line in the line cache
@@ -42,7 +44,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     @IBOutlet var editView: EditView!
     
     @IBOutlet weak var editViewHeight: NSLayoutConstraint!
-
+    @IBOutlet weak var editViewWidth: NSLayoutConstraint!
+    
     lazy var findViewController: FindViewController! = {
         let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
         let controller = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Find View Controller")) as! FindViewController
@@ -63,6 +66,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     var textMetrics: TextDrawingMetrics {
         return (NSApplication.shared.delegate as! AppDelegate).textMetrics
     }
+    
+    var gutterWidth: CGFloat = 0
 
     var styleMap: StyleMap {
         return (NSApplication.shared.delegate as! AppDelegate).styleMap
@@ -95,6 +100,14 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             }
         }
     }
+    
+    // Set by `EditView` so that we don't need to lock the linecache and iterate more than once
+    func maxWidthChanged(toWidth width: Double) {
+        let width = CGFloat(width) + gutterWidth + editView.x0
+        if width != editViewWidth.constant {
+            editViewWidth.constant = width
+        }
+    }
 
     // visible scroll region
     var visibleLines: LineRange = 0..<0
@@ -117,6 +130,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         editView.dataSource = self
         scrollView.contentView.documentCursor = NSCursor.iBeam;
         scrollView.automaticallyAdjustsContentInsets = false
+        scrollView.hasHorizontalScroller = true
         (scrollView.contentView as? XiClipView)?.delegate = self
     }
 
@@ -130,7 +144,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     func updateGutterWidth() {
         let gutterColumns = "\(lineCount)".count
         let chWidth = NSString(string: "9").size(withAttributes: textMetrics.attributes).width
-        editView.gutterWidth = chWidth * max(2, CGFloat(gutterColumns)) + 2 * editView.gutterXPad
+        gutterWidth = chWidth * max(2, CGFloat(gutterColumns)) + 2 * editView.gutterXPad
     }
     
     @objc func frameDidChangeNotification(_ notification: Notification) {

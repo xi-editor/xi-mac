@@ -130,7 +130,6 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     }
     var lastRevisionRendered = 0
     var gutterXPad: CGFloat = 8
-    var gutterWidth: CGFloat = 0
     var gutterCache: GutterCache?
 
     var dataSource: EditViewDataSource!
@@ -364,7 +363,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     /// Note: - The returned position is not guaruanteed to be an existing line. For instance, if a buffer does not fill the current window, a point below the last line will return a buffer position with a line number exceeding the number of lines in the file. In this case position.column will always be zero.
     func bufferPositionFromPoint(_ point: NSPoint) -> BufferPosition {
         let point = self.convert(point, from: nil)
-        let x = point.x + scrollOrigin.x - gutterWidth
+        let x = point.x + scrollOrigin.x - dataSource.gutterWidth
         let y = point.y + scrollOrigin.y
         let lineIx = yToLine(y)
         if let line = getLine(lineIx) {
@@ -414,7 +413,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         }
         let linespace = dataSource.textMetrics.linespace
         let topPad = linespace - dataSource.textMetrics.ascent
-        let xOff = gutterWidth + x0 - scrollOrigin.x
+        let xOff = dataSource.gutterWidth + x0 - scrollOrigin.x
         let yOff = topPad - scrollOrigin.y
         let firstVisible = max(0, Int((floor(dirtyRect.origin.y - topPad + scrollOrigin.y) / linespace)))
         let lastVisible = Int(ceil((dirtyRect.origin.y + dirtyRect.size.height - topPad + scrollOrigin.y) / linespace))
@@ -428,6 +427,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         let font = dataSource.textMetrics.font as CTFont
         let styleMap = dataSource.styleMap.locked()
         var textLines: [TextLine?] = []
+        var maxLineWidth: Double = 0
 
         // The actual drawing is split into passes for correct visual presentation and
         // also to improve batching of the OpenGL draw calls.
@@ -464,6 +464,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                 lineCache.setAssoc(lineIx, assoc: assoc)
                 textLines.append(textLine)
             }
+            maxLineWidth = max(maxLineWidth, textLine.width)
             let y0 = yOff + linespace * CGFloat(lineIx)
             renderer.drawLineBg(line: textLine, x0: GLfloat(xOff), yRange: GLfloat(y0)..<GLfloat(y0 + linespace), selColor: selArgb)
         }
@@ -529,7 +530,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         // Note: drawing the gutter background after the text effectively clips the text. This
         // is a bit of a hack, and some optimization might be possible with real clipping
         // (especially if the gutter background is the same as the theme background).
-        renderer.drawSolidRect(x: 0, y: GLfloat(dirtyRect.origin.x), width: GLfloat(gutterWidth), height: GLfloat(dirtyRect.height), argb: colorToArgb(dataSource.theme.gutter))
+        renderer.drawSolidRect(x: 0, y: GLfloat(dirtyRect.origin.x), width: GLfloat(dataSource.gutterWidth), height: GLfloat(dirtyRect.height), argb: colorToArgb(dataSource.theme.gutter))
         for lineIx in first..<last {
             let relLineIx = lineIx - first
             guard let line = lines[relLineIx] else {
@@ -539,11 +540,12 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             let gutterNumber = UInt(lineIx) + 1
             let gutterTL = gutterCache!.lookupLineNumber(lineIdx: gutterNumber, hasCursor: line.containsCursor)
 
-            let x = gutterWidth - (gutterXPad + CGFloat(gutterTL.width))
+            let x = dataSource.gutterWidth - (gutterXPad + CGFloat(gutterTL.width))
             let y0 = yOff + dataSource.textMetrics.ascent + linespace * CGFloat(lineIx)
             renderer.drawLine(line: gutterTL, x0: GLfloat(x), y0: GLfloat(y0))
         }
         lastRevisionRendered = lineCache.revision
+        dataSource.maxWidthChanged(toWidth: maxLineWidth)
         Trace.shared.trace("EditView render", .main, .end)
     }
 }
