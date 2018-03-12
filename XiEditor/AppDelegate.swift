@@ -141,6 +141,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         return applicationDirectory
     }()
     
+    // The default name for XiEditor's error logs
+    let defaultCoreLogName = "xi_tmp.log"
+    
     lazy var errorLogDirectory: URL = {
         let logDirectory = FileManager.default.urls(
         for: .libraryDirectory,
@@ -217,7 +220,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
     
     // Clean up temporary Xi stderr log
     func applicationWillTerminate(_ notification: Notification) {
-        let tmpErrLogFile = errorLogDirectory.appendingPathComponent("xi_tmp.log")
+        let tmpErrLogFile = errorLogDirectory.appendingPathComponent(defaultCoreLogName)
         do {
             try FileManager.default.removeItem(at: tmpErrLogFile)
         } catch let err as NSError {
@@ -416,6 +419,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
             Events.SaveTrace(destination: destination, frontendSamples: Trace.shared.snapshot()).dispatch(self.dispatcher!)
         }
     }
+    
     @IBAction func openErrorLogFolder(_ sender: Any) {
         NSWorkspace.shared.selectFile(nil, inFileViewerRootedAtPath: errorLogDirectory.path)
     }
