@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import Foundation
+import AppKit
 
 /// Env var used to specify a path for logging RPC messages.
 /// These logs can be used for profiling & debugging.
@@ -48,27 +49,19 @@ struct FileWriter {
 class CoreConnection {
     
     let task = Process()
-    var timer: Timer?
     var inHandle: FileHandle  // stdin of core process
     var recvBuf: Data
     weak var client: XiClient?
     let rpcLogWriter: FileWriter?
     let errLogWriter: FileWriter?
-    
-    // default log directory on MacOS is /Library/Logs
-    let logDirectory = FileManager.default.urls(
-        for: .libraryDirectory,
-        in: .userDomainMask)
-        .first!
-        .appendingPathComponent("Logs")
-        .appendingPathComponent("XiEditor")
+    let appDelegate = NSApp.delegate as! AppDelegate
+    let logDirectory: URL
+    let tmpLogName: String
     
     // RPC state
     var queue = DispatchQueue(label: "com.levien.xi.CoreConnection", attributes: [])
     var rpcIndex = 0
     var pending = Dictionary<Int, (Any?) -> ()>()
-    
-    var errOutput = "" // output of stderr as String
     
     init(path: String) {
         if let rpcLogPath = ProcessInfo.processInfo.environment[XI_RPC_LOG] {
@@ -80,8 +73,9 @@ class CoreConnection {
             self.rpcLogWriter = nil
         }
         
-        let tmpErrLog = logDirectory.appendingPathComponent("xi_tmp.log").path
-        
+        self.logDirectory = appDelegate.errorLogDirectory
+        self.tmpLogName = appDelegate.defaultCoreLogName
+        let tmpErrLog = logDirectory.appendingPathComponent(tmpLogName).path
         self.errLogWriter = FileWriter(path: tmpErrLog)
         if self.errLogWriter != nil {
             print("logging stderr to \(tmpErrLog)")
@@ -105,19 +99,9 @@ class CoreConnection {
         
         errPipe.fileHandleForReading.readabilityHandler = { handle in
             let data = handle.availableData
-            var lineCount = 1
-            
+            self.errLogWriter?.write(bytes: data)
             if let errString = String(data: data, encoding: String.Encoding.utf8) {
                 print(errString, terminator: "")
-                self.errOutput += errString
-            }
-            
-            if self.errOutput.hasSuffix("\n") {
-                lineCount += 1
-                if lineCount >= 100 {
-                    self.errOutput = ""
-                    lineCount = 1
-                }
             }
         }
         
@@ -129,7 +113,7 @@ class CoreConnection {
             dateFormatter.dateFormat = "yyyy-MM-dd-HHMMSS"
             let timeStamp = dateFormatter.string(from: currentTime)
             
-            let tmpErrLog = self.logDirectory.appendingPathComponent("xi_tmp.log")
+            let tmpErrLog = self.logDirectory.appendingPathComponent(self.tmpLogName)
             let timestampedLog = self.logDirectory.appendingPathComponent("XiEditor_\(timeStamp).log")
             
             do {
@@ -137,11 +121,8 @@ class CoreConnection {
             } catch let error as NSError {
                 print("failed to rename file with error: \(error)")
             }
-            
-            print("xi-core has closed, writing to log at XiEditor_\(timeStamp).log")
-            self.errLogWriter?.write(bytes: self.errOutput.data(using: String.Encoding.utf8)!)
+            print("xi-core has closed, log saved to XiEditor_\(timeStamp).log")
         }
-        
         task.launch()
     }
     
