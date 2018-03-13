@@ -117,6 +117,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         // to prevent scroll jump, we don't dynamically decrease view width
         if width > editViewWidth.constant {
             editViewWidth.constant = width
+            shadowView.showRightShadow = true
         }
     }
 
@@ -169,6 +170,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     /// is up to date.
     func willScroll(to newOrigin: NSPoint) {
         editView.scrollOrigin = newOrigin
+        shadowView.showLeftShadow = newOrigin.x > 0
+        shadowView.showRightShadow = (editViewWidth.constant - (newOrigin.x + self.view.bounds.width)) > rightTextPadding
         // TODO: this calculation doesn't take into account toppad; do in EditView in DRY fashion
         let first = Int(floor(newOrigin.y / textMetrics.linespace))
         let height = Int(ceil((scrollView.contentView.bounds.size.height) / textMetrics.linespace)) + 1
@@ -183,12 +186,13 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     /// If font size or theme changes, we invalidate all views.
     func redrawEverything() {
         visibleLines = 0..<0
-        editViewWidth.constant = 0
+        editViewWidth.constant = self.view.bounds.width
         updateGutterWidth()
         updateEditViewHeight()
         lines.locked().flushAssoc()
         willScroll(to: scrollView.contentView.bounds.origin)
         editView.gutterCache = nil
+        shadowView.updateShadowColor(newColor: theme.shadow)
         editView.needsDisplay = true
     }
 

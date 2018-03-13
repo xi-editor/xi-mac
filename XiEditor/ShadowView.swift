@@ -14,7 +14,7 @@
 
 import Cocoa
 
-class ShadowView: NSView {
+class ShadowView: NSView, CALayerDelegate {
 
     override var wantsUpdateLayer: Bool {
         return true
@@ -27,24 +27,38 @@ class ShadowView: NSView {
     /// If there is a gutter, this should equal the gutter's right edge.
     var leftShadowMinX: CGFloat = 0 {
         didSet {
-            self.setNeedsDisplay(self.bounds)
+            self.needsDisplay = true
         }
     }
 
     /// If set to true, this view will display a shadow at the left side of the view.
     var showLeftShadow: Bool = true {
         didSet {
-            updateVisibility()
-        }
-    }
-    /// If set to true, this view will display a shadow at the right side of the view.
-    var showRightShadow: Bool = true {
-        didSet {
-            updateVisibility()
+            if showLeftShadow != oldValue {
+                updateVisibility()
+            }
         }
     }
 
-    func updateVisibility() {
+    /// If set to true, this view will display a shadow at the right side of the view.
+    var showRightShadow: Bool = true {
+        didSet {
+            if showRightShadow != oldValue {
+                updateVisibility()
+            }
+        }
+    }
+
+    fileprivate var shadowColor = NSColor.shadowColor
+
+    func updateShadowColor(newColor: NSColor?) {
+        if newColor ?? NSColor.shadowColor != self.shadowColor {
+            self.shadowColor = newColor ?? NSColor.shadowColor
+            self.needsDisplay = true
+        }
+    }
+
+    fileprivate func updateVisibility() {
         self.isHidden = !(showLeftShadow || showRightShadow)
         leftShadow.isHidden = !showLeftShadow
         rightShadow.isHidden = !showRightShadow
@@ -52,27 +66,34 @@ class ShadowView: NSView {
 
     func setup() {
         self.layerContentsRedrawPolicy = .onSetNeedsDisplay
+        self.leftShadow.delegate = self
+        self.rightShadow.delegate = self
         self.layer!.addSublayer(leftShadow)
         self.layer!.addSublayer(rightShadow)
 
-        leftShadow.colors = [NSColor.shadowColor.cgColor, NSColor.clear.cgColor]
-        leftShadow.transform = CATransform3DMakeRotation((3 * CGFloat.pi) / 2, 0, 0, 1)
-        leftShadow.opacity = 0.4
-        leftShadow.autoresizingMask = .layerHeightSizable
-
-        rightShadow.colors = [NSColor.shadowColor.cgColor, NSColor.clear.cgColor]
-        rightShadow.transform = CATransform3DMakeRotation(CGFloat.pi / 2, 0, 0, 1)
-        rightShadow.opacity = 0.3
-        rightShadow.autoresizingMask = [.layerHeightSizable, .layerMinXMargin]
         updateVisibility()
     }
 
     override func updateLayer() {
-        //FIXME: magic numbers
-        leftShadow.frame = CGRect(x: leftShadowMinX - 2, y: self.bounds.origin.y,
-                                  width: 6, height: self.bounds.height)
+        leftShadow.frame = CGRect(x: leftShadowMinX, y: self.bounds.origin.y,
+                                  width: 4, height: self.bounds.height)
 
         rightShadow.frame = CGRect(x: self.bounds.width - 4, y: self.bounds.origin.y,
                                    width: 4, height: self.bounds.height)
+
+        leftShadow.colors = [shadowColor.cgColor, NSColor.clear.cgColor]
+        leftShadow.transform = CATransform3DMakeRotation((3 * CGFloat.pi) / 2, 0, 0, 1)
+        leftShadow.opacity = 0.4
+        leftShadow.autoresizingMask = .layerHeightSizable
+
+        rightShadow.colors = [shadowColor.cgColor, NSColor.clear.cgColor]
+        rightShadow.transform = CATransform3DMakeRotation(CGFloat.pi / 2, 0, 0, 1)
+        rightShadow.opacity = 0.4
+        rightShadow.autoresizingMask = [.layerHeightSizable, .layerMinXMargin]
+    }
+
+    // by default hiding and revealing our shadows is animated, which is distracting
+    func action(for layer: CALayer, forKey event: String) -> CAAction? {
+        return NSNull()
     }
 }

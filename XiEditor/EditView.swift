@@ -125,7 +125,9 @@ func colorToArgb(_ color: NSColor) -> UInt32 {
 class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     var scrollOrigin: NSPoint {
         didSet {
-            needsDisplay = true
+            if scrollOrigin != oldValue {
+                needsDisplay = true
+            }
         }
     }
     var lastRevisionRendered = 0
