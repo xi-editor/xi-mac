@@ -39,6 +39,9 @@
                             <customView wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="q1P-kd-995" customClass="EditView" customModule="XiEditor" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
                             </customView>
+                            <customView translatesAutoresizingMaskIntoConstraints="NO" id="x8W-KD-KOP" customClass="ShadowView" customModule="XiEditor" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
+                            </customView>
                             <scrollView wantsLayer="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qwv-ci-fVA">
                                 <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
                                 <clipView key="contentView" wantsLayer="YES" drawsBackground="NO" id="1wJ-s5-kVO" customClass="XiClipView" customModule="XiEditor" customModuleProvider="target">
@@ -69,10 +72,14 @@
                             </scrollView>
                         </subviews>
                         <constraints>
+                            <constraint firstItem="x8W-KD-KOP" firstAttribute="leading" secondItem="q1P-kd-995" secondAttribute="leading" id="0m0-0O-Llk"/>
+                            <constraint firstItem="x8W-KD-KOP" firstAttribute="top" secondItem="q1P-kd-995" secondAttribute="top" id="4lN-9b-wSx"/>
                             <constraint firstAttribute="trailing" secondItem="q1P-kd-995" secondAttribute="trailing" id="5IG-vx-2rb"/>
                             <constraint firstItem="Qwv-ci-fVA" firstAttribute="leading" secondItem="q1P-kd-995" secondAttribute="leading" id="Pyq-kX-0wa"/>
+                            <constraint firstItem="x8W-KD-KOP" firstAttribute="bottom" secondItem="q1P-kd-995" secondAttribute="bottom" id="Qak-2E-Fy6"/>
                             <constraint firstItem="Qwv-ci-fVA" firstAttribute="top" secondItem="q1P-kd-995" secondAttribute="top" id="Qwh-xz-kUZ"/>
                             <constraint firstItem="Qwv-ci-fVA" firstAttribute="bottom" secondItem="q1P-kd-995" secondAttribute="bottom" id="Sdy-8S-2NP"/>
+                            <constraint firstItem="x8W-KD-KOP" firstAttribute="trailing" secondItem="q1P-kd-995" secondAttribute="trailing" id="dL4-Ba-yMB"/>
                             <constraint firstItem="q1P-kd-995" firstAttribute="top" secondItem="3ye-5b-Ab2" secondAttribute="top" id="gHb-9s-5Ki"/>
                             <constraint firstItem="q1P-kd-995" firstAttribute="leading" secondItem="3ye-5b-Ab2" secondAttribute="leading" id="kaS-IB-LV9"/>
                             <constraint firstAttribute="bottom" secondItem="q1P-kd-995" secondAttribute="bottom" id="ngA-1s-M67"/>
@@ -85,6 +92,7 @@
                         <outlet property="editViewHeight" destination="dVF-N3-gwQ" id="izi-zu-iyl"/>
                         <outlet property="editViewWidth" destination="1Gd-zC-FVY" id="DtT-d0-KdH"/>
                         <outlet property="scrollView" destination="Qwv-ci-fVA" id="4cE-10-pSP"/>
+                        <outlet property="shadowView" destination="x8W-KD-KOP" id="mme-7Z-x1H"/>
                         <segue destination="9Ak-VM-8lJ" kind="modal" identifier="UserInputSegue" id="GqW-PV-ZCy"/>
                     </connections>
                 </viewController>

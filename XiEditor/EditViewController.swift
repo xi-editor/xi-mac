@@ -42,6 +42,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     @IBOutlet var scrollView: NSScrollView!
     @IBOutlet weak var editContainerView: EditContainerView!
     @IBOutlet var editView: EditView!
+    @IBOutlet weak var shadowView: ShadowView!
     
     @IBOutlet weak var editViewHeight: NSLayoutConstraint!
     @IBOutlet weak var editViewWidth: NSLayoutConstraint!
@@ -67,7 +68,11 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         return (NSApplication.shared.delegate as! AppDelegate).textMetrics
     }
     
-    var gutterWidth: CGFloat = 0
+    var gutterWidth: CGFloat = 0 {
+        didSet {
+            shadowView.leftShadowMinX = gutterWidth
+        }
+    }
 
     var styleMap: StyleMap {
         return (NSApplication.shared.delegate as! AppDelegate).styleMap
@@ -142,6 +147,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     override func viewDidAppear() {
         super.viewDidAppear()
+        shadowView.setup()
         NotificationCenter.default.addObserver(self, selector: #selector(EditViewController.frameDidChangeNotification(_:)), name: NSView.frameDidChangeNotification, object: scrollView)
         // call to set initial scroll position once we know view size
         redrawEverything()
