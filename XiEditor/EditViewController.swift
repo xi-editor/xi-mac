@@ -101,10 +101,16 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         }
     }
     
+    /// the minimum distance between the cursor and the right edge of the view
+    var rightTextPadding: CGFloat {
+        return 2 * textMetrics.fontWidth
+    }
+
     // Set by `EditView` so that we don't need to lock the linecache and iterate more than once
     func maxWidthChanged(toWidth width: Double) {
-        let width = CGFloat(width) + gutterWidth + editView.x0
-        if width != editViewWidth.constant {
+        let width = CGFloat(width) + gutterWidth + editView.x0 + rightTextPadding
+        // to prevent scroll jump, we don't dynamically decrease view width
+        if width > editViewWidth.constant {
             editViewWidth.constant = width
         }
     }
@@ -171,6 +177,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     /// If font size or theme changes, we invalidate all views.
     func redrawEverything() {
         visibleLines = 0..<0
+        editViewWidth.constant = 0
         updateGutterWidth()
         updateEditViewHeight()
         lines.locked().flushAssoc()
@@ -208,10 +215,17 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         }
     }
 
+    // handles the scroll RPC from xi-core
     func scrollTo(_ line: Int, _ col: Int) {
-        let x = CGFloat(col) * textMetrics.fontWidth  // TODO: deal with non-ASCII, non-monospaced case
+        // TODO: deal with non-ASCII, non-monospaced case
+        let x = CGFloat(col) * textMetrics.fontWidth
         let y = CGFloat(line) * textMetrics.linespace + textMetrics.baseline
-        let scrollRect = NSRect(x: x, y: y - textMetrics.baseline, width: 4, height: textMetrics.linespace + textMetrics.descent)
+        // x doesn't include gutter width; this ensures the scrolled region always accounts for the gutter,
+        // and that we scroll in a bit of right slop so the cursor isn't at the view's edge
+        let width = gutterWidth + editView.x0 + rightTextPadding
+        let scrollRect = NSRect(x: x, y: y - textMetrics.baseline,
+                                width: width,
+                                height: textMetrics.linespace + textMetrics.descent).integral
         editContainerView.scrollToVisible(scrollRect)
     }
     
