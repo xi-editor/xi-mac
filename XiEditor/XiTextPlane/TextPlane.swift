@@ -61,7 +61,7 @@ class TextPlaneDemo: NSView, TextPlaneDelegate {
         renderer.drawSolidRect(x: GLfloat(dirtyRect.maxX - 10), y: GLfloat(dirtyRect.maxY - 10), width: 10, height: 10, argb: 0xff00ff00)
 
         let text = "Now is the time for all good people to come to the aid of their country. This is a very long string because I really want to fill up the window and see if we can get 60Hz"
-        let font = NSFont(name: "InconsolataGo", size: 14) ?? NSFont(name: "Monaco", size: 14)!
+        let font = NSFont(name: "Inconsolata", size: 14) ?? NSFont(name: "Menlo", size: 14)!
         let builder = TextLineBuilder(text, font: font)
         builder.addFgSpan(range: 7..<10, argb: 0xffff0000)
         let tl = builder.build(fontCache: renderer.atlas.fontCache)
