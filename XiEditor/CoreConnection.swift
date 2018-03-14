@@ -113,11 +113,9 @@ class CoreConnection {
             dateFormatter.dateFormat = "yyyy-MM-dd-HHMMSS"
             let timeStamp = dateFormatter.string(from: currentTime)
 
-            guard let tmpErrLog = self.appDelegate.errorLogDirectory?.appendingPathComponent(self.appDelegate.defaultCoreLogName)
+            guard let tmpErrLog = self.appDelegate.errorLogDirectory?.appendingPathComponent(self.appDelegate.defaultCoreLogName),
+                let timestampedLog = self.appDelegate.errorLogDirectory?.appendingPathComponent("XiEditor_\(timeStamp).log")
                 else { return }
-            guard let timestampedLog = self.appDelegate.errorLogDirectory?.appendingPathComponent("XiEditor_\(timeStamp).log")
-                else { return }
-            
             do {
                 try FileManager.default.moveItem(at: tmpErrLog, to: timestampedLog)
             } catch let error as NSError {

@@ -83,7 +83,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
     var documentController: XiDocumentController!
 
     // This is set to 'InconsolataGo' in the user preferences; this value is a fallback.
-    let fallbackFont = CTFontCreateWithName(("Inconsolata" as CFString?)!, 14, nil)
+    let fallbackFont = CTFontCreateWithName(("Menlo" as CFString?)!, 14, nil)
 
     lazy fileprivate var _textMetrics = TextDrawingMetrics(font: self.fallbackFont,
                                                            textColor: self.theme.foreground)
@@ -148,19 +148,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         let logDirectory = FileManager.default.urls(
             for: .libraryDirectory,
             in: .userDomainMask)
-            .first!
+            .first?
             .appendingPathComponent("Logs")
             .appendingPathComponent("XiEditor")
-        
+
         // create XiEditor log folder on first run
-        do {
-            try FileManager.default.createDirectory(at: logDirectory,
-                                                    withIntermediateDirectories: true,
-                                                    attributes: nil)
-        } catch let err as NSError {
-            print("failed to create error log directory. \(err)")
-            return nil
-        }
+        guard logDirectory != nil else { return nil }
+        try? FileManager.default.createDirectory(at: logDirectory!,
+                                                 withIntermediateDirectories: true,
+                                                 attributes: nil)
         return logDirectory
     }()
 
