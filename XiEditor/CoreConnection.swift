@@ -55,8 +55,6 @@ class CoreConnection {
     let rpcLogWriter: FileWriter?
     let errLogWriter: FileWriter?
     let appDelegate = NSApp.delegate as! AppDelegate
-    let logDirectory: URL
-    let tmpLogName: String
     
     // RPC state
     var queue = DispatchQueue(label: "com.levien.xi.CoreConnection", attributes: [])
@@ -72,15 +70,17 @@ class CoreConnection {
         } else {
             self.rpcLogWriter = nil
         }
-        
-        self.logDirectory = appDelegate.errorLogDirectory
-        self.tmpLogName = appDelegate.defaultCoreLogName
-        let tmpErrLog = logDirectory.appendingPathComponent(tmpLogName).path
-        self.errLogWriter = FileWriter(path: tmpErrLog)
-        if self.errLogWriter != nil {
-            print("logging stderr to \(tmpErrLog)")
+
+        if let errLogPath = appDelegate.errorLogDirectory?
+            .appendingPathComponent(appDelegate.defaultCoreLogName).path {
+            self.errLogWriter = FileWriter(path: errLogPath)
+            if self.errLogWriter != nil {
+                print("logging stderr to \(errLogPath)")
+            }
+        } else {
+            self.errLogWriter = nil
         }
-          
+
         task.launchPath = path
         task.arguments = []
         let outPipe = Pipe()
@@ -112,9 +112,11 @@ class CoreConnection {
             let currentTime = Date.init()
             dateFormatter.dateFormat = "yyyy-MM-dd-HHMMSS"
             let timeStamp = dateFormatter.string(from: currentTime)
-            
-            let tmpErrLog = self.logDirectory.appendingPathComponent(self.tmpLogName)
-            let timestampedLog = self.logDirectory.appendingPathComponent("XiEditor_\(timeStamp).log")
+
+            guard let tmpErrLog = self.appDelegate.errorLogDirectory?.appendingPathComponent(self.appDelegate.defaultCoreLogName)
+                else { return }
+            guard let timestampedLog = self.appDelegate.errorLogDirectory?.appendingPathComponent("XiEditor_\(timeStamp).log")
+                else { return }
             
             do {
                 try FileManager.default.moveItem(at: tmpErrLog, to: timestampedLog)

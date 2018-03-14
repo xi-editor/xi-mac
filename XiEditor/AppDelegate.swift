@@ -83,7 +83,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
     var documentController: XiDocumentController!
 
     // This is set to 'InconsolataGo' in the user preferences; this value is a fallback.
-    let fallbackFont = CTFontCreateWithName(("Menlo" as CFString?)!, 14, nil)
+    let fallbackFont = CTFontCreateWithName(("Inconsolata" as CFString?)!, 14, nil)
 
     lazy fileprivate var _textMetrics = TextDrawingMetrics(font: self.fallbackFont,
                                                            textColor: self.theme.foreground)
@@ -144,25 +144,23 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
     // The default name for XiEditor's error logs
     let defaultCoreLogName = "xi_tmp.log"
     
-    lazy var errorLogDirectory: URL = {
+    lazy var errorLogDirectory: URL? = {
         let logDirectory = FileManager.default.urls(
-        for: .libraryDirectory,
-        in: .userDomainMask)
-        .first!
-        .appendingPathComponent("Logs")
-        .appendingPathComponent("XiEditor")
+            for: .libraryDirectory,
+            in: .userDomainMask)
+            .first!
+            .appendingPathComponent("Logs")
+            .appendingPathComponent("XiEditor")
         
         // create XiEditor log folder on first run
-        if !FileManager.default.fileExists(atPath: logDirectory.path) {
-            do {
-                try FileManager.default.createDirectory(at: logDirectory,
-                                                        withIntermediateDirectories: true,
-                                                        attributes: nil)
-            } catch let err as NSError {
-                print("failed to create error log directory. \(err)")
-            }
+        do {
+            try FileManager.default.createDirectory(at: logDirectory,
+                                                    withIntermediateDirectories: true,
+                                                    attributes: nil)
+        } catch let err as NSError {
+            print("failed to create error log directory. \(err)")
+            return nil
         }
-        
         return logDirectory
     }()
 
@@ -186,7 +184,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         Trace.shared.trace("appWillLaunch", .main, .begin)
 
         guard let corePath = Bundle.main.path(forResource: "xi-core", ofType: ""),
-        let bundledPluginPath = Bundle.main.path(forResource: "plugins", ofType: "")
+            let bundledPluginPath = Bundle.main.path(forResource: "plugins", ofType: "")
             else { fatalError("Xi bundle missing expected resouces") }
 
         let dispatcher: Dispatcher = {
@@ -199,7 +197,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         updateRpcTracingConfig(collectSamplesOnBoot)
 
         let params = ["client_extras_dir": bundledPluginPath,
-                           "config_dir": getUserConfigDirectory()]
+                      "config_dir": getUserConfigDirectory()]
         dispatcher.coreConnection.sendRpcAsync("client_started",
                                                params: params)
         
@@ -220,11 +218,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
     
     // Clean up temporary Xi stderr log
     func applicationWillTerminate(_ notification: Notification) {
-        let tmpErrLogFile = errorLogDirectory.appendingPathComponent(defaultCoreLogName)
-        do {
-            try FileManager.default.removeItem(at: tmpErrLogFile)
-        } catch let err as NSError {
-            print("Failed to remove temporary file. \(err)")
+        if let tmpErrLogFile = errorLogDirectory?.appendingPathComponent(defaultCoreLogName) {
+            do {
+                try FileManager.default.removeItem(at: tmpErrLogFile)
+            } catch let err as NSError {
+                print("Failed to remove temporary log file. \(err)")
+            }
         }
     }
 
@@ -421,6 +420,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
     }
     
     @IBAction func openErrorLogFolder(_ sender: Any) {
-        NSWorkspace.shared.selectFile(nil, inFileViewerRootedAtPath: errorLogDirectory.path)
+        if let errorLogPath = errorLogDirectory?.path {
+            NSWorkspace.shared.selectFile(nil, inFileViewerRootedAtPath: errorLogPath)
+        }
     }
 }
