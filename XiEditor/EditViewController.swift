@@ -139,10 +139,12 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        shadowView.wantsLayer = true
         editView.dataSource = self
         scrollView.contentView.documentCursor = NSCursor.iBeam;
         scrollView.automaticallyAdjustsContentInsets = false
         scrollView.hasHorizontalScroller = true
+        scrollView.usesPredominantAxisScrolling = true
         (scrollView.contentView as? XiClipView)?.delegate = self
     }
 

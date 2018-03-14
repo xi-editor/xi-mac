@@ -405,7 +405,12 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         }
     }
 
-    // Rendering using TextPlane
+    /// Our equivalent of drawRect:, with rendering using TextPlane.
+    ///
+    /// Note: This function has side effects in two cases: It stashes
+    /// the length of the longest line it sees, and passes this to the view controller;
+    /// if this line is longer than the previous longest, the view's width is updated.
+    /// It also updates IME state if IME is active.
     func render(_ renderer: Renderer, dirtyRect: NSRect) {
         Trace.shared.trace("EditView render", .main, .begin)
         renderer.clear(dataSource.theme.background)
