@@ -154,9 +154,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
 
         // create XiEditor log folder on first run
         guard logDirectory != nil else { return nil }
-        try? FileManager.default.createDirectory(at: logDirectory!,
-                                                 withIntermediateDirectories: true,
-                                                 attributes: nil)
+        do {
+            try FileManager.default.createDirectory(at: logDirectory!,
+                                                     withIntermediateDirectories: true,
+                                                     attributes: nil)
+        } catch {
+            // Returns nil if the log directory can't be created
+            return nil
+        }
         return logDirectory
     }()
 
