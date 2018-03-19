@@ -21,6 +21,8 @@ protocol EditViewDataSource {
     var theme: Theme { get }
     var textMetrics: TextDrawingMetrics { get }
     var document: Document! { get }
+    var gutterWidth: CGFloat { get }
+    func maxWidthChanged(toWidth: Double)
 }
 
 /// Associated data stored per line in the line cache
@@ -40,9 +42,11 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     @IBOutlet var scrollView: NSScrollView!
     @IBOutlet weak var editContainerView: EditContainerView!
     @IBOutlet var editView: EditView!
+    @IBOutlet weak var shadowView: ShadowView!
     
     @IBOutlet weak var editViewHeight: NSLayoutConstraint!
-
+    @IBOutlet weak var editViewWidth: NSLayoutConstraint!
+    
     lazy var findViewController: FindViewController! = {
         let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
         let controller = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Find View Controller")) as! FindViewController
@@ -62,6 +66,12 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     var textMetrics: TextDrawingMetrics {
         return (NSApplication.shared.delegate as! AppDelegate).textMetrics
+    }
+    
+    var gutterWidth: CGFloat = 0 {
+        didSet {
+            shadowView.leftShadowMinX = gutterWidth
+        }
     }
 
     var styleMap: StyleMap {
@@ -95,6 +105,21 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             }
         }
     }
+    
+    /// the minimum distance between the cursor and the right edge of the view
+    var rightTextPadding: CGFloat {
+        return 2 * textMetrics.fontWidth
+    }
+
+    // Set by `EditView` so that we don't need to lock the linecache and iterate more than once
+    func maxWidthChanged(toWidth width: Double) {
+        let width = CGFloat(width) + gutterWidth + editView.x0 + rightTextPadding
+        // to prevent scroll jump, we don't dynamically decrease view width
+        if width > editViewWidth.constant {
+            editViewWidth.constant = width
+            shadowView.showRightShadow = true
+        }
+    }
 
     // visible scroll region
     var visibleLines: LineRange = 0..<0
@@ -114,14 +139,18 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        shadowView.wantsLayer = true
         editView.dataSource = self
         scrollView.contentView.documentCursor = NSCursor.iBeam;
         scrollView.automaticallyAdjustsContentInsets = false
+        scrollView.hasHorizontalScroller = true
+        scrollView.usesPredominantAxisScrolling = true
         (scrollView.contentView as? XiClipView)?.delegate = self
     }
 
     override func viewDidAppear() {
         super.viewDidAppear()
+        shadowView.setup()
         NotificationCenter.default.addObserver(self, selector: #selector(EditViewController.frameDidChangeNotification(_:)), name: NSView.frameDidChangeNotification, object: scrollView)
         // call to set initial scroll position once we know view size
         redrawEverything()
@@ -130,7 +159,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     func updateGutterWidth() {
         let gutterColumns = "\(lineCount)".count
         let chWidth = NSString(string: "9").size(withAttributes: textMetrics.attributes).width
-        editView.gutterWidth = chWidth * max(2, CGFloat(gutterColumns)) + 2 * editView.gutterXPad
+        gutterWidth = chWidth * max(2, CGFloat(gutterColumns)) + 2 * editView.gutterXPad
     }
     
     @objc func frameDidChangeNotification(_ notification: Notification) {
@@ -143,6 +172,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     /// is up to date.
     func willScroll(to newOrigin: NSPoint) {
         editView.scrollOrigin = newOrigin
+        shadowView.showLeftShadow = newOrigin.x > 0
+        shadowView.showRightShadow = (editViewWidth.constant - (newOrigin.x + self.view.bounds.width)) > rightTextPadding
         // TODO: this calculation doesn't take into account toppad; do in EditView in DRY fashion
         let first = Int(floor(newOrigin.y / textMetrics.linespace))
         let height = Int(ceil((scrollView.contentView.bounds.size.height) / textMetrics.linespace)) + 1
@@ -157,11 +188,13 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     /// If font size or theme changes, we invalidate all views.
     func redrawEverything() {
         visibleLines = 0..<0
+        editViewWidth.constant = self.view.bounds.width
         updateGutterWidth()
         updateEditViewHeight()
         lines.locked().flushAssoc()
         willScroll(to: scrollView.contentView.bounds.origin)
         editView.gutterCache = nil
+        shadowView.updateShadowColor(newColor: theme.shadow)
         editView.needsDisplay = true
     }
 
@@ -194,10 +227,17 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         }
     }
 
+    // handles the scroll RPC from xi-core
     func scrollTo(_ line: Int, _ col: Int) {
-        let x = CGFloat(col) * textMetrics.fontWidth  // TODO: deal with non-ASCII, non-monospaced case
+        // TODO: deal with non-ASCII, non-monospaced case
+        let x = CGFloat(col) * textMetrics.fontWidth
         let y = CGFloat(line) * textMetrics.linespace + textMetrics.baseline
-        let scrollRect = NSRect(x: x, y: y - textMetrics.baseline, width: 4, height: textMetrics.linespace + textMetrics.descent)
+        // x doesn't include gutter width; this ensures the scrolled region always accounts for the gutter,
+        // and that we scroll in a bit of right slop so the cursor isn't at the view's edge
+        let width = gutterWidth + editView.x0 + rightTextPadding
+        let scrollRect = NSRect(x: x, y: y - textMetrics.baseline,
+                                width: width,
+                                height: textMetrics.linespace + textMetrics.descent).integral
         editContainerView.scrollToVisible(scrollRect)
     }
     

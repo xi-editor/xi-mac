@@ -149,7 +149,7 @@ class TextLineBuilder {
                 underlineRanges.append(UnderlineRange(range: range, y: y, argb: argb))
             }
         }
-        return TextLine(glyphs: glyphs, ctLine: ctLine, selRanges: selRanges, underlineRanges: underlineRanges, knownWidth: nil)
+        return TextLine(glyphs: glyphs, ctLine: ctLine, selRanges: selRanges, underlineRanges: underlineRanges, width: nil)
     }
 }
 
@@ -160,16 +160,18 @@ struct TextLine {
     var ctLine: CTLine
     var selRanges: [Range<GLfloat>]
     var underlineRanges: [UnderlineRange]
-
+    let width: Double
+    
+    init(glyphs: [GlyphInstance], ctLine: CTLine, selRanges: [Range<GLfloat>], underlineRanges: [UnderlineRange], width: Double?) {
+        self.glyphs = glyphs
+        self.width = width ?? CTLineGetTypographicBounds(ctLine, nil, nil, nil)
+        self.ctLine = ctLine
+        self.selRanges = selRanges
+        self.underlineRanges = underlineRanges
+    }
+    
     func offsetForIndex(utf16Ix: Int) -> CGFloat {
         return CTLineGetOffsetForStringIndex(ctLine, utf16Ix, nil)
-    }
-
-    //HACK: in the gutter case, we just stash the width and ignore the ctLine
-    fileprivate var knownWidth: Double?
-
-    var width: Double {
-        return knownWidth ?? CTLineGetTypographicBounds(ctLine, nil, nil, nil)
     }
 
     /// Fast approach to build a new string out of an atlas of glyphs.  This
@@ -194,7 +196,7 @@ struct TextLine {
             glyphPosition += 1
         }
 
-        return TextLine(glyphs: newGlyphs, ctLine: ctLine, selRanges: [], underlineRanges: [], knownWidth: newWidth);
+        return TextLine(glyphs: newGlyphs, ctLine: ctLine, selRanges: [], underlineRanges: [], width: newWidth);
     }
 }
 
