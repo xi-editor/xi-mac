@@ -65,9 +65,9 @@ User settings are currently stored in files; the general preferences are
 located at `~/Library/Application Support/XiEditor/preferences.xiconfig`.
 This file can be opened from File > Preferences (⌘ + ,).
 
-Users are encouraged to try out
-[Inconsolata](http://levien.com/type/myfonts/inconsolata.html), with which
-Xi is principally tested.
+The default font for Xi is 
+[Inconsolata](http://levien.com/type/myfonts/inconsolata.html), which
+is bundled with the app.
 
 ### Theme
 
@@ -79,6 +79,12 @@ custom themes.
 ## Authors
 
 The main author is Raph Levien.
+
+## License
+
+This project is licensed under the Apache 2 [license](LICENSE). The bundled fonts are under a
+different license, the Open Font License. See the [fonts](fonts) directory for the fonts and associated
+license.
 
 ## Contributions
 

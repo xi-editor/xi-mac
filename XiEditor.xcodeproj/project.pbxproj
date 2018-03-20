@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		28F1ED4A1EC4C735008839BE /* Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F1ED491EC4C735008839BE /* Search.swift */; };
+		4DCB4AF020576A6F00476F75 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 4DCB4AEF20576A6E00476F75 /* fonts */; };
 		50370A2B1D4209F300EA1B18 /* Dispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50370A2A1D4209F300EA1B18 /* Dispatcher.swift */; };
 		6038770720057B4500AABF17 /* XiDocumentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6038770620057B4500AABF17 /* XiDocumentController.swift */; };
 		6083722F2058597B00E9CF5D /* ShadowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6083722E2058597B00E9CF5D /* ShadowView.swift */; };
@@ -72,6 +73,7 @@
 
 /* Begin PBXFileReference section */
 		28F1ED491EC4C735008839BE /* Search.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
+		4DCB4AEF20576A6E00476F75 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
 		50370A2A1D4209F300EA1B18 /* Dispatcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dispatcher.swift; sourceTree = "<group>"; };
 		6038770620057B4500AABF17 /* XiDocumentController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiDocumentController.swift; sourceTree = "<group>"; };
 		6083722E2058597B00E9CF5D /* ShadowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShadowView.swift; sourceTree = "<group>"; };
@@ -145,6 +147,7 @@
 		AE499DC31C82BB2B002D68AF = {
 			isa = PBXGroup;
 			children = (
+				4DCB4AEF20576A6E00476F75 /* fonts */,
 				D023DA021CD071B40087EC0A /* xicore */,
 				AE499DCE1C82BB2B002D68AF /* XiEditor */,
 				AE499DDE1C82BB2B002D68AF /* XiEditorTests */,
@@ -369,6 +372,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4DCB4AF020576A6F00476F75 /* fonts in Resources */,
 				F53EA2AD1DCAA8110071ACFD /* Main.storyboard in Resources */,
 				AE228F5D1C897CE7000E9B0F /* xi-core in Resources */,
 				AED22D841FE84B4B0096E7C3 /* text.f.glsl in Resources */,
