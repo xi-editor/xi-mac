@@ -151,6 +151,12 @@ class TextLineBuilder {
         }
         return TextLine(glyphs: glyphs, ctLine: ctLine, selRanges: selRanges, underlineRanges: underlineRanges, width: nil)
     }
+
+    /// Measure the total width of the line. Should be consistent with `.build().width`
+    func measure() -> Double {
+        let ctLine = CTLineCreateWithAttributedString(attrString)
+        return CTLineGetTypographicBounds(ctLine, nil, nil, nil)
+    }
 }
 
 /// A line of text with attributes that is ready for drawing.
