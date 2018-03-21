@@ -902,6 +902,12 @@ Gw
                                                 <action selector="toggleScrollBenchmark:" target="azf-ih-6fI" id="HRQ-K7-rN1"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem title="Open Error Log Folder" id="R0h-rI-8o1">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="openErrorLogFolder:" target="azf-ih-6fI" id="dlx-rd-R59"/>
+                                            </connections>
+                                        </menuItem>
                                     </items>
                                 </menu>
                             </menuItem>

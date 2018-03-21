@@ -140,6 +140,30 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         } 
         return applicationDirectory
     }()
+    
+    // The default name for XiEditor's error logs
+    let defaultCoreLogName = "xi_tmp.log"
+    
+    lazy var errorLogDirectory: URL? = {
+        let logDirectory = FileManager.default.urls(
+            for: .libraryDirectory,
+            in: .userDomainMask)
+            .first?
+            .appendingPathComponent("Logs")
+            .appendingPathComponent("XiEditor")
+
+        // create XiEditor log folder on first run
+        guard logDirectory != nil else { return nil }
+        do {
+            try FileManager.default.createDirectory(at: logDirectory!,
+                                                     withIntermediateDirectories: true,
+                                                     attributes: nil)
+        } catch {
+            // Returns nil if the log directory can't be created
+            return nil
+        }
+        return logDirectory
+    }()
 
     var theme = Theme.defaultTheme() {
         didSet {
@@ -161,7 +185,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         Trace.shared.trace("appWillLaunch", .main, .begin)
 
         guard let corePath = Bundle.main.path(forResource: "xi-core", ofType: ""),
-        let bundledPluginPath = Bundle.main.path(forResource: "plugins", ofType: "")
+            let bundledPluginPath = Bundle.main.path(forResource: "plugins", ofType: "")
             else { fatalError("Xi bundle missing expected resouces") }
 
         let dispatcher: Dispatcher = {
@@ -174,7 +198,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         updateRpcTracingConfig(collectSamplesOnBoot)
 
         let params = ["client_extras_dir": bundledPluginPath,
-                           "config_dir": getUserConfigDirectory()]
+                      "config_dir": getUserConfigDirectory()]
         dispatcher.coreConnection.sendRpcAsync("client_started",
                                                params: params)
         
@@ -191,6 +215,17 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         dispatcher.coreConnection.sendRpcAsync(req.method, params: req.params!)
         Trace.shared.trace("appWillLaunch", .main, .end)
         documentController = XiDocumentController()
+    }
+    
+    // Clean up temporary Xi stderr log
+    func applicationWillTerminate(_ notification: Notification) {
+        if let tmpErrLogFile = errorLogDirectory?.appendingPathComponent(defaultCoreLogName) {
+            do {
+                try FileManager.default.removeItem(at: tmpErrLogFile)
+            } catch let err as NSError {
+                print("Failed to remove temporary log file. \(err)")
+            }
+        }
     }
 
     // MARK: - XiClient protocol
@@ -382,6 +417,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
             // that in a callback (or make it synchronous on a global dispatch
             // queue).
             Events.SaveTrace(destination: destination, frontendSamples: Trace.shared.snapshot()).dispatch(self.dispatcher!)
+        }
+    }
+    
+    @IBAction func openErrorLogFolder(_ sender: Any) {
+        if let errorLogPath = errorLogDirectory?.path {
+            NSWorkspace.shared.selectFile(nil, inFileViewerRootedAtPath: errorLogPath)
         }
     }
 }
