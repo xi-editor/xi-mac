@@ -317,6 +317,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         }
     }
 
+    func measureWidth(args: [[String : AnyObject]]) -> [[Double]] {
+        return styleMap.locked().measureWidths(args)
+    }
+
     //MARK: - top-level interactions
     @IBAction func openPreferences(_ sender: NSMenuItem) {
         let delegate = (NSApplication.shared.delegate as? AppDelegate)

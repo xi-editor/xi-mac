@@ -59,4 +59,9 @@ protocol XiClient: AnyObject {
     // config keys and their values. Subsequent calls contain only those items which
     // have changed since the previous call.
     func configChanged(viewIdentifier: String, changes: [String: AnyObject])
+
+    /// A request to measure the width of strings. Each item in the list is a dictionary
+    /// where `style` is the id of the style and `strings` is an array of strings to
+    /// measure. The result is an array of arrays of width measurements, in macOS "points".
+    func measureWidth(args: [[String: AnyObject]]) -> [[Double]]
 }
