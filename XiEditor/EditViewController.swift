@@ -377,12 +377,26 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         let flags = theEvent.modifierFlags.rawValue >> 16
         let clickCount = theEvent.clickCount
         if theEvent.modifierFlags.contains(NSEvent.ModifierFlags.command) {
-            // Note: all gestures will be moving to "gesture" rpc but for now, just toggle_sel
-            document.sendRpcAsync("gesture", params: [
-                "line": position.line,
-                "col": position.column,
-                "ty": "toggle_sel"])
-        } else {
+            switch (clickCount) {
+            case 2:
+                document.sendRpcAsync("gesture", params: [
+                    "line": position.line,
+                    "col": position.column,
+                    "ty": "multi_word_select"])
+            case 3:
+                document.sendRpcAsync("gesture", params: [
+                    "line": position.line,
+                    "col": position.column,
+                    "ty": "multi_line_select"])
+            default:
+                // Note: all gestures will be moving to "gesture" rpc but for now
+                document.sendRpcAsync("gesture", params: [
+                    "line": position.line,
+                    "col": position.column,
+                    "ty": "toggle_sel"])
+            }
+        }
+        else {
             document.sendRpcAsync("click", params: [position.line, position.column, flags, clickCount])
         }
         dragTimer = Timer.scheduledTimer(timeInterval: TimeInterval(1.0/60), target: self, selector: #selector(_autoscrollTimerCallback), userInfo: nil, repeats: true)
