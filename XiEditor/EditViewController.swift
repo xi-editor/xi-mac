@@ -342,6 +342,14 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     @objc func copy(_ sender: AnyObject?) {
         cutCopy("copy")
     }
+
+    override func indent(_ sender: Any?) {
+        document.sendRpcAsync("indent", params: [])
+    }
+
+    @objc func outdent(_ sender: Any?) {
+        document.sendRpcAsync("outdent", params: [])
+    }
     
     fileprivate func cutCopy(_ method: String) {
         let text = document?.sendRpc(method, params: [])
