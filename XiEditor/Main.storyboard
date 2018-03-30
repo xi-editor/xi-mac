@@ -752,6 +752,17 @@ Gw
                                                             <action selector="pasteRuler:" target="7er-QZ-amI" id="5VN-HF-Y7C"/>
                                                         </connections>
                                                     </menuItem>
+                                                    <menuItem isSeparatorItem="YES" id="cFX-wO-Pxl"/>
+                                                    <menuItem title="Indent" keyEquivalent="]" id="uVM-IT-1r0" userLabel="Indent">
+                                                        <connections>
+                                                            <action selector="indent:" target="7er-QZ-amI" id="vTx-qv-4AV"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                    <menuItem title="Outdent" keyEquivalent="[" id="bhP-6q-co4">
+                                                        <connections>
+                                                            <action selector="outdent:" target="7er-QZ-amI" id="Ak2-Ut-opO"/>
+                                                        </connections>
+                                                    </menuItem>
                                                 </items>
                                             </menu>
                                         </menuItem>
