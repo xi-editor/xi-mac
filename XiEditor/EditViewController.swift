@@ -131,6 +131,25 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             }
         }
     }
+  
+    var unifiedTitlebar = false {
+        didSet {
+            // Dont check if value is same as previous
+            // so when theme updates, background color still changes
+            if let window = self.view.window {
+                let color = self.theme.background
+        
+                window.titlebarAppearsTransparent = unifiedTitlebar
+                window.backgroundColor = unifiedTitlebar ? color : nil
+        
+            if color.isDark && unifiedTitlebar {
+                window.appearance = NSAppearance(named: NSAppearance.Name.vibrantDark)
+            } else {
+                window.appearance = NSAppearance(named: NSAppearance.Name.aqua)
+            }
+      }
+    }
+  }
 
     private var lastDragPosition: BufferPosition?
     /// handles autoscrolling when a drag gesture exists the window
@@ -523,6 +542,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
             case "scroll_past_end":
                 self.scrollPastEnd = changes["scroll_past_end"] as! Bool
+            
+            case "unified_titlebar":
+                self.unifiedTitlebar = changes["unified_titlebar"] as! Bool
                 
             default:
                 break
@@ -609,6 +631,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         for subItem in (pluginsMenu?.submenu!.items)! {
             subItem.state = NSControl.StateValue(rawValue: (subItem.title == theme) ? 1 : 0)
         }
+        self.unifiedTitlebar = { self.unifiedTitlebar }()
     }
 
     @IBAction func gotoLine(_ sender: AnyObject) {
@@ -657,3 +680,16 @@ extension EditViewController: NSWindowDelegate {
         editView.isFrontmostView = false
     }
 }
+
+extension NSColor {
+    var isDark: Bool {
+        let red = self.redComponent
+        let green = self.greenComponent
+        let blue = self.blueComponent
+    
+        // Formula taken from https://www.w3.org/WAI/ER/WD-AERT/#color-contrast
+        let brightness = ((red * 299) + (green * 587) + (blue * 114)) / 1000
+        return brightness < 0.5
+    }
+}
+
