@@ -142,14 +142,14 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
                 window.titlebarAppearsTransparent = unifiedTitlebar
                 window.backgroundColor = unifiedTitlebar ? color : nil
         
-            if color.isDark && unifiedTitlebar {
-                window.appearance = NSAppearance(named: NSAppearance.Name.vibrantDark)
-            } else {
+                if color.isDark && unifiedTitlebar {
+                    window.appearance = NSAppearance(named: NSAppearance.Name.vibrantDark)
+                } else {
                 window.appearance = NSAppearance(named: NSAppearance.Name.aqua)
+                }
             }
-      }
+        }
     }
-  }
 
     private var lastDragPosition: BufferPosition?
     /// handles autoscrolling when a drag gesture exists the window
