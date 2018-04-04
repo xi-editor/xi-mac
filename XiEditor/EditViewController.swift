@@ -366,7 +366,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         document.sendRpcAsync("indent", params: [])
     }
 
-    @objc func outdent(_ sender: Any?) {
+    @objc func unindent(_ sender: Any?) {
         document.sendRpcAsync("outdent", params: [])
     }
     
