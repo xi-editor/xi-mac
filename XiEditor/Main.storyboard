@@ -758,9 +758,9 @@ Gw
                                                             <action selector="indent:" target="7er-QZ-amI" id="vTx-qv-4AV"/>
                                                         </connections>
                                                     </menuItem>
-                                                    <menuItem title="Outdent" keyEquivalent="[" id="bhP-6q-co4">
+                                                    <menuItem title="Unindent" keyEquivalent="[" id="bhP-6q-co4" userLabel="Unindent">
                                                         <connections>
-                                                            <action selector="outdent:" target="7er-QZ-amI" id="Ak2-Ut-opO"/>
+                                                            <action selector="unindent:" target="7er-QZ-amI" id="83I-gO-x7f"/>
                                                         </connections>
                                                     </menuItem>
                                                 </items>
