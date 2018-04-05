@@ -133,6 +133,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     var lastRevisionRendered = 0
     var gutterXPad: CGFloat = 8
     var gutterCache: GutterCache?
+    var maxLineWidth: Double = 0
 
     var dataSource: EditViewDataSource!
 
@@ -434,7 +435,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         let font = dataSource.textMetrics.font as CTFont
         let styleMap = dataSource.styleMap.locked()
         var textLines: [TextLine?] = []
-        var maxLineWidth: Double = 0
+
 
         // The actual drawing is split into passes for correct visual presentation and
         // also to improve batching of the OpenGL draw calls.
