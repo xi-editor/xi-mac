@@ -399,36 +399,46 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         self.editView.inputContext?.handleEvent(theEvent);
     }
     
+    // Determines the gesture type based on flags and click count.
+    private func clickGestureType(event: NSEvent) -> String {
+        let flags = event.modifierFlags.rawValue >> 16
+        let clickCount = event.clickCount
+        
+        if event.modifierFlags.contains(NSEvent.ModifierFlags.command) {
+            switch (clickCount) {
+            case 2:
+                return "multi_word_select"
+            case 3:
+                return "multi_line_select"
+            default:
+                return "toggle_sel"
+            }
+        } else if (event.modifierFlags.contains(NSEvent.ModifierFlags.shift)) {
+            return "range_select"
+        } else {
+            switch (clickCount) {
+            case 2:
+                return "word_select"
+            case 3:
+                return "line_select"
+            default:
+                return "click"
+            }
+        }
+    }
+    
     override func mouseDown(with theEvent: NSEvent) {
         editView.unmarkText()
         editView.inputContext?.discardMarkedText()
         let position  = editView.bufferPositionFromPoint(theEvent.locationInWindow)
         lastDragPosition = position
-        let flags = theEvent.modifierFlags.rawValue >> 16
-        let clickCount = theEvent.clickCount
-        if theEvent.modifierFlags.contains(NSEvent.ModifierFlags.command) {
-            switch (clickCount) {
-            case 2:
-                document.sendRpcAsync("gesture", params: [
-                    "line": position.line,
-                    "col": position.column,
-                    "ty": "multi_word_select"])
-            case 3:
-                document.sendRpcAsync("gesture", params: [
-                    "line": position.line,
-                    "col": position.column,
-                    "ty": "multi_line_select"])
-            default:
-                // Note: all gestures will be moving to "gesture" rpc but for now
-                document.sendRpcAsync("gesture", params: [
-                    "line": position.line,
-                    "col": position.column,
-                    "ty": "toggle_sel"])
-            }
-        }
-        else {
-            document.sendRpcAsync("click", params: [position.line, position.column, flags, clickCount])
-        }
+        
+        document.sendRpcAsync("gesture", params: [
+            "line": position.line,
+            "col": position.column,
+            "ty": clickGestureType(event: theEvent)
+        ])
+        
         dragTimer = Timer.scheduledTimer(timeInterval: TimeInterval(1.0/60), target: self, selector: #selector(_autoscrollTimerCallback), userInfo: nil, repeats: true)
         dragEvent = theEvent
     }
