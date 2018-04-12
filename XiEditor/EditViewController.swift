@@ -422,7 +422,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             case 3:
                 return "line_select"
             default:
-                return "click"
+                return "point_select"
             }
         }
     }
