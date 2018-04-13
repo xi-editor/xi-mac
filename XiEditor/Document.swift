@@ -35,6 +35,9 @@ class Document: NSDocument {
     /// if set, should be used as the tabbingIdentifier of new documents' windows.
     static var preferredTabbingIdentifier: String?
 
+    // minimum size for a new or resized window
+    static var minWinSize = NSSize(width: 240, height: 160)
+
     var dispatcher: Dispatcher!
     
     /// coreViewIdentifier is the name used to identify this document when communicating with the Core.
@@ -89,7 +92,7 @@ class Document: NSDocument {
         }
         
         windowController.window?.setFrame(newFrame, display: true)
-        windowController.window?.minSize = newFrame.size
+        windowController.window?.minSize = Document.minWinSize
 
         self.editViewController = windowController.contentViewController as? EditViewController
         editViewController?.document = self
@@ -178,7 +181,7 @@ class Document: NSDocument {
             editVC.updateAsync(update: update)
         }
     }
-    
+
     /// Returns the frame to be used for the next new window.
     ///
     /// - Note: This is the position of the last active window, offset
@@ -197,15 +200,12 @@ class Document: NSDocument {
             nextFrame.origin.y = screenBounds.maxY - nextFrame.height
         }
 
-        let minNewWindowHeight: CGFloat = 160
-        let minNewWindowWidth: CGFloat = 240
-
-        nextFrame.size.width = max(nextFrame.width, minNewWindowWidth)
+        nextFrame.size.width = max(nextFrame.width, Document.minWinSize.width)
         // the origin is in the bottom left so a height change changes it too:
-        if nextFrame.size.height < minNewWindowHeight {
+        if nextFrame.size.height < Document.minWinSize.height {
             let oldHeight = nextFrame.size.height
-            nextFrame.size.height = minNewWindowHeight
-            nextFrame.origin.y = nextFrame.origin.y - (minNewWindowHeight - oldHeight)
+            nextFrame.size.height = Document.minWinSize.height
+            nextFrame.origin.y = nextFrame.origin.y - (Document.minWinSize.height - oldHeight)
         }
 
         return nextFrame
