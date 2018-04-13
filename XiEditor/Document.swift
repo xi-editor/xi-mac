@@ -89,7 +89,7 @@ class Document: NSDocument {
         }
         
         windowController.window?.setFrame(newFrame, display: true)
-        windowController.window?.minSize = NSSize(width: 200, height: 100)
+        windowController.window?.minSize = newFrame.size
 
         self.editViewController = windowController.contentViewController as? EditViewController
         editViewController?.document = self
