@@ -402,7 +402,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         let saveDialog = NSSavePanel.init()
         saveDialog.nameFieldStringValue = "xi-trace-\(pid)"
         if #available(OSX 10.12, *) {
-            saveDialog.directoryURL = FileManager.default.temporaryDirectory
+            saveDialog.directoryURL = errorLogDirectory ?? FileManager.default.temporaryDirectory
         }
         saveDialog.begin { (response) in
             guard response == .OK else { return }
