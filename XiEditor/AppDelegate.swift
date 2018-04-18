@@ -352,8 +352,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         guard (textMetrics.font.fontName != fontName && textMetrics.font.familyName != fontName)
             || textMetrics.font.pointSize != fontSize else { return }
 
-        if let newFont = NSFont(name: fontName ?? textMetrics.font.fontName,
-                                size: fontSize ?? textMetrics.font.pointSize) {
+        // if fontName argument is present but the font cannot be found, this will be nil
+        let desiredFont = NSFont(name: fontName ?? textMetrics.font.fontName,
+                                 size: fontSize ?? textMetrics.font.pointSize);
+        let fallbackFont = NSFont(name: textMetrics.font.fontName,
+                                  size:fontSize ?? textMetrics.font.pointSize);
+        if let newFont = desiredFont ?? fallbackFont {
             textMetrics = TextDrawingMetrics(font: newFont, textColor: theme.foreground)
         }
     }
