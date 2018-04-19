@@ -168,7 +168,12 @@ class CoreConnection {
             print("error serializing to json")
         }
     }
-    
+
+    func sendResult(id: Any, result: Any) {
+        let json = ["id": id, "result": result]
+        sendJson(json)
+    }
+
     func handleRaw(_ data: Data) {
         Trace.shared.trace("handleRaw", .rpc, .begin)
         do {
@@ -200,8 +205,21 @@ class CoreConnection {
     }
     
     func handleRequest(json: [String: AnyObject]) {
-        // there are currently no core -> client requests in the protocol
-        print("Unexpected RPC Request: \(json)")
+        guard let method = json["method"] as? String, let params = json["params"], let id = json["id"]
+            else {
+                print("unknown json from core: \(json)")
+                return
+        }
+
+        switch method {
+        case "measure_width":
+            let args = params as! [[String: AnyObject]]
+            if let result = self.client?.measureWidth(args: args) {
+                self.sendResult(id: id, result: result)
+            }
+        default:
+            print("unknown request \(method)")
+        }
     }
     
     func handleNotification(json: [String: AnyObject]) {

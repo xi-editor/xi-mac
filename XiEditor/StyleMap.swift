@@ -203,6 +203,23 @@ class StyleMapState: UnfairLock {
                   underline: $0.underline, italic: $0.italic, weight: $0.weight)
         } }
     }
+
+    func measureWidth(id: Int, s: String) -> Double {
+        let builder = TextLineBuilder(s, font: self.font)
+        let range = NSMakeRange(0, s.utf16.count)
+        applyStyle(builder: builder, id: id, range: range)
+        return builder.measure()
+    }
+
+    func measureWidths(_ args: [[String: AnyObject]]) -> [[Double]] {
+        return args.map({(arg: [String: AnyObject]) -> [Double] in
+            guard let id = arg["id"] as? Int, let strings = arg["strings"] as? [String] else {
+                print("invalid measure_widths request")
+                return []
+            }
+            return strings.map({(s: String) -> Double in measureWidth(id: id, s: s)})
+        })
+    }
 }
 
 /// Safe access to the style map, holding a lock
@@ -230,6 +247,10 @@ class StyleMapLocked {
 
     func updateFont(to font: NSFont) {
         inner.updateFont(to: font)
+    }
+
+    func measureWidths(_ args: [[String: AnyObject]]) -> [[Double]] {
+        return inner.measureWidths(args)
     }
 }
 
