@@ -133,8 +133,6 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     var lastRevisionRendered = 0
     var gutterXPad: CGFloat = 8
     var gutterCache: GutterCache?
-
-    var maxLineWidth: Double = 0
     
     var dataSource: EditViewDataSource!
 
@@ -436,7 +434,6 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         let font = dataSource.textMetrics.font as CTFont
         let styleMap = dataSource.styleMap.locked()
         var textLines: [TextLine?] = []
-        maxLineWidth = 0
 
         // The actual drawing is split into passes for correct visual presentation and
         // also to improve batching of the OpenGL draw calls.
@@ -469,10 +466,10 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                 styleMap.applyStyles(builder: builder, styles: line.styles)
                 textLine = builder.build(fontCache: renderer.fontCache)
                 let assoc = LineAssoc(textLine: textLine)
+                lineCache.setMaxLineWidth(lineIx, textLine.width)
                 lineCache.setAssoc(lineIx, assoc: assoc)
                 textLines.append(textLine)
             }
-            maxLineWidth = max(maxLineWidth, textLine.width)
             let y0 = yOff + linespace * CGFloat(lineIx)
             renderer.drawLineBg(line: textLine, x0: GLfloat(xOff), yRange: GLfloat(y0)..<GLfloat(y0 + linespace), selColor: selArgb)
         }
@@ -553,7 +550,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             renderer.drawLine(line: gutterTL, x0: GLfloat(x), y0: GLfloat(y0))
         }
         lastRevisionRendered = lineCache.revision
-        dataSource.maxWidthChanged(toWidth: maxLineWidth)
+        dataSource.maxWidthChanged(toWidth: lineCache.maxLineWidth)
         Trace.shared.trace("EditView render", .main, .end)
     }
 }

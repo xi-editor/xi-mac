@@ -76,6 +76,16 @@ fileprivate class LineCacheState<T>: UnfairLock {
     var height: Int {
         return nInvalidBefore + lines.count + nInvalidAfter
     }
+    
+    var longestLineIx: Int = 0
+    var maxLineWidth: Double = 0
+    
+    func setMaxLineWidth(_ ix: Int, _ width: Double) {
+        if width > maxLineWidth {
+            maxLineWidth = width
+            longestLineIx = ix
+        }
+    }
 
     var isEmpty: Bool {
         return  lines.count == 0 || (lines.count == 1 && lines[0]?.text  == "")
@@ -106,7 +116,7 @@ fileprivate class LineCacheState<T>: UnfairLock {
     func linesForRange(range: LineRange) -> [Line<T>?] {
         return range.map( { _get($0) } )
     }
-
+    
     /// Updates the state by applying a delta. The update format is detailed in the
     /// [xi-core docs](https://github.com/google/xi-editor/blob/master/doc/update.md).
     func applyUpdate(update: [String: AnyObject]) -> InvalSet {
@@ -198,10 +208,13 @@ fileprivate class LineCacheState<T>: UnfairLock {
         lines = newLines
         nInvalidAfter = newInvalidAfter
         revision += 1
+        maxLineWidth = 0
+        longestLineIx = 0
 
         if height < oldHeight {
             inval.addRange(start: height, end: oldHeight)
         }
+        
         return inval
     }
 
@@ -248,6 +261,10 @@ class LineCacheLocked<T> {
     var height: Int {
         return inner.height
     }
+    
+    var maxLineWidth: Double {
+        return inner.maxLineWidth
+    }
 
     var cursorInval: InvalSet {
         return inner.cursorInval
@@ -260,6 +277,10 @@ class LineCacheLocked<T> {
     /// Returns the line for the given index, if it exists in the cache.
     func get(_ ix: Int) -> Line<T>? {
         return inner._get(ix)
+    }
+    
+    func setMaxLineWidth(_ ix: Int, _ width: Double) {
+        inner.setMaxLineWidth(ix, width)
     }
 
     /// Sets the associated data for a line. The line _must_ be valid.
@@ -363,6 +384,10 @@ class LineCache<T> {
     /// The number of lines in the underlying document.
     var height: Int {
         return locked().height
+    }
+    
+    var maxLineWidth: Double {
+        return locked().maxLineWidth
     }
 
     /// Set of lines that need to be invalidated to blink the cursor
