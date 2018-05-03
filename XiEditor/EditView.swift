@@ -134,6 +134,8 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     var gutterXPad: CGFloat = 8
     var gutterCache: GutterCache?
 
+    var maxLineWidth: Double = 0
+    
     var dataSource: EditViewDataSource!
 
     var lastDragLineCol: (Int, Int)?
@@ -434,7 +436,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         let font = dataSource.textMetrics.font as CTFont
         let styleMap = dataSource.styleMap.locked()
         var textLines: [TextLine?] = []
-        var maxLineWidth: Double = 0
+        maxLineWidth = 0
 
         // The actual drawing is split into passes for correct visual presentation and
         // also to improve batching of the OpenGL draw calls.
@@ -466,7 +468,6 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                 builder.setFgColor(argb: foregroundArgb)
                 styleMap.applyStyles(builder: builder, styles: line.styles)
                 textLine = builder.build(fontCache: renderer.fontCache)
-
                 let assoc = LineAssoc(textLine: textLine)
                 lineCache.setAssoc(lineIx, assoc: assoc)
                 textLines.append(textLine)

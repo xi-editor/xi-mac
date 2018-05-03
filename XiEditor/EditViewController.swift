@@ -208,6 +208,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     func redrawEverything() {
         visibleLines = 0..<0
         editViewWidth.constant = self.view.bounds.width
+        if editViewWidth.constant > CGFloat(editView.maxLineWidth) {
+            editViewWidth.constant = CGFloat(editView.maxLineWidth)
+        }
         updateGutterWidth()
         updateEditViewHeight()
         lines.locked().flushAssoc()
