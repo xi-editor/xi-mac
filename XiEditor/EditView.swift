@@ -428,6 +428,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             return
         }
         let linespace = dataSource.textMetrics.linespace
+        let statusBar = StatusBar()
         let topPad = linespace - dataSource.textMetrics.ascent
         let xOff = dataSource.gutterWidth + x0 - scrollOrigin.x
         let yOff = topPad - scrollOrigin.y
@@ -562,6 +563,10 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             let y0 = yOff + dataSource.textMetrics.ascent + linespace * CGFloat(lineIx)
             renderer.drawLine(line: gutterTL, x0: GLfloat(x), y0: GLfloat(y0))
         }
+
+        // status bar drawing
+        statusBar.drawStatusBar(dataSource.gutterWidth, renderer, dirtyRect)
+
         lastRevisionRendered = lineCache.revision
         dataSource.maxWidthChanged(toWidth: maxLineWidth)
         Trace.shared.trace("EditView render", .main, .end)
