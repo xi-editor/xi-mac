@@ -230,6 +230,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         editView.gutterCache = nil
         shadowView.updateShadowColor(newColor: theme.shadow)
         editView.needsDisplay = true
+
     }
 
     fileprivate func updateEditViewHeight() {
