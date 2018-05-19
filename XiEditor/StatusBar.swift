@@ -12,9 +12,9 @@ import Cocoa
 class StatusBar: NSView {
 
     private let backgroundColor = NSColor(deviceWhite: 0.9, alpha: 1.0)
-    private let statusBarHeight: CGFloat = 15
+    private let statusBarHeight: CGFloat = 30
 
-    func drawStatusBar(_ gutterWidth: CGFloat, _ renderer: Renderer, _ dirtyRect: NSRect) {
-        renderer.drawSolidRect(x: GLfloat(gutterWidth), y: GLfloat(dirtyRect.height - statusBarHeight), width: GLfloat(dirtyRect.width), height: GLfloat(statusBarHeight), argb: colorToArgb(NSColor.white))
+    func drawStatusBar(_ gutterWidth: CGFloat, _ renderer: Renderer, _ dirtyRect: NSRect, _ statusBarColor: NSColor) {
+        renderer.drawSolidRect(x: GLfloat(gutterWidth), y: GLfloat(dirtyRect.height - statusBarHeight), width: GLfloat(dirtyRect.width), height: GLfloat(statusBarHeight), argb: colorToArgb(statusBarColor))
     }
 }
