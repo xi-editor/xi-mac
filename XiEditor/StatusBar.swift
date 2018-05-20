@@ -19,6 +19,9 @@ class StatusBar: NSView {
     private let backgroundColor = NSColor(deviceWhite: 0.9, alpha: 1.0)
     private let statusBarHeight: CGFloat = 20
 
+    var leftItems = [NSTextField]()
+    var rightItems = [NSTextField]()
+
     override var isFlipped: Bool {
         return true;
     }
@@ -41,15 +44,28 @@ class StatusBar: NSView {
         item.textColor = NSColor.black
 
         self.addSubview(item)
+        item.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
 
         switch alignment {
         case .left:
-            item.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
+            if let lastLeftItem = self.leftItems.last {
+                item.leadingAnchor.constraint(equalTo: lastLeftItem.trailingAnchor, constant: 10).isActive = true
+
+
+            } else {
+                item.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
+            }
+            leftItems.append(item)
 
         case .right:
             item.alignment = .right
-            item.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
 
+            if let lastRightItem = self.rightItems.last {
+                item.trailingAnchor.constraint(equalTo: lastRightItem.leadingAnchor, constant: 10).isActive = true
+            } else {
+                item.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
+            }
+            rightItems.append(item)
         }
     }
 

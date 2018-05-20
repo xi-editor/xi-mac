@@ -180,10 +180,16 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
         if #available(OSX 10.12, *) {
             let testLabelLeft = NSTextField(labelWithString: "Xi-Mac")
+            let anotherLeft = NSTextField(labelWithString: "Xi-Mac")
+
             let testLabelRight = NSTextField(labelWithString: "Status Bar")
+            let anotherRight = NSTextField(labelWithString: "Status Bar")
+
 
             statusBar.addSBItem(testLabelLeft, alignment: .left)
+            statusBar.addSBItem(anotherLeft, alignment: .left)
             statusBar.addSBItem(testLabelRight, alignment: .right)
+            statusBar.addSBItem(anotherRight, alignment: .right)
         }
 
         shadowView.setup()
