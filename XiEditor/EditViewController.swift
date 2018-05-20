@@ -180,21 +180,10 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
         if #available(OSX 10.12, *) {
             let testLabelLeft = NSTextField(labelWithString: "Xi-Mac")
-            testLabelLeft.textColor = NSColor.black
-
             let testLabelRight = NSTextField(labelWithString: "Status Bar")
-            testLabelRight.textColor = NSColor.black
-            testLabelRight.alignment = .right
 
-            statusBar.addSubview(testLabelLeft)
-            statusBar.addSubview(testLabelRight)
-
-            testLabelLeft.translatesAutoresizingMaskIntoConstraints = false
-            testLabelRight.translatesAutoresizingMaskIntoConstraints = false
-
-            testLabelLeft.leadingAnchor.constraint(equalTo: statusBar.leadingAnchor).isActive = true
-            testLabelRight.trailingAnchor.constraint(equalTo: statusBar.trailingAnchor).isActive = true
-
+            statusBar.addSBItem(testLabelLeft, alignment: .left)
+            statusBar.addSBItem(testLabelRight, alignment: .right)
         }
 
         shadowView.setup()

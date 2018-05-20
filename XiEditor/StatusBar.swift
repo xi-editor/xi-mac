@@ -11,6 +11,11 @@ import Cocoa
 
 class StatusBar: NSView {
 
+    enum StatusItemAlignment {
+        case left
+        case right
+    }
+
     private let backgroundColor = NSColor(deviceWhite: 0.9, alpha: 1.0)
     private let statusBarHeight: CGFloat = 20
 
@@ -29,6 +34,23 @@ class StatusBar: NSView {
         self.trailingAnchor.constraint(equalTo: editView.trailingAnchor).isActive = true
         self.bottomAnchor.constraint(equalTo: editView.bottomAnchor).isActive = true
 
+    }
+
+    func addSBItem(_ item: NSTextField, alignment: StatusItemAlignment) {
+        item.translatesAutoresizingMaskIntoConstraints = false
+        item.textColor = NSColor.black
+
+        self.addSubview(item)
+
+        switch alignment {
+        case .left:
+            item.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
+
+        case .right:
+            item.alignment = .right
+            item.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
+
+        }
     }
 
     override func draw(_ dirtyRect: NSRect) {
