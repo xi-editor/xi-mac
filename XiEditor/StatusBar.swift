@@ -12,7 +12,7 @@ import Cocoa
 class StatusBar: NSView {
 
     private let backgroundColor = NSColor(deviceWhite: 0.9, alpha: 1.0)
-    private let statusBarHeight: CGFloat = 30
+    private let statusBarHeight: CGFloat = 20
 
     override var isFlipped: Bool {
         return true;

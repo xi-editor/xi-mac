@@ -178,6 +178,25 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         self.view.addSubview(statusBar)
         statusBar.setup(editView)
 
+        if #available(OSX 10.12, *) {
+            let testLabelLeft = NSTextField(labelWithString: "Xi-Mac")
+            testLabelLeft.textColor = NSColor.black
+
+            let testLabelRight = NSTextField(labelWithString: "Status Bar")
+            testLabelRight.textColor = NSColor.black
+            testLabelRight.alignment = .right
+
+            statusBar.addSubview(testLabelLeft)
+            statusBar.addSubview(testLabelRight)
+
+            testLabelLeft.translatesAutoresizingMaskIntoConstraints = false
+            testLabelRight.translatesAutoresizingMaskIntoConstraints = false
+
+            testLabelLeft.leadingAnchor.constraint(equalTo: statusBar.leadingAnchor).isActive = true
+            testLabelRight.trailingAnchor.constraint(equalTo: statusBar.trailingAnchor).isActive = true
+
+        }
+
         shadowView.setup()
         NotificationCenter.default.addObserver(self, selector: #selector(EditViewController.frameDidChangeNotification(_:)), name: NSView.frameDidChangeNotification, object: scrollView)
         // call to set initial scroll position once we know view size
