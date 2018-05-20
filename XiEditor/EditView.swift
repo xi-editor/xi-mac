@@ -564,9 +564,6 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             renderer.drawLine(line: gutterTL, x0: GLfloat(x), y0: GLfloat(y0))
         }
 
-        // status bar drawing
-        statusBar.drawStatusBar(dataSource.gutterWidth, renderer, dirtyRect, dataSource.theme.gutter)
-
         lastRevisionRendered = lineCache.revision
         dataSource.maxWidthChanged(toWidth: maxLineWidth)
         Trace.shared.trace("EditView render", .main, .end)
