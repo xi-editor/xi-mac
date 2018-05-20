@@ -157,6 +157,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     private var dragTimer: Timer?
     private var dragEvent: NSEvent?
 
+    var statusBar: StatusBar!
+
     override func viewDidLoad() {
         super.viewDidLoad()
         shadowView.wantsLayer = true
@@ -166,10 +168,16 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         scrollView.hasHorizontalScroller = true
         scrollView.usesPredominantAxisScrolling = true
         (scrollView.contentView as? XiClipView)?.delegate = self
+
     }
 
     override func viewDidAppear() {
         super.viewDidAppear()
+
+        statusBar = StatusBar(frame: self.view.frame)
+        self.view.addSubview(statusBar)
+        statusBar.setup(editView)
+
         shadowView.setup()
         NotificationCenter.default.addObserver(self, selector: #selector(EditViewController.frameDidChangeNotification(_:)), name: NSView.frameDidChangeNotification, object: scrollView)
         // call to set initial scroll position once we know view size
