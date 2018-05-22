@@ -69,6 +69,13 @@ class StatusBar: NSView {
         }
     }
 
+    func removeSBItem() {
+        if let item = rightItems.last {
+            item.removeFromSuperview()
+            rightItems.removeLast()
+        }
+    }
+
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
 
