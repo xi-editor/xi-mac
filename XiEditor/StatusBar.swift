@@ -9,18 +9,44 @@
 import Foundation
 import Cocoa
 
-class StatusBar: NSView {
+enum StatusItemAlignment: String {
+    case left = "left"
+    case right = "right"
+}
 
-    enum StatusItemAlignment {
-        case left
-        case right
+class StatusBarItem: NSTextField {
+
+    var key: String = ""
+    var value: String = ""
+    var barAlignment: StatusItemAlignment
+
+    init(_ key: String, _ value: String, _ barAlignment: String) {
+        self.key = key
+        self.value = value
+        self.barAlignment = StatusItemAlignment(rawValue: barAlignment)!
+        super.init(frame: NSZeroRect)
+
+        self.isEditable = false
+        self.isSelectable = false
+        self.textColor = NSColor.labelColor
+        self.backgroundColor = NSColor.clear
+        self.lineBreakMode = .byClipping
+        self.isBezeled = false
+        self.stringValue = value
     }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+class StatusBar: NSView {
 
     private let backgroundColor = NSColor(deviceWhite: 0.9, alpha: 1.0)
     private let statusBarHeight: CGFloat = 20
 
-    var leftItems = [NSTextField]()
-    var rightItems = [NSTextField]()
+    var leftItems = [StatusBarItem]()
+    var rightItems = [StatusBarItem]()
 
     override var isFlipped: Bool {
         return true;
@@ -39,14 +65,14 @@ class StatusBar: NSView {
 
     }
 
-    func addSBItem(_ item: NSTextField, alignment: StatusItemAlignment) {
+    func addSBItem(_ item: StatusBarItem) {
         item.translatesAutoresizingMaskIntoConstraints = false
         item.textColor = NSColor.black
 
         self.addSubview(item)
         item.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
 
-        switch alignment {
+        switch item.barAlignment {
         case .left:
             if let lastLeftItem = self.leftItems.last {
                 item.leadingAnchor.constraint(equalTo: lastLeftItem.trailingAnchor, constant: 10).isActive = true
@@ -69,10 +95,19 @@ class StatusBar: NSView {
         }
     }
 
-    func removeSBItem() {
-        if let item = rightItems.last {
+    // Update a status bar item with a new value
+    func updateSBItem(_ key: String, _ value: String) {
+        if let item = (leftItems + rightItems).first(where: { $0.key == key } )  {
+            item.stringValue = value
+        }
+    }
+
+    // Removes status bar item with key
+    func removeSBItem(_ key: String) {
+        if let item = (leftItems + rightItems).first(where: { $0.key == key } )  {
             item.removeFromSuperview()
-            rightItems.removeLast()
+            leftItems = leftItems.filter { $0 != item }
+            rightItems = rightItems.filter { $0 != item }
         }
     }
 

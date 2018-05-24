@@ -313,6 +313,22 @@ class CoreConnection {
         case "alert":
             let message = params["msg"] as! String
             client?.alert(text: message)
+
+        case "add_status_item":
+            let key = params["key"] as! String
+            let value = params["value"] as! String
+            let alignment = params["alignment"] as! String
+            client?.addStatusItem(viewIdentifier: viewIdentifier!, key: key, value: value, alignment: alignment)
+
+        case "update_status_item":
+            let key = params["key"] as! String
+            let value = params["value"] as! String
+            client?.updateStatusItem(viewIdentifier: viewIdentifier!, key: key, value: value)
+
+        case "remove_status_item":
+            let key = params["key"] as! String
+            client?.removeStatusItem(viewIdentifier: viewIdentifier!, key: key)
+
             
         case "find_status":
             let status = params["queries"] as! [[String: AnyObject]]
