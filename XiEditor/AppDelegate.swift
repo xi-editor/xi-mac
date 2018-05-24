@@ -310,6 +310,28 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         }
     }
 
+    func addStatusItem(viewIdentifier: String, key: String, value: String, alignment: String) {
+        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
+        DispatchQueue.main.async {
+            let newStatusItem = StatusBarItem(key, value, alignment)
+            document?.editViewController?.statusBar.addSBItem(newStatusItem)
+        }
+    }
+
+    func updateStatusItem(viewIdentifier: String, key: String, value: String) {
+        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
+        DispatchQueue.main.async {
+            document?.editViewController?.statusBar.updateSBItem(key, value)
+        }
+    }
+
+    func removeStatusItem(viewIdentifier: String, key: String) {
+        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
+        DispatchQueue.main.async {
+            document?.editViewController?.statusBar.removeSBItem(key)
+        }
+    }
+
     func configChanged(viewIdentifier: ViewIdentifier, changes: [String : AnyObject]) {
         let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
         DispatchQueue.main.async {

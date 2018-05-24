@@ -54,6 +54,11 @@ protocol XiClient: AnyObject {
     /// A notification containing an alert message to be shown the user.
     func alert(text: String);
 
+    // Status bar notifications
+    func addStatusItem(viewIdentifier: String, key: String, value: String, alignment: String);
+    func updateStatusItem(viewIdentifier: String, key: String, value: String);
+    func removeStatusItem(viewIdentifier: String, key: String);
+
     /// A notification containing changes to the current config for the given view.
     /// - Note: The first time this message is sent, `changes` contains all defined
     // config keys and their values. Subsequent calls contain only those items which

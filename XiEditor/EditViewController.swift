@@ -185,12 +185,12 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             let testLabelRight = NSTextField(labelWithString: "Status Bar 1")
             let anotherRight = NSTextField(labelWithString: "Status Bar 2")
 
-
-            statusBar.addSBItem(testLabelLeft, alignment: .left)
-            statusBar.addSBItem(anotherLeft, alignment: .left)
-            statusBar.addSBItem(testLabelRight, alignment: .right)
-            statusBar.addSBItem(anotherRight, alignment: .right)
-            statusBar.removeSBItem()
+//
+//            statusBar.addSBItem(testLabelLeft, alignment: .left)
+//            statusBar.addSBItem(anotherLeft, alignment: .left)
+//            statusBar.addSBItem(testLabelRight, alignment: .right)
+//            statusBar.addSBItem(anotherRight, alignment: .right)
+//            statusBar.removeSBItem()
         }
 
         shadowView.setup()
