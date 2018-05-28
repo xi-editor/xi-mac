@@ -442,6 +442,8 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         // first pass: create TextLine objects and also draw background rects
         let selectionColor = self.isFrontmostView ? dataSource.theme.selection : dataSource.theme.inactiveSelection ?? dataSource.theme.selection
         let selArgb = colorToArgb(selectionColor)
+        let highlightColor = dataSource.theme.inactiveSelection ?? dataSource.theme.findHighlight
+        let highlightArgb = colorToArgb(highlightColor)
         let foregroundArgb = colorToArgb(dataSource.theme.foreground)
         let gutterArgb = colorToArgb(dataSource.theme.gutterForeground)
 
@@ -464,7 +466,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             } else {
                 let builder = TextLineBuilder(line.text, font: font)
                 builder.setFgColor(argb: foregroundArgb)
-                styleMap.applyStyles(builder: builder, styles: line.styles)
+                styleMap.applyStyles(builder: builder, styles: line.styles, selColor: selArgb, highlightColor: highlightArgb)
                 textLine = builder.build(fontCache: renderer.fontCache)
 
                 let assoc = LineAssoc(textLine: textLine)
@@ -473,7 +475,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             }
             maxLineWidth = max(maxLineWidth, textLine.width)
             let y0 = yOff + linespace * CGFloat(lineIx)
-            renderer.drawLineBg(line: textLine, x0: GLfloat(xOff), yRange: GLfloat(y0)..<GLfloat(y0 + linespace), selColor: selArgb)
+            renderer.drawLineBg(line: textLine, x0: GLfloat(xOff), yRange: GLfloat(y0)..<GLfloat(y0 + linespace))
         }
 
         // second pass: draw text
