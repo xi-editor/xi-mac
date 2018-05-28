@@ -428,7 +428,6 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             return
         }
         let linespace = dataSource.textMetrics.linespace
-        let statusBar = StatusBar()
         let topPad = linespace - dataSource.textMetrics.ascent
         let xOff = dataSource.gutterWidth + x0 - scrollOrigin.x
         let yOff = topPad - scrollOrigin.y

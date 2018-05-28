@@ -79,27 +79,13 @@ class StatusBar: NSView {
         item.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
         currentItems[item.key] = item
 
+        switch item.barAlignment {
+            case .left:
+                leftItems.append(item)
+            case .right:
+                rightItems.append(item)
+        }
         self.needsUpdateConstraints = true
-
-//        switch item.barAlignment {
-//        case .left:
-//            // instead of checking left and right arrays, we can just iterate through the dictionary and check if a left/right item exists
-//            if let lastLeftItem = self.leftItems.last {
-//                item.leadingAnchor.constraint(equalTo: lastLeftItem.trailingAnchor, constant: 10).isActive = true
-//            } else {
-//                item.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
-//            }
-//            leftItems.append(item)
-//
-//        case .right:
-//            if let lastRightItem = self.rightItems.last {
-//                item.trailingAnchor.constraint(equalTo: lastRightItem.leadingAnchor, constant: 10).isActive = true
-//            } else {
-//                item.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
-//            }
-//            rightItems.append(item)
-//        }
-
     }
 
     // Update a status bar item with a new value.
@@ -124,19 +110,19 @@ class StatusBar: NSView {
     // Called when the status bar item state is modified.
     override func updateConstraints() {
         for item in currentItems.values {
-            if item.alignment == .left {
+            if item.barAlignment == .left {
                 if item == leftItems.first {
-                    item.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10).isActive = true
+                    item.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
                 } else {
                     item.leadingAnchor.constraint(equalTo:
-                        leftItems[leftItems.index(of: item)! - 1].leadingAnchor, constant: 10).isActive = true
+                        leftItems[leftItems.index(of: item)! - 1].trailingAnchor, constant: 10).isActive = true
                 }
             } else {
                 if item == rightItems.first {
-                    item.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: 10).isActive = true
+                    item.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
                 } else {
                     item.trailingAnchor.constraint(equalTo:
-                        rightItems[rightItems.index(of: item)! + 1].trailingAnchor, constant: 10).isActive = true
+                        rightItems[rightItems.index(of: item)! - 1].leadingAnchor, constant: -10).isActive = true
                 }
             }
         }
