@@ -240,12 +240,12 @@ class Renderer {
     }
 
     /// Draw line background.
-    func drawLineBg(line: TextLine, x0: GLfloat, yRange: Range<GLfloat>, selColor: UInt32) {
+    func drawLineBg(line: TextLine, x0: GLfloat, yRange: Range<GLfloat>) {
         for selRange in line.selRanges {
-            drawSolidRect(x: x0 + selRange.lowerBound, y: yRange.lowerBound,
-                          width: selRange.upperBound - selRange.lowerBound,
+            drawSolidRect(x: x0 + selRange.range.lowerBound, y: yRange.lowerBound,
+                          width: selRange.range.upperBound - selRange.range.lowerBound,
                           height: yRange.upperBound - yRange.lowerBound,
-                          argb: selColor)
+                          argb: selRange.argb)
         }
     }
 

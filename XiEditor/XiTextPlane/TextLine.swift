@@ -19,8 +19,8 @@ class TextLineBuilder {
     var attrString: NSMutableAttributedString
     var defaultFgColor: UInt32 = 0xff000000
     var fgSpans: [ColorSpan] = []
-    var selSpans: [SelSpan] = []
-    var fakeItalicSpans: [FakeItalicSpan] = []
+    var selSpans: [ColorSpan] = []
+    var fakeItalicSpans: [SimpleSpan] = []
     var underlineSpans: [UnderlineSpan] = []
     // Note: the font here is used only to get underline metrics, this may change.
     var font: CTFont
@@ -40,27 +40,27 @@ class TextLineBuilder {
 
     /// Add a foreground color span to the text line. This method assumes that such spans
     /// are added in sorted order and do not overlap.
-    func addFgSpan(range: CountableRange<Int>, argb: UInt32) {
+    func addFgSpan(range: CountableRange<Int>, argb: ARGBColor) {
         if !range.isEmpty {
-            fgSpans.append(ColorSpan(range: range, argb: argb))
+            fgSpans.append(ColorSpan(range: range, payload: argb))
         }
     }
 
-    func addSelSpan(range: CountableRange<Int>) {
+    func addSelSpan(range: CountableRange<Int>, argb: ARGBColor) {
         if !range.isEmpty {
-            selSpans.append(SelSpan(range: range))
+            selSpans.append(ColorSpan(range: range, payload: argb))
         }
     }
 
     func addFakeItalicSpan(range: CountableRange<Int>) {
         if !range.isEmpty {
-            fakeItalicSpans.append(FakeItalicSpan(range: range))
+            fakeItalicSpans.append(SimpleSpan(range: range, payload: Empty()))
         }
     }
 
     func addUnderlineSpan(range: CountableRange<Int>, style: UnderlineStyle) {
         if !range.isEmpty {
-            underlineSpans.append(UnderlineSpan(range: range, style: style))
+            underlineSpans.append(UnderlineSpan(range: range, payload: style))
         }
     }
 
@@ -112,7 +112,7 @@ class TextLineBuilder {
                 }
                 if fgSpanIx < fgSpans.count && fgSpans[fgSpanIx].range.contains(ix) {
                     // TODO: maybe could reduce the amount of conversion
-                    fgColor = argbToFloats(argb: fgSpans[fgSpanIx].argb)
+                    fgColor = argbToFloats(argb: fgSpans[fgSpanIx].payload)
                 } else {
                     fgColor = argbToFloats(argb: defaultFgColor)
                 }
@@ -124,9 +124,9 @@ class TextLineBuilder {
                 glyphs.append(GlyphInstance(fontRef: fr, glyph: glyph, x: GLfloat(pos.x), y: GLfloat(pos.y), fgColor: fgColor, flags: flags))
             }
         }
-        var selRanges: [Range<GLfloat>] = []
+        var bgRange: [(BackgroundColorRange)] = []
         for selSpan in selSpans {
-            selRanges.append(getCtLineRange(ctLine, selSpan.range))
+            bgRange.append(BackgroundColorRange(range: getCtLineRange(ctLine, selSpan.range), argb: selSpan.payload))
         }
         var underlineRanges: [UnderlineRange] = []
         if !underlineSpans.isEmpty {
@@ -139,7 +139,7 @@ class TextLineBuilder {
                 // TODO: the underline should probably match the actual color
                 let argb = defaultFgColor
                 var thickness = ulThickness
-                switch underlineSpan.style {
+                switch underlineSpan.payload {
                 case .single:
                     ()
                 case .thick:
@@ -149,7 +149,7 @@ class TextLineBuilder {
                 underlineRanges.append(UnderlineRange(range: range, y: y, argb: argb))
             }
         }
-        return TextLine(glyphs: glyphs, ctLine: ctLine, selRanges: selRanges, underlineRanges: underlineRanges, width: nil)
+        return TextLine(glyphs: glyphs, ctLine: ctLine, selRanges: bgRange, underlineRanges: underlineRanges, width: nil)
     }
 
     /// Measure the total width of the line. Should be consistent with `.build().width`
@@ -164,11 +164,11 @@ struct TextLine {
     var glyphs: [GlyphInstance]
     // The CTLine is kept mostly for caret queries
     var ctLine: CTLine
-    var selRanges: [Range<GLfloat>]
+    var selRanges: [BackgroundColorRange]
     var underlineRanges: [UnderlineRange]
     let width: Double
     
-    init(glyphs: [GlyphInstance], ctLine: CTLine, selRanges: [Range<GLfloat>], underlineRanges: [UnderlineRange], width: Double?) {
+    init(glyphs: [GlyphInstance], ctLine: CTLine, selRanges: [BackgroundColorRange], underlineRanges: [UnderlineRange], width: Double?) {
         self.glyphs = glyphs
         self.width = width ?? CTLineGetTypographicBounds(ctLine, nil, nil, nil)
         self.ctLine = ctLine
@@ -217,36 +217,42 @@ struct GlyphInstance {
     var flags: UInt32
 }
 
+/// Represents a region of a `TextLine` that has a background color.
+struct BackgroundColorRange {
+    let range: Range<GLfloat>
+    let argb: ARGBColor
+}
 struct UnderlineRange {
     // Having separate ranges for x and y is maybe silly (it defines a rect), but makes it
     // more similar to selection ranges etc.
     var range: Range<GLfloat>
     var y: Range<GLfloat>
-    var argb: UInt32
+    var argb: ARGBColor
 }
 
 let FLAG_FAKE_ITALIC: UInt32 = 1 << 16
 let FLAG_HI_DPI: UInt32 = 1 << 17
 
-// Possible refactor: have Span<T> so range is separated from payload
-struct ColorSpan {
+/// A color, represented as a 32bit ARGB
+typealias ARGBColor = UInt32
+
+/// A generic span type, for associating some datum with some range of a line.
+struct Span<T> {
     // The range is in units of UTF-16 code units
-    var range: CountableRange<Int>
-    var argb: UInt32
+    let range: CountableRange<Int>
+    let payload: T
 }
 
-struct SelSpan {
-    var range: CountableRange<Int>
-}
+/// A span representing a colored region.
+typealias ColorSpan = Span<ARGBColor>
 
-struct FakeItalicSpan {
-    var range: CountableRange<Int>
-}
+/// A span representing an underlined region
+typealias UnderlineSpan = Span<UnderlineStyle>
 
-struct UnderlineSpan {
-    var range: CountableRange<Int>
-    var style: UnderlineStyle
-}
+/// A `Span` with no payload.
+typealias SimpleSpan = Span<Empty>
+
+struct Empty {}
 
 enum UnderlineStyle {
     case single

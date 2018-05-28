@@ -164,15 +164,13 @@ class StyleMapState: UnfairLock {
         }
     }
 
-    func applyStyle(builder: TextLineBuilder, id: Int, range: NSRange) {
+    func applyStyle(builder: TextLineBuilder, id: Int, range: NSRange, selColor: ARGBColor?) {
         if id >= styles.count {
             print("stylemap can't resolve \(id)")
             return
         }
-        if id == 0 {
-            builder.addSelSpan(range: convertRange(range))
-        } else if id == 1 {
-            () // TODO: handle find span - perhaps this should just be a regular bg span tho
+        if id == 0 || id == 1 {
+            builder.addSelSpan(range: convertRange(range), argb: selColor!)
         } else {
             guard let style = styles[id] else { return }
             if let fgColor = style.fgColor {
@@ -190,9 +188,18 @@ class StyleMapState: UnfairLock {
         }
     }
     
-    func applyStyles(builder: TextLineBuilder, styles: [StyleSpan]) {
+    func applyStyles(builder: TextLineBuilder, styles: [StyleSpan], selColor: ARGBColor, highlightColor: ARGBColor) {
         for styleSpan in styles {
-            applyStyle(builder: builder, id: styleSpan.style, range: styleSpan.range)
+            let color: ARGBColor?
+            switch styleSpan.style {
+            case 0:
+                color = selColor
+            case 1:
+                color = highlightColor
+            default:
+                color = nil
+            }
+            applyStyle(builder: builder, id: styleSpan.style, range: styleSpan.range, selColor: color)
         }
     }
 
@@ -207,7 +214,7 @@ class StyleMapState: UnfairLock {
     func measureWidth(id: Int, s: String) -> Double {
         let builder = TextLineBuilder(s, font: self.font)
         let range = NSMakeRange(0, s.utf16.count)
-        applyStyle(builder: builder, id: id, range: range)
+        applyStyle(builder: builder, id: id, range: range, selColor: 0)
         return builder.measure()
     }
 
@@ -241,8 +248,8 @@ class StyleMapLocked {
     }
 
     /// Applies the styles to the text line builder.
-    func applyStyles(builder: TextLineBuilder, styles: [StyleSpan]) {
-        inner.applyStyles(builder: builder, styles: styles)
+    func applyStyles(builder: TextLineBuilder, styles: [StyleSpan], selColor: ARGBColor, highlightColor: ARGBColor) {
+        inner.applyStyles(builder: builder, styles: styles, selColor: selColor, highlightColor: highlightColor)
     }
 
     func updateFont(to font: NSFont) {
