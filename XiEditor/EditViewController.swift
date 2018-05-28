@@ -177,22 +177,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         statusBar = StatusBar(frame: self.view.frame)
         self.view.addSubview(statusBar)
         statusBar.setup(editView)
-
-        if #available(OSX 10.12, *) {
-            let testLabelLeft = NSTextField(labelWithString: "Xi-Mac")
-            let anotherLeft = NSTextField(labelWithString: "Xi-Mac")
-
-            let testLabelRight = NSTextField(labelWithString: "Status Bar 1")
-            let anotherRight = NSTextField(labelWithString: "Status Bar 2")
-
-//
-//            statusBar.addSBItem(testLabelLeft, alignment: .left)
-//            statusBar.addSBItem(anotherLeft, alignment: .left)
-//            statusBar.addSBItem(testLabelRight, alignment: .right)
-//            statusBar.addSBItem(anotherRight, alignment: .right)
-//            statusBar.removeSBItem()
-        }
-
         shadowView.setup()
         NotificationCenter.default.addObserver(self, selector: #selector(EditViewController.frameDidChangeNotification(_:)), name: NSView.frameDidChangeNotification, object: scrollView)
         // call to set initial scroll position once we know view size
