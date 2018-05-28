@@ -213,10 +213,29 @@ class FindSearchField: NSSearchField {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
 
-        // Workaround: needs to be set here and not in FindViewController, otherwise
-        // the menu/dropdown arrow wouldn't be visible
         centersPlaceholder = false
-
         sendsSearchStringImmediately = true
+    }
+
+    var _lastSearchButtonWidth: CGFloat = 22 // known default
+
+    // required override; on 10.13(?) accessory icons aren't
+    // otherwise drawn if centersPlaceholder == false
+    override func draw(_ dirtyRect: NSRect) {
+        super.draw(dirtyRect)
+    }
+
+    override func rectForSearchButton(whenCentered isCentered: Bool) -> NSRect {
+        let rect = super.rectForSearchButton(whenCentered: isCentered)
+        _lastSearchButtonWidth = rect.width
+        return rect
+    }
+
+    // the search text is drawn too close to the search button by default
+    override func rectForSearchText(whenCentered isCentered: Bool) -> NSRect {
+        let rect = super.rectForSearchText(whenCentered: isCentered)
+        let delta = max(0, _lastSearchButtonWidth - rect.origin.x)
+        return NSRect(x: rect.origin.x + delta, y: rect.origin.y,
+                      width: rect.width - delta, height: rect.height)
     }
 }
