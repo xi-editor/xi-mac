@@ -239,7 +239,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             self?.document.updateChangeCount(hasNoUnsavedChanges ? .changeCleared : .changeDone)
             self?.lineCount = self?.lines.height ?? 0
             self?.updateEditViewHeight()
-            self?.editView.showBlinkingCursor = self?.editView.isFrontmostView ?? false
+            self?.editView.resetCursorTimer()
             if let lastRev = self?.editView.lastRevisionRendered, lastRev < revision {
                 self?.editView.partialInvalidate(invalid: inval)
             }
@@ -320,7 +320,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         // several commands (such as uppercaseWord:) are accessible from both a system binding
         // _and_ a menu; if there's a concrete implementation of such a method we just call it directly.
         if (self.responds(to: aSelector)) {
-            self.perform(aSelector)
+            self.perform(aSelector, with: self)
         } else {
             if let commandName = EditViewController.selectorToCommand[aSelector.description] {
                 document.sendRpcAsync(commandName, params: []);
@@ -330,7 +330,15 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             }
         }
     }
-    
+
+    override func cancelOperation(_ sender: Any?) {
+        if !findViewController.view.isHidden {
+            closeFind()
+        } else {
+            document.sendRpcAsync("cancel_operation", params: [])
+        }
+    }
+
     //MARK: Default menu items
     override func selectAll(_ sender: Any?) {
         editView.unmarkText()
@@ -423,8 +431,11 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             }
         }
     }
-    
+
     override func mouseDown(with theEvent: NSEvent) {
+        if !editView.isFirstResponder {
+            editView.window?.makeFirstResponder(editView)
+        }
         editView.unmarkText()
         editView.inputContext?.discardMarkedText()
         let position  = editView.bufferPositionFromPoint(theEvent.locationInWindow)
@@ -689,9 +700,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 //TODO: will have to think about whether this will work with splits
 extension EditViewController: NSWindowDelegate {
     func windowDidBecomeKey(_ notification: Notification) {
-        if editView.isFirstResponder {
-            editView.isFrontmostView = true
-        }
+        editView.isFrontmostView = true
         updatePluginMenu()
     }
 

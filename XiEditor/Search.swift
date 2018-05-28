@@ -122,8 +122,9 @@ extension EditViewController {
         }
 
         editView.window?.makeFirstResponder(editView)
+
         // forward command to editView to collapse find highlights?
-        editView.doCommand(by: #selector(NSResponder.cancelOperation(_:)))
+        document.sendRpcAsync("cancel_operation", params: [])
     }
 
     func findNext(wrapAround: Bool, allowSame: Bool) {
