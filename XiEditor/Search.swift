@@ -158,7 +158,7 @@ extension EditViewController {
     }
 
     func clearFind() {
-        document.sendRpcAsync("find", params: ["chars": ""]) { _ in }
+        document.sendRpcAsync("find", params: ["chars": "", "case_sensitive": false]) { _ in }
     }
 
     @IBAction func performCustomFinderAction(_ sender: Any?) {
