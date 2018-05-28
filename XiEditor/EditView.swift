@@ -144,12 +144,17 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     fileprivate var _selectedRange: NSRange
     fileprivate var _markedRange: NSRange
 
-    var isFirstResponder = false
+    /// Whether or not this view is the focused view for its window
+    var isFirstResponder = false {
+        didSet {
+            resetCursorTimer()
+        }
+    }
+
+    /// Whether or not this view is in the frontmost window
     var isFrontmostView = false {
         didSet {
-            //TODO: blinking should one day be a user preference
-            showBlinkingCursor = isFrontmostView
-            self.needsDisplay = true
+            resetCursorTimer()
         }
     }
 
@@ -170,6 +175,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             } else {
                 _blinkTimer = nil
             }
+            self.needsDisplay = true
         }
     }
 
@@ -205,13 +211,11 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     }
 
     override func becomeFirstResponder() -> Bool {
-        isFrontmostView = true
         isFirstResponder = true
         return true
     }
 
     override func resignFirstResponder() -> Bool {
-        isFrontmostView = false
         isFirstResponder = false
         return true
     }
@@ -227,6 +231,11 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
 
     override var preservesContentDuringLiveResize: Bool {
         return true
+    }
+
+    /// Resets the blink timer, if the cursor should be blinking
+    func resetCursorTimer() {
+        self.showBlinkingCursor = self.isFrontmostView && self.isFirstResponder
     }
 
     // MARK: - NSTextInputClient protocol
