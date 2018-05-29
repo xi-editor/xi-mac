@@ -31,7 +31,7 @@ struct LineAssoc {
 }
 
 protocol FindDelegate {
-    func find(_ term: String?, caseSensitive: Bool)
+    func find(_ term: String?, caseSensitive: Bool, regex: Bool)
     func findNext(wrapAround: Bool, allowSame: Bool)
     func findPrevious(wrapAround: Bool)
     func closeFind()
