@@ -26,6 +26,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate {
     let resultCountLabel = Label(title: "")
     @objc var ignoreCase = true
     @objc var wrapAround = true
+    @objc var regex = false
 
     override func viewDidLoad() {
         // add recent searches menu items
@@ -68,13 +69,18 @@ class FindViewController: NSViewController, NSSearchFieldDelegate {
         ignoreCase = !ignoreCase
         sender.state = ignoreCase ? NSControl.StateValue.on : NSControl.StateValue.off
 
-        findDelegate.find(searchField.stringValue, caseSensitive: !ignoreCase)
+        findDelegate.find(searchField.stringValue, caseSensitive: !ignoreCase, regex: regex)
         findDelegate.findNext(wrapAround: wrapAround, allowSame: true)
     }
     
     @IBAction func selectWrapAroundMenuAction(_ sender: NSMenuItem) {
         wrapAround = !wrapAround
         sender.state = wrapAround ? NSControl.StateValue.on : NSControl.StateValue.off
+    }
+
+    @IBAction func selectRegexMenuAction(_ sender: NSMenuItem) {
+        regex = !regex
+        sender.state = regex ? NSControl.StateValue.on : NSControl.StateValue.off
     }
 
     @IBAction func segmentControlAction(_ sender: NSSegmentedControl) {
@@ -89,7 +95,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate {
     }
 
     @IBAction func searchFieldAction(_ sender: NSSearchField) {
-        findDelegate.find(sender.stringValue, caseSensitive: !ignoreCase)
+        findDelegate.find(sender.stringValue, caseSensitive: !ignoreCase, regex: regex)
         findDelegate.findNext(wrapAround: wrapAround, allowSame: false)
     }
 
@@ -141,9 +147,10 @@ extension EditViewController {
         ])
     }
 
-    func find(_ term: String?, caseSensitive: Bool) {
+    func find(_ term: String?, caseSensitive: Bool, regex: Bool) {
         var params: [String: Any] = [
             "case_sensitive": caseSensitive,
+            "regex": regex,
         ]
 
         if term != nil {
@@ -204,7 +211,7 @@ extension EditViewController {
 
         case .setSearchString:
             openFind()
-            self.find(nil, caseSensitive: !findViewController.ignoreCase)
+            self.find(nil, caseSensitive: !findViewController.ignoreCase, regex: findViewController.regex)
 
         case .replaceAllInSelection:
             Swift.print("replaceAllInSelection not implemented")
