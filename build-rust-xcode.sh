@@ -70,13 +70,17 @@ function build_target () {
     fi
 }
 
+function install_syntect () {
+    SYNTECT_ROOT="${SRCROOT}/xi-editor/rust/syntect-plugin"
+    mkdir -p "${BUILT_PRODUCTS_DIR}/plugins/syntect/bin"
+    mv "${BUILT_PRODUCTS_DIR}/xi-syntect-plugin" "${BUILT_PRODUCTS_DIR}/plugins/syntect/bin/"
+    cp $SYNTECT_ROOT/*.toml "${BUILT_PRODUCTS_DIR}/plugins/syntect/"
+    cp "${SYNTECT_ROOT}/manifest.toml" "${BUILT_PRODUCTS_DIR}/plugins/syntect/"
+}
+
 build_target xi-core rust
 build_target xi-syntect-plugin rust/syntect-plugin
-
-# move syntect plugin into plugins dir
-mkdir -p "${BUILT_PRODUCTS_DIR}/plugins/syntect/bin"
-mv "${BUILT_PRODUCTS_DIR}/xi-syntect-plugin" "${BUILT_PRODUCTS_DIR}/plugins/syntect/bin/"
-cp "${SRCROOT}/xi-editor/rust/syntect-plugin/manifest.toml" "${BUILT_PRODUCTS_DIR}/plugins/syntect/"
+install_syntect
 
 # workaround for https://github.com/travis-ci/travis-ci/issues/6522
 set +e
