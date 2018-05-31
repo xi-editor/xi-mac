@@ -213,6 +213,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     @objc func frameDidChangeNotification(_ notification: Notification) {
         updateEditViewHeight()
+        statusBar.updateItemVisibility(windowWidth: self.editViewWidth.constant)
         willScroll(to: scrollView.contentView.bounds.origin)
         updateViewportSize()
     }
