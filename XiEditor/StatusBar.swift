@@ -54,7 +54,6 @@ class StatusBar: NSView {
     var statusBarPadding: CGFloat = 10
     let statusBarHeight: CGFloat = 20
 
-    // This should change in the future, as ordering is alphabetical.
     var leftItems = [StatusItem]()
     var rightItems = [StatusItem]()
 
@@ -122,20 +121,27 @@ class StatusBar: NSView {
     }
 
     // Update constraints of status bar items.
+    // Also handles ordering of status bar items.
     // Called when the status bar item state is modified.
     override func updateConstraints() {
         lastLeftItem = leftItems.first
         lastRightItem = rightItems.first
 
+        leftItems = leftItems.sorted(by: {$0.key < $1.key})
+        rightItems = rightItems.sorted(by: {$0.key < $1.key})
+
         for item in currentItems.values.sorted(by: {$0.key < $1.key}) {
+            item.removeFromSuperview()
             switch item.barAlignment {
             case .left:
                 if item == leftItems.first {
+                    self.addSubview(item)
                     item.leadingAnchor.constraint(equalTo:
                         self.leadingAnchor)
                         .isActive = true
                 } else {
                     guard lastLeftItem != nil else { return }
+                    self.addSubview(item)
                     item.leadingAnchor.constraint(equalTo:
                         lastLeftItem!.trailingAnchor, constant: statusBarPadding)
                         .isActive = true
@@ -143,11 +149,13 @@ class StatusBar: NSView {
                 }
             case .right:
                 if item == rightItems.first {
+                    self.addSubview(item)
                     item.trailingAnchor.constraint(equalTo:
                         self.trailingAnchor)
                         .isActive = true
                 } else {
                     guard lastRightItem != nil else { return }
+                    self.addSubview(item)
                     item.trailingAnchor.constraint(equalTo:
                         lastRightItem!.leadingAnchor, constant: -statusBarPadding)
                         .isActive = true
