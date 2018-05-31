@@ -173,14 +173,24 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     override func viewDidAppear() {
         super.viewDidAppear()
-
-        statusBar = StatusBar(frame: self.view.frame)
-        self.view.addSubview(statusBar)
-        statusBar.setup(editView)
+        setupStatusBar()
         shadowView.setup()
         NotificationCenter.default.addObserver(self, selector: #selector(EditViewController.frameDidChangeNotification(_:)), name: NSView.frameDidChangeNotification, object: scrollView)
         // call to set initial scroll position once we know view size
         redrawEverything()
+    }
+
+    func setupStatusBar() {
+        statusBar = StatusBar(frame: .zero, backgroundColor: self.theme.background, textColor: self.theme.foreground)
+        self.view.addSubview(statusBar)
+
+        NSLayoutConstraint.activate([
+            statusBar.heightAnchor.constraint(equalToConstant: statusBar.statusBarHeight),
+            statusBar.widthAnchor.constraint(equalTo: editView.widthAnchor),
+            statusBar.leadingAnchor.constraint(equalTo: editView.leadingAnchor),
+            statusBar.trailingAnchor.constraint(equalTo: editView.trailingAnchor),
+            statusBar.bottomAnchor.constraint(equalTo: editView.bottomAnchor)
+            ])
     }
 
     func updateGutterWidth() {
@@ -236,6 +246,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         updateViewportSize()
         editView.gutterCache = nil
         shadowView.updateShadowColor(newColor: theme.shadow)
+        statusBar.updateStatusBarColor(newBackgroundColor: theme.background, newTextColor: theme.foreground)
         editView.needsDisplay = true
 
     }

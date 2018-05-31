@@ -1,10 +1,16 @@
+// Copyright 2018 Google LLC
 //
-//  StatusBar.swift
-//  XiEditor
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
 //
-//  Created by Dzũng Lê on 19/05/2018.
-//  Copyright © 2018 Raph Levien. All rights reserved.
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 import Foundation
 import Cocoa
@@ -16,15 +22,15 @@ enum StatusItemAlignment: String {
 
 class StatusItem: NSTextField {
 
-    var key: String = ""
+    let key: String
     var value: String = ""
-    var barAlignment: StatusItemAlignment
+    let barAlignment: StatusItemAlignment
 
     init(_ key: String, _ value: String, _ barAlignment: String) {
         self.key = key
         self.value = value
         self.barAlignment = StatusItemAlignment(rawValue: barAlignment)!
-        super.init(frame: NSZeroRect)
+        super.init(frame: .zero)
 
         // Similar to what NSTextField convenience init creates
         self.isEditable = false
@@ -43,42 +49,46 @@ class StatusItem: NSTextField {
 
 class StatusBar: NSView {
 
-    private let backgroundColor = NSColor(deviceWhite: 0.9, alpha: 1.0)
-    private let statusBarHeight: CGFloat = 20
+    var backgroundColor: NSColor
+    var itemTextColor: NSColor
+    var statusBarPadding: CGFloat = 10
+    let statusBarHeight: CGFloat = 20
 
     // This should change in the future, as ordering is alphabetical.
     var leftItems = [StatusItem]()
     var rightItems = [StatusItem]()
 
+    var lastLeftItem: StatusItem?
+    var lastRightItem: StatusItem?
+    
     var currentItems = [String : StatusItem]()
 
     override var isFlipped: Bool {
         return true;
     }
 
-    func setup(_ editView: NSView) {
+    init(frame frameRect: NSRect, backgroundColor: NSColor, textColor: NSColor) {
+        self.backgroundColor = backgroundColor
+        self.itemTextColor = textColor
+        super.init(frame: .zero)
         self.translatesAutoresizingMaskIntoConstraints = false
-        self.heightAnchor.constraint(equalToConstant: statusBarHeight).isActive = true
-        self.widthAnchor.constraint(equalTo: editView.widthAnchor).isActive = true
-        self.leadingAnchor.constraint(equalTo: editView.leadingAnchor).isActive = true
-        self.trailingAnchor.constraint(equalTo: editView.trailingAnchor).isActive = true
-        self.bottomAnchor.constraint(equalTo: editView.bottomAnchor).isActive = true
+    }
+
+    required init?(coder decoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
     // Adds a status bar item. Only appends status bar items for now.
     func addStatusItem(_ item: StatusItem) {
-        // If item exists, update its value
         if let existingItem = currentItems[item.key] {
-            updateStatusItem(existingItem.key, item.value)
+            print("tried to add existing item \(existingItem.key), ignoring")
             return
         }
-        print("added item \(item.key)")
         item.translatesAutoresizingMaskIntoConstraints = false
-        item.textColor = NSColor.black
+        item.textColor = itemTextColor
         self.addSubview(item)
-        item.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
+        item.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
         currentItems[item.key] = item
-
         switch item.barAlignment {
             case .left:
                 leftItems.append(item)
@@ -92,6 +102,8 @@ class StatusBar: NSView {
     func updateStatusItem(_ key: String, _ value: String) {
         if let item = currentItems[key] {
             item.stringValue = value
+        } else {
+            print("tried to update item with key \(key) that doesn't exist")
         }
     }
 
@@ -102,6 +114,9 @@ class StatusBar: NSView {
             leftItems = leftItems.filter { $0 != item }
             rightItems = rightItems.filter { $0 != item }
             currentItems.removeValue(forKey: key)
+        } else {
+            print("tried to remove item with \(key) that doesn't exist")
+            return
         }
         self.needsUpdateConstraints = true
     }
@@ -109,32 +124,59 @@ class StatusBar: NSView {
     // Update constraints of status bar items.
     // Called when the status bar item state is modified.
     override func updateConstraints() {
-        for item in currentItems.values {
-            if item.barAlignment == .left {
+        lastLeftItem = leftItems.first
+        lastRightItem = rightItems.first
+
+        for item in currentItems.values.sorted(by: {$0.key < $1.key}) {
+            switch item.barAlignment {
+            case .left:
                 if item == leftItems.first {
-                    item.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
-                } else {
                     item.leadingAnchor.constraint(equalTo:
-                        leftItems[leftItems.index(of: item)! - 1].trailingAnchor, constant: 10).isActive = true
-                }
-            } else {
-                if item == rightItems.first {
-                    item.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
+                        self.leadingAnchor)
+                        .isActive = true
                 } else {
+                    guard lastLeftItem != nil else { return }
+                    item.leadingAnchor.constraint(equalTo:
+                        lastLeftItem!.trailingAnchor, constant: statusBarPadding)
+                        .isActive = true
+                    lastLeftItem = item
+                }
+            case .right:
+                if item == rightItems.first {
                     item.trailingAnchor.constraint(equalTo:
-                        rightItems[rightItems.index(of: item)! - 1].leadingAnchor, constant: -10).isActive = true
+                        self.trailingAnchor)
+                        .isActive = true
+                } else {
+                    guard lastRightItem != nil else { return }
+                    item.trailingAnchor.constraint(equalTo:
+                        lastRightItem!.leadingAnchor, constant: -statusBarPadding)
+                        .isActive = true
+                    lastRightItem = item
                 }
             }
         }
         super.updateConstraints()
     }
 
+    func updateStatusBarColor(newBackgroundColor: NSColor, newTextColor: NSColor) {
+        self.backgroundColor = newBackgroundColor
+        self.itemTextColor = newTextColor
+        self.needsDisplay = true
+    }
+
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
-        let path = NSBezierPath()
         backgroundColor.setFill()
-        __NSRectFill(dirtyRect)
-        path.move(to: CGPoint(x: dirtyRect.maxX, y: dirtyRect.minY))
-        path.line(to: CGPoint(x: dirtyRect.minX, y: dirtyRect.minY))
+        dirtyRect.fill()
+
+        let borderColor = NSColor.black
+        borderColor.setStroke()
+
+        let path = NSBezierPath()
+        path.lineWidth = 1
+        path.move(to: CGPoint(x: dirtyRect.minX, y: dirtyRect.minY))
+        path.line(to: CGPoint(x: dirtyRect.maxX, y: dirtyRect.minY))
+        path.stroke()
+
     }
 }

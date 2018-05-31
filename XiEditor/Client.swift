@@ -54,7 +54,9 @@ protocol XiClient: AnyObject {
     /// A notification containing an alert message to be shown the user.
     func alert(text: String);
 
-    // Status bar notifications
+    /// A list of notifications that manages status items.
+    /// Keys are unique, and alignment (left or right) cannot be
+    /// changed after creating the status item.
     func addStatusItem(viewIdentifier: String, key: String, value: String, alignment: String);
     func updateStatusItem(viewIdentifier: String, key: String, value: String);
     func removeStatusItem(viewIdentifier: String, key: String);
