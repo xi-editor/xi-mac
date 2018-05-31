@@ -49,18 +49,25 @@ class StatusItem: NSTextField {
 
 class StatusBar: NSView {
 
+    var currentItems = [String : StatusItem]()
+    var hiddenItems = [StatusItem]()
+    var leftItems = [StatusItem]()
+    var rightItems = [StatusItem]()
+
     var backgroundColor: NSColor
     var itemTextColor: NSColor
     var statusBarPadding: CGFloat = 10
     let statusBarHeight: CGFloat = 20
 
-    var leftItems = [StatusItem]()
-    var rightItems = [StatusItem]()
-
     var lastLeftItem: StatusItem?
     var lastRightItem: StatusItem?
-    
-    var currentItems = [String : StatusItem]()
+
+    // Returns the minimum width required to display all items.
+    var minWidth: CGFloat {
+        return currentItems.values
+            .map({$0.frame.width})
+            .reduce(CGFloat(currentItems.count - 1) * statusBarPadding, +)
+    }
 
     override var isFlipped: Bool {
         return true;
@@ -170,6 +177,24 @@ class StatusBar: NSView {
         self.backgroundColor = newBackgroundColor
         self.itemTextColor = newTextColor
         self.needsDisplay = true
+    }
+
+    func updateItemVisibility(windowWidth: CGFloat) {
+        if windowWidth < minWidth {
+            repeat {
+                if leftItems.count > rightItems.count {
+                    guard lastLeftItem != nil else { return }
+                    lastLeftItem!.isHidden = true
+                    hiddenItems.append(lastLeftItem!)
+                } else {
+                    guard lastRightItem != nil else { return }
+                    lastRightItem!.isHidden = true
+                    hiddenItems.append(lastRightItem!)
+                }
+            } while (windowWidth < minWidth)
+        } else {
+            hiddenItems.popLast()?.isHidden = false
+        }
     }
 
     override func draw(_ dirtyRect: NSRect) {
