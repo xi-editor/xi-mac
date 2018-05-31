@@ -181,10 +181,23 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         let chWidth = NSString(string: "9").size(withAttributes: textMetrics.attributes).width
         gutterWidth = chWidth * max(2, CGFloat(gutterColumns)) + 2 * editView.gutterXPad
     }
-    
+
+    var _previousViewportSize = CGSize.zero
+
+    func updateViewportSize() {
+        let height = editView.bounds.height
+        let width = editView.bounds.width - (gutterWidth + editView.x0 + rightTextPadding)
+        let newSize = CGSize(width: width, height: height)
+        if newSize != _previousViewportSize {
+            _previousViewportSize = newSize
+            document.sendRpcAsync("resize", params: ["width": width, "height": height])
+        }
+    }
+
     @objc func frameDidChangeNotification(_ notification: Notification) {
         updateEditViewHeight()
         willScroll(to: scrollView.contentView.bounds.origin)
+        updateViewportSize()
     }
 
     /// Called by `XiClipView`; this gives us early notice of an incoming scroll event.
@@ -213,6 +226,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         updateEditViewHeight()
         lines.locked().flushAssoc()
         willScroll(to: scrollView.contentView.bounds.origin)
+        updateViewportSize()
         editView.gutterCache = nil
         shadowView.updateShadowColor(newColor: theme.shadow)
         editView.needsDisplay = true
