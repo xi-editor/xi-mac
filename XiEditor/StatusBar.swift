@@ -21,7 +21,6 @@ enum StatusItemAlignment: String {
 }
 
 class StatusItem: NSTextField {
-
     let key: String
     var value: String = ""
     let barAlignment: StatusItemAlignment
@@ -32,7 +31,7 @@ class StatusItem: NSTextField {
         self.barAlignment = StatusItemAlignment(rawValue: barAlignment)!
         super.init(frame: .zero)
 
-        // Similar to what NSTextField convenience init creates
+        // Similar to what NSTextField's label convenience init creates
         self.isEditable = false
         self.isSelectable = false
         self.textColor = NSColor.labelColor
@@ -49,10 +48,13 @@ class StatusItem: NSTextField {
 
 class StatusBar: NSView {
 
-    var currentItems = [String : StatusItem]()
+    var currentKeys = [String]()
     var hiddenItems = [StatusItem]()
     var leftItems = [StatusItem]()
     var rightItems = [StatusItem]()
+    var currentItems: [StatusItem] {
+        return (leftItems + rightItems).sorted {$0.key < $1.key}
+    }
 
     var lastLeftItem: StatusItem?
     var lastRightItem: StatusItem?
@@ -64,10 +66,11 @@ class StatusBar: NSView {
 
     // Returns the minimum width required to display all items.
     var minWidth: CGFloat {
-        return (leftItems + rightItems)
+        return currentItems
             .map({$0.frame.width})
-            .reduce(CGFloat((leftItems + rightItems).count - 1) * statusBarPadding, +)
+            .reduce(CGFloat(currentItems.count - 1) * statusBarPadding, +)
     }
+
     // Difference to compensate for when status bar is resized
     let minWidthDifference: CGFloat = 2
 
@@ -91,16 +94,16 @@ class StatusBar: NSView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    // Adds a status bar item. Only appends status bar items for now.
+    // Adds a status bar item.
     func addStatusItem(_ item: StatusItem) {
-        if let existingItem = currentItems[item.key] {
-            print("tried to add existing item \(existingItem.key), ignoring")
+        if currentKeys.contains(item.key) {
+            print("tried to add existing item \(item.key), ignoring")
             return
         }
         item.translatesAutoresizingMaskIntoConstraints = false
         item.textColor = itemTextColor
         self.addSubview(item)
-        currentItems[item.key] = item
+        currentKeys.append(item.key)
         switch item.barAlignment {
         case .left:
             leftItems.append(item)
@@ -112,7 +115,7 @@ class StatusBar: NSView {
 
     // Update a status bar item with a new value.
     func updateStatusItem(_ key: String, _ value: String) {
-        if let item = currentItems[key] {
+        if let item = currentItems.first(where: {$0.key == key}) {
             item.stringValue = value
         } else {
             print("tried to update item with key \(key) that doesn't exist")
@@ -121,11 +124,11 @@ class StatusBar: NSView {
 
     // Removes status bar item with a specified key.
     func removeStatusItem(_ key: String) {
-        if let item = currentItems[key]  {
+        if let item = currentItems.first(where: {$0.key == key}) {
             item.removeFromSuperview()
             leftItems = leftItems.filter { $0 != item }
             rightItems = rightItems.filter { $0 != item }
-            currentItems.removeValue(forKey: key)
+            currentKeys = currentKeys.filter { $0 != item.key}
         } else {
             print("tried to remove item with \(key) that doesn't exist")
             return
@@ -133,7 +136,6 @@ class StatusBar: NSView {
         self.needsUpdateConstraints = true
     }
 
-    // Update constraints of status bar items.
     // Also handles ordering of status bar items.
     // Called when the status bar item state is modified.
     override func updateConstraints() {
@@ -143,7 +145,7 @@ class StatusBar: NSView {
         leftItems = leftItems.sorted(by: {$0.key < $1.key})
         rightItems = rightItems.sorted(by: {$0.key < $1.key})
 
-        for item in currentItems.values.sorted(by: {$0.key < $1.key}) {
+        for item in currentItems {
             item.removeFromSuperview()
             switch item.barAlignment {
             case .left:
@@ -172,7 +174,6 @@ class StatusBar: NSView {
                     item.trailingAnchor.constraint(equalTo:
                         lastRightItem!.leadingAnchor, constant: -statusBarPadding)
                         .isActive = true
-
                 }
                 lastRightItem = item
             }
@@ -202,9 +203,11 @@ class StatusBar: NSView {
                     lastRightItem = rightItems.last
                 }
             } while (windowWidth < minWidth)
+
         } else {
             if let lastHiddenItem = hiddenItems.last {
-                if (minWidth + statusBarPadding + lastHiddenItem.frame.width - windowWidth) < minWidthDifference {
+                let newMinWidth = minWidth + statusBarPadding + lastHiddenItem.frame.width
+                if (newMinWidth - windowWidth) < minWidthDifference {
                     lastHiddenItem.isHidden = false
                     switch lastHiddenItem.barAlignment {
                     case .left:
