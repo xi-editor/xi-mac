@@ -54,23 +54,30 @@ class StatusBar: NSView {
     var leftItems = [StatusItem]()
     var rightItems = [StatusItem]()
 
-    var backgroundColor: NSColor
-    var itemTextColor: NSColor
-    var statusBarPadding: CGFloat = 10
-    let statusBarHeight: CGFloat = 20
-
     var lastLeftItem: StatusItem?
     var lastRightItem: StatusItem?
 
+    var backgroundColor: NSColor = NSColor.white
+    var itemTextColor: NSColor = NSColor.black
+    var statusBarPadding: CGFloat = 10
+    let statusBarHeight: CGFloat = 20
+
     // Returns the minimum width required to display all items.
     var minWidth: CGFloat {
-        return currentItems.values
+        return (leftItems + rightItems)
             .map({$0.frame.width})
-            .reduce(CGFloat(currentItems.count - 1) * statusBarPadding, +)
+            .reduce(CGFloat((leftItems + rightItems).count - 1) * statusBarPadding, +)
     }
+    // Difference to compensate for when status bar is resized
+    let minWidthDifference: CGFloat = 2
 
     override var isFlipped: Bool {
         return true;
+    }
+
+    override init(frame frameRect: NSRect) {
+        super.init(frame: .zero)
+        self.translatesAutoresizingMaskIntoConstraints = false
     }
 
     init(frame frameRect: NSRect, backgroundColor: NSColor, textColor: NSColor) {
@@ -93,13 +100,12 @@ class StatusBar: NSView {
         item.translatesAutoresizingMaskIntoConstraints = false
         item.textColor = itemTextColor
         self.addSubview(item)
-        item.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
         currentItems[item.key] = item
         switch item.barAlignment {
-            case .left:
-                leftItems.append(item)
-            case .right:
-                rightItems.append(item)
+        case .left:
+            leftItems.append(item)
+        case .right:
+            rightItems.append(item)
         }
         self.needsUpdateConstraints = true
     }
@@ -152,8 +158,8 @@ class StatusBar: NSView {
                     item.leadingAnchor.constraint(equalTo:
                         lastLeftItem!.trailingAnchor, constant: statusBarPadding)
                         .isActive = true
-                    lastLeftItem = item
                 }
+                lastLeftItem = item
             case .right:
                 if item == rightItems.first {
                     self.addSubview(item)
@@ -166,9 +172,11 @@ class StatusBar: NSView {
                     item.trailingAnchor.constraint(equalTo:
                         lastRightItem!.leadingAnchor, constant: -statusBarPadding)
                         .isActive = true
-                    lastRightItem = item
+
                 }
+                lastRightItem = item
             }
+            item.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
         }
         super.updateConstraints()
     }
@@ -185,15 +193,30 @@ class StatusBar: NSView {
                 if leftItems.count > rightItems.count {
                     guard lastLeftItem != nil else { return }
                     lastLeftItem!.isHidden = true
-                    hiddenItems.append(lastLeftItem!)
+                    hiddenItems.append(leftItems.removeLast())
+                    lastLeftItem = leftItems.last
                 } else {
                     guard lastRightItem != nil else { return }
                     lastRightItem!.isHidden = true
-                    hiddenItems.append(lastRightItem!)
+                    hiddenItems.append(rightItems.removeLast())
+                    lastRightItem = rightItems.last
                 }
             } while (windowWidth < minWidth)
         } else {
-            hiddenItems.popLast()?.isHidden = false
+            if let lastHiddenItem = hiddenItems.last {
+                if (minWidth + statusBarPadding + lastHiddenItem.frame.width - windowWidth) < minWidthDifference {
+                    lastHiddenItem.isHidden = false
+                    switch lastHiddenItem.barAlignment {
+                    case .left:
+                        self.leftItems.append(lastHiddenItem)
+                        lastLeftItem = lastHiddenItem
+                    case .right:
+                        self.rightItems.append(lastHiddenItem)
+                        lastRightItem = lastHiddenItem
+                    }
+                    hiddenItems.removeLast()
+                }
+            }
         }
     }
 
