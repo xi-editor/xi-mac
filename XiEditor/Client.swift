@@ -64,4 +64,7 @@ protocol XiClient: AnyObject {
     /// where `style` is the id of the style and `strings` is an array of strings to
     /// measure. The result is an array of arrays of width measurements, in macOS "points".
     func measureWidth(args: [[String: AnyObject]]) -> [[Double]]
+    
+    /// A notification containing the current find status.
+    func findStatus(viewIdentifier: String, status: [[String: AnyObject]])
 }

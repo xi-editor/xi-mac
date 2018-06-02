@@ -95,6 +95,10 @@ class FindViewController: NSViewController, NSSearchFieldDelegate {
     override func cancelOperation(_ sender: Any?) {
         findDelegate.closeFind()
     }
+    
+    public func findStatus(status: [[String: AnyObject]]) {
+        findDelegate.findStatus(status: status)
+    }
 }
 
 extension EditViewController {
@@ -109,6 +113,8 @@ extension EditViewController {
                 find(findViewController.searchField.stringValue,
                      caseSensitive: !findViewController.ignoreCase)
             }
+            
+            document.sendRpcAsync("search_dialog", params: ["open": true])
         }
         editView.window?.makeFirstResponder(findViewController.searchField)
     }
@@ -124,7 +130,7 @@ extension EditViewController {
         editView.window?.makeFirstResponder(editView)
 
         // forward command to editView to collapse find highlights?
-        document.sendRpcAsync("cancel_operation", params: [])
+        document.sendRpcAsync("search_dialog", params: ["open": false])
     }
 
     func findNext(wrapAround: Bool, allowSame: Bool) {
@@ -160,6 +166,23 @@ extension EditViewController {
 
     func clearFind() {
         document.sendRpcAsync("find", params: ["chars": "", "case_sensitive": false]) { _ in }
+    }
+    
+    func findStatus(status: [[String: AnyObject]]) {
+        if status.first?["chars"] != nil && !(status.first?["chars"] is NSNull) {
+            findViewController.searchField.stringValue = status.first?["chars"] as! String
+        }
+        
+        if status.first?["case_sensitive"] != nil {
+            findViewController.ignoreCase = status.first?["case_sensitive"] as! Bool
+        }
+        
+        // set the current count number in the search field
+        if status.first?["matches"] != nil {
+            if let cell = findViewController.searchField.cell as? NSSearchFieldCell {
+                cell.cancelButtonCell?.title = String(status.first?["matches"] as! Int)
+            }
+        }
     }
 
     @IBAction func performCustomFinderAction(_ sender: Any?) {
