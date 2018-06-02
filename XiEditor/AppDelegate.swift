@@ -320,6 +320,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
     func measureWidth(args: [[String : AnyObject]]) -> [[Double]] {
         return styleMap.locked().measureWidths(args)
     }
+    
+    func findStatus(viewIdentifier: ViewIdentifier, status: [[String : AnyObject]]) {
+        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
+        DispatchQueue.main.async {
+            document?.editViewController?.findStatus(status: status)
+        }
+    }
 
     //MARK: - top-level interactions
     @IBAction func openPreferences(_ sender: NSMenuItem) {

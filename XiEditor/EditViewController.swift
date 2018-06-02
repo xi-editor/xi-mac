@@ -35,6 +35,7 @@ protocol FindDelegate {
     func findNext(wrapAround: Bool, allowSame: Bool)
     func findPrevious(wrapAround: Bool)
     func closeFind()
+    func findStatus(status: [[String: AnyObject]])
 }
 
 class EditViewController: NSViewController, EditViewDataSource, FindDelegate, ScrollInterested {

@@ -283,6 +283,10 @@ class CoreConnection {
             let message = params["msg"] as! String
             client?.alert(text: message)
             
+        case "find_status":
+            let status = params["queries"] as! [[String: AnyObject]]
+            client?.findStatus(viewIdentifier: viewIdentifier!, status: status)
+            
         default:
             print("unknown notification \(method)")
         }
