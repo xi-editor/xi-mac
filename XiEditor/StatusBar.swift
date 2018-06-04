@@ -48,12 +48,17 @@ class StatusItem: NSTextField {
 
 class StatusBar: NSView {
 
-    var currentKeys = [String]()
+    var currentItems = [String : StatusItem]()
     var hiddenItems = [StatusItem]()
-    var leftItems = [StatusItem]()
-    var rightItems = [StatusItem]()
-    var currentItems: [StatusItem] {
-        return (leftItems + rightItems).sorted {$0.key < $1.key}
+    var leftItems: [StatusItem] {
+        return currentItems.values
+            .filter { $0.barAlignment == .left }
+            .sorted { $0.key < $1.key }
+    }
+    var rightItems: [StatusItem] {
+        return currentItems.values
+            .filter { $0.barAlignment == .right }
+            .sorted { $0.key < $1.key }
     }
 
     var lastLeftItem: StatusItem?
@@ -66,7 +71,7 @@ class StatusBar: NSView {
 
     // Returns the minimum width required to display all items.
     var minWidth: CGFloat {
-        return currentItems
+        return currentItems.values
             .map({$0.frame.width})
             .reduce(CGFloat(currentItems.count - 1) * statusBarPadding, +)
     }
@@ -96,26 +101,20 @@ class StatusBar: NSView {
 
     // Adds a status bar item.
     func addStatusItem(_ item: StatusItem) {
-        if currentKeys.contains(item.key) {
-            print("tried to add existing item \(item.key), ignoring")
+        if let existingItem = currentItems[item.key] {
+            print("tried to add existing item with key \(existingItem.key), ignoring")
             return
         }
         item.translatesAutoresizingMaskIntoConstraints = false
         item.textColor = itemTextColor
         self.addSubview(item)
-        currentKeys.append(item.key)
-        switch item.barAlignment {
-        case .left:
-            leftItems.append(item)
-        case .right:
-            rightItems.append(item)
-        }
+        currentItems[item.key] = item
         self.needsUpdateConstraints = true
     }
 
     // Update a status bar item with a new value.
     func updateStatusItem(_ key: String, _ value: String) {
-        if let item = currentItems.first(where: {$0.key == key}) {
+        if let item = currentItems[key] {
             item.stringValue = value
         } else {
             print("tried to update item with key \(key) that doesn't exist")
@@ -124,11 +123,9 @@ class StatusBar: NSView {
 
     // Removes status bar item with a specified key.
     func removeStatusItem(_ key: String) {
-        if let item = currentItems.first(where: {$0.key == key}) {
+        if let item = currentItems[key] {
             item.removeFromSuperview()
-            leftItems = leftItems.filter { $0 != item }
-            rightItems = rightItems.filter { $0 != item }
-            currentKeys = currentKeys.filter { $0 != item.key}
+            currentItems.removeValue(forKey: key)
         } else {
             print("tried to remove item with \(key) that doesn't exist")
             return
@@ -142,10 +139,7 @@ class StatusBar: NSView {
         lastLeftItem = leftItems.first
         lastRightItem = rightItems.first
 
-        leftItems = leftItems.sorted(by: {$0.key < $1.key})
-        rightItems = rightItems.sorted(by: {$0.key < $1.key})
-
-        for item in currentItems {
+        for item in currentItems.values.sorted(by: {$0.key < $1.key}) {
             item.removeFromSuperview()
             switch item.barAlignment {
             case .left:
@@ -194,16 +188,17 @@ class StatusBar: NSView {
                 if leftItems.count > rightItems.count {
                     guard lastLeftItem != nil else { return }
                     lastLeftItem!.isHidden = true
-                    hiddenItems.append(leftItems.removeLast())
-                    lastLeftItem = leftItems.last
+                    currentItems.removeValue(forKey: lastLeftItem!.key)
+                    lastLeftItem = leftItems[leftItems.count - 1]
+                    hiddenItems.append(lastLeftItem!)
                 } else {
                     guard lastRightItem != nil else { return }
                     lastRightItem!.isHidden = true
-                    hiddenItems.append(rightItems.removeLast())
-                    lastRightItem = rightItems.last
+                    currentItems.removeValue(forKey: lastRightItem!.key)
+                    lastRightItem = rightItems[rightItems.count - 1]
+                    hiddenItems.append(lastRightItem!)
                 }
             } while (windowWidth < minWidth)
-
         } else {
             if let lastHiddenItem = hiddenItems.last {
                 let newMinWidth = minWidth + statusBarPadding + lastHiddenItem.frame.width
@@ -211,12 +206,11 @@ class StatusBar: NSView {
                     lastHiddenItem.isHidden = false
                     switch lastHiddenItem.barAlignment {
                     case .left:
-                        self.leftItems.append(lastHiddenItem)
                         lastLeftItem = lastHiddenItem
                     case .right:
-                        self.rightItems.append(lastHiddenItem)
                         lastRightItem = lastHiddenItem
                     }
+                    currentItems.updateValue(lastHiddenItem, forKey: lastHiddenItem.key)
                     hiddenItems.removeLast()
                 }
             }
