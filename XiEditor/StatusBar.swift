@@ -66,7 +66,7 @@ class StatusBar: NSView {
 
     var backgroundColor: NSColor = NSColor.white
     var itemTextColor: NSColor = NSColor.black
-    var statusBarPadding: CGFloat = 10
+    let statusBarPadding: CGFloat = 10
     let statusBarHeight: CGFloat = 20
 
     // Returns the minimum width required to display all items.
@@ -102,6 +102,7 @@ class StatusBar: NSView {
         item.textColor = itemTextColor
         self.addSubview(item)
         currentItems[item.key] = item
+        updateItemVisibility(windowWidth: self.superview!.frame.width)
         self.needsUpdateConstraints = true
     }
 
@@ -182,14 +183,14 @@ class StatusBar: NSView {
                     guard lastLeftItem != nil else { return }
                     lastLeftItem!.isHidden = true
                     currentItems.removeValue(forKey: lastLeftItem!.key)
-                    lastLeftItem = leftItems[leftItems.count - 1]
                     hiddenItems.append(lastLeftItem!)
+                    lastLeftItem = leftItems[leftItems.count - 1]
                 } else {
                     guard lastRightItem != nil else { return }
                     lastRightItem!.isHidden = true
                     currentItems.removeValue(forKey: lastRightItem!.key)
-                    lastRightItem = rightItems[rightItems.count - 1]
                     hiddenItems.append(lastRightItem!)
+                    lastRightItem = rightItems[rightItems.count - 1]
                 }
             } while (windowWidth < minWidth)
         } else {
@@ -203,7 +204,8 @@ class StatusBar: NSView {
                     case .right:
                         lastRightItem = lastHiddenItem
                     }
-                    currentItems.updateValue(lastHiddenItem, forKey: lastHiddenItem.key)
+                    currentItems[lastHiddenItem.key] = lastHiddenItem
+                    self.needsUpdateConstraints = true
                     hiddenItems.removeLast()
                 }
             }
