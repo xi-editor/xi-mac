@@ -88,13 +88,6 @@ class StatusBar: NSView {
         self.translatesAutoresizingMaskIntoConstraints = false
     }
 
-    init(frame frameRect: NSRect, backgroundColor: NSColor, textColor: NSColor) {
-        self.backgroundColor = backgroundColor
-        self.itemTextColor = textColor
-        super.init(frame: .zero)
-        self.translatesAutoresizingMaskIntoConstraints = false
-    }
-
     required init?(coder decoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

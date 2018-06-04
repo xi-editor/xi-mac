@@ -148,6 +148,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
                 } else {
                     window.appearance = NSAppearance(named: NSAppearance.Name.aqua)
                 }
+                statusBar.updateStatusBarColor(newBackgroundColor: theme.background, newTextColor: theme.foreground)
             }
         }
     }
@@ -181,11 +182,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     func setupStatusBar() {
-        if self.unifiedTitlebar == true {
-            statusBar = StatusBar(frame: .zero, backgroundColor: self.theme.background, textColor: self.theme.foreground)
-        } else {
-            statusBar = StatusBar(frame: .zero)
-        }
+        statusBar = StatusBar(frame: .zero)
         self.view.addSubview(statusBar)
 
         NSLayoutConstraint.activate([
@@ -251,9 +248,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         updateViewportSize()
         editView.gutterCache = nil
         shadowView.updateShadowColor(newColor: theme.shadow)
-        if self.unifiedTitlebar == true {
-            statusBar.updateStatusBarColor(newBackgroundColor: theme.background, newTextColor: theme.foreground)
-        }
         editView.needsDisplay = true
 
     }
