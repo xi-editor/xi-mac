@@ -108,13 +108,8 @@ extension EditViewController {
 
             let offset = findViewController.viewHeight.constant
             scrollView.contentInsets = NSEdgeInsetsMake(offset, 0, 0, 0)
-
-            if !findViewController.searchField.stringValue.isEmpty {
-                find(findViewController.searchField.stringValue,
-                     caseSensitive: !findViewController.ignoreCase)
-            }
             
-            document.sendRpcAsync("search_dialog", params: ["open": true])
+//            document.sendRpcAsync("highlight_find", params: ["visible": true])
         }
         editView.window?.makeFirstResponder(findViewController.searchField)
     }
@@ -122,15 +117,14 @@ extension EditViewController {
     func closeFind() {
         if !findViewController.view.isHidden {
             findViewController.view.isHidden = true
-            clearFind()
 
             scrollView.contentInsets = NSEdgeInsetsZero
         }
 
         editView.window?.makeFirstResponder(editView)
 
-        // forward command to editView to collapse find highlights?
-        document.sendRpcAsync("search_dialog", params: ["open": false])
+        // forward command to editView to collapse find highlights
+//        document.sendRpcAsync("highlight_find", params: ["visible": false])
     }
 
     func findNext(wrapAround: Bool, allowSame: Bool) {
@@ -154,18 +148,13 @@ extension EditViewController {
 
         if term != nil {
             params["chars"] = term
-            document.sendRpcAsync("find", params: params) { _ in }
-        } else {
-            document.sendRpcAsync("find", params: params) { (result: Any?) in
-                DispatchQueue.main.async {
-                    self.findViewController.searchField.stringValue = result as! String
-                }
-            }
         }
+        
+        document.sendRpcAsync("find", params: params)
     }
 
     func clearFind() {
-        document.sendRpcAsync("find", params: ["chars": "", "case_sensitive": false]) { _ in }
+        document.sendRpcAsync("find", params: ["chars": "", "case_sensitive": false])
     }
     
     func findStatus(status: [[String: AnyObject]]) {
@@ -173,7 +162,7 @@ extension EditViewController {
             findViewController.searchField.stringValue = status.first?["chars"] as! String
         }
         
-        if status.first?["case_sensitive"] != nil {
+        if status.first?["case_sensitive"] != nil && !(status.first?["case_sensitive"] is NSNull) {
             findViewController.ignoreCase = status.first?["case_sensitive"] as! Bool
         }
         
