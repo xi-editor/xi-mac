@@ -71,7 +71,7 @@ class StatusBar: NSView {
 
     // Returns the minimum width required to display all items.
     var minWidth: CGFloat {
-        return currentItems.values
+        return currentItems.values.filter { $0.isHidden == false }
             .map({$0.frame.width})
             .reduce(CGFloat(currentItems.count - 1) * statusBarPadding, +)
     }
@@ -110,14 +110,20 @@ class StatusBar: NSView {
     func updateStatusItem(_ key: String, _ value: String) {
         if let item = currentItems[key] {
             item.stringValue = value
+        } else if let item = hiddenItems.first(where: {$0.key == key}) {
+            item.stringValue = value
         } else {
             print("tried to update item with key \(key) that doesn't exist")
         }
+        updateItemVisibility(windowWidth: self.superview!.frame.width)
     }
 
     // Removes status bar item with a specified key.
     func removeStatusItem(_ key: String) {
         if let item = currentItems[key] {
+            item.removeFromSuperview()
+            currentItems.removeValue(forKey: key)
+        } else if let item = hiddenItems.first(where: {$0.key == key}) {
             item.removeFromSuperview()
             currentItems.removeValue(forKey: key)
         } else {
@@ -188,8 +194,8 @@ class StatusBar: NSView {
                 } else {
                     guard lastRightItem != nil else { return }
                     lastRightItem!.isHidden = true
-                    currentItems.removeValue(forKey: lastRightItem!.key)
                     hiddenItems.append(lastRightItem!)
+                    currentItems.removeValue(forKey: lastRightItem!.key)
                     lastRightItem = rightItems[rightItems.count - 1]
                 }
             } while (windowWidth < minWidth)
@@ -204,7 +210,7 @@ class StatusBar: NSView {
                     case .right:
                         lastRightItem = lastHiddenItem
                     }
-                    currentItems[lastHiddenItem.key] = lastHiddenItem
+                    currentItems.updateValue(lastHiddenItem, forKey: lastHiddenItem.key)
                     self.needsUpdateConstraints = true
                     hiddenItems.removeLast()
                 }
