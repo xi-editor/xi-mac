@@ -166,12 +166,7 @@ extension EditViewController {
             findViewController.ignoreCase = status.first?["case_sensitive"] as! Bool
         }
         
-        // set the current count number in the search field
-        if status.first?["matches"] != nil {
-            if let cell = findViewController.searchField.cell as? NSSearchFieldCell {
-                cell.cancelButtonCell?.title = String(status.first?["matches"] as! Int)
-            }
-        }
+        // TODO: add number of matches to search bar status.first?["matches"]
     }
 
     @IBAction func performCustomFinderAction(_ sender: Any?) {
