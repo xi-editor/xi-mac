@@ -109,7 +109,7 @@ extension EditViewController {
             let offset = findViewController.viewHeight.constant
             scrollView.contentInsets = NSEdgeInsetsMake(offset, 0, 0, 0)
             
-//            document.sendRpcAsync("highlight_find", params: ["visible": true])
+            document.sendRpcAsync("highlight_find", params: ["visible": true])
         }
         editView.window?.makeFirstResponder(findViewController.searchField)
     }
@@ -124,7 +124,7 @@ extension EditViewController {
         editView.window?.makeFirstResponder(editView)
 
         // forward command to editView to collapse find highlights
-//        document.sendRpcAsync("highlight_find", params: ["visible": false])
+        document.sendRpcAsync("highlight_find", params: ["visible": false])
     }
 
     func findNext(wrapAround: Bool, allowSame: Bool) {
