@@ -39,6 +39,7 @@ class StatusItem: NSTextField {
         self.lineBreakMode = .byClipping
         self.isBezeled = false
         self.stringValue = value
+        self.preferredMaxLayoutWidth = self.frame.width
     }
 
     required init?(coder: NSCoder) {
@@ -76,8 +77,8 @@ class StatusBar: NSView {
             .reduce(CGFloat(currentItems.count - 1) * statusBarPadding, +)
     }
 
-    // Difference to compensate for when status bar is resized
-    let minWidthDifference: CGFloat = 2
+    // Difference (in points) to compensate for when status bar is resized
+    let minWidthDifference: CGFloat = 3
 
     override var isFlipped: Bool {
         return true;
@@ -110,8 +111,10 @@ class StatusBar: NSView {
     func updateStatusItem(_ key: String, _ value: String) {
         if let item = currentItems[key] {
             item.stringValue = value
+            currentItems.updateValue(item, forKey: key)
         } else if let item = hiddenItems.first(where: {$0.key == key}) {
             item.stringValue = value
+            currentItems.updateValue(item, forKey: key)
         } else {
             print("tried to update item with key \(key) that doesn't exist")
         }
