@@ -24,6 +24,7 @@ class StatusItem: NSTextField {
     let key: String
     var value: String = ""
     let barAlignment: StatusItemAlignment
+    var sideConstraints = [NSLayoutConstraint]()
 
     init(_ key: String, _ value: String, _ barAlignment: String) {
         self.key = key
@@ -50,7 +51,10 @@ class StatusItem: NSTextField {
 class StatusBar: NSView {
 
     var currentItems = [String : StatusItem]()
-    var hiddenItems = [StatusItem]()
+    var hiddenItems: [StatusItem] {
+        return currentItems.values
+            .filter { $0.isHidden == false }
+    }
     var leftItems: [StatusItem] {
         return currentItems.values
             .filter { $0.barAlignment == .left }
@@ -143,38 +147,36 @@ class StatusBar: NSView {
         lastRightItem = rightItems.first
 
         for item in currentItems.values.sorted(by: {$0.key < $1.key}) {
-            item.removeFromSuperview()
+            NSLayoutConstraint.deactivate(item.sideConstraints)
+            item.sideConstraints.removeAll()
             switch item.barAlignment {
             case .left:
                 if item == leftItems.first {
-                    self.addSubview(item)
-                    item.leadingAnchor.constraint(equalTo:
+                    let leftConstraint = item.leadingAnchor.constraint(equalTo:
                         self.leadingAnchor)
-                        .isActive = true
+                    item.sideConstraints.append(leftConstraint)
                 } else {
                     guard lastLeftItem != nil else { return }
-                    self.addSubview(item)
-                    item.leadingAnchor.constraint(equalTo:
+                    let leftConstraint = item.leadingAnchor.constraint(equalTo:
                         lastLeftItem!.trailingAnchor, constant: statusBarPadding)
-                        .isActive = true
+                    item.sideConstraints.append(leftConstraint)
                 }
                 lastLeftItem = item
             case .right:
                 if item == rightItems.first {
-                    self.addSubview(item)
-                    item.trailingAnchor.constraint(equalTo:
+                    let rightConstraint = item.trailingAnchor.constraint(equalTo:
                         self.trailingAnchor)
-                        .isActive = true
+                    item.sideConstraints.append(rightConstraint)
                 } else {
                     guard lastRightItem != nil else { return }
-                    self.addSubview(item)
-                    item.trailingAnchor.constraint(equalTo:
+                    let rightConstraint = item.trailingAnchor.constraint(equalTo:
                         lastRightItem!.leadingAnchor, constant: -statusBarPadding)
-                        .isActive = true
+                    item.sideConstraints.append(rightConstraint)
                 }
                 lastRightItem = item
             }
             item.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
+            NSLayoutConstraint.activate(item.sideConstraints)
         }
         super.updateConstraints()
     }
@@ -191,15 +193,9 @@ class StatusBar: NSView {
                 if leftItems.count > rightItems.count {
                     guard lastLeftItem != nil else { return }
                     lastLeftItem!.isHidden = true
-                    currentItems.removeValue(forKey: lastLeftItem!.key)
-                    hiddenItems.append(lastLeftItem!)
-                    lastLeftItem = leftItems[leftItems.count - 1]
                 } else {
                     guard lastRightItem != nil else { return }
                     lastRightItem!.isHidden = true
-                    hiddenItems.append(lastRightItem!)
-                    currentItems.removeValue(forKey: lastRightItem!.key)
-                    lastRightItem = rightItems[rightItems.count - 1]
                 }
             } while (windowWidth < minWidth)
         } else {
@@ -215,7 +211,6 @@ class StatusBar: NSView {
                     }
                     currentItems.updateValue(lastHiddenItem, forKey: lastHiddenItem.key)
                     self.needsUpdateConstraints = true
-                    hiddenItems.removeLast()
                 }
             }
         }
