@@ -70,8 +70,8 @@ class StatusBar: NSView {
     var lastLeftItem: StatusItem?
     var lastRightItem: StatusItem?
 
-    var backgroundColor: NSColor = NSColor.textBackgroundColor
-    var itemTextColor: NSColor = NSColor.textColor
+    var backgroundColor: NSColor = NSColor.windowFrameColor
+    var itemTextColor: NSColor = NSColor.windowFrameTextColor
     let statusBarPadding: CGFloat = 10
     let statusBarHeight: CGFloat = 24
     let firstItemMargin: CGFloat = 3
@@ -233,17 +233,23 @@ class StatusBar: NSView {
 
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
-        backgroundColor.setFill()
+//        backgroundColor.setFill()
         dirtyRect.fill()
 
-        let borderColor = NSColor.systemGray
+        // test to replicate native NSWindow title gradient
+        let native1 = NSColor(calibratedWhite: 246/255, alpha: 1)
+        let native2 = NSColor(calibratedWhite: 202/255, alpha: 1)
+        let nativeColor = NSGradient(colors: [native1, native2])
+
+        nativeColor?.draw(in: dirtyRect, angle: 90)
+
+        let borderColor = NSColor(calibratedRed: 194 / 255, green: 194 / 255, blue: 194 / 255, alpha: 1)
         borderColor.setStroke()
 
         let path = NSBezierPath()
-        path.lineWidth = 0
+        path.lineWidth = 1
         path.move(to: CGPoint(x: dirtyRect.minX, y: dirtyRect.minY))
         path.line(to: CGPoint(x: dirtyRect.maxX, y: dirtyRect.minY))
         path.stroke()
-
     }
 }
