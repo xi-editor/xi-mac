@@ -23,6 +23,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate {
     @IBOutlet weak var doneButton: NSButton!
     @IBOutlet weak var viewHeight: NSLayoutConstraint!
 
+    let resultCountLabel = Label(title: "")
     @objc var ignoreCase = true
     @objc var wrapAround = true
 
@@ -117,13 +118,12 @@ extension EditViewController {
     func closeFind() {
         if !findViewController.view.isHidden {
             findViewController.view.isHidden = true
-
+            (findViewController.searchField as? FindSearchField)?.resultCount = nil
             scrollView.contentInsets = NSEdgeInsetsZero
         }
 
         editView.window?.makeFirstResponder(editView)
 
-        // forward command to editView to collapse find highlights
         document.sendRpcAsync("highlight_find", params: ["visible": false])
     }
 
@@ -149,7 +149,12 @@ extension EditViewController {
         if term != nil {
             params["chars"] = term
         }
-        
+
+        let shouldClearCount = term == nil || term == ""
+
+        if shouldClearCount {
+            (self.findViewController.searchField as? FindSearchField)?.resultCount = nil
+        }
         document.sendRpcAsync("find", params: params)
     }
 
@@ -165,8 +170,10 @@ extension EditViewController {
         if status.first?["case_sensitive"] != nil && !(status.first?["case_sensitive"] is NSNull) {
             findViewController.ignoreCase = status.first?["case_sensitive"] as! Bool
         }
-        
-        // TODO: add number of matches to search bar status.first?["matches"]
+
+        if let resultCount = status.first?["matches"] as? Int {
+            (findViewController.searchField as? FindSearchField)?.resultCount = resultCount
+        }
     }
 
     @IBAction func performCustomFinderAction(_ sender: Any?) {
@@ -217,15 +224,58 @@ extension EditViewController {
     }
 }
 
+/// A Utility class that behaves approximately like UILabel
+class Label: NSTextField {
+    init(title: String) {
+        super.init(frame: .zero)
+        self.stringValue = title
+        self.isEditable = false
+        self.isSelectable = false
+        self.textColor = NSColor.labelColor
+        self.backgroundColor = NSColor.clear
+        self.lineBreakMode = .byClipping
+        self.isBezeled = false
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
 class FindSearchField: NSSearchField {
+    let label = Label(title: "")
+
+    private var _lastSearchButtonWidth: CGFloat = 22 // known default
+
+    var resultCount: Int? {
+        didSet {
+            if let newCount = resultCount {
+                label.stringValue = String(newCount)
+                if self.stringValue != "" {
+                    label.isHidden = false
+                }
+            } else {
+                label.isHidden = true
+            }
+        }
+    }
+
     required init?(coder: NSCoder) {
         super.init(coder: coder)
 
         centersPlaceholder = false
         sendsSearchStringImmediately = true
-    }
 
-    var _lastSearchButtonWidth: CGFloat = 22 // known default
+        self.addSubview(label)
+        label.textColor = NSColor.lightGray
+        label.font = NSFont.systemFont(ofSize: 12)
+        label.translatesAutoresizingMaskIntoConstraints = false
+
+        let defaultButtonWidth: CGFloat = 22;
+
+        self.addConstraint(label.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -defaultButtonWidth))
+        self.addConstraint(label.centerYAnchor.constraint(equalTo: self.centerYAnchor))
+    }
 
     // required override; on 10.13(?) accessory icons aren't
     // otherwise drawn if centersPlaceholder == false
@@ -243,7 +293,15 @@ class FindSearchField: NSSearchField {
     override func rectForSearchText(whenCentered isCentered: Bool) -> NSRect {
         let rect = super.rectForSearchText(whenCentered: isCentered)
         let delta = max(0, _lastSearchButtonWidth - rect.origin.x)
-        return NSRect(x: rect.origin.x + delta, y: rect.origin.y,
-                      width: rect.width - delta, height: rect.height)
+        let originX = rect.origin.x + delta
+        var width = label.frame.minX - originX
+
+        // the label's frame is at 0,0 the first time we open this view
+        if width < 0 {
+            width = rect.width - delta
+        }
+
+        return NSRect(x: originX, y: rect.origin.y,
+                      width: width, height: rect.height)
     }
 }
