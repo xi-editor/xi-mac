@@ -53,26 +53,28 @@ class StatusBar: NSView {
     var currentItems = [String : StatusItem]()
     var hiddenItems: [StatusItem] {
         return currentItems.values
-            .filter { $0.isHidden == false }
+            .filter { $0.isHidden == true }
+            .sorted { $0.key > $1.key }
     }
     var leftItems: [StatusItem] {
         return currentItems.values
-            .filter { $0.barAlignment == .left }
+            .filter { $0.barAlignment == .left && $0.isHidden == false }
             .sorted { $0.key < $1.key }
     }
     var rightItems: [StatusItem] {
         return currentItems.values
-            .filter { $0.barAlignment == .right }
+            .filter { $0.barAlignment == .right && $0.isHidden == false }
             .sorted { $0.key < $1.key }
     }
 
     var lastLeftItem: StatusItem?
     var lastRightItem: StatusItem?
 
-    var backgroundColor: NSColor = NSColor.white
-    var itemTextColor: NSColor = NSColor.black
+    var backgroundColor: NSColor = NSColor.textBackgroundColor
+    var itemTextColor: NSColor = NSColor.textColor
     let statusBarPadding: CGFloat = 10
-    let statusBarHeight: CGFloat = 20
+    let statusBarHeight: CGFloat = 24
+    let firstItemMargin: CGFloat = 3
 
     // Returns the minimum width required to display all items.
     var minWidth: CGFloat {
@@ -107,7 +109,7 @@ class StatusBar: NSView {
         item.textColor = itemTextColor
         self.addSubview(item)
         currentItems[item.key] = item
-        updateItemVisibility(windowWidth: self.superview!.frame.width)
+        checkItemsFitFor(windowWidth: self.superview!.frame.width)
         self.needsUpdateConstraints = true
     }
 
@@ -122,7 +124,7 @@ class StatusBar: NSView {
         } else {
             print("tried to update item with key \(key) that doesn't exist")
         }
-        updateItemVisibility(windowWidth: self.superview!.frame.width)
+        checkItemsFitFor(windowWidth: self.superview!.frame.width)
     }
 
     // Removes status bar item with a specified key.
@@ -137,6 +139,7 @@ class StatusBar: NSView {
             print("tried to remove item with \(key) that doesn't exist")
             return
         }
+        checkItemsFitFor(windowWidth: self.superview!.frame.width)
         self.needsUpdateConstraints = true
     }
 
@@ -153,7 +156,7 @@ class StatusBar: NSView {
             case .left:
                 if item == leftItems.first {
                     let leftConstraint = item.leadingAnchor.constraint(equalTo:
-                        self.leadingAnchor)
+                        self.leadingAnchor, constant: firstItemMargin)
                     item.sideConstraints.append(leftConstraint)
                 } else {
                     guard lastLeftItem != nil else { return }
@@ -165,7 +168,7 @@ class StatusBar: NSView {
             case .right:
                 if item == rightItems.first {
                     let rightConstraint = item.trailingAnchor.constraint(equalTo:
-                        self.trailingAnchor)
+                        self.trailingAnchor, constant: -firstItemMargin)
                     item.sideConstraints.append(rightConstraint)
                 } else {
                     guard lastRightItem != nil else { return }
@@ -187,31 +190,43 @@ class StatusBar: NSView {
         self.needsDisplay = true
     }
 
-    func updateItemVisibility(windowWidth: CGFloat) {
-        if windowWidth < minWidth {
-            repeat {
-                if leftItems.count > rightItems.count {
-                    guard lastLeftItem != nil else { return }
-                    lastLeftItem!.isHidden = true
-                } else {
-                    guard lastRightItem != nil else { return }
-                    lastRightItem!.isHidden = true
-                }
-            } while (windowWidth < minWidth)
+    // When items are added, expanded or removed, the status bar checks if
+    // any items need to be hidden or unhidden to make use of available space.
+    func checkItemsFitFor(windowWidth: CGFloat) {
+        if windowWidth <= minWidth {
+            hideItemsToFit(windowWidth)
         } else {
-            if let lastHiddenItem = hiddenItems.last {
-                let newMinWidth = minWidth + statusBarPadding + lastHiddenItem.frame.width
-                if (newMinWidth - windowWidth) < minWidthDifference {
-                    lastHiddenItem.isHidden = false
-                    switch lastHiddenItem.barAlignment {
-                    case .left:
-                        lastLeftItem = lastHiddenItem
-                    case .right:
-                        lastRightItem = lastHiddenItem
-                    }
-                    currentItems.updateValue(lastHiddenItem, forKey: lastHiddenItem.key)
-                    self.needsUpdateConstraints = true
+            unhideItemsToFit(windowWidth)
+            self.needsUpdateConstraints = true
+        }
+    }
+
+    func hideItemsToFit(_ widthToFit: CGFloat) {
+        repeat {
+            if leftItems.count > 1 {
+                guard lastLeftItem != nil else { return }
+                lastLeftItem!.isHidden = true
+                lastLeftItem = leftItems.last
+            } else {
+                guard lastRightItem != nil else { return }
+                lastRightItem!.isHidden = true
+                lastRightItem = rightItems.last
+            }
+        } while (minWidth - widthToFit > minWidthDifference)
+    }
+
+    func unhideItemsToFit(_ widthToFit: CGFloat) {
+        if let lastHiddenItem = hiddenItems.last {
+            let newMinWidth = minWidth + statusBarPadding + lastHiddenItem.frame.width
+            if (newMinWidth - widthToFit) < minWidthDifference {
+                lastHiddenItem.isHidden = false
+                switch lastHiddenItem.barAlignment {
+                case .left:
+                    lastLeftItem = lastHiddenItem
+                case .right:
+                    lastRightItem = lastHiddenItem
                 }
+                currentItems.updateValue(lastHiddenItem, forKey: lastHiddenItem.key)
             }
         }
     }
@@ -221,11 +236,11 @@ class StatusBar: NSView {
         backgroundColor.setFill()
         dirtyRect.fill()
 
-        let borderColor = NSColor.black
+        let borderColor = NSColor.systemGray
         borderColor.setStroke()
 
         let path = NSBezierPath()
-        path.lineWidth = 1
+        path.lineWidth = 0
         path.move(to: CGPoint(x: dirtyRect.minX, y: dirtyRect.minY))
         path.line(to: CGPoint(x: dirtyRect.maxX, y: dirtyRect.minY))
         path.stroke()
