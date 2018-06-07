@@ -19,6 +19,26 @@ import AppKit
 /// These logs can be used for profiling & debugging.
 let XI_RPC_LOG = "XI_CLIENT_RPC_LOG"
 
+/// An error returned from core
+struct RemoteError {
+    let code: Int
+    let message: String
+    let data: AnyObject?
+
+    init?(json: [String: AnyObject]) {
+        guard let code = json["code"] as? Int,
+        let message = json["message"] as? String else { return nil }
+//        let data = json["data"] as? AnyObject? else { return nil }
+
+        self.code = code
+        self.message = message
+        self.data = json["data"]
+    }
+}
+
+/// A completion handler for a synchrounous RPC
+typealias RpcCallback = (Any?, RemoteError?) -> ()
+
 /// Error tolerant wrapper for append-writing to a file.
 struct FileWriter {
     let path: URL
@@ -59,7 +79,7 @@ class CoreConnection {
     // RPC state
     var queue = DispatchQueue(label: "com.levien.xi.CoreConnection", attributes: [])
     var rpcIndex = 0
-    var pending = Dictionary<Int, (Any?) -> ()>()
+    var pending = Dictionary<Int, RpcCallback>()
     
     init(path: String) {
         if let rpcLogPath = ProcessInfo.processInfo.environment[XI_RPC_LOG] {
@@ -190,12 +210,19 @@ class CoreConnection {
     func handleRpc(_ json: Any) {
         guard let obj = json as? [String: AnyObject] else { fatalError("malformed json \(json)") }
         if let index = obj["id"] as? Int {
-            if let result = obj["result"] { // is response
-                var callback: ((Any?) -> ())?
+            if obj["result"] != nil || obj["error"] != nil {
+                var callback: RpcCallback?
                 queue.sync {
                     callback = self.pending.removeValue(forKey: index)
                 }
-                callback?(result)
+                if let result = obj["result"] {
+                    callback?(result, nil)
+                } else if let errJson = obj["error"] as? [String: AnyObject],
+                    let err = RemoteError(json: errJson) {
+                    callback?(nil, err)
+                } else {
+                    print("failed to parse response \(obj)")
+                }
             } else {
                 self.handleRequest(json: obj)
             }
@@ -294,7 +321,7 @@ class CoreConnection {
     
     /// send an RPC request, returning immediately. The callback will be called when the
     /// response comes in, likely from a different thread
-    func sendRpcAsync(_ method: String, params: Any, callback: ((Any?) -> ())? = nil) {
+    func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback? = nil) {
         Trace.shared.trace("send \(method)", .rpc, .begin)
         var req = ["method": method, "params": params] as [String : Any]
         if let callback = callback {
@@ -312,14 +339,17 @@ class CoreConnection {
     /// send RPC synchronously, blocking until return. Note: there is no ordering guarantee on
     /// when this function may return. In particular, an async notification sent by the core after
     /// a response to a synchronous RPC may be delivered before it.
-    func sendRpc(_ method: String, params: Any) -> Any? {
+    func sendRpc(_ method: String, params: Any) -> (Any?, RemoteError?) {
         let semaphore = DispatchSemaphore(value: 0)
         var result: Any? = nil
-        sendRpcAsync(method, params: params) { r in
+        var error: RemoteError? = nil
+
+        sendRpcAsync(method, params: params) { (r, e) in
             result = r
+            error = e
             semaphore.signal()
         }
         let _ = semaphore.wait(timeout: DispatchTime.distantFuture)
-        return result
+        return (result, error)
     }
 }

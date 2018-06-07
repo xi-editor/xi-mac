@@ -118,13 +118,21 @@ class XiDocumentController: NSDocumentController {
             }
             currentDocument.coreViewIdentifier = nil;
 
-            Events.NewView(path: url.path).dispatchWithCallback(currentDocument.dispatcher!) { (response) in
+            Events.NewView(path: url.path).dispatchWithCallback(currentDocument.dispatcher!) { (response, error) in
                 DispatchQueue.main.sync {
-                    currentDocument.coreViewIdentifier = response
-                    currentDocument.fileURL = url
-                    self.setIdentifier(response, forDocument: currentDocument)
-                    currentDocument.editViewController!.redrawEverything()
-                    completionHandler(currentDocument, false, nil)
+                    if let response = response {
+                        currentDocument.coreViewIdentifier = response
+                        currentDocument.fileURL = url
+                        self.setIdentifier(response, forDocument: currentDocument)
+                        currentDocument.editViewController!.redrawEverything()
+                        completionHandler(currentDocument, false, nil)
+                    } else {
+                        let userInfo = [NSLocalizedDescriptionKey: error!.message]
+                        let nsError = NSError(domain: "xi.io.error", code: error!.code,
+                                              userInfo: userInfo)
+                        completionHandler(nil, false, nsError)
+                        currentDocument.close()
+                    }
                 }
             }
         } else {
@@ -158,10 +166,15 @@ class XiDocumentController: NSDocumentController {
         // we nil out this field to opt out of having NSDocument check for changes on disk when saving;
         // we (theoretically) do that check in xi-core.
         document.fileModificationDate = nil
-        Events.NewView(path: url?.path).dispatchWithCallback(document.dispatcher!) { (response) in
+        Events.NewView(path: url?.path).dispatchWithCallback(document.dispatcher!) { (response, error) in
             DispatchQueue.main.sync {
-                self.setIdentifier(response, forDocument: document)
-                document.coreViewIdentifier = response
+                if let response = response {
+                    self.setIdentifier(response, forDocument: document)
+                    document.coreViewIdentifier = response
+                } else {
+                    document.close()
+                    (NSApplication.shared.delegate as! AppDelegate).alert(text: error!.message)
+                }
             }
         }
     }

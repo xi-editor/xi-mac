@@ -31,10 +31,10 @@ class Dispatcher {
         return coreConnection.sendRpcAsync(rpc.method, params: rpc.params) as! O
     }
 
-    func dispatchWithCallback<E: Event, O>(_ event: E, callback: @escaping (O) -> ()) {
+    func dispatchWithCallback<E: Event, O>(_ event: E, callback: @escaping (O?, RemoteError?) -> ()) {
         let rpc = event.rpcRepresentation
-        return coreConnection.sendRpcAsync(rpc.method, params: rpc.params) { (result: Any?) in
-            callback(result as! O)
+        return coreConnection.sendRpcAsync(rpc.method, params: rpc.params) { (result: Any?, error: RemoteError?) in
+            callback(result as? O, error)
         }
     }
 }
@@ -56,7 +56,7 @@ protocol Event {
 
     func dispatch(_ dispatcher: Dispatcher) -> Output
 
-    func dispatchWithCallback(_ dispatcher: Dispatcher, callback: @escaping (Output) -> ())
+    func dispatchWithCallback(_ dispatcher: Dispatcher, callback: @escaping (Output?, RemoteError?) -> ())
 }
 
 extension Event {
@@ -74,7 +74,7 @@ extension Event {
     }
 
     /// Note: the callback may be called from an arbitrary thread
-    func dispatchWithCallback(_ dispatcher: Dispatcher, callback: @escaping (Output) -> ()) {
+    func dispatchWithCallback(_ dispatcher: Dispatcher, callback: @escaping (Output?, RemoteError?) -> ()) {
         assert(dispatchMethod == .sync)
         dispatcher.dispatchWithCallback(self, callback: callback)
     }
