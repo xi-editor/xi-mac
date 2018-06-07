@@ -24,9 +24,15 @@ class FindViewController: NSViewController, NSSearchFieldDelegate {
     @IBOutlet weak var viewHeight: NSLayoutConstraint!
 
     let resultCountLabel = Label(title: "")
-    @objc var ignoreCase = true
-    @objc var wrapAround = true
-    @objc var regex = false
+
+    // assigned in IB
+    let ignoreCaseMenuTag = 101
+    let wrapAroundMenuTag = 102
+    let regexMenuTag = 103
+
+    var ignoreCase = true
+    var wrapAround = true
+    var regex = false
 
     override func viewDidLoad() {
         // add recent searches menu items
@@ -49,7 +55,18 @@ class FindViewController: NSViewController, NSSearchFieldDelegate {
         menu.addItem(recentClear)
     }
 
+    // we use this to make sure that UI corresponds to our state
     override func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
+        switch menuItem.tag {
+        case ignoreCaseMenuTag:
+            menuItem.state = ignoreCase ? NSControl.StateValue.on : NSControl.StateValue.off
+        case wrapAroundMenuTag:
+            menuItem.state = wrapAround ? NSControl.StateValue.on : NSControl.StateValue.off
+        case regexMenuTag:
+            menuItem.state = regex ? NSControl.StateValue.on : NSControl.StateValue.off
+        default:
+            break
+        }
         return true
     }
 
@@ -67,20 +84,16 @@ class FindViewController: NSViewController, NSSearchFieldDelegate {
 
     @IBAction func selectIgnoreCaseMenuAction(_ sender: NSMenuItem) {
         ignoreCase = !ignoreCase
-        sender.state = ignoreCase ? NSControl.StateValue.on : NSControl.StateValue.off
-
-        findDelegate.find(searchField.stringValue, caseSensitive: !ignoreCase, regex: regex)
-        findDelegate.findNext(wrapAround: wrapAround, allowSame: true)
+        redoFind()
     }
     
     @IBAction func selectWrapAroundMenuAction(_ sender: NSMenuItem) {
         wrapAround = !wrapAround
-        sender.state = wrapAround ? NSControl.StateValue.on : NSControl.StateValue.off
     }
 
     @IBAction func selectRegexMenuAction(_ sender: NSMenuItem) {
         regex = !regex
-        sender.state = regex ? NSControl.StateValue.on : NSControl.StateValue.off
+        redoFind()
     }
 
     @IBAction func segmentControlAction(_ sender: NSSegmentedControl) {
@@ -95,8 +108,13 @@ class FindViewController: NSViewController, NSSearchFieldDelegate {
     }
 
     @IBAction func searchFieldAction(_ sender: NSSearchField) {
-        findDelegate.find(sender.stringValue, caseSensitive: !ignoreCase, regex: regex)
+        findDelegate.find(searchField.stringValue, caseSensitive: !ignoreCase, regex: regex)
         findDelegate.findNext(wrapAround: wrapAround, allowSame: false)
+    }
+
+    func redoFind() {
+        findDelegate.find(searchField.stringValue, caseSensitive: !ignoreCase, regex: regex)
+        findDelegate.findNext(wrapAround: wrapAround, allowSame: true)
     }
 
     override func cancelOperation(_ sender: Any?) {
