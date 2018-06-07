@@ -272,21 +272,19 @@ Gw
                 <customObject id="MxZ-GG-2K0" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
                 <menu title="Find Menu" autoenablesItems="NO" id="0va-ps-fv2">
                     <items>
-                        <menuItem title="Ignore Case" state="on" id="h8d-fe-rWj">
+                        <menuItem title="Ignore Case" state="on" tag="101" id="h8d-fe-rWj">
                             <modifierMask key="keyEquivalentModifierMask"/>
                             <connections>
                                 <action selector="selectIgnoreCaseMenuAction:" target="lKE-xV-0EG" id="YL3-c0-UBZ"/>
-                                <binding destination="lKE-xV-0EG" name="value" keyPath="ignoreCase" id="XX8-q0-SKg"/>
                             </connections>
                         </menuItem>
-                        <menuItem title="Wrap Around" id="LvD-lr-RfY">
+                        <menuItem title="Wrap Around" state="on" tag="102" id="LvD-lr-RfY">
                             <modifierMask key="keyEquivalentModifierMask"/>
                             <connections>
                                 <action selector="selectWrapAroundMenuAction:" target="lKE-xV-0EG" id="B7N-nB-Wee"/>
-                                <binding destination="lKE-xV-0EG" name="value" keyPath="wrapAround" id="Pcz-D1-sYR"/>
                             </connections>
                         </menuItem>
-                        <menuItem title="Regex" id="rue-us-4Db">
+                        <menuItem title="Regex" tag="103" id="rue-us-4Db">
                             <modifierMask key="keyEquivalentModifierMask"/>
                             <connections>
                                 <action selector="selectRegexMenuAction:" target="lKE-xV-0EG" id="6KD-C7-tlP"/>
