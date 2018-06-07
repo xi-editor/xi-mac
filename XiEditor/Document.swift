@@ -17,7 +17,7 @@ import Cocoa
 struct PendingNotification {
     let method: String
     let params: Any
-    let callback: ((Any?) -> ())?
+    let callback: RpcCallback?
 }
 
 class Document: NSDocument {
@@ -111,8 +111,8 @@ class Document: NSDocument {
     override func close() {
         if let identifier = self.coreViewIdentifier {
             Events.CloseView(viewIdentifier: identifier).dispatch(dispatcher!)
-            super.close()
         }
+        super.close()
     }
     
     override var isEntireFileLoaded: Bool {
@@ -133,7 +133,7 @@ class Document: NSDocument {
     
     /// Send a notification specific to the tab. If the tab name hasn't been set, then the
     /// notification is queued, and sent when the tab name arrives.
-    func sendRpcAsync(_ method: String, params: Any, callback: ((Any?) -> ())? = nil) {
+    func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback? = nil) {
         Trace.shared.trace(method, .rpc, .begin)
         if let coreViewIdentifier = coreViewIdentifier {
             let inner = ["method": method, "params": params, "view_id": coreViewIdentifier] as [String : Any]
