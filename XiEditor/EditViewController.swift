@@ -142,10 +142,11 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         
                 window.titlebarAppearsTransparent = unifiedTitlebar
                 window.backgroundColor = unifiedTitlebar ? color : nil
-        
+
+                statusBar.updateStatusBarColor(newBackgroundColor: self.theme.background, newTextColor: self.theme.foreground, newUnifiedTitlebar: unifiedTitlebar)
+
                 if color.isDark && unifiedTitlebar {
                     window.appearance = NSAppearance(named: NSAppearance.Name.vibrantDark)
-                    statusBar.updateStatusBarColor(newBackgroundColor: theme.background, newTextColor: theme.foreground)
                 } else {
                     window.appearance = NSAppearance(named: NSAppearance.Name.aqua)
                 }
@@ -183,6 +184,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     func setupStatusBar() {
         statusBar = StatusBar(frame: .zero)
+        statusBar.hasUnifiedTitlebar = unifiedTitlebar
         self.view.addSubview(statusBar)
 
         NSLayoutConstraint.activate([

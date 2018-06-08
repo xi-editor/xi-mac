@@ -70,11 +70,17 @@ class StatusBar: NSView {
     var lastLeftItem: StatusItem?
     var lastRightItem: StatusItem?
 
-    var backgroundColor: NSColor = NSColor.windowFrameColor
-    var itemTextColor: NSColor = NSColor.windowFrameTextColor
+    var hasUnifiedTitlebar: Bool?
+
+    var backgroundColor: NSColor = NSColor.windowBackgroundColor
+    var itemTextColor: NSColor = NSColor.labelColor
+    var borderColor: NSColor = NSColor.windowFrameColor
     let statusBarPadding: CGFloat = 10
     let statusBarHeight: CGFloat = 24
     let firstItemMargin: CGFloat = 3
+
+    // Difference (in points) to compensate for when status bar is resized
+    let minWidthDifference: CGFloat = 3
 
     // Returns the minimum width required to display all items.
     var minWidth: CGFloat {
@@ -82,9 +88,6 @@ class StatusBar: NSView {
             .map({$0.frame.width})
             .reduce(CGFloat(currentItems.count - 1) * statusBarPadding, +)
     }
-
-    // Difference (in points) to compensate for when status bar is resized
-    let minWidthDifference: CGFloat = 3
 
     override var isFlipped: Bool {
         return true;
@@ -178,9 +181,23 @@ class StatusBar: NSView {
         super.updateConstraints()
     }
 
-    func updateStatusBarColor(newBackgroundColor: NSColor, newTextColor: NSColor) {
-        self.backgroundColor = newBackgroundColor
-        self.itemTextColor = newTextColor
+    func updateStatusBarColor(newBackgroundColor: NSColor, newTextColor: NSColor, newUnifiedTitlebar: Bool) {
+        self.hasUnifiedTitlebar = newUnifiedTitlebar
+
+        if self.hasUnifiedTitlebar! {
+            self.backgroundColor = newBackgroundColor
+            self.borderColor = newBackgroundColor
+            self.itemTextColor = NSColor.labelColor
+            for item in currentItems.values {
+                item.textColor = self.itemTextColor
+            }
+        } else {
+            self.backgroundColor = NSColor.windowBackgroundColor
+            self.borderColor = NSColor.windowFrameColor
+            for item in currentItems.values {
+                item.textColor = NSColor.labelColor
+            }
+        }
         self.needsDisplay = true
     }
 
@@ -227,17 +244,10 @@ class StatusBar: NSView {
 
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
-//        backgroundColor.setFill()
+
+        backgroundColor.setFill()
         dirtyRect.fill()
-
-        // test to replicate native NSWindow title gradient
-        let native1 = NSColor(calibratedWhite: 246/255, alpha: 1)
-        let native2 = NSColor(calibratedWhite: 202/255, alpha: 1)
-        let nativeColor = NSGradient(colors: [native1, native2])
-
-        nativeColor?.draw(in: dirtyRect, angle: 90)
-
-        let borderColor = NSColor(calibratedRed: 194 / 255, green: 194 / 255, blue: 194 / 255, alpha: 1)
+        borderColor = backgroundColor
         borderColor.setStroke()
 
         let path = NSBezierPath()
@@ -246,4 +256,5 @@ class StatusBar: NSView {
         path.line(to: CGPoint(x: dirtyRect.maxX, y: dirtyRect.minY))
         path.stroke()
     }
+
 }
