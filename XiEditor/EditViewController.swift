@@ -539,14 +539,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     // MARK: - Debug Methods
-    @IBAction func debugRewrap(_ sender: AnyObject) {
-        document.sendRpcAsync("debug_rewrap", params: [])
-    }
-
-    @IBAction func debugWrapWidth(_ sender: AnyObject) {
-        document.sendRpcAsync("debug_wrap_width", params: [])
-    }
-
     @IBAction func debugSetTheme(_ sender: NSMenuItem) {
         guard sender.state != NSControl.StateValue.on else { print("theme already active"); return }
         let req = Events.SetTheme(themeName: sender.title)
