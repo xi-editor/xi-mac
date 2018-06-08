@@ -817,18 +817,6 @@ Gw
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Debug" id="WuB-lA-TEF">
                                     <items>
-                                        <menuItem title="Rewrap" keyEquivalent="" id="dOI-hB-j6H">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
-                                            <connections>
-                                                <action selector="debugRewrap:" target="7er-QZ-amI" id="qoT-pS-n4J"/>
-                                            </connections>
-                                        </menuItem>
-                                        <menuItem title="Wrap with width" keyEquivalent="" id="QGA-8o-1cd">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
-                                            <connections>
-                                                <action selector="debugWrapWidth:" target="7er-QZ-amI" id="dBT-8g-4c9"/>
-                                            </connections>
-                                        </menuItem>
                                         <menuItem title="Print Selection Spans" keyEquivalent="" id="8QK-XZ-5IS">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
