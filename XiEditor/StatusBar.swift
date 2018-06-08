@@ -118,9 +118,6 @@ class StatusBar: NSView {
         if let item = currentItems[key] {
             item.stringValue = value
             currentItems.updateValue(item, forKey: key)
-        } else if let item = hiddenItems.first(where: {$0.key == key}) {
-            item.stringValue = value
-            currentItems.updateValue(item, forKey: key)
         } else {
             print("tried to update item with key \(key) that doesn't exist")
         }
@@ -130,9 +127,6 @@ class StatusBar: NSView {
     // Removes status bar item with a specified key.
     func removeStatusItem(_ key: String) {
         if let item = currentItems[key] {
-            item.removeFromSuperview()
-            currentItems.removeValue(forKey: key)
-        } else if let item = hiddenItems.first(where: {$0.key == key}) {
             item.removeFromSuperview()
             currentItems.removeValue(forKey: key)
         } else {
