@@ -31,10 +31,10 @@ class Dispatcher {
         return coreConnection.sendRpcAsync(rpc.method, params: rpc.params) as! O
     }
 
-    func dispatchWithCallback<E: Event, O>(_ event: E, callback: @escaping (O?, RemoteError?) -> ()) {
+    func dispatchWithCallback<E: Event>(_ event: E, callback: @escaping (RpcResult) -> ()) {
         let rpc = event.rpcRepresentation
-        return coreConnection.sendRpcAsync(rpc.method, params: rpc.params) { (result: Any?, error: RemoteError?) in
-            callback(result as? O, error)
+        return coreConnection.sendRpcAsync(rpc.method, params: rpc.params) { result in
+            callback(result)
         }
     }
 }
@@ -47,6 +47,9 @@ enum EventDispatchMethod {
 }
 
 protocol Event {
+    //NOTE: output is now unused; this file in general should be considered deprecated.
+    // In the future we would like to move to having a 'XiCore protocol', and then implementing that
+    // via CoreConnection or equivalent.
     associatedtype Output
 
     var method: String { get }
@@ -56,7 +59,7 @@ protocol Event {
 
     func dispatch(_ dispatcher: Dispatcher) -> Output
 
-    func dispatchWithCallback(_ dispatcher: Dispatcher, callback: @escaping (Output?, RemoteError?) -> ())
+    func dispatchWithCallback(_ dispatcher: Dispatcher, callback: @escaping (RpcResult) -> ())
 }
 
 extension Event {
@@ -74,7 +77,7 @@ extension Event {
     }
 
     /// Note: the callback may be called from an arbitrary thread
-    func dispatchWithCallback(_ dispatcher: Dispatcher, callback: @escaping (Output?, RemoteError?) -> ()) {
+    func dispatchWithCallback(_ dispatcher: Dispatcher, callback: @escaping (RpcResult) -> ()) {
         assert(dispatchMethod == .sync)
         dispatcher.dispatchWithCallback(self, callback: callback)
     }

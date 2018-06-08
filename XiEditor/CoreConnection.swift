@@ -28,16 +28,20 @@ struct RemoteError {
     init?(json: [String: AnyObject]) {
         guard let code = json["code"] as? Int,
         let message = json["message"] as? String else { return nil }
-//        let data = json["data"] as? AnyObject? else { return nil }
-
         self.code = code
         self.message = message
         self.data = json["data"]
     }
 }
 
-/// A completion handler for a synchrounous RPC
-typealias RpcCallback = (Any?, RemoteError?) -> ()
+/// The return value of a synchronous RPC
+enum RpcResult {
+    case error(RemoteError)
+    case ok(AnyObject)
+}
+
+/// A completion handler for a synchronous RPC
+typealias RpcCallback = (RpcResult) -> ()
 
 /// Error tolerant wrapper for append-writing to a file.
 struct FileWriter {
@@ -216,10 +220,10 @@ class CoreConnection {
                     callback = self.pending.removeValue(forKey: index)
                 }
                 if let result = obj["result"] {
-                    callback?(result, nil)
+                    callback?(.ok(result))
                 } else if let errJson = obj["error"] as? [String: AnyObject],
                     let err = RemoteError(json: errJson) {
-                    callback?(nil, err)
+                    callback?(.error(err))
                 } else {
                     print("failed to parse response \(obj)")
                 }
@@ -339,17 +343,15 @@ class CoreConnection {
     /// send RPC synchronously, blocking until return. Note: there is no ordering guarantee on
     /// when this function may return. In particular, an async notification sent by the core after
     /// a response to a synchronous RPC may be delivered before it.
-    func sendRpc(_ method: String, params: Any) -> (Any?, RemoteError?) {
+    func sendRpc(_ method: String, params: Any) -> RpcResult {
         let semaphore = DispatchSemaphore(value: 0)
-        var result: Any? = nil
-        var error: RemoteError? = nil
+        var result: RpcResult? = nil
 
-        sendRpcAsync(method, params: params) { (r, e) in
+        sendRpcAsync(method, params: params) { (r) in
             result = r
-            error = e
             semaphore.signal()
         }
         let _ = semaphore.wait(timeout: DispatchTime.distantFuture)
-        return (result, error)
+        return result!
     }
 }
