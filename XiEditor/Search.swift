@@ -182,7 +182,7 @@ extension EditViewController {
         }
         document.sendRpcAsync("find", params: params)
     }
-
+    
     func clearFind() {
         document.sendRpcAsync("find", params: ["chars": "", "case_sensitive": false])
     }
@@ -228,9 +228,8 @@ extension EditViewController {
             Swift.print("replaceAndFind not implemented")
 
         case .setSearchString:
-            openFind()
-            self.find(nil, caseSensitive: !findViewController.ignoreCase, regex: findViewController.regex)
-
+            document.sendRpcAsync("selection_for_find", params: [])
+            
         case .replaceAllInSelection:
             Swift.print("replaceAllInSelection not implemented")
 
