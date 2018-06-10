@@ -24,23 +24,23 @@ class StatusItem: NSTextField {
     let key: String
     var value: String = ""
     let barAlignment: StatusItemAlignment
-    var sideConstraints = [NSLayoutConstraint]()
+    var barConstraints = [NSLayoutConstraint]()
 
     init(_ key: String, _ value: String, _ barAlignment: String) {
         self.key = key
         self.value = value
         self.barAlignment = StatusItemAlignment(rawValue: barAlignment)!
         super.init(frame: .zero)
-
         // Similar to what NSTextField's label convenience init creates
         self.isEditable = false
         self.isSelectable = false
+        self.font = NSFont.systemFont(ofSize: 11)
         self.textColor = NSColor.labelColor
         self.backgroundColor = NSColor.clear
         self.lineBreakMode = .byClipping
         self.isBezeled = false
         self.stringValue = value
-        self.preferredMaxLayoutWidth = self.frame.width
+        self.sizeToFit()
     }
 
     required init?(coder: NSCoder) {
@@ -74,10 +74,10 @@ class StatusBar: NSView {
 
     var backgroundColor: NSColor = NSColor.windowBackgroundColor
     var itemTextColor: NSColor = NSColor.labelColor
-    var borderColor: NSColor = NSColor.windowFrameColor
+    var borderColor: NSColor = NSColor.systemGray
     let statusBarPadding: CGFloat = 10
     let statusBarHeight: CGFloat = 24
-    let firstItemMargin: CGFloat = 3
+    let firstItemMargin: CGFloat = 5
 
     // Difference (in points) to compensate for when status bar is resized
     let minWidthDifference: CGFloat = 3
@@ -85,7 +85,7 @@ class StatusBar: NSView {
     // Returns the minimum width required to display all items.
     var minWidth: CGFloat {
         return currentItems.values.filter { $0.isHidden == false }
-            .map({$0.frame.width})
+            .map({$0.bounds.width})
             .reduce(CGFloat(currentItems.count - 1) * statusBarPadding, +)
     }
 
@@ -112,8 +112,8 @@ class StatusBar: NSView {
         item.textColor = itemTextColor
         self.addSubview(item)
         currentItems[item.key] = item
-        checkItemsFitFor(windowWidth: self.superview!.frame.width)
         self.needsUpdateConstraints = true
+        checkItemsFitFor(windowWidth: self.superview!.frame.width)
     }
 
     // Update a status bar item with a new value.
@@ -121,10 +121,10 @@ class StatusBar: NSView {
         if let item = currentItems[key] {
             item.stringValue = value
             currentItems.updateValue(item, forKey: key)
+            checkItemsFitFor(windowWidth: self.superview!.frame.width)
         } else {
             print("tried to update item with key \(key) that doesn't exist")
         }
-        checkItemsFitFor(windowWidth: self.superview!.frame.width)
     }
 
     // Removes status bar item with a specified key.
@@ -132,12 +132,12 @@ class StatusBar: NSView {
         if let item = currentItems[key] {
             item.removeFromSuperview()
             currentItems.removeValue(forKey: key)
+            self.needsUpdateConstraints = true
+            checkItemsFitFor(windowWidth: self.superview!.frame.width)
         } else {
             print("tried to remove item with \(key) that doesn't exist")
             return
         }
-        checkItemsFitFor(windowWidth: self.superview!.frame.width)
-        self.needsUpdateConstraints = true
     }
 
     // Also handles ordering of status bar items.
@@ -147,43 +147,43 @@ class StatusBar: NSView {
         lastRightItem = rightItems.first
 
         for item in currentItems.values.sorted(by: {$0.key < $1.key}) {
-            NSLayoutConstraint.deactivate(item.sideConstraints)
-            item.sideConstraints.removeAll()
+            NSLayoutConstraint.deactivate(item.barConstraints)
+            item.barConstraints.removeAll()
             switch item.barAlignment {
             case .left:
                 if item == leftItems.first {
                     let leftConstraint = item.leadingAnchor.constraint(equalTo:
                         self.leadingAnchor, constant: firstItemMargin)
-                    item.sideConstraints.append(leftConstraint)
+                    item.barConstraints.append(leftConstraint)
                 } else {
                     guard lastLeftItem != nil else { return }
                     let leftConstraint = item.leadingAnchor.constraint(equalTo:
                         lastLeftItem!.trailingAnchor, constant: statusBarPadding)
-                    item.sideConstraints.append(leftConstraint)
+                    item.barConstraints.append(leftConstraint)
                 }
                 lastLeftItem = item
             case .right:
                 if item == rightItems.first {
                     let rightConstraint = item.trailingAnchor.constraint(equalTo:
                         self.trailingAnchor, constant: -firstItemMargin)
-                    item.sideConstraints.append(rightConstraint)
+                    item.barConstraints.append(rightConstraint)
                 } else {
                     guard lastRightItem != nil else { return }
                     let rightConstraint = item.trailingAnchor.constraint(equalTo:
                         lastRightItem!.leadingAnchor, constant: -statusBarPadding)
-                    item.sideConstraints.append(rightConstraint)
+                    item.barConstraints.append(rightConstraint)
                 }
                 lastRightItem = item
             }
-            item.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
-            NSLayoutConstraint.activate(item.sideConstraints)
+            let centerConstraint = item.centerYAnchor.constraint(equalTo: self.centerYAnchor)
+            item.barConstraints.append(centerConstraint)
+            NSLayoutConstraint.activate(item.barConstraints)
         }
         super.updateConstraints()
     }
 
     func updateStatusBarColor(newBackgroundColor: NSColor, newTextColor: NSColor, newUnifiedTitlebar: Bool) {
         self.hasUnifiedTitlebar = newUnifiedTitlebar
-
         if self.hasUnifiedTitlebar! {
             self.backgroundColor = newBackgroundColor
             self.borderColor = newBackgroundColor
@@ -204,7 +204,7 @@ class StatusBar: NSView {
     // When items are added, expanded or removed, the status bar checks if
     // any items need to be hidden or unhidden to make use of available space.
     func checkItemsFitFor(windowWidth: CGFloat) {
-        if windowWidth <= minWidth {
+        if windowWidth < minWidth {
             hideItemsToFit(windowWidth)
         } else {
             unhideItemsToFit(windowWidth)
@@ -247,7 +247,6 @@ class StatusBar: NSView {
 
         backgroundColor.setFill()
         dirtyRect.fill()
-        borderColor = backgroundColor
         borderColor.setStroke()
 
         let path = NSBezierPath()
