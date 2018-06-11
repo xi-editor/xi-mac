@@ -82,11 +82,12 @@ class StatusBar: NSView {
     // Difference (in points) to compensate for when status bar is resized
     let minWidthDifference: CGFloat = 3
 
-    // Returns the minimum width required to display all items.
+    // Returns the minimum width required to display items without
+    // clipping in the status bar.
     var minWidth: CGFloat {
         return currentItems.values.filter { $0.isHidden == false }
             .map({$0.bounds.width})
-            .reduce(CGFloat(currentItems.count - 1) * statusBarPadding, +)
+            .reduce(CGFloat(currentItems.count - hiddenItems.count - 1) * statusBarPadding, +)
     }
 
     override var isFlipped: Bool {
@@ -142,6 +143,8 @@ class StatusBar: NSView {
 
     // Also handles ordering of status bar items.
     // Called when the status bar item state is modified.
+    // First checks if item being modified belongs to the left or the right,
+    // then adds constraints as necessary.
     override func updateConstraints() {
         lastLeftItem = leftItems.first
         lastRightItem = rightItems.first
@@ -149,6 +152,7 @@ class StatusBar: NSView {
         for item in currentItems.values.sorted(by: {$0.key < $1.key}) {
             NSLayoutConstraint.deactivate(item.barConstraints)
             item.barConstraints.removeAll()
+            item.sizeToFit()
             switch item.barAlignment {
             case .left:
                 if item == leftItems.first {
@@ -193,7 +197,7 @@ class StatusBar: NSView {
             }
         } else {
             self.backgroundColor = NSColor.windowBackgroundColor
-            self.borderColor = NSColor.windowFrameColor
+            self.borderColor = NSColor.systemGray
             for item in currentItems.values {
                 item.textColor = NSColor.labelColor
             }
