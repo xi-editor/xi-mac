@@ -189,7 +189,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
         NSLayoutConstraint.activate([
             statusBar.heightAnchor.constraint(equalToConstant: statusBar.statusBarHeight),
-            statusBar.widthAnchor.constraint(equalTo: editView.widthAnchor),
             statusBar.leadingAnchor.constraint(equalTo: editView.leadingAnchor),
             statusBar.trailingAnchor.constraint(equalTo: editView.trailingAnchor),
             statusBar.bottomAnchor.constraint(equalTo: editView.bottomAnchor)
