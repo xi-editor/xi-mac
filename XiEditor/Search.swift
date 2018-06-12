@@ -228,7 +228,7 @@ extension EditViewController {
             Swift.print("replaceAndFind not implemented")
 
         case .setSearchString:
-            document.sendRpcAsync("selection_for_find", params: [])
+            document.sendRpcAsync("selection_for_find", params: ["case_sensitive": false])
             
         case .replaceAllInSelection:
             Swift.print("replaceAllInSelection not implemented")
