@@ -202,7 +202,7 @@ extension EditViewController {
     }
     
     @IBAction func addNextToSelection(_ sender: AnyObject?) {
-        document.sendRpcAsync("selection_for_find", params: [])
+        document.sendRpcAsync("selection_for_find", params: ["case_sensitive": false])
         document.sendRpcAsync("find_next", params: ["allow_same": true, "add_to_selection": true])
     }
 
