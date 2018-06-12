@@ -87,7 +87,7 @@ class StatusBar: NSView {
     var minWidth: CGFloat {
         return currentItems.values.filter { $0.isHidden == false }
             .map({$0.bounds.width})
-            .reduce(CGFloat(currentItems.count - hiddenItems.count - 1) * statusBarPadding, +)
+            .reduce(CGFloat((currentItems.count - hiddenItems.count) - 1) * statusBarPadding, +)
     }
 
     override var isFlipped: Bool {
@@ -114,7 +114,7 @@ class StatusBar: NSView {
         self.addSubview(item)
         currentItems[item.key] = item
         self.needsUpdateConstraints = true
-        checkItemsFitFor(windowWidth: self.superview!.frame.width)
+        checkItemsFitFor(windowWidth: self.bounds.width)
     }
 
     // Update a status bar item with a new value.
@@ -122,7 +122,7 @@ class StatusBar: NSView {
         if let item = currentItems[key] {
             item.stringValue = value
             currentItems.updateValue(item, forKey: key)
-            checkItemsFitFor(windowWidth: self.superview!.frame.width)
+            checkItemsFitFor(windowWidth: self.bounds.width)
         } else {
             print("tried to update item with key \(key) that doesn't exist")
         }
@@ -134,7 +134,7 @@ class StatusBar: NSView {
             item.removeFromSuperview()
             currentItems.removeValue(forKey: key)
             self.needsUpdateConstraints = true
-            checkItemsFitFor(windowWidth: self.superview!.frame.width)
+            checkItemsFitFor(windowWidth: self.bounds.width)
         } else {
             print("tried to remove item with \(key) that doesn't exist")
             return
