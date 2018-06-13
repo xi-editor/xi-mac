@@ -159,7 +159,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     private var dragTimer: Timer?
     private var dragEvent: NSEvent?
 
-    var statusBar: StatusBar!
+    let statusBar = StatusBar(frame: .zero)
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -183,7 +183,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     func setupStatusBar() {
-        statusBar = StatusBar(frame: .zero)
         statusBar.hasUnifiedTitlebar = unifiedTitlebar
         self.view.addSubview(statusBar)
 
