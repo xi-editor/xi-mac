@@ -392,16 +392,20 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     @objc func unindent(_ sender: Any?) {
         document.sendRpcAsync("outdent", params: [])
     }
-    
+
     fileprivate func cutCopy(_ method: String) {
-        let text = document?.sendRpc(method, params: [])
-        if let text = text as? String {
-            let pasteboard = NSPasteboard.general
-            pasteboard.clearContents()
-            pasteboard.writeObjects([text as NSPasteboardWriting])
+        if let result = document?.sendRpc(method, params: []) {
+            switch result {
+            case .ok(let text):
+                let pasteboard = NSPasteboard.general
+                pasteboard.clearContents()
+                pasteboard.writeObjects([(text as! String) as NSPasteboardWriting])
+            case .error(let err):
+                print("cut/copy failed: \(err)")
+            }
         }
     }
-    
+
     @objc func paste(_ sender: AnyObject?) {
         let pasteboard = NSPasteboard.general
         if let items = pasteboard.pasteboardItems {
