@@ -515,11 +515,12 @@ Gw
                                                             <action selector="addNextToSelection:" target="7er-QZ-amI" id="dcA-Ho-qnI"/>
                                                         </connections>
                                                     </menuItem>
-                                                    <menuItem title="Jump to Selection" keyEquivalent="j" id="CkI-7q-fng">
+                                                    <menuItem title="Add Next and Remove Current..." tag="7" keyEquivalent="D" id="9DI-GT-19Y" userLabel="Add Next and Remove Current Selection">
                                                         <connections>
-                                                            <action selector="centerSelectionInVisibleArea:" target="7er-QZ-amI" id="cSm-kk-Scc"/>
+                                                            <action selector="addNextToSelectionRemoveCurrent:" target="7er-QZ-amI" id="3aA-qn-leZ"/>
                                                         </connections>
                                                     </menuItem>
+                                                    <menuItem title="Jump to Selection" keyEquivalent="j" id="CkI-7q-fng"/>
                                                 </items>
                                             </menu>
                                         </menuItem>
