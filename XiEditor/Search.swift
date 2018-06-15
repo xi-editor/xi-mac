@@ -29,10 +29,12 @@ class FindViewController: NSViewController, NSSearchFieldDelegate {
     let ignoreCaseMenuTag = 101
     let wrapAroundMenuTag = 102
     let regexMenuTag = 103
+    let wholeWordsMenuTag = 104
 
     var ignoreCase = true
     var wrapAround = true
     var regex = false
+    var wholeWords = false
 
     override func viewDidLoad() {
         // add recent searches menu items
@@ -64,6 +66,8 @@ class FindViewController: NSViewController, NSSearchFieldDelegate {
             menuItem.state = wrapAround ? NSControl.StateValue.on : NSControl.StateValue.off
         case regexMenuTag:
             menuItem.state = regex ? NSControl.StateValue.on : NSControl.StateValue.off
+        case wholeWordsMenuTag:
+            menuItem.state = wholeWords ? NSControl.StateValue.on : NSControl.StateValue.off
         default:
             break
         }
@@ -96,6 +100,11 @@ class FindViewController: NSViewController, NSSearchFieldDelegate {
         redoFind()
     }
 
+    @IBAction func selectWholeWordsMenuAction(_ sender: NSMenuItem) {
+        wholeWords = !wholeWords
+        redoFind()
+    }
+
     @IBAction func segmentControlAction(_ sender: NSSegmentedControl) {
         switch sender.selectedSegment {
         case 0:
@@ -108,12 +117,12 @@ class FindViewController: NSViewController, NSSearchFieldDelegate {
     }
 
     @IBAction func searchFieldAction(_ sender: NSSearchField) {
-        findDelegate.find(searchField.stringValue, caseSensitive: !ignoreCase, regex: regex)
+        findDelegate.find(searchField.stringValue, caseSensitive: !ignoreCase, regex: regex, wholeWords: wholeWords)
         findDelegate.findNext(wrapAround: wrapAround, allowSame: false)
     }
 
     func redoFind() {
-        findDelegate.find(searchField.stringValue, caseSensitive: !ignoreCase, regex: regex)
+        findDelegate.find(searchField.stringValue, caseSensitive: !ignoreCase, regex: regex, wholeWords: wholeWords)
         findDelegate.findNext(wrapAround: wrapAround, allowSame: true)
     }
 
@@ -165,10 +174,11 @@ extension EditViewController {
         ])
     }
 
-    func find(_ term: String?, caseSensitive: Bool, regex: Bool) {
+    func find(_ term: String?, caseSensitive: Bool, regex: Bool, wholeWords: Bool) {
         var params: [String: Any] = [
             "case_sensitive": caseSensitive,
             "regex": regex,
+            "whole_words": wholeWords,
         ]
 
         if term != nil {
@@ -194,6 +204,10 @@ extension EditViewController {
         
         if status.first?["case_sensitive"] != nil && !(status.first?["case_sensitive"] is NSNull) {
             findViewController.ignoreCase = status.first?["case_sensitive"] as! Bool
+        }
+
+        if status.first?["whole_words"] != nil && !(status.first?["whole_words"] is NSNull) {
+            findViewController.wholeWords = status.first?["whole_words"] as! Bool
         }
 
         if let resultCount = status.first?["matches"] as? Int {

@@ -290,6 +290,12 @@ Gw
                                 <action selector="selectRegexMenuAction:" target="lKE-xV-0EG" id="6KD-C7-tlP"/>
                             </connections>
                         </menuItem>
+                        <menuItem title="Whole Words" tag="104" id="3oE-F1-ZB2">
+                            <modifierMask key="keyEquivalentModifierMask"/>
+                            <connections>
+                                <action selector="selectWholeWordsMenuAction:" target="lKE-xV-0EG" id="fye-R9-1dB"/>
+                            </connections>
+                        </menuItem>
                     </items>
                 </menu>
                 <userDefaultsController representsSharedInstance="YES" id="DVW-4U-qxz"/>
