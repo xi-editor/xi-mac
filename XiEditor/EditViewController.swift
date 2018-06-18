@@ -162,7 +162,12 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     private var dragTimer: Timer?
     private var dragEvent: NSEvent?
 
+    // timers to manage hovers
+    private var hoverTimer: Timer?
+    private var hoverEvent: NSEvent?
+
     let statusBar = StatusBar(frame: .zero)
+    let infoPopover = NSPopover()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -173,12 +178,12 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         scrollView.hasHorizontalScroller = true
         scrollView.usesPredominantAxisScrolling = true
         (scrollView.contentView as? XiClipView)?.delegate = self
-
     }
 
     override func viewDidAppear() {
         super.viewDidAppear()
         setupStatusBar()
+        setupHover()
         shadowView.setup()
         NotificationCenter.default.addObserver(self, selector: #selector(EditViewController.frameDidChangeNotification(_:)), name: NSView.frameDidChangeNotification, object: scrollView)
         // call to set initial scroll position once we know view size
@@ -195,6 +200,13 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             statusBar.trailingAnchor.constraint(equalTo: editView.trailingAnchor),
             statusBar.bottomAnchor.constraint(equalTo: editView.bottomAnchor)
             ])
+    }
+
+    func setupHover() {
+        let hoverViewController = HoverViewController()
+        let trackingArea = NSTrackingArea(rect: editView.frame, options: [.mouseMoved, .activeWhenFirstResponder], owner: self, userInfo: nil)
+        self.view.addTrackingArea(trackingArea)
+        infoPopover.contentViewController = hoverViewController
     }
 
     func updateGutterWidth() {
@@ -479,6 +491,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         if !editView.isFirstResponder {
             editView.window?.makeFirstResponder(editView)
         }
+        infoPopover.performClose(self)
         editView.unmarkText()
         editView.inputContext?.discardMarkedText()
         let position  = editView.bufferPositionFromPoint(theEvent.locationInWindow)
@@ -509,6 +522,25 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         dragTimer?.invalidate()
         dragTimer = nil
         dragEvent = nil
+    }
+
+    override func mouseMoved(with theEvent: NSEvent) {
+        if infoPopover.isShown {
+            infoPopover.performClose(self)
+            hoverTimer = Timer.scheduledTimer(timeInterval: TimeInterval(5.0), target: self, selector: #selector(_showHoverTimerCallback), userInfo: nil, repeats: false)
+            hoverEvent = theEvent
+        } else {
+            infoPopover.show(relativeTo: NSRect(origin: theEvent.locationInWindow, size: CGSize(width: 1, height: 1)), of: self.view, preferredEdge: .minY)
+        }
+    }
+
+    @objc func _showHoverTimerCallback(_ sender: Any?) {
+        if let event = hoverEvent {
+            mouseMoved(with: event)
+            hoverTimer?.invalidate()
+            hoverTimer = nil
+            hoverEvent = nil
+        }
     }
     
     @objc func _autoscrollTimerCallback() {
