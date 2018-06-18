@@ -204,7 +204,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     func setupHover() {
         let hoverViewController = HoverViewController()
-        let trackingArea = NSTrackingArea(rect: editView.frame, options: [.mouseMoved, .activeWhenFirstResponder], owner: self, userInfo: nil)
+        let trackingArea = NSTrackingArea(rect: editView.frame, options: [.mouseMoved, .activeAlways], owner: self, userInfo: nil)
         self.view.addTrackingArea(trackingArea)
         infoPopover.contentViewController = hoverViewController
     }
@@ -524,19 +524,19 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         dragEvent = nil
     }
 
+    // TODO: Fix behavior here
     override func mouseMoved(with theEvent: NSEvent) {
-        if infoPopover.isShown {
-            infoPopover.performClose(self)
-            hoverTimer = Timer.scheduledTimer(timeInterval: TimeInterval(5.0), target: self, selector: #selector(_showHoverTimerCallback), userInfo: nil, repeats: false)
-            hoverEvent = theEvent
-        } else {
-            infoPopover.show(relativeTo: NSRect(origin: theEvent.locationInWindow, size: CGSize(width: 1, height: 1)), of: self.view, preferredEdge: .minY)
+        if !editView.isFirstResponder {
+            editView.window?.makeFirstResponder(editView)
         }
+        infoPopover.performClose(self)
+        hoverTimer = Timer.scheduledTimer(timeInterval: TimeInterval(2.0), target: self, selector: #selector(showHover), userInfo: nil, repeats: false)
+        hoverEvent = theEvent
     }
 
-    @objc func _showHoverTimerCallback(_ sender: Any?) {
+    @objc func showHover() {
         if let event = hoverEvent {
-            mouseMoved(with: event)
+            infoPopover.show(relativeTo: NSRect(origin: event.locationInWindow, size: CGSize(width: 1, height: 1)), of: self.view, preferredEdge: .minY)
             hoverTimer?.invalidate()
             hoverTimer = nil
             hoverEvent = nil
