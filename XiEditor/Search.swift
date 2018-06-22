@@ -229,7 +229,6 @@ extension EditViewController {
             params["chars"] = term
         }
 
-        print("repl RPC")
         document.sendRpcAsync("replace", params: params)
     }
     
@@ -241,6 +240,10 @@ extension EditViewController {
     @IBAction func addNextToSelectionRemoveCurrent(_ sender: AnyObject?) {
         document.sendRpcAsync("selection_for_find", params: ["case_sensitive": false])
         document.sendRpcAsync("find_next", params: ["allow_same": true, "add_to_selection": true, "modify_selection": "add_removing_current"])
+    }
+
+    @IBAction func selectionForReplace(_ sender: AnyObject?) {
+        document.sendRpcAsync("selection_for_replace", params: [])
     }
 
     @IBAction func performCustomFinderAction(_ sender: Any?) {
@@ -267,7 +270,6 @@ extension EditViewController {
             Swift.print("replace not implemented")
 
         case .replaceAndFind:
-            print("---")
             document.sendRpcAsync("replace_next", params: [])
 
         case .setSearchString:
