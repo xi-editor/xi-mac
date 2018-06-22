@@ -506,9 +506,15 @@ Gw
                                                             <action selector="performCustomFinderAction:" target="7er-QZ-amI" id="W7J-gN-Wbc"/>
                                                         </connections>
                                                     </menuItem>
-                                                    <menuItem title="Find Previous" tag="3" keyEquivalent="G" id="sQB-EY-Z5c">
+                                                    <menuItem title="Find All" tag="9" keyEquivalent="g" id="sQB-EY-Z5c">
+                                                        <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                                         <connections>
                                                             <action selector="performCustomFinderAction:" target="7er-QZ-amI" id="Ty5-sv-3v1"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                    <menuItem title="Find Previous" tag="3" keyEquivalent="G" id="cWy-VI-DmY">
+                                                        <connections>
+                                                            <action selector="performCustomFinderAction:" target="7er-QZ-amI" id="rSg-rh-fV9"/>
                                                         </connections>
                                                     </menuItem>
                                                     <menuItem title="Use Selection for Find" tag="7" keyEquivalent="e" id="f79-Bh-EZa">
