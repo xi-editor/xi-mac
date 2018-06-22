@@ -258,7 +258,7 @@ extension EditViewController {
             Swift.print("replaceAllInSelection not implemented")
 
         case .selectAll:
-            Swift.print("selectAll not implemented")
+            document.sendRpcAsync("find_all", params: [])
 
         case .selectAllInSelection:
             Swift.print("selectAllInSelection not implemented")
