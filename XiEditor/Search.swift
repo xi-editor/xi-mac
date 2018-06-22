@@ -15,13 +15,14 @@
 import Cocoa
 import Swift
 
-class FindViewController: NSViewController, NSSearchFieldDelegate {
+class FindViewController: NSViewController, NSSearchFieldDelegate, NSTextFieldDelegate {
     var findDelegate: FindDelegate!
 
     @IBOutlet weak var searchField: NSSearchField!
     @IBOutlet weak var navigationButtons: NSSegmentedControl!
     @IBOutlet weak var doneButton: NSButton!
     @IBOutlet weak var viewHeight: NSLayoutConstraint!
+    @IBOutlet weak var replaceField: NSTextField!
 
     let resultCountLabel = Label(title: "")
 
@@ -121,6 +122,10 @@ class FindViewController: NSViewController, NSSearchFieldDelegate {
         findDelegate.findNext(wrapAround: wrapAround, allowSame: false)
     }
 
+    @IBAction func replaceFieldAction(_ sender: NSTextField) {
+        findDelegate.replace(replaceField.stringValue)
+    }
+
     func redoFind() {
         findDelegate.find(searchField.stringValue, caseSensitive: !ignoreCase, regex: regex, wholeWords: wholeWords)
         findDelegate.findNext(wrapAround: wrapAround, allowSame: true)
@@ -214,6 +219,19 @@ extension EditViewController {
             (findViewController.searchField as? FindSearchField)?.resultCount = resultCount
         }
     }
+
+    func replace(_ term: String?) {
+        var params: [String: Any] = [
+            "preserve_case": false,     // todo: impement option for preserving case
+        ]
+
+        if term != nil {
+            params["chars"] = term
+        }
+
+        print("repl RPC")
+        document.sendRpcAsync("replace", params: params)
+    }
     
     @IBAction func addNextToSelection(_ sender: AnyObject?) {
         document.sendRpcAsync("selection_for_find", params: ["case_sensitive": false])
@@ -243,13 +261,14 @@ extension EditViewController {
             findPrevious(wrapAround: findViewController.wrapAround)
 
         case .replaceAll:
-            Swift.print("replaceAll not implemented")
+            document.sendRpcAsync("replace_all", params: [])
 
         case .replace:
             Swift.print("replace not implemented")
 
         case .replaceAndFind:
-            Swift.print("replaceAndFind not implemented")
+            print("---")
+            document.sendRpcAsync("replace_next", params: [])
 
         case .setSearchString:
             document.sendRpcAsync("selection_for_find", params: ["case_sensitive": false])
