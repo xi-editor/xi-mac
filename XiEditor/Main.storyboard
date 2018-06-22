@@ -604,6 +604,11 @@ Gw
                                                             <action selector="performCustomFinderAction:" target="7er-QZ-amI" id="NCr-C4-VFL"/>
                                                         </connections>
                                                     </menuItem>
+                                                    <menuItem title="Use Selection for Replace" tag="7" keyEquivalent="E" id="jpJ-mc-SpO">
+                                                        <connections>
+                                                            <action selector="selectionForReplace:" target="7er-QZ-amI" id="jKt-s9-otH"/>
+                                                        </connections>
+                                                    </menuItem>
                                                     <menuItem title="Replace Next" tag="6" keyEquivalent="e" id="3Ql-eE-Z4O">
                                                         <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                                         <connections>
