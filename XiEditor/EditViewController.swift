@@ -595,6 +595,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     
     public func pluginStopped(_ plugin: String) {
         self.availablePlugins[plugin] = false
+        let pluginStatusItems = self.statusBar.currentItems.values
+            .filter { $0.pluginName == plugin }
+        pluginStatusItems.forEach { self.statusBar.removeStatusItem($0.key) }
         print("client: plugin stopped \(plugin)")
     }
 
