@@ -529,8 +529,12 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         if !editView.isFirstResponder {
             editView.window?.makeFirstResponder(editView)
         }
-        infoPopover.performClose(self)
-        hoverTimer = Timer.scheduledTimer(timeInterval: TimeInterval(2.0), target: self, selector: #selector(showHover), userInfo: nil, repeats: false)
+        if infoPopover.isShown {
+            infoPopover.performClose(self)
+        }
+        if hoverTimer == nil {
+            hoverTimer = Timer.scheduledTimer(timeInterval: TimeInterval(5.0), target: self, selector: #selector(showHover), userInfo: nil, repeats: false)
+        }
         hoverEvent = theEvent
     }
 
@@ -541,7 +545,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             hoverTimer?.invalidate()
             hoverTimer = nil
             hoverEvent = nil
-            document.sendRpcAsync("request_hover_definition", params: ["line": hoverPosition.line, "col": hoverPosition.column])
+            document.sendRpcAsync("request_hover_definition", params: ["request_id": 1, "line": hoverPosition.line, "col": hoverPosition.column])
         }
     }
     

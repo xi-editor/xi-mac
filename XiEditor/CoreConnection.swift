@@ -260,7 +260,7 @@ class CoreConnection {
                 return
         }
         let viewIdentifier = params["view_id"] as? ViewIdentifier
-        
+
         switch method {
         case "update":
             let update = params["update"] as! [String: AnyObject]

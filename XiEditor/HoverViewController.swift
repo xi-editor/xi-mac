@@ -16,8 +16,12 @@ class HoverViewController: NSViewController {
     }
 
     override func loadView() {
-        let hoverView = NSView(frame: NSRect(x: 0, y: 0, width: 50, height: 50))
+        let hoverView = NSTextView(frame: .zero)
+        hoverView.translatesAutoresizingMaskIntoConstraints = false
+        hoverView.string = "This is some test string to test out hover def. When there is a real implementation, this space will be replaced with that text instead."
+        hoverView.isEditable = false
+        hoverView.textContainerInset = NSSize(width: 20, height: 20)
+        hoverView.sizeToFit()
         self.view = hoverView
     }
-
 }
