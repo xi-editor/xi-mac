@@ -315,10 +315,11 @@ class CoreConnection {
             client?.alert(text: message)
 
         case "add_status_item":
+            let plugin = params["plugin"] as! String
             let key = params["key"] as! String
             let value = params["value"] as! String
             let alignment = params["alignment"] as! String
-            client?.addStatusItem(viewIdentifier: viewIdentifier!, key: key, value: value, alignment: alignment)
+            client?.addStatusItem(viewIdentifier: viewIdentifier!, plugin: plugin, key: key, value: value, alignment: alignment)
 
         case "update_status_item":
             let key = params["key"] as! String
