@@ -332,6 +332,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         }
     }
 
+    func requestHoverDefinition(viewIdentifier: String, position: BufferPosition, onResult: ((String) -> Void)) {
+        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
+    }
+
     func configChanged(viewIdentifier: ViewIdentifier, changes: [String : AnyObject]) {
         let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
         DispatchQueue.main.async {

@@ -536,10 +536,12 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     @objc func showHover() {
         if let event = hoverEvent {
+            let hoverPosition = editView.bufferPositionFromPoint(event.locationInWindow)
             infoPopover.show(relativeTo: NSRect(origin: event.locationInWindow, size: CGSize(width: 1, height: 1)), of: self.view, preferredEdge: .minY)
             hoverTimer?.invalidate()
             hoverTimer = nil
             hoverEvent = nil
+            document.sendRpcAsync("request_hover_definition", params: ["line": hoverPosition.line, "col": hoverPosition.column])
         }
     }
     
