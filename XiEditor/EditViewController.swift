@@ -532,8 +532,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         if infoPopover.isShown {
             infoPopover.performClose(self)
         }
-        if hoverTimer == nil {
-            hoverTimer = Timer.scheduledTimer(timeInterval: TimeInterval(5.0), target: self, selector: #selector(showHover), userInfo: nil, repeats: false)
+        if hoverTimer == nil && theEvent.modifierFlags.contains(.option){
+            hoverTimer = Timer.scheduledTimer(timeInterval: TimeInterval(2.0), target: self, selector: #selector(showHover), userInfo: nil, repeats: false)
         }
         hoverEvent = theEvent
     }
