@@ -228,12 +228,34 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         }
     }
 
+    // Called when using the 'Open Recent' menu. If we return false, the item
+    // is removed from that menu.
+    func application(_ sender: NSApplication, openFile filename: String) -> Bool {
+        if FileManager.default.fileExists(atPath: filename) {
+            documentController.openDocumentAsync(atUrl: URL(fileURLWithPath: filename))
+            return true
+        } else {
+            return false
+        }
+    }
+
     // MARK: - XiClient protocol
 
-    func update(viewIdentifier: String, update: [String: AnyObject], rev: UInt64?) {
-        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
-        if document == nil { print("document missing for view id \(viewIdentifier)") }
-        document?.updateAsync(update: update)
+    func newView(viewIdentifier: String, path: String?) {
+        let fileUrl = path.map() { URL(fileURLWithPath: $0) }
+        documentController.addDocument(withIdentifier: viewIdentifier, url: fileUrl)
+    }
+
+    func update(viewIdentifier: String, update: [String: AnyObject], rev: UInt64?){
+        documentForViewIdentifier(viewIdentifier: viewIdentifier)?.updateAsync(update: update)
+    }
+
+    // Only used during development, but annoying to have to always rewrite
+    private func debugPrintUpdate(viewId: ViewIdentifier, update: [String: AnyObject], retry: Bool) {
+        let opString = (update["ops"] as! [[String: AnyObject]])
+            .map({"\($0["op"] as! String): \($0["n"] as! Int)"})
+            .joined(separator: "\n\t")
+        print("update \(viewId) \(retry ? "(retry)" : ""):\n\t\(opString)")
     }
 
     func scroll(viewIdentifier: String, line: Int, column: Int) {
@@ -358,17 +380,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
     }
 
     //MARK: - top-level interactions
+
     @IBAction func openPreferences(_ sender: NSMenuItem) {
         let delegate = (NSApplication.shared.delegate as? AppDelegate)
         if let preferencesPath = delegate?.defaultConfigDirectory.appendingPathComponent(PREFERENCES_FILE_NAME) {
-            NSDocumentController.shared.openDocument(
-                withContentsOf: preferencesPath,
-                display: true,
-                completionHandler: { (document, alreadyOpen, error) in
-                    if let error = error {
-                        print("error opening preferences \(error)")
-                    }
-            });
+            documentController.openDocumentAsync(atUrl: preferencesPath)
         }
     }
 
@@ -376,8 +392,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
 
     /// returns the NSDocument corresponding to the given viewIdentifier
     private func documentForViewIdentifier(viewIdentifier: ViewIdentifier) -> Document? {
-        return (NSDocumentController.shared as! XiDocumentController)
-            .documentForViewIdentifier(viewIdentifier)
+        return documentController.documentForViewIdentifier(viewIdentifier)
     }
 
     /// Redraws all open document views, as on a font or theme change.

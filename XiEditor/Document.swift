@@ -38,6 +38,8 @@ class Document: NSDocument {
     // minimum size for a new or resized window
     static var minWinSize = NSSize(width: 240, height: 160)
 
+    var lines = LineCache<LineAssoc>()
+
     var dispatcher: Dispatcher!
     
     /// coreViewIdentifier is the name used to identify this document when communicating with the Core.
@@ -176,9 +178,18 @@ class Document: NSDocument {
         self.sendRpcAsync("scroll", params: [first, last])
     }
 
+    /// handles the `update` RPC. This is called from a dedicated thread.
     func updateAsync(update: [String: AnyObject]) {
+        let lineCache = lines.locked()
+        let hasNoUnsavedChanges = update["pristine"] as? Bool ?? false
+        let inval = lineCache.applyUpdate(update: update)
+        let revision = lineCache.revision
+
         if let editVC = editViewController {
-            editVC.updateAsync(update: update)
+            DispatchQueue.main.async {
+                self.updateChangeCount(hasNoUnsavedChanges ? .changeCleared : .changeDone)
+                editVC.afterUpdate(revision: revision, inval: inval)
+            }
         }
     }
 

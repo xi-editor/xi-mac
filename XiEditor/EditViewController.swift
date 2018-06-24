@@ -66,7 +66,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     var document: Document!
 
-    var lines = LineCache<LineAssoc>()
+    var lines: LineCache<LineAssoc> {
+        return document.lines
+    }
 
     var textMetrics: TextDrawingMetrics {
         return (NSApplication.shared.delegate as! AppDelegate).textMetrics
@@ -266,21 +268,13 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     // MARK: - Core Commands
 
-    /// handles the `update` RPC. This is called from a dedicated thread.
-    func updateAsync(update: [String: AnyObject]) {
-        let lineCache = lines.locked()
-        let inval = lineCache.applyUpdate(update: update)
-        let hasNoUnsavedChanges = update["pristine"] as? Bool ?? false
-        let revision = lineCache.revision
-        
-        DispatchQueue.main.async { [weak self] in
-            self?.document.updateChangeCount(hasNoUnsavedChanges ? .changeCleared : .changeDone)
-            self?.lineCount = self?.lines.height ?? 0
-            self?.updateEditViewHeight()
-            self?.editView.resetCursorTimer()
-            if let lastRev = self?.editView.lastRevisionRendered, lastRev < revision {
-                self?.editView.partialInvalidate(invalid: inval)
-            }
+    /// Called after the LineCache has been updated.
+    func afterUpdate(revision: Int, inval: InvalSet) {
+        lineCount = lines.height
+        updateEditViewHeight()
+        editView.resetCursorTimer()
+        if editView.lastRevisionRendered < revision {
+            editView.partialInvalidate(invalid: inval)
         }
     }
 
@@ -530,10 +524,10 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         } else {
             Document.preferredTabbingIdentifier = nil
         }
-        // pass the message to the intended recipient
-        NSDocumentController.shared.newDocument(sender)
+        (NSDocumentController.shared as! XiDocumentController)
+            .openDocumentAsync(atUrl: nil)
     }
-    
+
     override func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
         // disable the New Tab menu item when running in 10.12
         if menuItem.tag == 10 {
