@@ -138,6 +138,10 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSTextFieldDe
     public func findStatus(status: [[String: AnyObject]]) {
         findDelegate.findStatus(status: status)
     }
+
+    public func replaceStatus(status: [[String: AnyObject]]) {
+        findDelegate.replaceStatus(status: status)
+    }
 }
 
 extension EditViewController {
@@ -220,6 +224,14 @@ extension EditViewController {
         }
     }
 
+    func replaceStatus(status: [[String: AnyObject]]) {
+        if status.first?["chars"] != nil && !(status.first?["chars"] is NSNull) {
+            findViewController.replaceField.stringValue = status.first?["chars"] as! String
+        }
+
+        // todo: preserve case
+    }
+
     func replace(_ term: String?) {
         var params: [String: Any] = [
             "preserve_case": false,     // todo: impement option for preserving case
@@ -234,12 +246,12 @@ extension EditViewController {
     
     @IBAction func addNextToSelection(_ sender: AnyObject?) {
         document.sendRpcAsync("selection_for_find", params: ["case_sensitive": false])
-        document.sendRpcAsync("find_next", params: ["allow_same": true, "add_to_selection": true, "modify_selection": "add"])
+        document.sendRpcAsync("find_next", params: ["wrap_around": false, "allow_same": true, "add_to_selection": false, "modify_selection": "add"])
     }
 
     @IBAction func addNextToSelectionRemoveCurrent(_ sender: AnyObject?) {
         document.sendRpcAsync("selection_for_find", params: ["case_sensitive": false])
-        document.sendRpcAsync("find_next", params: ["allow_same": true, "add_to_selection": true, "modify_selection": "add_removing_current"])
+        document.sendRpcAsync("find_next", params: ["wrap_around": true, "allow_same": true, "add_to_selection": true, "modify_selection": "add_removing_current"])
     }
 
     @IBAction func selectionForReplace(_ sender: AnyObject?) {
