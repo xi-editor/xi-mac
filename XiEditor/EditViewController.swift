@@ -204,6 +204,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     func setupHover() {
         let hoverViewController = HoverViewController()
+        hoverViewController.updateHoverViewColors(newBackgroundColor: self.theme.background, newTextColor: self.theme.foreground)
         let trackingArea = NSTrackingArea(rect: editView.frame, options: [.mouseMoved, .activeAlways], owner: self, userInfo: nil)
         self.view.addTrackingArea(trackingArea)
         infoPopover.contentViewController = hoverViewController
