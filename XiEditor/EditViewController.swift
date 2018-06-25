@@ -148,6 +148,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
                 statusBar.updateStatusBarColor(newBackgroundColor: self.theme.background, newTextColor: self.theme.foreground, newUnifiedTitlebar: unifiedTitlebar)
 
+                hoverVC.changeHoverViewColors(newBackgroundColor: self.theme.background, newTextColor: self.theme.foreground)
+
+
                 if color.isDark && unifiedTitlebar {
                     window.appearance = NSAppearance(named: NSAppearance.Name.vibrantDark)
                 } else {
@@ -168,6 +171,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     let statusBar = StatusBar(frame: .zero)
     let infoPopover = NSPopover()
+    let hoverVC = HoverViewController()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -203,11 +207,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     func setupHover() {
-        let hoverViewController = HoverViewController()
-        hoverViewController.updateHoverViewColors(newBackgroundColor: self.theme.background, newTextColor: self.theme.foreground)
         let trackingArea = NSTrackingArea(rect: editView.frame, options: [.mouseMoved, .activeAlways], owner: self, userInfo: nil)
         self.view.addTrackingArea(trackingArea)
-        infoPopover.contentViewController = hoverViewController
+        infoPopover.contentViewController = hoverVC
     }
 
     func updateGutterWidth() {

@@ -21,8 +21,6 @@ class HoverView: NSTextView {
         self.isEditable = false
         self.textContainerInset = NSSize(width: 10, height: 10)
         self.font = NSFont.systemFont(ofSize: 11)
-        self.backgroundColor = NSColor.textBackgroundColor
-        self.textColor = NSColor.textColor
         self.sizeToFit()
         self.translatesAutoresizingMaskIntoConstraints = false
     }
@@ -31,7 +29,16 @@ class HoverView: NSTextView {
         fatalError("init(coder:) has not been implemented")
     }
 
-
+//    override func viewDidMoveToWindow() {
+//        guard let frameView = window?.contentView?.superview else {
+//            return
+//        }
+//        let backgroundView = NSView(frame: frameView.bounds)
+//        backgroundView.wantsLayer = true
+//        backgroundView.layer?.backgroundColor = .black // colour of your choice
+//        backgroundView.autoresizingMask = [.width, .height]
+//        frameView.addSubview(backgroundView, positioned: .below, relativeTo: frameView)
+//    }
 }
 
 class HoverViewController: NSViewController {
@@ -43,13 +50,12 @@ class HoverViewController: NSViewController {
     }
 
     override func loadView() {
-        hoverView.string = "This is some test string to test out hover def. When there is a real implementation, this space will be replaced with that text instead."
+        self.hoverView.string = "This is some test text for hover def. When hover def is implemented, the string here will come from that."
         self.view = hoverView
     }
 
-    func updateHoverViewColors(newBackgroundColor: NSColor, newTextColor: NSColor) {
+    func changeHoverViewColors(newBackgroundColor: NSColor, newTextColor: NSColor) {
         self.hoverView.backgroundColor = newBackgroundColor
         self.hoverView.textColor = newTextColor
-        self.hoverView.needsDisplay = true
     }
 }
