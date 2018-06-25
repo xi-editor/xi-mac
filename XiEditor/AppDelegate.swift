@@ -350,6 +350,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         }
     }
 
+    func replaceStatus(viewIdentifier: ViewIdentifier, status: [[String : AnyObject]]) {
+        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
+        DispatchQueue.main.async {
+            document?.editViewController?.replaceStatus(status: status)
+        }
+    }
+
     //MARK: - top-level interactions
     @IBAction func openPreferences(_ sender: NSMenuItem) {
         let delegate = (NSApplication.shared.delegate as? AppDelegate)
