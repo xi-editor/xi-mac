@@ -97,6 +97,7 @@ class StatusBar: NSView {
     override init(frame frameRect: NSRect) {
         super.init(frame: .zero)
         self.translatesAutoresizingMaskIntoConstraints = false
+        checkStatusBarVisibility()
     }
 
     required init?(coder decoder: NSCoder) {
@@ -115,6 +116,7 @@ class StatusBar: NSView {
         currentItems[item.key] = item
         self.needsUpdateConstraints = true
         checkItemsFitFor(windowWidth: self.bounds.width)
+        checkStatusBarVisibility()
     }
 
     // Update a status bar item with a new value.
@@ -135,6 +137,7 @@ class StatusBar: NSView {
             currentItems.removeValue(forKey: key)
             self.needsUpdateConstraints = true
             checkItemsFitFor(windowWidth: self.bounds.width)
+            checkStatusBarVisibility()
         } else {
             print("tried to remove item with \(key) that doesn't exist")
             return
@@ -203,6 +206,11 @@ class StatusBar: NSView {
             }
         }
         self.needsDisplay = true
+    }
+
+    // Hides the status bar if there is no item currently.
+    func checkStatusBarVisibility() {
+        self.isHidden = currentItems.isEmpty
     }
 
     // When items are added, expanded or removed, the status bar checks if
