@@ -76,5 +76,5 @@ protocol XiClient: AnyObject {
     func findStatus(viewIdentifier: String, status: [[String: AnyObject]])
 
     /// A notification containing the current replace status.
-    func replaceStatus(viewIdentifier: String, status: [[String: AnyObject]])
+    func replaceStatus(viewIdentifier: String, status: [String: AnyObject])
 }
