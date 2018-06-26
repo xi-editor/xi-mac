@@ -350,7 +350,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         }
     }
 
-    func replaceStatus(viewIdentifier: ViewIdentifier, status: [[String : AnyObject]]) {
+    func replaceStatus(viewIdentifier: ViewIdentifier, status: [String : AnyObject]) {
         let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
         DispatchQueue.main.async {
             document?.editViewController?.replaceStatus(status: status)

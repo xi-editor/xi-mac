@@ -139,7 +139,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSTextFieldDe
         findDelegate.findStatus(status: status)
     }
 
-    public func replaceStatus(status: [[String: AnyObject]]) {
+    public func replaceStatus(status: [String: AnyObject]) {
         findDelegate.replaceStatus(status: status)
     }
 }
@@ -224,9 +224,9 @@ extension EditViewController {
         }
     }
 
-    func replaceStatus(status: [[String: AnyObject]]) {
-        if status.first?["chars"] != nil && !(status.first?["chars"] is NSNull) {
-            findViewController.replaceField.stringValue = status.first?["chars"] as! String
+    func replaceStatus(status: [String: AnyObject]) {
+        if status["chars"] != nil && !(status["chars"] is NSNull) {
+            findViewController.replaceField.stringValue = status["chars"] as! String
         }
 
         // todo: preserve case

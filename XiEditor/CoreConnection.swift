@@ -336,8 +336,7 @@ class CoreConnection {
             client?.findStatus(viewIdentifier: viewIdentifier!, status: status)
 
         case "replace_status":
-            print(params["status"])
-            let status = params["status"] as! [[String: AnyObject]]
+            let status = params["status"] as! [String: AnyObject]
             client?.replaceStatus(viewIdentifier: viewIdentifier!, status: status)
             
         default:
