@@ -61,8 +61,8 @@ protocol XiClient: AnyObject {
     func updateStatusItem(viewIdentifier: String, key: String, value: String);
     func removeStatusItem(viewIdentifier: String, key: String);
 
-    /// A request for hover definitions, to be retrieved from the LSP.
-    func requestHoverDefinition(viewIdentifier: String, position: BufferPosition, onResult: ((String) -> Void))
+    /// A result, formatted in Markdown, that is returned from a hover definition request.
+    func showHover(viewIdentifier: String, requestIdentifier: Int, result: [String: AnyObject])
 
     /// A notification containing changes to the current config for the given view.
     /// - Note: The first time this message is sent, `changes` contains all defined
