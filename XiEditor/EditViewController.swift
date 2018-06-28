@@ -483,7 +483,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         } else if (event.modifierFlags.contains(NSEvent.ModifierFlags.shift)) {
             return "range_select"
         } else if (event.modifierFlags.contains(NSEvent.ModifierFlags.option)) {
-            return "show_definition"
+            return "request_hover"
         } else {
             switch (clickCount) {
             case 2:
@@ -508,11 +508,16 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
         let gestureType = clickGestureType(event: theEvent)
 
-        document.sendRpcAsync("gesture", params: [
-            "line": position.line,
-            "col": position.column,
-            "ty": gestureType
-        ])
+        if gestureType == "request_hover" {
+            document.sendRpcAsync("request_hover", params: ["request_id": 1, "position": ["type": "utf8_line_char", "line": position.line, "character": position.column]])
+        } else {
+            document.sendRpcAsync("gesture", params: [
+                "line": position.line,
+                "col": position.column,
+                "ty": gestureType
+                ])
+        }
+
         
         dragTimer = Timer.scheduledTimer(timeInterval: TimeInterval(1.0/60), target: self, selector: #selector(_autoscrollTimerCallback), userInfo: nil, repeats: true)
         dragEvent = theEvent
@@ -543,7 +548,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         if infoPopover.isShown {
             infoPopover.performClose(self)
         }
-        if hoverTimer == nil && theEvent.modifierFlags.contains(.option){
+        if hoverTimer == nil && theEvent.modifierFlags.contains([.option, .shift]){
             hoverTimer = Timer.scheduledTimer(timeInterval: TimeInterval(2.0), target: self, selector: #selector(sendHover), userInfo: nil, repeats: false)
         }
         hoverEvent = theEvent
@@ -552,10 +557,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     @objc func sendHover() {
         if let event = hoverEvent {
             let hoverPosition = editView.bufferPositionFromPoint(event.locationInWindow)
-            infoPopover.show(relativeTo: NSRect(origin: event.locationInWindow, size: CGSize(width: 1, height: 1)), of: self.view, preferredEdge: .minY)
             hoverTimer?.invalidate()
             hoverTimer = nil
-            hoverEvent = nil
             document.sendRpcAsync("request_hover", params: ["request_id": 1, "position": ["type": "utf8_line_char", "line": hoverPosition.line, "character": hoverPosition.column]])
         }
     }
@@ -563,6 +566,14 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     func showHover(withResult result: [String: AnyObject]) {
         print("content:  \(String(describing: result["content"]))")
         print("range:  \(String(describing: result["range"]))")
+
+        if let event = hoverEvent {
+            let hoverContent = result["content"] as! String
+            hoverVC.setHoverContent(content: hoverContent)
+            infoPopover.contentSize = hoverVC.hoverView.frame.size
+            infoPopover.show(relativeTo: NSRect(origin: event.locationInWindow, size: CGSize(width: 1, height: 1)), of: self.view, preferredEdge: .minY)
+            hoverEvent = nil
+        }
     }
     
     @objc func _autoscrollTimerCallback() {

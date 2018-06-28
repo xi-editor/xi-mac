@@ -21,8 +21,8 @@ class HoverView: NSTextView {
         self.isEditable = false
         self.textContainerInset = NSSize(width: 10, height: 10)
         self.font = NSFont.systemFont(ofSize: 11)
-        self.sizeToFit()
         self.translatesAutoresizingMaskIntoConstraints = false
+        self.sizeToFit()
     }
 
     required init?(coder: NSCoder) {
@@ -57,5 +57,10 @@ class HoverViewController: NSViewController {
     func changeHoverViewColors(newBackgroundColor: NSColor, newTextColor: NSColor) {
         self.hoverView.backgroundColor = newBackgroundColor
         self.hoverView.textColor = newTextColor
+    }
+
+    func setHoverContent(content: String) {
+        self.hoverView.string = content
+        self.hoverView.needsDisplay = true
     }
 }
