@@ -107,17 +107,23 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSTextFieldDe
         redoFind()
     }
 
-    @IBAction func segmentControlAction(_ sender: NSSegmentedControl) {
-        print(sender.tag)
+    @IBAction func findSegmentControlAction(_ sender: NSSegmentedControl) {
         switch sender.selectedSegment {
         case 0:
             findDelegate.findPrevious(wrapAround: wrapAround)
         case 1:
             findDelegate.findNext(wrapAround: wrapAround, allowSame: false)
-        case 2:
-            print("replace next")
-        case 3:
-            print("replace all")
+        default:
+            break
+        }
+    }
+
+    @IBAction func replaceSegmentControlAction(_ sender: NSSegmentedControl) {
+        switch sender.selectedSegment {
+        case 0:
+            findDelegate.replaceNext()
+        case 1:
+            findDelegate.replaceAll()
         default:
             break
         }
@@ -129,6 +135,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSTextFieldDe
     }
 
     @IBAction func replaceFieldAction(_ sender: NSTextField) {
+        print("dd")
         findDelegate.replace(replaceField.stringValue)
     }
 
@@ -230,6 +237,14 @@ extension EditViewController {
         }
     }
 
+    func replaceNext() {
+        document.sendRpcAsync("replace_next", params: [])
+    }
+
+    func replaceAll() {
+        document.sendRpcAsync("replace_all", params: [])
+    }
+
     func replaceStatus(status: [String: AnyObject]) {
         if status["chars"] != nil && !(status["chars"] is NSNull) {
             findViewController.replaceField.stringValue = status["chars"] as! String
@@ -282,13 +297,13 @@ extension EditViewController {
             findPrevious(wrapAround: findViewController.wrapAround)
 
         case .replaceAll:
-            document.sendRpcAsync("replace_all", params: [])
+            replaceAll()
 
         case .replace:
             Swift.print("replace not implemented")
 
         case .replaceAndFind:
-            document.sendRpcAsync("replace_next", params: [])
+            replaceNext()
 
         case .setSearchString:
             document.sendRpcAsync("selection_for_find", params: ["case_sensitive": false])
