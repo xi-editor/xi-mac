@@ -191,7 +191,7 @@ Gw
                                 <rect key="frame" x="8" y="0.0" width="997" height="60"/>
                                 <subviews>
                                     <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lrE-3U-oZn">
-                                        <rect key="frame" x="0.0" y="4" width="835" height="52"/>
+                                        <rect key="frame" x="0.0" y="4" width="832" height="52"/>
                                         <subviews>
                                             <searchField wantsLayer="YES" focusRingType="none" verticalHuggingPriority="750" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yjF-1R-sp7" customClass="FindSearchField" customModule="XiEditor" customModuleProvider="target">
                                                 <rect key="frame" x="0.0" y="30" width="682" height="22"/>
@@ -233,10 +233,10 @@ Gw
                                         </customSpacing>
                                     </stackView>
                                     <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oqn-cC-uXf">
-                                        <rect key="frame" x="843" y="8" width="154" height="44"/>
+                                        <rect key="frame" x="840" y="8" width="157" height="44"/>
                                         <subviews>
                                             <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="87Z-4W-agC">
-                                                <rect key="frame" x="0.0" y="26" width="93" height="18"/>
+                                                <rect key="frame" x="0.0" y="26" width="157" height="18"/>
                                                 <subviews>
                                                     <segmentedControl verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="usm-aH-bgF">
                                                         <rect key="frame" x="-1" y="-1" width="43" height="20"/>
@@ -251,9 +251,9 @@ Gw
                                                             <action selector="findSegmentControlAction:" target="lKE-xV-0EG" id="dcN-Hb-sap"/>
                                                         </connections>
                                                     </segmentedControl>
-                                                    <button verticalHuggingPriority="750" tag="11" translatesAutoresizingMaskIntoConstraints="NO" id="OLd-3g-GU4">
-                                                        <rect key="frame" x="49" y="-1" width="44" height="19"/>
-                                                        <buttonCell key="cell" type="roundRect" title="Done" bezelStyle="roundedRect" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="wFY-L9-Tvu">
+                                                    <button verticalHuggingPriority="750" tag="9" translatesAutoresizingMaskIntoConstraints="NO" id="OLd-3g-GU4" userLabel="Find All Button">
+                                                        <rect key="frame" x="49" y="-1" width="56" height="19"/>
+                                                        <buttonCell key="cell" type="roundRect" title="Find All" bezelStyle="roundedRect" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="wFY-L9-Tvu">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="cellTitle"/>
                                                         </buttonCell>
@@ -261,12 +261,24 @@ Gw
                                                             <action selector="performCustomFinderAction:" target="MxZ-GG-2K0" id="xqt-Pf-AM8"/>
                                                         </connections>
                                                     </button>
+                                                    <button verticalHuggingPriority="750" tag="11" translatesAutoresizingMaskIntoConstraints="NO" id="5rw-0w-Suw">
+                                                        <rect key="frame" x="113" y="-1" width="44" height="19"/>
+                                                        <buttonCell key="cell" type="roundRect" title="Done" bezelStyle="roundedRect" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="FOD-1e-hKW">
+                                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                            <font key="font" metaFont="cellTitle"/>
+                                                        </buttonCell>
+                                                        <connections>
+                                                            <action selector="performCustomFinderAction:" target="MxZ-GG-2K0" id="499-Lj-2Yh"/>
+                                                        </connections>
+                                                    </button>
                                                 </subviews>
                                                 <visibilityPriorities>
                                                     <integer value="1000"/>
                                                     <integer value="1000"/>
+                                                    <integer value="1000"/>
                                                 </visibilityPriorities>
                                                 <customSpacing>
+                                                    <real value="3.4028234663852886e+38"/>
                                                     <real value="3.4028234663852886e+38"/>
                                                     <real value="3.4028234663852886e+38"/>
                                                 </customSpacing>
