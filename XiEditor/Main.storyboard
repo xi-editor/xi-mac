@@ -190,11 +190,11 @@ Gw
                             <stackView distribution="fill" orientation="horizontal" alignment="centerY" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0fT-ae-quE">
                                 <rect key="frame" x="8" y="0.0" width="997" height="60"/>
                                 <subviews>
-                                    <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lrE-3U-oZn">
-                                        <rect key="frame" x="0.0" y="4" width="832" height="52"/>
+                                    <stackView distribution="fill" orientation="vertical" alignment="leading" spacing="4" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lrE-3U-oZn">
+                                        <rect key="frame" x="0.0" y="6" width="832" height="48"/>
                                         <subviews>
                                             <searchField wantsLayer="YES" focusRingType="none" verticalHuggingPriority="750" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yjF-1R-sp7" customClass="FindSearchField" customModule="XiEditor" customModuleProvider="target">
-                                                <rect key="frame" x="0.0" y="30" width="682" height="22"/>
+                                                <rect key="frame" x="0.0" y="26" width="682" height="22"/>
                                                 <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" focusRingType="none" bezelStyle="round" recentsAutosaveName="xi-editor-find" id="4a0-aC-Kre">
                                                     <font key="font" metaFont="system"/>
                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -232,10 +232,10 @@ Gw
                                             <real value="3.4028234663852886e+38"/>
                                         </customSpacing>
                                     </stackView>
-                                    <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oqn-cC-uXf">
+                                    <stackView focusRingType="exterior" distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oqn-cC-uXf">
                                         <rect key="frame" x="840" y="8" width="157" height="44"/>
                                         <subviews>
-                                            <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="87Z-4W-agC">
+                                            <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="87Z-4W-agC">
                                                 <rect key="frame" x="0.0" y="26" width="157" height="18"/>
                                                 <subviews>
                                                     <segmentedControl verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="usm-aH-bgF">
@@ -346,11 +346,11 @@ Gw
                     </visualEffectView>
                     <connections>
                         <outlet property="doneButton" destination="OLd-3g-GU4" id="inN-tK-kdf"/>
+                        <outlet property="findReplaceViewHeight" destination="dIp-Lv-vRx" id="W5W-4W-b3Y"/>
                         <outlet property="navigationButtons" destination="usm-aH-bgF" id="f6d-0g-ht5"/>
                         <outlet property="replaceButtons" destination="neW-QX-zJG" id="bVm-GY-Zjn"/>
                         <outlet property="replaceField" destination="C06-uM-0mq" id="MRI-qt-pvO"/>
                         <outlet property="searchField" destination="yjF-1R-sp7" id="Zbr-6Y-tIV"/>
-                        <outlet property="viewHeight" destination="dIp-Lv-vRx" id="gjc-zs-H7f"/>
                     </connections>
                 </viewController>
                 <customObject id="MxZ-GG-2K0" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>

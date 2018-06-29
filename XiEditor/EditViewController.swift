@@ -63,7 +63,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         controller.view.isHidden = true
         return controller
     }()
-    
+
     var document: Document!
 
     var lines = LineCache<LineAssoc>()
