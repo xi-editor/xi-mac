@@ -212,13 +212,13 @@ Gw
                                             </searchField>
                                             <textField focusRingType="none" verticalHuggingPriority="750" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="C06-uM-0mq">
                                                 <rect key="frame" x="0.0" y="0.0" width="682" height="22"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" focusRingType="none" placeholderString="Replace" bezelStyle="round" id="PAV-4z-SXm">
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" state="on" borderStyle="bezel" focusRingType="none" tag="1" placeholderString="Replace" bezelStyle="round" id="PAV-4z-SXm">
                                                     <font key="font" metaFont="system"/>
                                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                                 <connections>
-                                                    <action selector="replaceFieldAction:" target="lKE-xV-0EG" id="vg1-jc-IjH"/>
+                                                    <outlet property="delegate" destination="lKE-xV-0EG" id="xr8-FS-GXe"/>
                                                     <outlet property="nextKeyView" destination="yjF-1R-sp7" id="Svg-RQ-vke"/>
                                                 </connections>
                                             </textField>

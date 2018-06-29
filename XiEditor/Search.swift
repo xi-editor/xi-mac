@@ -15,7 +15,7 @@
 import Cocoa
 import Swift
 
-class FindViewController: NSViewController, NSSearchFieldDelegate, NSTextFieldDelegate {
+class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlTextEditingDelegate {
     var findDelegate: FindDelegate!
 
     @IBOutlet weak var searchField: NSSearchField!
@@ -134,9 +134,10 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSTextFieldDe
         findDelegate.findNext(wrapAround: wrapAround, allowSame: false)
     }
 
-    @IBAction func replaceFieldAction(_ sender: NSTextField) {
-        print("dd")
-        findDelegate.replace(replaceField.stringValue)
+    override func controlTextDidChange(_ obj: Notification) {
+        if obj.object as? NSTextField == replaceField {
+            findDelegate.replace(replaceField.stringValue)
+        }
     }
 
     func redoFind() {
