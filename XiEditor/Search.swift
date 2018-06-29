@@ -182,7 +182,7 @@ extension EditViewController {
         }
         document.sendRpcAsync("find", params: params)
     }
-    
+
     func clearFind() {
         document.sendRpcAsync("find", params: ["chars": "", "case_sensitive": false])
     }
