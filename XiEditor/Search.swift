@@ -200,6 +200,16 @@ extension EditViewController {
             (findViewController.searchField as? FindSearchField)?.resultCount = resultCount
         }
     }
+    
+    @IBAction func addNextToSelection(_ sender: AnyObject?) {
+        document.sendRpcAsync("selection_for_find", params: ["case_sensitive": false])
+        document.sendRpcAsync("find_next", params: ["allow_same": true, "add_to_selection": true, "modify_selection": "add"])
+    }
+
+    @IBAction func addNextToSelectionRemoveCurrent(_ sender: AnyObject?) {
+        document.sendRpcAsync("selection_for_find", params: ["case_sensitive": false])
+        document.sendRpcAsync("find_next", params: ["allow_same": true, "add_to_selection": true, "modify_selection": "add_removing_current"])
+    }
 
     @IBAction func performCustomFinderAction(_ sender: Any?) {
         guard let tag = (sender as AnyObject).value(forKey: "tag") as? Int,
