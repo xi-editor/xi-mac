@@ -184,17 +184,17 @@ Gw
             <objects>
                 <viewController storyboardIdentifier="Find View Controller" id="lKE-xV-0EG" customClass="FindViewController" customModule="XiEditor" customModuleProvider="target" sceneMemberID="viewController">
                     <visualEffectView key="view" blendingMode="behindWindow" material="appearanceBased" state="inactive" id="NrM-ac-2ZW">
-                        <rect key="frame" x="0.0" y="0.0" width="805" height="60"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1013" height="60"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                         <subviews>
                             <stackView distribution="fill" orientation="horizontal" alignment="centerY" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0fT-ae-quE">
-                                <rect key="frame" x="8" y="0.0" width="789" height="60"/>
+                                <rect key="frame" x="8" y="0.0" width="997" height="60"/>
                                 <subviews>
                                     <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lrE-3U-oZn">
-                                        <rect key="frame" x="0.0" y="4" width="636" height="52"/>
+                                        <rect key="frame" x="0.0" y="4" width="674" height="52"/>
                                         <subviews>
                                             <searchField wantsLayer="YES" focusRingType="none" verticalHuggingPriority="750" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yjF-1R-sp7" customClass="FindSearchField" customModule="XiEditor" customModuleProvider="target">
-                                                <rect key="frame" x="0.0" y="30" width="363" height="22"/>
+                                                <rect key="frame" x="0.0" y="30" width="636" height="22"/>
                                                 <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" focusRingType="none" bezelStyle="round" recentsAutosaveName="xi-editor-find" id="4a0-aC-Kre">
                                                     <font key="font" metaFont="system"/>
                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -209,9 +209,9 @@ Gw
                                                     <outlet property="searchMenuTemplate" destination="0va-ps-fv2" id="hIs-xS-5bK"/>
                                                 </connections>
                                             </searchField>
-                                            <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="C06-uM-0mq">
-                                                <rect key="frame" x="0.0" y="0.0" width="480" height="22"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="left" placeholderString="Replace" drawsBackground="YES" id="PAV-4z-SXm">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="C06-uM-0mq">
+                                                <rect key="frame" x="0.0" y="0.0" width="636" height="22"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" focusRingType="none" placeholderString="Replace" bezelStyle="round" id="PAV-4z-SXm">
                                                     <font key="font" metaFont="system"/>
                                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -231,7 +231,7 @@ Gw
                                         </customSpacing>
                                     </stackView>
                                     <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oqn-cC-uXf">
-                                        <rect key="frame" x="644" y="8" width="145" height="44"/>
+                                        <rect key="frame" x="682" y="8" width="315" height="44"/>
                                         <subviews>
                                             <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="87Z-4W-agC">
                                                 <rect key="frame" x="0.0" y="26" width="93" height="18"/>
@@ -241,12 +241,8 @@ Gw
                                                         <segmentedCell key="cell" borderStyle="border" alignment="left" style="roundRect" trackingMode="momentary" id="53c-PL-hc5">
                                                             <font key="font" metaFont="cellTitle"/>
                                                             <segments>
-                                                                <segment image="NSLeftFacingTriangleTemplate" width="18">
-                                                                    <nil key="label"/>
-                                                                </segment>
-                                                                <segment image="NSRightFacingTriangleTemplate" width="18">
-                                                                    <nil key="label"/>
-                                                                </segment>
+                                                                <segment image="NSLeftFacingTriangleTemplate" width="18"/>
+                                                                <segment image="NSRightFacingTriangleTemplate" width="18"/>
                                                             </segments>
                                                         </segmentedCell>
                                                         <connections>
@@ -274,22 +270,35 @@ Gw
                                                 </customSpacing>
                                             </stackView>
                                             <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eFo-Od-w1I">
-                                                <rect key="frame" x="0.0" y="0.0" width="145" height="18"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="315" height="18"/>
                                                 <subviews>
                                                     <button verticalHuggingPriority="750" tag="6" translatesAutoresizingMaskIntoConstraints="NO" id="y5q-fj-zjS">
-                                                        <rect key="frame" x="0.0" y="-1" width="60" height="19"/>
-                                                        <buttonCell key="cell" type="roundRect" title="Replace" bezelStyle="roundedRect" alignment="center" borderStyle="border" tag="6" imageScaling="proportionallyDown" inset="2" id="HCl-a5-4oL">
-                                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                        <rect key="frame" x="0.0" y="-1" width="64" height="19"/>
+                                                        <buttonCell key="cell" type="roundRect" title="Replace" bezelStyle="roundedRect" imagePosition="left" borderStyle="border" tag="6" inset="2" id="HCl-a5-4oL">
+                                                            <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
                                                             <font key="font" metaFont="cellTitle"/>
                                                         </buttonCell>
                                                         <connections>
                                                             <action selector="performCustomFinderAction:" target="MxZ-GG-2K0" id="eKZ-1P-iSw"/>
                                                         </connections>
                                                     </button>
+                                                    <segmentedControl verticalHuggingPriority="750" tag="2" translatesAutoresizingMaskIntoConstraints="NO" id="neW-QX-zJG">
+                                                        <rect key="frame" x="71" y="-1" width="156" height="20"/>
+                                                        <segmentedCell key="cell" borderStyle="border" alignment="left" style="roundRect" trackingMode="momentary" id="bsz-je-mdh">
+                                                            <font key="font" metaFont="cellTitle"/>
+                                                            <segments>
+                                                                <segment label="Replace"/>
+                                                                <segment label="Replace All" tag="3"/>
+                                                            </segments>
+                                                        </segmentedCell>
+                                                        <connections>
+                                                            <action selector="segmentControlAction:" target="lKE-xV-0EG" id="ssi-Xh-6fb"/>
+                                                        </connections>
+                                                    </segmentedControl>
                                                     <button verticalHuggingPriority="750" tag="4" translatesAutoresizingMaskIntoConstraints="NO" id="Vxu-qr-c0s">
-                                                        <rect key="frame" x="68" y="-1" width="77" height="19"/>
-                                                        <buttonCell key="cell" type="roundRect" title="Replace All" bezelStyle="roundedRect" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="AhM-Dk-4rp">
-                                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                        <rect key="frame" x="234" y="-1" width="81" height="19"/>
+                                                        <buttonCell key="cell" type="roundRect" title="Replace All" bezelStyle="roundedRect" imagePosition="left" borderStyle="border" inset="2" id="AhM-Dk-4rp">
+                                                            <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
                                                             <font key="font" metaFont="cellTitle"/>
                                                         </buttonCell>
                                                         <connections>
@@ -300,8 +309,10 @@ Gw
                                                 <visibilityPriorities>
                                                     <integer value="1000"/>
                                                     <integer value="1000"/>
+                                                    <integer value="1000"/>
                                                 </visibilityPriorities>
                                                 <customSpacing>
+                                                    <real value="3.4028234663852886e+38"/>
                                                     <real value="3.4028234663852886e+38"/>
                                                     <real value="3.4028234663852886e+38"/>
                                                 </customSpacing>
@@ -330,7 +341,7 @@ Gw
                                 </customSpacing>
                             </stackView>
                             <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="ZGd-Q7-ois">
-                                <rect key="frame" x="0.0" y="-2" width="805" height="5"/>
+                                <rect key="frame" x="0.0" y="-2" width="1013" height="5"/>
                             </box>
                         </subviews>
                         <constraints>
@@ -346,6 +357,7 @@ Gw
                     <connections>
                         <outlet property="doneButton" destination="OLd-3g-GU4" id="inN-tK-kdf"/>
                         <outlet property="navigationButtons" destination="usm-aH-bgF" id="f6d-0g-ht5"/>
+                        <outlet property="replaceButtons" destination="neW-QX-zJG" id="bVm-GY-Zjn"/>
                         <outlet property="replaceField" destination="C06-uM-0mq" id="MRI-qt-pvO"/>
                         <outlet property="searchField" destination="yjF-1R-sp7" id="Zbr-6Y-tIV"/>
                         <outlet property="viewHeight" destination="dIp-Lv-vRx" id="gjc-zs-H7f"/>

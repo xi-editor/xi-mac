@@ -23,6 +23,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSTextFieldDe
     @IBOutlet weak var doneButton: NSButton!
     @IBOutlet weak var viewHeight: NSLayoutConstraint!
     @IBOutlet weak var replaceField: NSTextField!
+    @IBOutlet weak var replaceButtons: NSSegmentedControl!
 
     let resultCountLabel = Label(title: "")
 
@@ -107,11 +108,16 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSTextFieldDe
     }
 
     @IBAction func segmentControlAction(_ sender: NSSegmentedControl) {
+        print(sender.tag)
         switch sender.selectedSegment {
         case 0:
             findDelegate.findPrevious(wrapAround: wrapAround)
         case 1:
             findDelegate.findNext(wrapAround: wrapAround, allowSame: false)
+        case 2:
+            print("replace next")
+        case 3:
+            print("replace all")
         default:
             break
         }
