@@ -38,6 +38,8 @@ protocol FindDelegate {
     func findStatus(status: [[String: AnyObject]])
     func replaceStatus(status: [String: AnyObject])
     func replace(_ term: String?)
+    func replaceNext()
+    func replaceAll()
 }
 
 class EditViewController: NSViewController, EditViewDataSource, FindDelegate, ScrollInterested {
