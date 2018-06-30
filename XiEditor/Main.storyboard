@@ -184,17 +184,17 @@ Gw
             <objects>
                 <viewController storyboardIdentifier="Find View Controller" id="lKE-xV-0EG" customClass="FindViewController" customModule="XiEditor" customModuleProvider="target" sceneMemberID="viewController">
                     <visualEffectView key="view" blendingMode="behindWindow" material="appearanceBased" state="inactive" id="NrM-ac-2ZW">
-                        <rect key="frame" x="0.0" y="0.0" width="1559" height="60"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1559" height="30"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                         <subviews>
                             <stackView distribution="fill" orientation="horizontal" alignment="centerY" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0fT-ae-quE">
-                                <rect key="frame" x="8" y="0.0" width="1543" height="60"/>
+                                <rect key="frame" x="8" y="0.0" width="1543" height="30"/>
                                 <subviews>
                                     <stackView focusRingType="exterior" distribution="fill" orientation="vertical" alignment="leading" spacing="4" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oqn-cC-uXf">
-                                        <rect key="frame" x="0.0" y="2" width="1543" height="56"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="1543" height="30"/>
                                         <subviews>
-                                            <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" translatesAutoresizingMaskIntoConstraints="NO" id="87Z-4W-agC">
-                                                <rect key="frame" x="0.0" y="30" width="1543" height="22"/>
+                                            <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="87Z-4W-agC">
+                                                <rect key="frame" x="0.0" y="4" width="1543" height="22"/>
                                                 <subviews>
                                                     <searchField wantsLayer="YES" focusRingType="none" verticalHuggingPriority="750" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yjF-1R-sp7" customClass="FindSearchField" customModule="XiEditor" customModuleProvider="target">
                                                         <rect key="frame" x="0.0" y="0.0" width="1375" height="22"/>
@@ -275,8 +275,8 @@ Gw
                                                     <real value="3.4028234663852886e+38"/>
                                                 </customSpacing>
                                             </stackView>
-                                            <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eFo-Od-w1I">
-                                                <rect key="frame" x="0.0" y="4" width="1543" height="22"/>
+                                            <stackView hidden="YES" distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eFo-Od-w1I">
+                                                <rect key="frame" x="0.0" y="8" width="1543" height="22"/>
                                                 <subviews>
                                                     <textField focusRingType="none" verticalHuggingPriority="750" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="C06-uM-0mq">
                                                         <rect key="frame" x="0.0" y="0.0" width="1375" height="22"/>
@@ -340,9 +340,6 @@ Gw
                                         </customSpacing>
                                     </stackView>
                                 </subviews>
-                                <constraints>
-                                    <constraint firstAttribute="height" relation="lessThanOrEqual" constant="60" id="dIp-Lv-vRx"/>
-                                </constraints>
                                 <visibilityPriorities>
                                     <integer value="1000"/>
                                 </visibilityPriorities>
@@ -366,7 +363,6 @@ Gw
                     </visualEffectView>
                     <connections>
                         <outlet property="doneButton" destination="OLd-3g-GU4" id="inN-tK-kdf"/>
-                        <outlet property="findReplaceViewHeight" destination="dIp-Lv-vRx" id="W5W-4W-b3Y"/>
                         <outlet property="navigationButtons" destination="usm-aH-bgF" id="f6d-0g-ht5"/>
                         <outlet property="replaceField" destination="C06-uM-0mq" id="MRI-qt-pvO"/>
                         <outlet property="replacePanel" destination="eFo-Od-w1I" id="5Bk-VY-upm"/>
