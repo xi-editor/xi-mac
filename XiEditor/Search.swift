@@ -22,10 +22,8 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     @IBOutlet weak var navigationButtons: NSSegmentedControl!
     @IBOutlet weak var doneButton: NSButton!
     @IBOutlet weak var findReplaceViewHeight: NSLayoutConstraint!
-    @IBOutlet var hideReplace: NSLayoutConstraint!
-
+    @IBOutlet weak var replacePanel: NSStackView!
     @IBOutlet weak var replaceField: NSTextField!
-    @IBOutlet weak var replaceButtons: NSSegmentedControl!
 
     let resultCountLabel = Label(title: "")
 
@@ -287,7 +285,7 @@ extension EditViewController {
 
         switch action {
         case .showFindInterface:
-            findViewController.hideReplace.isActive = true
+            findViewController.replacePanel.isHidden = true
             openFind()
 
         case .hideFindInterface:
@@ -321,7 +319,7 @@ extension EditViewController {
             Swift.print("selectAllInSelection not implemented")
 
         case .showReplaceInterface:
-            findViewController.hideReplace.isActive = false
+            findViewController.replacePanel.isHidden = false
             openFind()
             
         case .hideReplaceInterface:
