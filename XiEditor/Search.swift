@@ -22,6 +22,8 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     @IBOutlet weak var navigationButtons: NSSegmentedControl!
     @IBOutlet weak var doneButton: NSButton!
     @IBOutlet weak var findReplaceViewHeight: NSLayoutConstraint!
+    @IBOutlet var hideReplace: NSLayoutConstraint!
+
     @IBOutlet weak var replaceField: NSTextField!
     @IBOutlet weak var replaceButtons: NSSegmentedControl!
 
@@ -37,8 +39,6 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     var wrapAround = true
     var regex = false
     var wholeWords = false
-    var findPanelHeight: CGFloat = 0
-    var findReplacePanelHeight: CGFloat = 0
 
     override func viewDidLoad() {
         // add recent searches menu items
@@ -58,9 +58,6 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
         let recentClear = NSMenuItem(title: "Clear Recent Searches", action: nil, keyEquivalent: "")
         recentClear.tag = Int(NSSearchField.clearRecentsMenuItemTag)
         menu.addItem(recentClear)
-
-        findPanelHeight = findReplaceViewHeight.constant / 2
-        findReplacePanelHeight = findReplaceViewHeight.constant
     }
 
     // we use this to make sure that UI corresponds to our state
@@ -164,18 +161,12 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
 
 extension EditViewController {
     func openFind() {
-        if findViewController.replaceField.isHidden {
-            findViewController.findReplaceViewHeight.constant = findViewController.findPanelHeight
-        } else {
-            findViewController.findReplaceViewHeight.constant = findViewController.findReplacePanelHeight
-        }
-
         if findViewController.view.isHidden {
             findViewController.view.isHidden = false
 
             let offset = findViewController.findReplaceViewHeight.constant
             scrollView.contentInsets = NSEdgeInsetsMake(offset, 0, 0, 0)
-            
+
             document.sendRpcAsync("highlight_find", params: ["visible": true])
         }
         editView.window?.makeFirstResponder(findViewController.searchField)
@@ -296,8 +287,7 @@ extension EditViewController {
 
         switch action {
         case .showFindInterface:
-            findViewController.replaceField.isHidden = true
-            findViewController.replaceButtons.isHidden = true
+            findViewController.hideReplace.isActive = true
             openFind()
 
         case .hideFindInterface:
@@ -331,8 +321,7 @@ extension EditViewController {
             Swift.print("selectAllInSelection not implemented")
 
         case .showReplaceInterface:
-            findViewController.replaceField.isHidden = false
-            findViewController.replaceButtons.isHidden = false
+            findViewController.hideReplace.isActive = false
             openFind()
             
         case .hideReplaceInterface:
