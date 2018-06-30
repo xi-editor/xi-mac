@@ -191,13 +191,13 @@ Gw
                                 <rect key="frame" x="8" y="0.0" width="1543" height="60"/>
                                 <subviews>
                                     <stackView focusRingType="exterior" distribution="fill" orientation="vertical" alignment="leading" spacing="4" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oqn-cC-uXf">
-                                        <rect key="frame" x="0.0" y="15" width="1543" height="30"/>
+                                        <rect key="frame" x="0.0" y="2" width="1543" height="56"/>
                                         <subviews>
                                             <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" translatesAutoresizingMaskIntoConstraints="NO" id="87Z-4W-agC">
-                                                <rect key="frame" x="0.0" y="4" width="1537" height="22"/>
+                                                <rect key="frame" x="0.0" y="30" width="1543" height="22"/>
                                                 <subviews>
                                                     <searchField wantsLayer="YES" focusRingType="none" verticalHuggingPriority="750" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yjF-1R-sp7" customClass="FindSearchField" customModule="XiEditor" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="0.0" width="1369" height="22"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="1375" height="22"/>
                                                         <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" focusRingType="none" bezelStyle="round" recentsAutosaveName="xi-editor-find" id="4a0-aC-Kre">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -214,7 +214,7 @@ Gw
                                                         </connections>
                                                     </searchField>
                                                     <stackView distribution="equalCentering" orientation="horizontal" alignment="centerY" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rOR-6k-Bho">
-                                                        <rect key="frame" x="1377" y="0.0" width="160" height="22"/>
+                                                        <rect key="frame" x="1383" y="0.0" width="160" height="22"/>
                                                         <subviews>
                                                             <segmentedControl verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="usm-aH-bgF">
                                                                 <rect key="frame" x="-1" y="1" width="43" height="20"/>
@@ -276,10 +276,10 @@ Gw
                                                 </customSpacing>
                                             </stackView>
                                             <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eFo-Od-w1I">
-                                                <rect key="frame" x="0.0" y="0.0" width="1543" height="0.0"/>
+                                                <rect key="frame" x="0.0" y="4" width="1543" height="22"/>
                                                 <subviews>
                                                     <textField focusRingType="none" verticalHuggingPriority="750" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="C06-uM-0mq">
-                                                        <rect key="frame" x="0.0" y="0.0" width="1375" height="0.0"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="1375" height="22"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" state="on" borderStyle="bezel" focusRingType="none" tag="1" placeholderString="Replace" bezelStyle="round" id="PAV-4z-SXm">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -291,10 +291,10 @@ Gw
                                                         </connections>
                                                     </textField>
                                                     <stackView distribution="fill" orientation="horizontal" alignment="bottom" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" placeholderIntrinsicWidth="154" placeholderIntrinsicHeight="22" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="An4-dp-5FQ">
-                                                        <rect key="frame" x="1383" y="0.0" width="160" height="0.0"/>
+                                                        <rect key="frame" x="1383" y="0.0" width="160" height="22"/>
                                                         <subviews>
                                                             <segmentedControl verticalHuggingPriority="750" verifyAmbiguity="ignoreSizes" tag="2" translatesAutoresizingMaskIntoConstraints="NO" id="neW-QX-zJG">
-                                                                <rect key="frame" x="-1" y="-1" width="162" height="2"/>
+                                                                <rect key="frame" x="-1" y="-1" width="162" height="20"/>
                                                                 <segmentedCell key="cell" borderStyle="border" alignment="left" style="roundRect" trackingMode="momentary" id="bsz-je-mdh">
                                                                     <font key="font" metaFont="cellTitle"/>
                                                                     <segments>
@@ -319,10 +319,6 @@ Gw
                                                         </customSpacing>
                                                     </stackView>
                                                 </subviews>
-                                                <edgeInsets key="edgeInsets" left="0.0" right="0.0" top="0.0" bottom="6"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" relation="lessThanOrEqual" id="gZ4-jm-xs0"/>
-                                                </constraints>
                                                 <visibilityPriorities>
                                                     <integer value="1000"/>
                                                     <real value="1000"/>
@@ -333,7 +329,7 @@ Gw
                                                 </customSpacing>
                                             </stackView>
                                         </subviews>
-                                        <edgeInsets key="edgeInsets" left="0.0" right="0.0" top="4" bottom="0.0"/>
+                                        <edgeInsets key="edgeInsets" left="0.0" right="0.0" top="4" bottom="4"/>
                                         <visibilityPriorities>
                                             <integer value="1000"/>
                                             <integer value="1000"/>
@@ -371,10 +367,9 @@ Gw
                     <connections>
                         <outlet property="doneButton" destination="OLd-3g-GU4" id="inN-tK-kdf"/>
                         <outlet property="findReplaceViewHeight" destination="dIp-Lv-vRx" id="W5W-4W-b3Y"/>
-                        <outlet property="hideReplace" destination="gZ4-jm-xs0" id="9jx-5J-5IQ"/>
                         <outlet property="navigationButtons" destination="usm-aH-bgF" id="f6d-0g-ht5"/>
-                        <outlet property="replaceButtons" destination="neW-QX-zJG" id="bVm-GY-Zjn"/>
                         <outlet property="replaceField" destination="C06-uM-0mq" id="MRI-qt-pvO"/>
+                        <outlet property="replacePanel" destination="eFo-Od-w1I" id="5Bk-VY-upm"/>
                         <outlet property="searchField" destination="yjF-1R-sp7" id="Zbr-6Y-tIV"/>
                     </connections>
                 </viewController>
