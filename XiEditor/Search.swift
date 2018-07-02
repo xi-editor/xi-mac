@@ -165,7 +165,7 @@ extension EditViewController {
         }
 
         findViewController.replacePanel.isHidden = replaceHidden
-        let offset = findViewController.view.frame.size.height
+        let offset = findViewController.view.fittingSize.height
         scrollView.contentInsets = NSEdgeInsetsMake(offset, 0, 0, 0)
         editView.window?.makeFirstResponder(findViewController.searchField)
     }
