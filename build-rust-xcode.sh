@@ -71,7 +71,7 @@ function build_target () {
 }
 
 build_target xi-core rust
-build_target xi-syntect-plugin rust/syntect-plugin
+build_target xi-syntect-plugin rust
 
 # move syntect plugin into plugins dir
 mkdir -p "${BUILT_PRODUCTS_DIR}/plugins/syntect/bin"
