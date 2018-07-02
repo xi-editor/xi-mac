@@ -49,18 +49,18 @@ class HoverViewController: NSViewController {
         super.viewDidLoad()
     }
 
+    // Required to instantiate view controller programmatically.
     override func loadView() {
-        self.hoverView.string = "This is some test text for hover def. When hover def is implemented, the string here will come from that."
         self.view = hoverView
     }
 
-    func changeHoverViewColors(newBackgroundColor: NSColor, newTextColor: NSColor) {
+    func updateHoverViewColors(newBackgroundColor: NSColor, newTextColor: NSColor) {
         self.hoverView.backgroundColor = newBackgroundColor
         self.hoverView.textColor = newTextColor
     }
 
     func setHoverContent(content: String) {
         self.hoverView.string = content
-        self.hoverView.needsDisplay = true
+
     }
 }

@@ -147,8 +147,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
                 window.backgroundColor = unifiedTitlebar ? color : nil
 
                 statusBar.updateStatusBarColor(newBackgroundColor: self.theme.background, newTextColor: self.theme.foreground, newUnifiedTitlebar: unifiedTitlebar)
-
-                hoverVC.changeHoverViewColors(newBackgroundColor: self.theme.background, newTextColor: self.theme.foreground)
+                hoverVC.updateHoverViewColors(newBackgroundColor: self.theme.background, newTextColor: self.theme.foreground)
 
 
                 if color.isDark && unifiedTitlebar {
@@ -170,8 +169,18 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     private var hoverEvent: NSEvent?
 
     let statusBar = StatusBar(frame: .zero)
-    let infoPopover = NSPopover()
+
+    // Popover and view controller that manages hover and show definition views.
     let hoverVC = HoverViewController()
+    lazy var definitionPopover: NSPopover = {
+        let popover = NSPopover()
+        popover.appearance = self.view.window?.appearance
+        popover.behavior = .semitransient
+        popover.contentViewController = hoverVC
+        popover.contentSize = hoverVC.hoverView.frame.size
+        hoverVC.updateHoverViewColors(newBackgroundColor: self.theme.background, newTextColor: self.theme.foreground)
+        return popover
+    }()
 
     override func viewDidLoad() {
         if let path = ProcessInfo.processInfo.environment["PATH"] {
@@ -212,8 +221,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     func setupHover() {
         let trackingArea = NSTrackingArea(rect: editView.frame, options: [.mouseMoved, .activeAlways], owner: self, userInfo: nil)
         self.view.addTrackingArea(trackingArea)
-
-        infoPopover.contentViewController = hoverVC
     }
 
     func updateGutterWidth() {
@@ -500,7 +507,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         if !editView.isFirstResponder {
             editView.window?.makeFirstResponder(editView)
         }
-        infoPopover.performClose(self)
+        definitionPopover.performClose(self)
         editView.unmarkText()
         editView.inputContext?.discardMarkedText()
         let position  = editView.bufferPositionFromPoint(theEvent.locationInWindow)
@@ -545,8 +552,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         if !editView.isFirstResponder {
             editView.window?.makeFirstResponder(editView)
         }
-        if infoPopover.isShown {
-            infoPopover.performClose(self)
+        if definitionPopover.isShown {
+            definitionPopover.performClose(self)
         }
         if hoverTimer == nil && theEvent.modifierFlags.contains([.option, .shift]){
             hoverTimer = Timer.scheduledTimer(timeInterval: TimeInterval(2.0), target: self, selector: #selector(sendHover), userInfo: nil, repeats: false)
@@ -569,9 +576,10 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
         if let event = hoverEvent {
             let hoverContent = result["content"] as! String
+            let positioningSize = CGSize(width: 1, height: 1) // Generic size to center popover on cursor
             hoverVC.setHoverContent(content: hoverContent)
-            infoPopover.contentSize = hoverVC.hoverView.frame.size
-            infoPopover.show(relativeTo: NSRect(origin: event.locationInWindow, size: CGSize(width: 1, height: 1)), of: self.view, preferredEdge: .minY)
+            definitionPopover.contentSize = hoverVC.hoverView.frame.size
+            definitionPopover.show(relativeTo: NSRect(origin: event.locationInWindow, size: positioningSize), of: self.view, preferredEdge: .minY)
             hoverEvent = nil
         }
     }
