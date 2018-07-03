@@ -105,9 +105,9 @@ func insertedStringToJson(_ stringToInsert: NSString) -> Any {
 
 func colorFromArgb(_ argb: UInt32) -> NSColor {
     return NSColor(red: CGFloat((argb >> 16) & 0xff) * 1.0/255,
-        green: CGFloat((argb >> 8) & 0xff) * 1.0/255,
-        blue: CGFloat(argb & 0xff) * 1.0/255,
-        alpha: CGFloat((argb >> 24) & 0xff) * 1.0/255)
+                   green: CGFloat((argb >> 8) & 0xff) * 1.0/255,
+                   blue: CGFloat(argb & 0xff) * 1.0/255,
+                   alpha: CGFloat((argb >> 24) & 0xff) * 1.0/255)
 }
 
 /// Convert color to ARGB format. Note: we should do less conversion
@@ -236,6 +236,15 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     /// Resets the blink timer, if the cursor should be blinking
     func resetCursorTimer() {
         self.showBlinkingCursor = self.isFrontmostView && self.isFirstResponder
+    }
+
+    override func updateTrackingAreas() {
+        for area in self.trackingAreas {
+            self.removeTrackingArea(area)
+        }
+        let newTrackingArea = NSTrackingArea(rect: self.bounds, options: [.activeInActiveApp, .mouseMoved], owner: self, userInfo: nil)
+        self.addTrackingArea(newTrackingArea)
+        super.updateTrackingAreas()
     }
 
     // MARK: - NSTextInputClient protocol
@@ -552,7 +561,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         for lineIx in first..<last {
             let relLineIx = lineIx - first
             guard let line = lines[relLineIx] else {
-              continue
+                continue
             }
 
             let gutterNumber = UInt(lineIx) + 1

@@ -182,6 +182,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         return popover
     }()
 
+    // Incrementing request identifier to be used with hover/show definition
+    var requestId = 0
+
     override func viewDidLoad() {
         if let path = ProcessInfo.processInfo.environment["PATH"] {
             print(path)
@@ -199,7 +202,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     override func viewDidAppear() {
         super.viewDidAppear()
         setupStatusBar()
-        setupHover()
+        editView.updateTrackingAreas()
         shadowView.setup()
         NotificationCenter.default.addObserver(self, selector: #selector(EditViewController.frameDidChangeNotification(_:)), name: NSView.frameDidChangeNotification, object: scrollView)
         // call to set initial scroll position once we know view size
@@ -216,11 +219,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             statusBar.trailingAnchor.constraint(equalTo: editView.trailingAnchor),
             statusBar.bottomAnchor.constraint(equalTo: editView.bottomAnchor)
             ])
-    }
-
-    func setupHover() {
-        let trackingArea = NSTrackingArea(rect: editView.frame, options: [.mouseMoved, .activeAlways], owner: self, userInfo: nil)
-        self.view.addTrackingArea(trackingArea)
     }
 
     func updateGutterWidth() {
@@ -245,6 +243,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         updateEditViewHeight()
         willScroll(to: scrollView.contentView.bounds.origin)
         updateViewportSize()
+        editView.updateTrackingAreas()
         statusBar.checkItemsFitFor(windowWidth: self.view.frame.width)
     }
 
@@ -566,7 +565,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             let hoverPosition = editView.bufferPositionFromPoint(event.locationInWindow)
             hoverTimer?.invalidate()
             hoverTimer = nil
-            document.sendRpcAsync("request_hover", params: ["request_id": 1, "position": ["type": "utf8_line_char", "line": hoverPosition.line, "character": hoverPosition.column]])
+            document.sendRpcAsync("request_hover", params: ["request_id": requestId, "position": ["type": "utf8_line_char", "line": hoverPosition.line, "character": hoverPosition.column]])
+            requestId += 1
         }
     }
 
