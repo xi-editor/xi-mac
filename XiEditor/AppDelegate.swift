@@ -310,10 +310,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         }
     }
 
-    func addStatusItem(viewIdentifier: String, plugin: String, key: String, value: String, alignment: String) {
+    func addStatusItem(viewIdentifier: String, source: String, key: String, value: String, alignment: String) {
         let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
         DispatchQueue.main.async {
-            let newStatusItem = StatusItem(pluginName: plugin, key, value, alignment)
+            let newStatusItem = StatusItem(source, key, value, alignment)
             document?.editViewController?.statusBar.addStatusItem(newStatusItem)
         }
     }

@@ -57,7 +57,7 @@ protocol XiClient: AnyObject {
     /// A list of notifications that manages status items.
     /// Keys are unique, and alignment (left or right) cannot be
     /// changed after creating the status item.
-    func addStatusItem(viewIdentifier: String, plugin: String, key: String, value: String, alignment: String);
+    func addStatusItem(viewIdentifier: String, source: String, key: String, value: String, alignment: String);
     func updateStatusItem(viewIdentifier: String, key: String, value: String);
     func removeStatusItem(viewIdentifier: String, key: String);
 

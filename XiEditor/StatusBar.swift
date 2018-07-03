@@ -23,15 +23,15 @@ enum StatusItemAlignment: String {
 class StatusItem: NSTextField {
     let key: String
     var value: String = ""
-    let pluginName: String
+    let source: String
     let barAlignment: StatusItemAlignment
     var barConstraints = [NSLayoutConstraint]()
 
-    init(pluginName: String, _ key: String, _ value: String, _ barAlignment: String) {
+    init(_ source: String, _ key: String, _ value: String, _ barAlignment: String) {
         self.key = key
         self.value = value
         self.barAlignment = StatusItemAlignment(rawValue: barAlignment)!
-        self.pluginName = pluginName
+        self.source = source
         super.init(frame: .zero)
         // Similar to what NSTextField's label convenience init creates
         self.isEditable = false
