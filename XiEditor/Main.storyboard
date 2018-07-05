@@ -230,7 +230,7 @@ Gw
                                                                 </connections>
                                                             </segmentedControl>
                                                             <button verticalHuggingPriority="750" tag="9" translatesAutoresizingMaskIntoConstraints="NO" id="OLd-3g-GU4" userLabel="Find All Button">
-                                                                <rect key="frame" x="51.5" y="1" width="56" height="19"/>
+                                                                <rect key="frame" x="51" y="1" width="56" height="19"/>
                                                                 <buttonCell key="cell" type="roundRect" title="Find All" bezelStyle="roundedRect" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="wFY-L9-Tvu">
                                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                                     <font key="font" metaFont="cellTitle"/>
@@ -293,7 +293,7 @@ Gw
                                                     <stackView distribution="fill" orientation="horizontal" alignment="bottom" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" placeholderIntrinsicWidth="154" placeholderIntrinsicHeight="22" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="An4-dp-5FQ">
                                                         <rect key="frame" x="1383" y="0.0" width="160" height="22"/>
                                                         <subviews>
-                                                            <segmentedControl verticalHuggingPriority="750" verifyAmbiguity="ignoreSizes" tag="2" translatesAutoresizingMaskIntoConstraints="NO" id="neW-QX-zJG">
+                                                            <segmentedControl verticalHuggingPriority="750" tag="2" translatesAutoresizingMaskIntoConstraints="NO" id="neW-QX-zJG">
                                                                 <rect key="frame" x="-1" y="-1" width="162" height="20"/>
                                                                 <segmentedCell key="cell" borderStyle="border" alignment="left" style="roundRect" trackingMode="momentary" id="bsz-je-mdh">
                                                                     <font key="font" metaFont="cellTitle"/>
@@ -375,25 +375,25 @@ Gw
                         <menuItem title="Ignore Case" state="on" tag="101" id="h8d-fe-rWj">
                             <modifierMask key="keyEquivalentModifierMask"/>
                             <connections>
-                                <action selector="findSegmentControlAction:" target="lKE-xV-0EG" id="YL3-c0-UBZ"/>
+                                <action selector="selectIgnoreCaseMenuAction:" target="lKE-xV-0EG" id="bo7-j1-Sfh"/>
                             </connections>
                         </menuItem>
                         <menuItem title="Wrap Around" state="on" tag="102" id="LvD-lr-RfY">
                             <modifierMask key="keyEquivalentModifierMask"/>
                             <connections>
-                                <action selector="findSegmentControlAction:" target="lKE-xV-0EG" id="B7N-nB-Wee"/>
+                                <action selector="selectWrapAroundMenuAction:" target="lKE-xV-0EG" id="Q3M-Qd-3jn"/>
                             </connections>
                         </menuItem>
                         <menuItem title="Regex" tag="103" id="rue-us-4Db">
                             <modifierMask key="keyEquivalentModifierMask"/>
                             <connections>
-                                <action selector="findSegmentControlAction:" target="lKE-xV-0EG" id="6KD-C7-tlP"/>
+                                <action selector="selectRegexMenuAction:" target="lKE-xV-0EG" id="qAJ-lD-bi9"/>
                             </connections>
                         </menuItem>
                         <menuItem title="Whole Words" tag="104" id="3oE-F1-ZB2">
                             <modifierMask key="keyEquivalentModifierMask"/>
                             <connections>
-                                <action selector="findSegmentControlAction:" target="lKE-xV-0EG" id="fye-R9-1dB"/>
+                                <action selector="selectWholeWordsMenuAction:" target="lKE-xV-0EG" id="cmt-6R-gHT"/>
                             </connections>
                         </menuItem>
                     </items>
