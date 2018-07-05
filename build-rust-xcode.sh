@@ -23,7 +23,8 @@ set -e
 
 function build_target () {
     TARGET_NAME="$1"
-    cd "${SRCROOT}/xi-editor/$2"
+    CARGO_PROJECT_FLAG="$2"
+    cd "${SRCROOT}/xi-editor/rust"
     if [[ ${ACTION:-build} = "build" ]]; then
         if [[ $PLATFORM_NAME = "" ]]; then
             # default for building with xcodebuild
@@ -58,7 +59,7 @@ function build_target () {
             if [[ $RUST_ARCH = "arm64" ]]; then
                 RUST_ARCH="aarch64"
             fi
-            cargo build $RUST_CONFIGURATION_FLAG --target "${RUST_ARCH}-apple-${RUST_TARGET_OS}"
+            cargo build $RUST_CONFIGURATION_FLAG $CARGO_PROJECT_FLAG --target "${RUST_ARCH}-apple-${RUST_TARGET_OS}"
             EXECUTABLES+=("target/${RUST_ARCH}-apple-${RUST_TARGET_OS}/${RUST_CONFIGURATION}/${TARGET_NAME}")
         done
 
@@ -70,8 +71,8 @@ function build_target () {
     fi
 }
 
-build_target xi-core rust
-build_target xi-syntect-plugin rust/syntect-plugin
+build_target xi-core ""
+build_target xi-syntect-plugin "-p xi-syntect-plugin"
 
 # move syntect plugin into plugins dir
 mkdir -p "${BUILT_PRODUCTS_DIR}/plugins/syntect/bin"
