@@ -152,6 +152,10 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
         findDelegate.findStatus(status: status)
     }
 
+    @IBAction func replaceFieldAction(_ sender: NSTextField) {
+        findDelegate.replaceNext()
+    }
+
     public func replaceStatus(status: [String: AnyObject]) {
         findDelegate.replaceStatus(status: status)
     }

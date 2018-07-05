@@ -286,6 +286,7 @@ Gw
                                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                         <connections>
+                                                            <action selector="replaceFieldAction:" target="lKE-xV-0EG" id="nxv-8d-MfH"/>
                                                             <outlet property="delegate" destination="lKE-xV-0EG" id="xr8-FS-GXe"/>
                                                             <outlet property="nextKeyView" destination="yjF-1R-sp7" id="Svg-RQ-vke"/>
                                                         </connections>
