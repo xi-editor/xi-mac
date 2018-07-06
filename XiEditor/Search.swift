@@ -258,9 +258,7 @@ extension EditViewController {
     }
 
     func replace(_ term: String?) {
-        var params: [String: Any] = [
-            "preserve_case": false,     // todo: impement option for preserving case
-        ]
+        var params: [String: Any] = [:]
 
         if term != nil {
             params["chars"] = term
