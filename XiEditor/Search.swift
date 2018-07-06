@@ -307,8 +307,8 @@ class FindSearchField: NSSearchField {
 
         let defaultButtonWidth: CGFloat = 22;
 
-        self.addConstraint(label.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -defaultButtonWidth))
-        self.addConstraint(label.centerYAnchor.constraint(equalTo: self.centerYAnchor))
+        label.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -defaultButtonWidth).isActive = true
+        label.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
     }
 
     // required override; on 10.13(?) accessory icons aren't

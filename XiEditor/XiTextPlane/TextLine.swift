@@ -184,7 +184,7 @@ struct TextLine {
     /// only works properly (i.e. rendered correctly) for monospace fonts
     /// although non-monospace fonts will still produce some output.
     func scatterGather<C: Collection>(indices glyphIndices: C, font: CTFont)
-            -> TextLine where C.Element == Int, C.IndexDistance == Int {
+            -> TextLine where C.Element == Int {
         var newGlyphs = Array<GlyphInstance>()
         newGlyphs.reserveCapacity(glyphIndices.count)
 

@@ -445,7 +445,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     
     // Determines the gesture type based on flags and click count.
     private func clickGestureType(event: NSEvent) -> String {
-        let flags = event.modifierFlags.rawValue >> 16
         let clickCount = event.clickCount
         
         if event.modifierFlags.contains(NSEvent.ModifierFlags.command) {
