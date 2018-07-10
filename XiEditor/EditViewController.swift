@@ -147,8 +147,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
                 window.backgroundColor = unifiedTitlebar ? color : nil
 
                 statusBar.updateStatusBarColor(newBackgroundColor: self.theme.background, newTextColor: self.theme.foreground, newUnifiedTitlebar: unifiedTitlebar)
-                hoverVC.updateHoverViewColors(newBackgroundColor: self.theme.background, newTextColor: self.theme.foreground)
-
 
                 if color.isDark && unifiedTitlebar {
                     window.appearance = NSAppearance(named: NSAppearance.Name.vibrantDark)
@@ -170,20 +168,19 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     let statusBar = StatusBar(frame: .zero)
 
-    // Popover and view controller that manages hover and show definition views.
-    let hoverVC = HoverViewController()
-    lazy var definitionPopover: NSPopover = {
+    // Popover that manages hover and show definition views.
+    lazy var infoPopover: NSPopover = {
         let popover = NSPopover()
-        popover.appearance = self.view.window?.appearance
+        if let window = self.view.window {
+            popover.appearance = window.appearance
+        }
         popover.behavior = .semitransient
-        popover.contentViewController = hoverVC
-        popover.contentSize = hoverVC.hoverView.frame.size
-        hoverVC.updateHoverViewColors(newBackgroundColor: self.theme.background, newTextColor: self.theme.foreground)
         return popover
     }()
 
-    // Incrementing request identifier to be used with hover/show definition
-    var requestId = 0
+    // Incrementing request identifiers to be used with hover/show definition
+    var hoverRequestID = 0
+    var definitionRequestID = 0
 
     override func viewDidLoad() {
         if let path = ProcessInfo.processInfo.environment["PATH"] {
@@ -476,7 +473,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     // Determines the gesture type based on flags and click count.
     private func clickGestureType(event: NSEvent) -> String {
         let clickCount = event.clickCount
-        
+
         if event.modifierFlags.contains(NSEvent.ModifierFlags.command) {
             switch (clickCount) {
             case 2:
@@ -490,6 +487,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             return "range_select"
         } else if (event.modifierFlags.contains(NSEvent.ModifierFlags.option)) {
             return "request_hover"
+        } else if (event.modifierFlags.contains([NSEvent.ModifierFlags.option, .command])) {
+            return "request_definition"
         } else {
             switch (clickCount) {
             case 2:
@@ -506,7 +505,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         if !editView.isFirstResponder {
             editView.window?.makeFirstResponder(editView)
         }
-        definitionPopover.performClose(self)
+        infoPopover.performClose(self)
         editView.unmarkText()
         editView.inputContext?.discardMarkedText()
         let position  = editView.bufferPositionFromPoint(theEvent.locationInWindow)
@@ -515,7 +514,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         let gestureType = clickGestureType(event: theEvent)
 
         if gestureType == "request_hover" {
-            document.sendRpcAsync("request_hover", params: ["request_id": 1, "position": ["type": "utf8_line_char", "line": position.line, "character": position.column]])
+            document.sendRpcAsync("request_hover", params: ["request_id": hoverRequestID, "position": ["type": "utf8_line_char", "line": position.line, "character": position.column]])
+        } else if gestureType == "request_definition" {
+            document.sendRpcAsync("request_definition", params: ["request_id": definitionRequestID, "position": ["type": "utf8_line_char", "line": position.line, "character": position.column]])
         } else {
             document.sendRpcAsync("gesture", params: [
                 "line": position.line,
@@ -551,9 +552,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         if !editView.isFirstResponder {
             editView.window?.makeFirstResponder(editView)
         }
-        if definitionPopover.isShown {
-            definitionPopover.performClose(self)
-        }
         if hoverTimer == nil && theEvent.modifierFlags.contains([.option, .shift]){
             hoverTimer = Timer.scheduledTimer(timeInterval: TimeInterval(2.0), target: self, selector: #selector(sendHover), userInfo: nil, repeats: false)
         }
@@ -565,11 +563,12 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             let hoverPosition = editView.bufferPositionFromPoint(event.locationInWindow)
             hoverTimer?.invalidate()
             hoverTimer = nil
-            document.sendRpcAsync("request_hover", params: ["request_id": requestId, "position": ["type": "utf8_line_char", "line": hoverPosition.line, "character": hoverPosition.column]])
-            requestId += 1
+            document.sendRpcAsync("request_hover", params: ["request_id": hoverRequestID, "position": ["type": "utf8_line_char", "line": hoverPosition.line, "character": hoverPosition.column]])
+            hoverRequestID += 1
         }
     }
 
+    // Creates a new view controller to be used with the results of a hover request.
     func showHover(withResult result: [String: AnyObject]) {
         print("content:  \(String(describing: result["content"]))")
         print("range:  \(String(describing: result["range"]))")
@@ -577,9 +576,10 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         if let event = hoverEvent {
             let hoverContent = result["content"] as! String
             let positioningSize = CGSize(width: 1, height: 1) // Generic size to center popover on cursor
+            let hoverVC = InformationViewController(type: .Hover)
             hoverVC.setHoverContent(content: hoverContent)
-            definitionPopover.contentSize = hoverVC.hoverView.frame.size
-            definitionPopover.show(relativeTo: NSRect(origin: event.locationInWindow, size: positioningSize), of: self.view, preferredEdge: .minY)
+            infoPopover.contentViewController = hoverVC
+            infoPopover.show(relativeTo: NSRect(origin: event.locationInWindow, size: positioningSize), of: self.view, preferredEdge: .minY)
             hoverEvent = nil
         }
     }

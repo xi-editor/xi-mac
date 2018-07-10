@@ -338,6 +338,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
             document?.editViewController?.showHover(withResult: result)
         }
     }
+
+    func showDefinition(viewIdentifier: String, requestIdentifier: Int, result: [String : AnyObject]) {
+        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
+        DispatchQueue.main.async {
+            document?.editViewController?.showHover(withResult: result)
+        }
+    }
+
     func configChanged(viewIdentifier: ViewIdentifier, changes: [String : AnyObject]) {
         let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
         DispatchQueue.main.async {

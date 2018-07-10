@@ -1,0 +1,47 @@
+// Copyright 2018 Google Inc. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+import Cocoa
+
+class HoverView: NSTextView {
+
+    override init(frame frameRect: NSRect, textContainer container: NSTextContainer?) {
+        // Lets AppKit do all the work when setting up a new text view
+        let textView = NSTextView(frame: .zero)
+        super.init(frame: frameRect, textContainer: textView.textContainer)
+    }
+
+    override init(frame frameRect: NSRect) {
+        super.init(frame: .zero)
+        self.isEditable = false
+        self.textContainerInset = NSSize(width: 10, height: 10)
+        self.font = NSFont.systemFont(ofSize: 11)
+        self.translatesAutoresizingMaskIntoConstraints = false
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    //    override func viewDidMoveToWindow() {
+    //        guard let frameView = window?.contentView?.superview else {
+    //            return
+    //        }
+    //        let backgroundView = NSView(frame: frameView.bounds)
+    //        backgroundView.wantsLayer = true
+    //        backgroundView.layer?.backgroundColor = .black // colour of your choice
+    //        backgroundView.autoresizingMask = [.width, .height]
+    //        frameView.addSubview(backgroundView, positioned: .below, relativeTo: frameView)
+    //    }
+}
