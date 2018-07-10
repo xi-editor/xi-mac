@@ -14,19 +14,14 @@
 
 import Cocoa
 
-enum InfoType: String {
-    case Hover
-    case Definition
-}
+class HoverViewController: NSViewController {
 
-class InformationViewController: NSViewController {
+    var hoverContent: String
+    var hoverView: HoverView
 
-    var infoType: InfoType
-    let hoverView = HoverView(frame: .zero)
-    let definitionView = HoverView(frame: .zero)
-
-    init(type: InfoType) {
-        self.infoType = type
+    init(content: String) {
+        self.hoverContent = content
+        self.hoverView = HoverView(content: content)
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -34,26 +29,29 @@ class InformationViewController: NSViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
+    // Required to instantiate view controller programmatically.
     override func loadView() {
-        switch infoType {
-        case .Hover:
-            self.view = hoverView
-        case .Definition:
-            self.view = definitionView
-        }
+        self.view = hoverView
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
     }
 
-    // Required to instantiate view controller programmatically.
     func updateHoverViewColors(newBackgroundColor: NSColor, newTextColor: NSColor) {
         self.hoverView.backgroundColor = newBackgroundColor
         self.hoverView.textColor = newTextColor
     }
 
-    func setHoverContent(content: String) {
-        self.hoverView.string = content
+    // Returns the height required to fit the hover result.
+    // The text container inset for the top and bottom is added to the height required to
+    // draw the string.
+    func heightForString() -> CGFloat {
+        guard let layoutManager = self.hoverView.layoutManager else { return 0 }
+        guard let textContainer = self.hoverView.textContainer else { return 0 }
+
+        layoutManager.glyphRange(for: textContainer)
+        print(layoutManager.usedRect(for: textContainer).height)
+        return layoutManager.usedRect(for: textContainer).height + self.hoverView.textContainerInset.height * 2
     }
 }

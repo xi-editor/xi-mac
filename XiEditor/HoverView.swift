@@ -22,12 +22,14 @@ class HoverView: NSTextView {
         super.init(frame: frameRect, textContainer: textView.textContainer)
     }
 
-    override init(frame frameRect: NSRect) {
+    init(content: String) {
         super.init(frame: .zero)
+        self.string = content
         self.isEditable = false
         self.textContainerInset = NSSize(width: 10, height: 10)
         self.font = NSFont.systemFont(ofSize: 11)
         self.translatesAutoresizingMaskIntoConstraints = false
+        self.needsLayout = true
     }
 
     required init?(coder: NSCoder) {

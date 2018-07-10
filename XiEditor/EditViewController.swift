@@ -169,14 +169,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     let statusBar = StatusBar(frame: .zero)
 
     // Popover that manages hover and show definition views.
-    lazy var infoPopover: NSPopover = {
-        let popover = NSPopover()
-        if let window = self.view.window {
-            popover.appearance = window.appearance
-        }
-        popover.behavior = .semitransient
-        return popover
-    }()
+    let infoPopover = NSPopover()
 
     // Incrementing request identifiers to be used with hover/show definition
     var hoverRequestID = 0
@@ -199,6 +192,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     override func viewDidAppear() {
         super.viewDidAppear()
         setupStatusBar()
+        setupInfoPopover()
         editView.updateTrackingAreas()
         shadowView.setup()
         NotificationCenter.default.addObserver(self, selector: #selector(EditViewController.frameDidChangeNotification(_:)), name: NSView.frameDidChangeNotification, object: scrollView)
@@ -216,6 +210,13 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             statusBar.trailingAnchor.constraint(equalTo: editView.trailingAnchor),
             statusBar.bottomAnchor.constraint(equalTo: editView.bottomAnchor)
             ])
+    }
+
+    func setupInfoPopover() {
+        if let window = self.view.window {
+            infoPopover.appearance = window.appearance
+        }
+        infoPopover.behavior = .semitransient
     }
 
     func updateGutterWidth() {
@@ -572,16 +573,23 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     func showHover(withResult result: [String: AnyObject]) {
         print("content:  \(String(describing: result["content"]))")
         print("range:  \(String(describing: result["range"]))")
+        let hoverContent = result["content"] as! String
+        let positioningSize = CGSize(width: 1, height: 1) // Generic size to center popover on cursor
+        let hoverVC = HoverViewController(content: hoverContent)
+        infoPopover.contentViewController = hoverVC
+        infoPopover.contentSize.width = 250
+        infoPopover.contentSize.height = hoverVC.heightForString()
 
         if let event = hoverEvent {
-            let hoverContent = result["content"] as! String
-            let positioningSize = CGSize(width: 1, height: 1) // Generic size to center popover on cursor
-            let hoverVC = InformationViewController(type: .Hover)
-            hoverVC.setHoverContent(content: hoverContent)
-            infoPopover.contentViewController = hoverVC
             infoPopover.show(relativeTo: NSRect(origin: event.locationInWindow, size: positioningSize), of: self.view, preferredEdge: .minY)
             hoverEvent = nil
         }
+    }
+
+    // To be used when definitions are returned.
+    func showDefinition(withResult result: [String: AnyObject]) {
+        print("content:  \(String(describing: result["content"]))")
+        print("range:  \(String(describing: result["range"]))")
     }
     
     @objc func _autoscrollTimerCallback() {

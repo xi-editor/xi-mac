@@ -44,7 +44,7 @@
 		AED22D861FE877000096E7C3 /* TextLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AED22D851FE877000096E7C3 /* TextLine.swift */; };
 		AED23F181C83CBED002246CE /* EditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AED23F171C83CBEC002246CE /* EditView.swift */; };
 		E1288E8020B06E9C0068EEB9 /* StatusBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1288E7F20B06E9C0068EEB9 /* StatusBar.swift */; };
-		E17D65FA20D56C5B00C4F566 /* InformationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17D65F920D56C5B00C4F566 /* InformationViewController.swift */; };
+		E17D65FA20D56C5B00C4F566 /* HoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17D65F920D56C5B00C4F566 /* HoverViewController.swift */; };
 		F53EA2AD1DCAA8110071ACFD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F53EA2AC1DCAA8110071ACFD /* Main.storyboard */; };
 		F53EA2AF1DCAAA170071ACFD /* EditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53EA2AE1DCAAA170071ACFD /* EditViewController.swift */; };
 		F5BDBF371DCA9D2C0042430B /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5BDBF361DCA9D2C0042430B /* Document.swift */; };
@@ -119,7 +119,7 @@
 		AED22D851FE877000096E7C3 /* TextLine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextLine.swift; sourceTree = "<group>"; };
 		AED23F171C83CBEC002246CE /* EditView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditView.swift; sourceTree = "<group>"; };
 		E1288E7F20B06E9C0068EEB9 /* StatusBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBar.swift; sourceTree = "<group>"; };
-		E17D65F920D56C5B00C4F566 /* InformationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InformationViewController.swift; sourceTree = "<group>"; };
+		E17D65F920D56C5B00C4F566 /* HoverViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoverViewController.swift; sourceTree = "<group>"; };
 		F53EA2AC1DCAA8110071ACFD /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		F53EA2AE1DCAAA170071ACFD /* EditViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = EditViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		F5BDBF361DCA9D2C0042430B /* Document.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
@@ -199,7 +199,7 @@
 				E1288E7F20B06E9C0068EEB9 /* StatusBar.swift */,
 				832910D820229C2D0042C32B /* Fps.swift */,
 				96098D5020F46E3B003272DB /* HoverView.swift */,
-				E17D65F920D56C5B00C4F566 /* InformationViewController.swift */,
+				E17D65F920D56C5B00C4F566 /* HoverViewController.swift */,
 				AE499DD61C82BB2B002D68AF /* Info.plist */,
 				F53EA2AC1DCAA8110071ACFD /* Main.storyboard */,
 				AE499DD11C82BB2B002D68AF /* Assets.xcassets */,
@@ -422,7 +422,7 @@
 				AE0243F61E4BDF8A00641BDA /* StyleMap.swift in Sources */,
 				AED22D761FE836880096E7C3 /* TextPlane.swift in Sources */,
 				AE168C5C1E4AD87B008249AE /* LineCache.swift in Sources */,
-				E17D65FA20D56C5B00C4F566 /* InformationViewController.swift in Sources */,
+				E17D65FA20D56C5B00C4F566 /* HoverViewController.swift in Sources */,
 				96098D5120F46E3B003272DB /* HoverView.swift in Sources */,
 				6B90DD1C1F129C1A00DF3CE2 /* PluginCommand.swift in Sources */,
 				6B53F5F21EF963EB00A4C664 /* Theme.swift in Sources */,
