@@ -420,9 +420,11 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         if let result = document?.sendRpc(method, params: []) {
             switch result {
             case .ok(let text):
-                let pasteboard = NSPasteboard.general
-                pasteboard.clearContents()
-                pasteboard.writeObjects([(text as! String) as NSPasteboardWriting])
+                if let text = text as? String {
+                    let pasteboard = NSPasteboard.general
+                    pasteboard.clearContents()
+                    pasteboard.writeObjects([text as NSPasteboardWriting])
+                }
             case .error(let err):
                 print("cut/copy failed: \(err)")
             }
