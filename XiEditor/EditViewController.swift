@@ -31,7 +31,7 @@ struct LineAssoc {
 }
 
 protocol FindDelegate {
-    func find(_ term: String?, caseSensitive: Bool, regex: Bool)
+    func find(_ term: String?, caseSensitive: Bool, regex: Bool, wholeWords: Bool)
     func findNext(wrapAround: Bool, allowSame: Bool)
     func findPrevious(wrapAround: Bool)
     func closeFind()
@@ -39,7 +39,6 @@ protocol FindDelegate {
 }
 
 class EditViewController: NSViewController, EditViewDataSource, FindDelegate, ScrollInterested {
-
     @IBOutlet var scrollView: NSScrollView!
     @IBOutlet weak var editContainerView: EditContainerView!
     @IBOutlet var editView: EditView!
