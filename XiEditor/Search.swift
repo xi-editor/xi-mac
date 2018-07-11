@@ -130,7 +130,11 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
 
     @IBAction func searchFieldAction(_ sender: NSSearchField) {
         findDelegate.find(searchField.stringValue, caseSensitive: !ignoreCase, regex: regex, wholeWords: wholeWords)
-        findDelegate.findNext(wrapAround: wrapAround, allowSame: false)
+        if NSEvent.modifierFlags.contains(.shift) {
+            findDelegate.findPrevious(wrapAround: wrapAround)
+        } else {
+            findDelegate.findNext(wrapAround: wrapAround, allowSame: false)
+        }
     }
 
     override func controlTextDidChange(_ obj: Notification) {
