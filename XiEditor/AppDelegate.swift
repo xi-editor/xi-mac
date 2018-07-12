@@ -339,10 +339,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         }
     }
 
-    func showDefinition(viewIdentifier: String, requestIdentifier: Int, result: [String : AnyObject]) {
+    func showDefinition(viewIdentifier: String, requestIdentifier: Int, result: [[String: AnyObject]]) {
         let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
         DispatchQueue.main.async {
-            document?.editViewController?.showHover(withResult: result)
+            document?.editViewController?.showDefinition(withResult: result)
         }
     }
 

@@ -14,10 +14,38 @@
 
 import Cocoa
 
-class DefinitionViewController: NSViewController {
+class DefinitionViewController: NSViewController, NSTableViewDataSource, NSTableViewDelegate {
+
+    @IBOutlet weak var definitionTableView: NSTableView!
+    var definitionURIs = [String]()
+    var definitionPositions = [BufferPosition]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        definitionTableView.dataSource = self
+        definitionTableView.delegate = self
     }
+
+    func numberOfRows(in tableView: NSTableView) -> Int {
+        return definitionPositions.count
+    }
+
+    func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
+        if definitionPositions.isEmpty {
+            return nil
+        }
+
+        let line = definitionPositions[row].line
+        let column = definitionPositions[row].column
+
+        if let cell = tableView.makeView(withIdentifier: .init("DefinitionCellView"), owner: nil) as? NSTableCellView {
+            cell.textField?.stringValue = "\(line), \(column)"
+            return cell
+        }
+
+        return nil
+    }
+
+
 
 }

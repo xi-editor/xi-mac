@@ -167,9 +167,21 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     private var hoverEvent: NSEvent?
 
     let statusBar = StatusBar(frame: .zero)
+    lazy var definitionVC: DefinitionViewController! = {
+        let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
+        let controller = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Definition View Controller")) as! DefinitionViewController
+        return controller
+    }()
 
     // Popover that manages hover and show definition views.
-    let infoPopover = NSPopover()
+    lazy var infoPopover: NSPopover = {
+        let popover = NSPopover()
+        if let window = self.view.window {
+            popover.appearance = window.appearance
+        }
+        popover.behavior = .semitransient
+        return popover
+    }()
 
     // Incrementing request identifiers to be used with hover/show definition
     var hoverRequestID = 0
@@ -213,10 +225,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     func setupInfoPopover() {
-        if let window = self.view.window {
-            infoPopover.appearance = window.appearance
-        }
-        infoPopover.behavior = .semitransient
+
     }
 
     func updateGutterWidth() {
@@ -586,10 +595,16 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         }
     }
 
-    // To be used when definitions are returned.
-    func showDefinition(withResult result: [String: AnyObject]) {
-        print("content:  \(String(describing: result["content"]))")
-        print("range:  \(String(describing: result["range"]))")
+    // Hooks data for the definition view controller to display definition results from a request.
+    func showDefinition(withResult result: [[String: AnyObject]]) {
+        for position in result {
+            definitionVC.definitionURIs.append(position["document_URI"] as! String)
+            let range = position["range"]
+            let newPosition = BufferPosition(range!["start"] as! Int, range!["end"] as! Int)
+            definitionVC.definitionPositions.append(newPosition)
+        }
+        print(definitionVC.definitionURIs)
+        print(definitionVC.definitionPositions)
     }
     
     @objc func _autoscrollTimerCallback() {

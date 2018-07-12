@@ -337,7 +337,7 @@ class CoreConnection {
 
         case "show_definition":
             let requestIdentifier = params["request_id"] as! Int
-            let result = params["result"] as! [String: AnyObject]
+            let result = params["result"] as! [[String: AnyObject]]
             client?.showDefinition(viewIdentifier: viewIdentifier!, requestIdentifier: requestIdentifier, result: result)
             
         case "find_status":

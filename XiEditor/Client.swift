@@ -65,7 +65,7 @@ protocol XiClient: AnyObject {
     func showHover(viewIdentifier: String, requestIdentifier: Int, result: [String: AnyObject])
 
     /// A result, formatted in Markdown, that is returned from a definition request.
-    func showDefinition(viewIdentifier: String, requestIdentifier: Int, result: [String: AnyObject])
+    func showDefinition(viewIdentifier: String, requestIdentifier: Int, result: [[String: AnyObject]])
 
     /// A notification containing changes to the current config for the given view.
     /// - Note: The first time this message is sent, `changes` contains all defined
