@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14269.14" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14113"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14269.14"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
-        <capability name="stacking Non-gravity area distributions on NSStackView" minToolsVersion="7.0" minSystemVersion="10.11"/>
     </dependencies>
     <scenes>
         <!--Window Controller-->
@@ -61,11 +60,11 @@
                                         <constraint firstItem="rTT-RO-I3T" firstAttribute="top" secondItem="1wJ-s5-kVO" secondAttribute="top" id="BTR-DU-CLt"/>
                                     </constraints>
                                 </clipView>
-                                <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="hEG-a6-BYd">
+                                <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="hEG-a6-BYd">
                                     <rect key="frame" x="0.0" y="255" width="465" height="15"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
-                                <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="O02-Lc-5gg">
+                                <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="O02-Lc-5gg">
                                     <rect key="frame" x="465" y="0.0" width="15" height="255"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
@@ -305,21 +304,21 @@ Gw
                         <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <scrollView fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="42" horizontalPageScroll="10" verticalLineScroll="42" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Owi-sQ-2Q5">
+                            <scrollView fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="52" horizontalPageScroll="10" verticalLineScroll="52" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Owi-sQ-2Q5">
                                 <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <clipView key="contentView" ambiguous="YES" drawsBackground="NO" id="RS3-zH-Bub">
                                     <rect key="frame" x="1" y="0.0" width="448" height="299"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowHeight="40" rowSizeStyle="automatic" headerView="R7m-FF-1gc" viewBased="YES" id="KcI-BV-n3h" customClass="DefinitionTableView" customModule="XiEditor" customModuleProvider="target">
+                                        <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowHeight="50" rowSizeStyle="automatic" headerView="R7m-FF-1gc" viewBased="YES" id="KcI-BV-n3h" customClass="DefinitionTableView" customModule="XiEditor" customModuleProvider="target">
                                             <rect key="frame" x="0.0" y="0.0" width="448" height="274"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <size key="intercellSpacing" width="3" height="2"/>
                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                             <tableColumns>
-                                                <tableColumn identifier="" width="445" minWidth="40" maxWidth="1000" id="Ul0-FA-v3I">
+                                                <tableColumn editable="NO" width="445" minWidth="40" maxWidth="1000" id="Ul0-FA-v3I">
                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="center" title="Definition">
                                                         <font key="font" metaFont="smallSystem"/>
                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -333,12 +332,12 @@ Gw
                                                     <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                     <prototypeCellViews>
                                                         <tableCellView identifier="DefinitionCellView" id="dq9-0D-sPk" customClass="DefinitionTableCellView" customModule="XiEditor" customModuleProvider="target">
-                                                            <rect key="frame" x="1" y="1" width="445" height="40"/>
+                                                            <rect key="frame" x="1" y="1" width="445" height="50"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
                                                                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="QM4-Wl-I4b">
-                                                                    <rect key="frame" x="13" y="17" width="419" height="23"/>
-                                                                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="left" title="main()" id="KVz-5t-oDm">
+                                                                    <rect key="frame" x="13" y="18" width="419" height="23"/>
+                                                                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="main()" usesSingleLineMode="YES" id="KVz-5t-oDm">
                                                                         <font key="font" size="15" name="Menlo-Regular"/>
                                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -346,7 +345,7 @@ Gw
                                                                 </textField>
                                                                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Rr4-Gg-ORr">
                                                                     <rect key="frame" x="13" y="0.0" width="419" height="18"/>
-                                                                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="left" title="rust.rs - 104:30" id="Boq-J2-hsI">
+                                                                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="rust.rs - 104:30" usesSingleLineMode="YES" id="Boq-J2-hsI">
                                                                         <font key="font" size="12" name="Menlo-Regular"/>
                                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -354,13 +353,12 @@ Gw
                                                                 </textField>
                                                             </subviews>
                                                             <constraints>
-                                                                <constraint firstAttribute="trailing" secondItem="QM4-Wl-I4b" secondAttribute="trailing" constant="15" id="JiC-ok-b3h"/>
-                                                                <constraint firstAttribute="bottom" secondItem="Rr4-Gg-ORr" secondAttribute="bottom" id="P93-xm-n0O"/>
-                                                                <constraint firstItem="Rr4-Gg-ORr" firstAttribute="leading" secondItem="QM4-Wl-I4b" secondAttribute="leading" id="S7c-XQ-COd"/>
-                                                                <constraint firstItem="QM4-Wl-I4b" firstAttribute="leading" secondItem="dq9-0D-sPk" secondAttribute="leading" constant="15" id="aes-dE-5VH"/>
-                                                                <constraint firstItem="Rr4-Gg-ORr" firstAttribute="top" secondItem="QM4-Wl-I4b" secondAttribute="bottom" constant="-1" id="iCp-Wl-qsh"/>
-                                                                <constraint firstItem="QM4-Wl-I4b" firstAttribute="top" secondItem="dq9-0D-sPk" secondAttribute="top" id="iz3-1e-u3I"/>
-                                                                <constraint firstItem="Rr4-Gg-ORr" firstAttribute="trailing" secondItem="QM4-Wl-I4b" secondAttribute="trailing" id="xmP-f7-NLx"/>
+                                                                <constraint firstItem="QM4-Wl-I4b" firstAttribute="centerX" secondItem="dq9-0D-sPk" secondAttribute="centerX" id="BVf-Hm-Moe"/>
+                                                                <constraint firstItem="QM4-Wl-I4b" firstAttribute="leading" secondItem="Rr4-Gg-ORr" secondAttribute="leading" id="DYP-pF-Gbq"/>
+                                                                <constraint firstItem="QM4-Wl-I4b" firstAttribute="trailing" secondItem="Rr4-Gg-ORr" secondAttribute="trailing" id="Ons-H7-LZ3"/>
+                                                                <constraint firstItem="QM4-Wl-I4b" firstAttribute="leading" secondItem="dq9-0D-sPk" secondAttribute="leading" constant="15" id="eH4-qQ-ZEq"/>
+                                                                <constraint firstItem="Rr4-Gg-ORr" firstAttribute="top" secondItem="QM4-Wl-I4b" secondAttribute="bottom" id="fqq-Kc-4g5"/>
+                                                                <constraint firstItem="QM4-Wl-I4b" firstAttribute="top" secondItem="dq9-0D-sPk" secondAttribute="top" constant="9" id="wCi-Au-Gpo"/>
                                                             </constraints>
                                                             <connections>
                                                                 <outlet property="locationField" destination="Rr4-Gg-ORr" id="DRO-Aj-vsd"/>
@@ -375,11 +373,11 @@ Gw
                                     </subviews>
                                     <nil key="backgroundColor"/>
                                 </clipView>
-                                <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="tkO-vL-QML">
+                                <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="tkO-vL-QML">
                                     <rect key="frame" x="1" y="9" width="0.0" height="16"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
-                                <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="EbI-mY-h8X">
+                                <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="EbI-mY-h8X">
                                     <rect key="frame" x="224" y="17" width="15" height="102"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>

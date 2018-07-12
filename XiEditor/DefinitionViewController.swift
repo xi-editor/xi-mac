@@ -35,15 +35,30 @@ class DefinitionViewController: NSViewController, NSTableViewDataSource, NSTable
         if definitionPositions.isEmpty {
             return nil
         }
-
         let line = definitionPositions[row].line
         let column = definitionPositions[row].column
 
         if let cell = tableView.makeView(withIdentifier: .init("DefinitionCellView"), owner: nil) as? DefinitionTableCellView {
-            cell.methodField.stringValue = "main.rs"
-            cell.locationField.stringValue = "\(line):\(column)"
+            cell.methodField.stringValue = "Line: \(line)-Column: \(column)"
+            cell.locationField.stringValue = definitionURIs[row]
             return cell
         }
         return nil
     }
+
+    func sizeToFitContents() -> CGFloat {
+        var longest: CGFloat = 0
+        // We only have 1 column here
+        let column = definitionTableView.tableColumns[0]
+        for row in 0...definitionTableView.numberOfRows - 1 {
+            let view = definitionTableView.view(atColumn: 0, row: row, makeIfNecessary: true) as! DefinitionTableCellView
+            let width = view.methodField.attributedStringValue.size().width
+            if longest < width { longest = width }
+        }
+        column.width = longest
+        definitionTableView.reloadData()
+
+        return longest
+    }
 }
+
