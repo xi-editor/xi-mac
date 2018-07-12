@@ -22,6 +22,7 @@ class DefinitionViewController: NSViewController, NSTableViewDataSource, NSTable
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
         definitionTableView.dataSource = self
         definitionTableView.delegate = self
     }
@@ -38,14 +39,11 @@ class DefinitionViewController: NSViewController, NSTableViewDataSource, NSTable
         let line = definitionPositions[row].line
         let column = definitionPositions[row].column
 
-        if let cell = tableView.makeView(withIdentifier: .init("DefinitionCellView"), owner: nil) as? NSTableCellView {
-            cell.textField?.stringValue = "\(line), \(column)"
+        if let cell = tableView.makeView(withIdentifier: .init("DefinitionCellView"), owner: nil) as? DefinitionTableCellView {
+            cell.methodField.stringValue = "main.rs"
+            cell.locationField.stringValue = "\(line):\(column)"
             return cell
         }
-
         return nil
     }
-
-
-
 }

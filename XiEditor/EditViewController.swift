@@ -167,7 +167,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     private var hoverEvent: NSEvent?
 
     let statusBar = StatusBar(frame: .zero)
-    lazy var definitionVC: DefinitionViewController! = {
+    lazy var definitionViewController: DefinitionViewController! = {
         let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
         let controller = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Definition View Controller")) as! DefinitionViewController
         return controller
@@ -495,11 +495,11 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             }
         } else if (event.modifierFlags.contains(NSEvent.ModifierFlags.shift)) {
             return "range_select"
+        } else if (event.modifierFlags.contains(NSEvent.ModifierFlags.control)) {
+            return "request_definition"
         } else if (event.modifierFlags.contains(NSEvent.ModifierFlags.option)) {
             return "request_hover"
-        } else if (event.modifierFlags.contains([NSEvent.ModifierFlags.option, .command])) {
-            return "request_definition"
-        } else {
+        }  else {
             switch (clickCount) {
             case 2:
                 return "word_select"
@@ -597,14 +597,15 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     // Hooks data for the definition view controller to display definition results from a request.
     func showDefinition(withResult result: [[String: AnyObject]]) {
+        print(result)
         for position in result {
-            definitionVC.definitionURIs.append(position["document_URI"] as! String)
+            definitionViewController.definitionURIs.append(position["document_URI"] as! String)
             let range = position["range"]
             let newPosition = BufferPosition(range!["start"] as! Int, range!["end"] as! Int)
-            definitionVC.definitionPositions.append(newPosition)
+            definitionViewController.definitionPositions.append(newPosition)
         }
-        print(definitionVC.definitionURIs)
-        print(definitionVC.definitionPositions)
+        print(definitionViewController.definitionURIs)
+        print(definitionViewController.definitionPositions)
     }
     
     @objc func _autoscrollTimerCallback() {
