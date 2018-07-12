@@ -596,16 +596,16 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     // Hooks data for the definition view controller to display definition results from a request.
-    func showDefinition(withResult result: [[String: AnyObject]]) {
-        print(result)
-        for position in result {
-            definitionViewController.definitionURIs.append(position["document_URI"] as! String)
-            let range = position["range"]
+    func showDefinition(withResult result: [String: AnyObject]) {
+        let locations = result["locations"] as! [[String: AnyObject]]
+        for location in locations {
+            definitionViewController.definitionURIs.append(location["document_URI"] as! String)
+            let range = location["range"]
             let newPosition = BufferPosition(range!["start"] as! Int, range!["end"] as! Int)
             definitionViewController.definitionPositions.append(newPosition)
+            print(definitionViewController.definitionURIs)
+            print(definitionViewController.definitionPositions)
         }
-        print(definitionViewController.definitionURIs)
-        print(definitionViewController.definitionPositions)
     }
     
     @objc func _autoscrollTimerCallback() {
