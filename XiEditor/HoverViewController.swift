@@ -51,7 +51,6 @@ class HoverViewController: NSViewController {
         guard let textContainer = self.hoverView.textContainer else { return 0 }
 
         layoutManager.glyphRange(for: textContainer)
-        print(layoutManager.usedRect(for: textContainer).height)
         return layoutManager.usedRect(for: textContainer).height + self.hoverView.textContainerInset.height * 2
     }
 }
