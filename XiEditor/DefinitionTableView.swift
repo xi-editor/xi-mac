@@ -15,21 +15,46 @@ class DefinitionTableView: NSTableView {
         super.draw(dirtyRect)
     }
 
-    override func updateTrackingAreas() {
-        for area in self.trackingAreas {
-            self.removeTrackingArea(area)
-        }
-        let newTrackingArea = NSTrackingArea(rect: self.bounds, options: [.activeInActiveApp, .mouseEnteredAndExited], owner: self, userInfo: nil)
-        self.addTrackingArea(newTrackingArea)
-    }
-
 }
 
-class DefinitionTableCellView: NSTableCellView {
+class DefinitionTableRowView: NSTableRowView {
     @IBOutlet weak var methodField: NSTextField!
     @IBOutlet weak var locationField: NSTextField!
 
-    private var hover = false {
+    // MARK: - Mouse hover
+    deinit {
+        removeTrackingArea(trackingArea)
+    }
+
+    private var trackingArea: NSTrackingArea!
+
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        self.trackingArea = NSTrackingArea(
+            rect: frame,
+            options: [.activeAlways,.mouseEnteredAndExited],
+            owner: self,
+            userInfo: nil
+        )
+        addTrackingArea(trackingArea)
+    }
+
+    override func draw(_ dirtyRect: NSRect) {
+        super.draw(dirtyRect)
+
+        NSColor(red: 0.96, green: 0.96, blue: 0.96, alpha: 1.00).set()
+        // mouse hover
+        if highlight {
+            let path = NSBezierPath(rect: bounds)
+            path.fill()
+        }
+    }
+
+    override func drawSelection(in dirtyRect: NSRect) {
+        super.drawSelection(in: dirtyRect)
+    }
+
+    private var highlight = false {
         didSet {
             setNeedsDisplay(bounds)
         }
@@ -37,28 +62,15 @@ class DefinitionTableCellView: NSTableCellView {
 
     override func mouseEntered(with event: NSEvent) {
         super.mouseEntered(with: event)
-        if !hover {
-            hover = true
+        if !highlight {
+            highlight = true
         }
     }
 
     override func mouseExited(with event: NSEvent) {
         super.mouseExited(with: event)
-        if hover {
-            hover = false
+        if highlight {
+            highlight = false
         }
-    }
-
-    override func draw(_ dirtyRect: NSRect) {
-        super.draw(dirtyRect)
-
-        NSColor.controlHighlightColor.setFill()
-        if hover {
-            let path = NSBezierPath(rect: bounds)
-            path.fill()
-        }
-        let rect = NSRect(x: 0, y: bounds.height - 2, width: bounds.width, height: bounds.height)
-        let path = NSBezierPath(rect: rect)
-        path.fill()
     }
 }
