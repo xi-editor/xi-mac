@@ -1016,9 +1016,8 @@ Gw
                                                                 <constraint firstItem="z5M-bJ-aB3" firstAttribute="trailing" secondItem="ujR-HI-L5z" secondAttribute="trailing" id="dQu-w8-3HW"/>
                                                             </constraints>
                                                             <connections>
-                                                                <outlet property="locationField" destination="ujR-HI-L5z" id="dOp-zs-fnv"/>
-                                                                <outlet property="methodField" destination="z5M-bJ-aB3" id="diE-qO-jpz"/>
-                                                                <outlet property="textField" destination="z5M-bJ-aB3" id="u8i-Ro-9QZ"/>
+                                                                <outlet property="locationField" destination="ujR-HI-L5z" id="dGy-0O-hUy"/>
+                                                                <outlet property="methodField" destination="z5M-bJ-aB3" id="Y7H-gA-P2t"/>
                                                             </connections>
                                                         </tableCellView>
                                                     </prototypeCellViews>

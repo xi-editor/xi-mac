@@ -557,13 +557,12 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         dragEvent = nil
     }
 
-    // TODO: Fix behavior here
     override func mouseMoved(with theEvent: NSEvent) {
         if !editView.isFirstResponder {
             editView.window?.makeFirstResponder(editView)
         }
-        if hoverTimer == nil && theEvent.modifierFlags.contains([.option, .shift]){
-            hoverTimer = Timer.scheduledTimer(timeInterval: TimeInterval(2.0), target: self, selector: #selector(sendHover), userInfo: nil, repeats: false)
+        if hoverTimer == nil && theEvent.modifierFlags.contains([.option]){
+            hoverTimer = Timer.scheduledTimer(timeInterval: TimeInterval(3.0), target: self, selector: #selector(sendHover), userInfo: nil, repeats: false)
         }
         hoverEvent = theEvent
     }
@@ -609,6 +608,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         }
 
         infoPopover.contentViewController = definitionViewController
+        infoPopover.contentSize.width = 500
+        infoPopover.contentSize.height = 500
+        
         if let event = definitionEvent {
             infoPopover.show(relativeTo: NSRect(origin: event.locationInWindow, size: positioningSize), of: self.view, preferredEdge: .minY)
             definitionEvent = nil
