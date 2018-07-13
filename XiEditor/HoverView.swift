@@ -35,15 +35,4 @@ class HoverView: NSTextView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-    //    override func viewDidMoveToWindow() {
-    //        guard let frameView = window?.contentView?.superview else {
-    //            return
-    //        }
-    //        let backgroundView = NSView(frame: frameView.bounds)
-    //        backgroundView.wantsLayer = true
-    //        backgroundView.layer?.backgroundColor = .black // colour of your choice
-    //        backgroundView.autoresizingMask = [.width, .height]
-    //        frameView.addSubview(backgroundView, positioned: .below, relativeTo: frameView)
-    //    }
 }

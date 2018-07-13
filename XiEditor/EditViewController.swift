@@ -64,6 +64,12 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         return controller
     }()
 
+    lazy var definitionViewController: DefinitionViewController! = {
+        let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
+        let controller = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Definition View Controller")) as! DefinitionViewController
+        return controller
+    }()
+
     var document: Document!
 
     var lines = LineCache<LineAssoc>()
@@ -168,11 +174,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     private var definitionEvent: NSEvent?
 
     let statusBar = StatusBar(frame: .zero)
-    lazy var definitionViewController: DefinitionViewController! = {
-        let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
-        let controller = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Definition View Controller")) as! DefinitionViewController
-        return controller
-    }()
 
     // Popover that manages hover and show definition views.
     lazy var infoPopover: NSPopover = {
@@ -522,9 +523,11 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         if gestureType == "request_hover" {
             document.sendRpcAsync("request_hover", params: ["request_id": hoverRequestID, "position": ["type": "utf8_line_char", "line": position.line, "character": position.column]])
             hoverEvent = theEvent
+            hoverRequestID += 1
         } else if gestureType == "request_definition" {
             document.sendRpcAsync("request_definition", params: ["request_id": definitionRequestID, "position": ["type": "utf8_line_char", "line": position.line, "character": position.column]])
             definitionEvent = theEvent
+            definitionRequestID += 1
         } else {
             document.sendRpcAsync("gesture", params: [
                 "line": position.line,
@@ -533,7 +536,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
                 ])
         }
 
-        
         dragTimer = Timer.scheduledTimer(timeInterval: TimeInterval(1.0/60), target: self, selector: #selector(_autoscrollTimerCallback), userInfo: nil, repeats: true)
         dragEvent = theEvent
     }
@@ -576,16 +578,15 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         }
     }
 
-    // Creates a new view controller to be used with the results of a hover request.
+    // Displays the results from a hover request in a popover.
     func showHover(withResult result: [String: AnyObject]) {
-        print("content:  \(String(describing: result["content"]))")
-        print("range:  \(String(describing: result["range"]))")
         let hoverContent = result["content"] as! String
         let positioningSize = CGSize(width: 1, height: 1) // Generic size to center popover on cursor
         let hoverViewController = HoverViewController(content: hoverContent)
+
         infoPopover.contentViewController = hoverViewController
         infoPopover.contentSize.width = 250
-        infoPopover.contentSize.height = hoverViewController.heightForString()
+        infoPopover.contentSize.height = hoverViewController.heightForContent()
 
         if let event = hoverEvent {
             infoPopover.show(relativeTo: NSRect(origin: event.locationInWindow, size: positioningSize), of: self.view, preferredEdge: .minY)
@@ -593,25 +594,21 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         }
     }
 
-    // Hooks data for the definition view controller to display definition results from a request.
+    // Displays the results from a definition request in a popover.
     func showDefinition(withResult result: [String: AnyObject]) {
         let locations = result["locations"] as! [[String: AnyObject]]
-
+        let positioningSize = CGSize(width: 1, height: 1) // Generic size to center popover on cursor
         definitionViewController.definitionURIs.removeAll()
         definitionViewController.definitionPositions.removeAll()
 
-        let positioningSize = CGSize(width: 1, height: 1) // Generic size to center popover on cursor
         for location in locations {
             definitionViewController.definitionURIs.append(location["document_uri"] as! String)
             let range = location["range"]
             let newPosition = BufferPosition(range!["start"] as! Int, range!["end"] as! Int)
             definitionViewController.definitionPositions.append(newPosition)
-            print(definitionViewController.definitionURIs)
-            print(definitionViewController.definitionPositions)
         }
 
         infoPopover.contentViewController = definitionViewController
-
         if let event = definitionEvent {
             infoPopover.show(relativeTo: NSRect(origin: event.locationInWindow, size: positioningSize), of: self.view, preferredEdge: .minY)
             definitionEvent = nil

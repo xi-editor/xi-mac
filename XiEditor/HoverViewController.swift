@@ -44,9 +44,9 @@ class HoverViewController: NSViewController {
     }
 
     // Returns the height required to fit the hover result.
-    // The text container inset for the top and bottom is added to the height required to
+    // The text container inset for top and bottom is added to the height required to
     // draw the string.
-    func heightForString() -> CGFloat {
+    func heightForContent() -> CGFloat {
         guard let layoutManager = self.hoverView.layoutManager else { return 0 }
         guard let textContainer = self.hoverView.textContainer else { return 0 }
 

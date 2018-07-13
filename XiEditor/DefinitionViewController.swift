@@ -25,14 +25,13 @@ class DefinitionViewController: NSViewController, NSTableViewDataSource, NSTable
 
         definitionTableView.dataSource = self
         definitionTableView.delegate = self
-        definitionTableView.updateTrackingAreas()
     }
 
     func numberOfRows(in tableView: NSTableView) -> Int {
         return definitionPositions.count
     }
 
-    func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
+    func tableView(_ tableView: NSTableView, rowViewForRow row: Int) -> NSTableRowView? {
         if definitionPositions.isEmpty {
             return nil
         }
@@ -40,8 +39,8 @@ class DefinitionViewController: NSViewController, NSTableViewDataSource, NSTable
         let column = definitionPositions[row].column
 
         if let cell = tableView.makeView(withIdentifier: .init("DefinitionCellView"), owner: nil) as? DefinitionTableRowView {
-            cell.methodField.stringValue = "Line: \(line) Column: \(column)"
-            cell.locationField.stringValue = definitionURIs[row]
+            cell.methodField.stringValue = definitionURIs[row]
+            cell.locationField.stringValue = "Line: \(line) Column: \(column)"
             return cell
         }
         return nil
