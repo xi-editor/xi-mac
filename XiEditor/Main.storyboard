@@ -183,7 +183,7 @@ Gw
         <scene sceneID="CRJ-r2-SVm">
             <objects>
                 <viewController storyboardIdentifier="Find View Controller" id="lKE-xV-0EG" customClass="FindViewController" customModule="XiEditor" customModuleProvider="target" sceneMemberID="viewController">
-                    <visualEffectView key="view" blendingMode="behindWindow" material="appearanceBased" state="inactive" id="NrM-ac-2ZW">
+                    <view key="view" id="NrM-ac-2ZW" wantsLayer="YES">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="56"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                         <subviews>
@@ -347,7 +347,7 @@ Gw
                             <constraint firstAttribute="trailing" secondItem="ZGd-Q7-ois" secondAttribute="trailing" id="q13-Vo-xNG"/>
                             <constraint firstAttribute="bottom" secondItem="0fT-ae-quE" secondAttribute="bottom" id="t0p-ig-Uu0"/>
                         </constraints>
-                    </visualEffectView>
+                    </view>
                     <connections>
                         <outlet property="doneButton" destination="OLd-3g-GU4" id="inN-tK-kdf"/>
                         <outlet property="navigationButtons" destination="usm-aH-bgF" id="f6d-0g-ht5"/>

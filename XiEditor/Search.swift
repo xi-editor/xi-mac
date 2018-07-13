@@ -75,6 +75,11 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
         return true
     }
 
+    func updateColor(newBackgroundColor: NSColor, unifiedTitlebar: Bool) {
+        let veryLightGray = CGColor(gray: 246.0/256.0, alpha: 1.0)
+        self.view.layer?.backgroundColor = unifiedTitlebar ? newBackgroundColor.cgColor : veryLightGray
+    }
+
     func control(_ control: NSControl, textView: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
         switch commandSelector {
         case #selector(NSResponder.cancelOperation(_:)):
