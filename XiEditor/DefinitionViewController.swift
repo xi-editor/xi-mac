@@ -20,11 +20,20 @@ class DefinitionViewController: NSViewController, NSTableViewDataSource, NSTable
     var definitionURIs = [String]()
     var definitionPositions = [BufferPosition]()
 
+    // Value to pad the definition content width.
+    let definitionTextPadding: CGFloat = 50
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
         definitionTableView.dataSource = self
         definitionTableView.delegate = self
+    }
+
+    // Force view controller to load all its views - including the table view.
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        _ = self.view
     }
 
     func numberOfRows(in tableView: NSTableView) -> Int {
@@ -44,6 +53,22 @@ class DefinitionViewController: NSViewController, NSTableViewDataSource, NSTable
             return cell
         }
         return nil
+    }
+
+    func widthToFitContents() -> CGFloat {
+        var longest: CGFloat = 0
+
+        for row in 0..<definitionTableView.numberOfRows {
+            let view = definitionTableView.rowView(atRow: row, makeIfNecessary: true) as! DefinitionTableRowView
+            let width = ceil(view.methodField.attributedStringValue.size().width + definitionTextPadding)
+            if longest < width { longest = width }
+        }
+
+        // We only have one column
+        definitionTableView.tableColumns.first?.width = longest
+        definitionTableView.reloadData()
+
+        return longest
     }
 }
 

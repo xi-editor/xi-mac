@@ -1010,6 +1010,7 @@ Gw
                                                             <constraints>
                                                                 <constraint firstItem="ujR-HI-L5z" firstAttribute="top" secondItem="z5M-bJ-aB3" secondAttribute="bottom" id="5JD-py-c7L"/>
                                                                 <constraint firstItem="z5M-bJ-aB3" firstAttribute="leading" secondItem="8Qf-dP-QQv" secondAttribute="leading" constant="15" id="5bG-M2-kg3"/>
+                                                                <constraint firstAttribute="trailing" secondItem="z5M-bJ-aB3" secondAttribute="trailing" constant="15" id="Dbr-Zb-aCJ"/>
                                                                 <constraint firstItem="z5M-bJ-aB3" firstAttribute="top" secondItem="8Qf-dP-QQv" secondAttribute="top" constant="9" id="FYh-Yd-jBc"/>
                                                                 <constraint firstItem="z5M-bJ-aB3" firstAttribute="centerX" secondItem="8Qf-dP-QQv" secondAttribute="centerX" id="RqK-K6-30K"/>
                                                                 <constraint firstItem="z5M-bJ-aB3" firstAttribute="leading" secondItem="ujR-HI-L5z" secondAttribute="leading" id="Xqn-3s-SgI"/>
@@ -1049,7 +1050,7 @@ Gw
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="definitionTableView" destination="pRq-2U-VBC" id="Ls3-gR-SS8"/>
+                        <outlet property="definitionTableView" destination="pRq-2U-VBC" id="JTh-Qs-ekg"/>
                     </connections>
                 </viewController>
             </objects>

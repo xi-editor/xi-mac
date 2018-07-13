@@ -608,8 +608,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         }
 
         infoPopover.contentViewController = definitionViewController
-        infoPopover.contentSize.width = 500
-        infoPopover.contentSize.height = 500
+        infoPopover.contentSize.width = definitionViewController.widthToFitContents()
+        infoPopover.contentSize.height = definitionViewController.definitionTableView.frame.size.height
         
         if let event = definitionEvent {
             infoPopover.show(relativeTo: NSRect(origin: event.locationInWindow, size: positioningSize), of: self.view, preferredEdge: .minY)
