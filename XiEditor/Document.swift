@@ -173,7 +173,11 @@ class Document: NSDocument {
     }
         
     func sendWillScroll(first: Int, last: Int) {
-        self.sendRpcAsync("scroll", params: [first, last])
+        sendRpcAsync("scroll", params: [first, last])
+    }
+
+    func sendPaste(_ pasteString: String) {
+        sendRpcAsync("paste", params: ["chars": pasteString])
     }
 
     func updateAsync(update: [String: AnyObject]) {
