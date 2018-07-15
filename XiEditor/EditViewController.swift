@@ -455,7 +455,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         if let items = pasteboard.pasteboardItems {
             for element in items {
                 if let str = element.string(forType: NSPasteboard.PasteboardType(rawValue: "public.utf8-plain-text")) {
-                    insertText(str)
+                    document.sendPaste(str)
                     break
                 }
             }
@@ -562,9 +562,18 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         }
     }
 
-    // used mostly for paste
+    // NOTE: this was previously used for paste, and could possibly be removed, but it
+    // may be used for IME?
     override func insertText(_ insertString: Any) {
-        document.sendRpcAsync("insert", params: insertedStringToJson(insertString as! NSString))
+        let text: String
+        if let s = insertString as? NSString {
+            text = s as String
+        } else if let s = insertString as? NSAttributedString {
+            text = s.string as String
+        } else {
+            fatalError("insertText: called with undocumented type")
+        }
+        document.sendRpcAsync("insert", params: ["chars": text])
     }
 
     // we intercept this method to check if we should open a new tab
