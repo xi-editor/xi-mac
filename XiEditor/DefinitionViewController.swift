@@ -72,3 +72,32 @@ class DefinitionViewController: NSViewController, NSTableViewDataSource, NSTable
     }
 }
 
+extension EditViewController {
+
+    // Displays the results from a definition request in a popover.
+    func showDefinition(withResult result: [String: AnyObject]) {
+        let locations = result["locations"] as! [[String: AnyObject]]
+        let positioningSize = CGSize(width: 1, height: 1) // Generic size to center popover on cursor
+        
+        definitionViewController.definitionURIs.removeAll()
+        definitionViewController.definitionPositions.removeAll()
+
+        for location in locations {
+            let range = location["range"]
+            let newPosition = BufferPosition(range!["start"] as! Int, range!["end"] as! Int)
+
+            definitionViewController.definitionURIs.append(location["document_uri"] as! String)
+            definitionViewController.definitionPositions.append(newPosition)
+        }
+
+        infoPopover.contentViewController = definitionViewController
+        infoPopover.contentSize.width = definitionViewController.widthToFitContents()
+        infoPopover.contentSize.height = definitionViewController.definitionTableView.frame.size.height
+
+        if let event = definitionEvent {
+            infoPopover.show(relativeTo: NSRect(origin: event.locationInWindow, size: positioningSize), of: self.view, preferredEdge: .minY)
+            definitionEvent = nil
+        }
+    }
+}
+

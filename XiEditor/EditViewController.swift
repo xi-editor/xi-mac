@@ -170,8 +170,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     // timers to manage hovers
     private var hoverTimer: Timer?
-    private var hoverEvent: NSEvent?
-    private var definitionEvent: NSEvent?
+    var hoverEvent: NSEvent?
+    var definitionEvent: NSEvent?
 
     let statusBar = StatusBar(frame: .zero)
 
@@ -577,46 +577,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         }
     }
 
-    // Displays the results from a hover request in a popover.
-    func showHover(withResult result: [String: AnyObject]) {
-        let hoverContent = result["content"] as! String
-        let positioningSize = CGSize(width: 1, height: 1) // Generic size to center popover on cursor
-        let hoverViewController = HoverViewController(content: hoverContent)
 
-        infoPopover.contentViewController = hoverViewController
-        infoPopover.contentSize.width = 250
-        infoPopover.contentSize.height = hoverViewController.heightForContent()
-
-        if let event = hoverEvent {
-            infoPopover.show(relativeTo: NSRect(origin: event.locationInWindow, size: positioningSize), of: self.view, preferredEdge: .minY)
-            hoverEvent = nil
-        }
-    }
-
-    // Displays the results from a definition request in a popover.
-    func showDefinition(withResult result: [String: AnyObject]) {
-        let locations = result["locations"] as! [[String: AnyObject]]
-        let positioningSize = CGSize(width: 1, height: 1) // Generic size to center popover on cursor
-        definitionViewController.definitionURIs.removeAll()
-        definitionViewController.definitionPositions.removeAll()
-
-        for location in locations {
-            definitionViewController.definitionURIs.append(location["document_uri"] as! String)
-            let range = location["range"]
-            let newPosition = BufferPosition(range!["start"] as! Int, range!["end"] as! Int)
-            definitionViewController.definitionPositions.append(newPosition)
-        }
-
-        infoPopover.contentViewController = definitionViewController
-        infoPopover.contentSize.width = definitionViewController.widthToFitContents()
-        infoPopover.contentSize.height = definitionViewController.definitionTableView.frame.size.height
-        
-        if let event = definitionEvent {
-            infoPopover.show(relativeTo: NSRect(origin: event.locationInWindow, size: positioningSize), of: self.view, preferredEdge: .minY)
-            definitionEvent = nil
-        }
-    }
-    
     @objc func _autoscrollTimerCallback() {
         if let event = dragEvent {
             mouseDragged(with: event)

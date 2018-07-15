@@ -14,7 +14,6 @@
 
 import Cocoa
 
-
 class DefinitionTableView: NSTableView {
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)

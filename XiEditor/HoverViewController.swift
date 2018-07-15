@@ -14,6 +14,29 @@
 
 import Cocoa
 
+class HoverView: NSTextView {
+
+    // Lets AppKit do all the work when setting up a new text view
+    override init(frame frameRect: NSRect, textContainer container: NSTextContainer?) {
+        let textView = NSTextView(frame: .zero)
+        super.init(frame: frameRect, textContainer: textView.textContainer)
+    }
+
+    init(content: String) {
+        super.init(frame: .zero)
+        self.string = content
+        self.isEditable = false
+        self.textContainerInset = NSSize(width: 10, height: 10)
+        self.font = NSFont.systemFont(ofSize: 11)
+        self.translatesAutoresizingMaskIntoConstraints = false
+        self.needsLayout = true
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
 class HoverViewController: NSViewController {
 
     var hoverContent: String
@@ -52,5 +75,24 @@ class HoverViewController: NSViewController {
 
         layoutManager.glyphRange(for: textContainer)
         return layoutManager.usedRect(for: textContainer).height + self.hoverView.textContainerInset.height * 2
+    }
+}
+
+extension EditViewController {
+
+    // Displays the results from a hover request in a popover.
+    func showHover(withResult result: [String: AnyObject]) {
+        let hoverContent = result["content"] as! String
+        let positioningSize = CGSize(width: 1, height: 1) // Generic size to center popover on cursor
+        let hoverViewController = HoverViewController(content: hoverContent)
+
+        infoPopover.contentViewController = hoverViewController
+        infoPopover.contentSize.width = 250
+        infoPopover.contentSize.height = hoverViewController.heightForContent()
+
+        if let event = hoverEvent {
+            infoPopover.show(relativeTo: NSRect(origin: event.locationInWindow, size: positioningSize), of: self.view, preferredEdge: .minY)
+            hoverEvent = nil
+        }
     }
 }
