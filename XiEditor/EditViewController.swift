@@ -577,7 +577,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         }
     }
 
-
     @objc func _autoscrollTimerCallback() {
         if let event = dragEvent {
             mouseDragged(with: event)
@@ -620,6 +619,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     @IBAction func debugPrintSpans(_ sender: AnyObject) {
         document.sendRpcAsync("debug_print_spans", params: [])
     }
+
     @IBAction func debugOverrideWhitespace(_ sender: NSMenuItem) {
         var changes = [String: Any]()
         switch sender.title {
@@ -650,7 +650,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         }
     }
 
-    
     public func pluginStarted(_ plugin: String) {
         self.availablePlugins[plugin] = true
         print("client: plugin started \(plugin)")

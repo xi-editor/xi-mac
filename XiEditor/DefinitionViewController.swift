@@ -74,11 +74,10 @@ class DefinitionViewController: NSViewController, NSTableViewDataSource, NSTable
 
 extension EditViewController {
 
-    // Displays the results from a definition request in a popover.
+    // Puts the popover at the baseline of the chosen defintition symbol.
     func showDefinition(withResult result: [String: AnyObject]) {
         let locations = result["locations"] as! [[String: AnyObject]]
-        let positioningSize = CGSize(width: 1, height: 1) // Generic size to center popover on cursor
-        
+
         definitionViewController.definitionURIs.removeAll()
         definitionViewController.definitionPositions.removeAll()
 
@@ -94,10 +93,14 @@ extension EditViewController {
         infoPopover.contentSize.width = definitionViewController.widthToFitContents()
         infoPopover.contentSize.height = definitionViewController.definitionTableView.frame.size.height
 
+
         if let event = definitionEvent {
-            infoPopover.show(relativeTo: NSRect(origin: event.locationInWindow, size: positioningSize), of: self.view, preferredEdge: .minY)
+            let definitionLine = editView.bufferPositionFromPoint(event.locationInWindow).line
+            let symbolBaseline = editView.lineIxToBaseline(definitionLine) * CGFloat(definitionLine + 1)
+            let positioningPoint = NSPoint(x: event.locationInWindow.x, y: editView.frame.height - symbolBaseline)
+            let positioningSize = CGSize(width: 1, height: 1) // Generic size to center popover on cursor
+            infoPopover.show(relativeTo: NSRect(origin: positioningPoint, size: positioningSize), of: self.view, preferredEdge: .minY)
             definitionEvent = nil
         }
     }
 }
-

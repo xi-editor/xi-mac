@@ -80,10 +80,9 @@ class HoverViewController: NSViewController {
 
 extension EditViewController {
 
-    // Displays the results from a hover request in a popover.
+    // Puts the popover at the baseline of the chosen hover symbol.
     func showHover(withResult result: [String: AnyObject]) {
         let hoverContent = result["content"] as! String
-        let positioningSize = CGSize(width: 1, height: 1) // Generic size to center popover on cursor
         let hoverViewController = HoverViewController(content: hoverContent)
 
         infoPopover.contentViewController = hoverViewController
@@ -91,7 +90,12 @@ extension EditViewController {
         infoPopover.contentSize.height = hoverViewController.heightForContent()
 
         if let event = hoverEvent {
-            infoPopover.show(relativeTo: NSRect(origin: event.locationInWindow, size: positioningSize), of: self.view, preferredEdge: .minY)
+            let hoverLine = editView.bufferPositionFromPoint(event.locationInWindow).line
+            let symbolBaseline = editView.lineIxToBaseline(hoverLine) * CGFloat(hoverLine + 1)
+
+            let positioningPoint = NSPoint(x: event.locationInWindow.x, y: editView.frame.height - symbolBaseline)
+            let positioningSize = CGSize(width: 1, height: 1) // Generic size to center popover on cursor
+            infoPopover.show(relativeTo: NSRect(origin: positioningPoint, size: positioningSize), of: self.view, preferredEdge: .minY)
             hoverEvent = nil
         }
     }
