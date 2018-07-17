@@ -238,6 +238,15 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         self.showBlinkingCursor = self.isFrontmostView && self.isFirstResponder
     }
 
+    override func updateTrackingAreas() {
+        for area in self.trackingAreas {
+            self.removeTrackingArea(area)
+        }
+        let newTrackingArea = NSTrackingArea(rect: self.bounds, options: [.activeInActiveApp, .mouseMoved], owner: self, userInfo: nil)
+        self.addTrackingArea(newTrackingArea)
+        super.updateTrackingAreas()
+    }
+
     // MARK: - NSTextInputClient protocol
     func insertText(_ aString: Any, replacementRange: NSRange) {
         self.removeMarkedText()
@@ -552,7 +561,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         for lineIx in first..<last {
             let relLineIx = lineIx - first
             guard let line = lines[relLineIx] else {
-              continue
+                continue
             }
 
             let gutterNumber = UInt(lineIx) + 1
