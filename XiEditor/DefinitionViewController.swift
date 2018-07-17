@@ -89,10 +89,10 @@ extension EditViewController {
             definitionViewController.definitionPositions.append(newPosition)
         }
 
-        infoPopover.contentViewController = definitionViewController
-        infoPopover.contentSize.width = definitionViewController.widthToFitContents()
-        infoPopover.contentSize.height = definitionViewController.definitionTableView.frame.size.height
+        let definitionContentSize = NSSize(width: definitionViewController.widthToFitContents(), height: definitionViewController.definitionTableView.frame.size.height)
 
+        infoPopover.contentViewController = definitionViewController
+        infoPopover.contentSize = definitionContentSize
 
         if let event = definitionEvent {
             let definitionLine = editView.bufferPositionFromPoint(event.locationInWindow).line

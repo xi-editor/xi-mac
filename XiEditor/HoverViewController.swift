@@ -40,6 +40,14 @@ class HoverView: NSTextView {
 
 class HoverViewController: NSViewController {
 
+
+    lazy var hoverScrollView: NSScrollView = {
+        let scrollView = NSScrollView(frame: NSRect(x: 0, y: 0, width: hoverPopoverWidth, height: 0))
+        scrollView.borderType = .noBorder
+        scrollView.hasVerticalScroller = true
+        scrollView.autoresizingMask = [.height]
+        return scrollView
+    }()
     var hoverContent: String
     var hoverView: HoverView
     let hoverPopoverWidth: CGFloat = 500 // XCode size
@@ -48,6 +56,7 @@ class HoverViewController: NSViewController {
         self.hoverContent = content
         self.hoverView = HoverView(content: self.hoverContent)
         super.init(nibName: nil, bundle: nil)
+        self.hoverScrollView.documentView = hoverView
     }
 
     required init?(coder: NSCoder) {
@@ -56,18 +65,12 @@ class HoverViewController: NSViewController {
 
     // Required to instantiate view controller programmatically.
     override func loadView() {
-        let scrollView = NSScrollView(frame: NSRect(x: 0, y: 0, width: hoverPopoverWidth, height: 0))
-        scrollView.borderType = .noBorder
-        scrollView.hasVerticalScroller = true
-        scrollView.autoresizingMask = [.height]
-        self.view = scrollView
-        hoverView.frame.size = scrollView.contentSize
-        scrollView.documentView = hoverView
+        self.view = hoverScrollView
+        hoverView.frame.size = hoverScrollView.contentSize
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.hoverView.sizeToFit()
     }
 
     func updateHoverViewColors(newBackgroundColor: NSColor, newTextColor: NSColor) {
@@ -83,7 +86,7 @@ class HoverViewController: NSViewController {
         guard let textContainer = self.hoverView.textContainer else { return 0 }
 
         layoutManager.glyphRange(for: textContainer)
-        return layoutManager.usedRect(for: textContainer).height + self.hoverView.textContainerInset.height * 4
+        return layoutManager.usedRect(for: textContainer).height + self.hoverView.textContainerInset.height * 2
     }
 }
 
@@ -94,9 +97,11 @@ extension EditViewController {
         let hoverContent = result["content"] as! String
         let hoverViewController = HoverViewController(content: hoverContent)
 
+        let hoverContentSize = NSSize(width: hoverViewController.hoverPopoverWidth, height: hoverViewController.heightForContent())
+
+        hoverViewController.hoverScrollView.documentView?.setFrameSize(hoverContentSize)
         infoPopover.contentViewController = hoverViewController
-        infoPopover.contentSize.width = hoverViewController.hoverPopoverWidth
-        infoPopover.contentSize.height = hoverViewController.heightForContent()
+        infoPopover.contentSize = hoverContentSize
 
         if let event = hoverEvent {
             let hoverLine = editView.bufferPositionFromPoint(event.locationInWindow).line
