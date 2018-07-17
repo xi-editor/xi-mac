@@ -61,6 +61,12 @@ protocol XiClient: AnyObject {
     func updateStatusItem(viewIdentifier: String, key: String, value: String);
     func removeStatusItem(viewIdentifier: String, key: String);
 
+    /// A result, formatted in Markdown, that is returned from a hover request.
+    func showHover(viewIdentifier: String, requestIdentifier: Int, result: [String: AnyObject])
+
+    /// A result, formatted in Markdown, that is returned from a definition request.
+    func showDefinition(viewIdentifier: String, requestIdentifier: Int, result: [String: AnyObject])
+
     /// A notification containing changes to the current config for the given view.
     /// - Note: The first time this message is sent, `changes` contains all defined
     // config keys and their values. Subsequent calls contain only those items which

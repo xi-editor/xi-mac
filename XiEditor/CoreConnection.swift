@@ -260,7 +260,7 @@ class CoreConnection {
                 return
         }
         let viewIdentifier = params["view_id"] as? ViewIdentifier
-        
+
         switch method {
         case "update":
             let update = params["update"] as! [String: AnyObject]
@@ -330,6 +330,15 @@ class CoreConnection {
             let key = params["key"] as! String
             client?.removeStatusItem(viewIdentifier: viewIdentifier!, key: key)
 
+        case "show_hover":
+            let requestIdentifier = params["request_id"] as! Int
+            let result = params["result"] as! [String: AnyObject]
+            client?.showHover(viewIdentifier: viewIdentifier!, requestIdentifier: requestIdentifier, result: result)
+
+        case "show_definition":
+            let requestIdentifier = params["request_id"] as! Int
+            let result = params["result"] as! [String: AnyObject]
+            client?.showDefinition(viewIdentifier: viewIdentifier!, requestIdentifier: requestIdentifier, result: result)
             
         case "find_status":
             let status = params["queries"] as! [[String: AnyObject]]
@@ -338,7 +347,7 @@ class CoreConnection {
         case "replace_status":
             let status = params["status"] as! [String: AnyObject]
             client?.replaceStatus(viewIdentifier: viewIdentifier!, status: status)
-            
+
         default:
             print("unknown notification \(method)")
         }

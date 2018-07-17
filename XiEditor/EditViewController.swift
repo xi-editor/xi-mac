@@ -64,6 +64,12 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         return controller
     }()
 
+    lazy var definitionViewController: DefinitionViewController! = {
+        let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
+        let controller = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Definition View Controller")) as! DefinitionViewController
+        return controller
+    }()
+
     var document: Document!
 
     var lines = LineCache<LineAssoc>()
@@ -162,9 +168,31 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     private var dragTimer: Timer?
     private var dragEvent: NSEvent?
 
+    // timers to manage hovers
+    private var hoverTimer: Timer?
+    var hoverEvent: NSEvent?
+    var definitionEvent: NSEvent?
+
     let statusBar = StatusBar(frame: .zero)
 
+    // Popover that manages hover and show definition views.
+    lazy var infoPopover: NSPopover = {
+        let popover = NSPopover()
+        if let window = self.view.window {
+            popover.appearance = window.appearance
+        }
+        popover.behavior = .semitransient
+        return popover
+    }()
+
+    // Incrementing request identifiers to be used with hover/show definition
+    var hoverRequestID = 0
+    var definitionRequestID = 0
+
     override func viewDidLoad() {
+        if let path = ProcessInfo.processInfo.environment["PATH"] {
+            print(path)
+        }
         super.viewDidLoad()
         shadowView.wantsLayer = true
         editView.dataSource = self
@@ -173,12 +201,12 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         scrollView.hasHorizontalScroller = true
         scrollView.usesPredominantAxisScrolling = true
         (scrollView.contentView as? XiClipView)?.delegate = self
-
     }
 
     override func viewDidAppear() {
         super.viewDidAppear()
         setupStatusBar()
+        editView.updateTrackingAreas()
         shadowView.setup()
         NotificationCenter.default.addObserver(self, selector: #selector(EditViewController.frameDidChangeNotification(_:)), name: NSView.frameDidChangeNotification, object: scrollView)
         // call to set initial scroll position once we know view size
@@ -219,6 +247,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         updateEditViewHeight()
         willScroll(to: scrollView.contentView.bounds.origin)
         updateViewportSize()
+        editView.updateTrackingAreas()
         statusBar.checkItemsFitFor(windowWidth: self.view.frame.width)
     }
 
@@ -451,7 +480,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     // Determines the gesture type based on flags and click count.
     private func clickGestureType(event: NSEvent) -> String {
         let clickCount = event.clickCount
-        
+
         if event.modifierFlags.contains(NSEvent.ModifierFlags.command) {
             switch (clickCount) {
             case 2:
@@ -463,7 +492,11 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             }
         } else if (event.modifierFlags.contains(NSEvent.ModifierFlags.shift)) {
             return "range_select"
-        } else {
+        } else if (event.modifierFlags.contains(NSEvent.ModifierFlags.control)) {
+            return "request_definition"
+        } else if (event.modifierFlags.contains(NSEvent.ModifierFlags.option)) {
+            return "request_hover"
+        }  else {
             switch (clickCount) {
             case 2:
                 return "word_select"
@@ -479,17 +512,30 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         if !editView.isFirstResponder {
             editView.window?.makeFirstResponder(editView)
         }
+        infoPopover.performClose(self)
         editView.unmarkText()
         editView.inputContext?.discardMarkedText()
         let position  = editView.bufferPositionFromPoint(theEvent.locationInWindow)
         lastDragPosition = position
-        
-        document.sendRpcAsync("gesture", params: [
-            "line": position.line,
-            "col": position.column,
-            "ty": clickGestureType(event: theEvent)
-        ])
-        
+
+        let gestureType = clickGestureType(event: theEvent)
+
+        if gestureType == "request_hover" {
+            document.sendRpcAsync("request_hover", params: ["request_id": hoverRequestID, "position": ["type": "utf8_line_char", "line": position.line, "character": position.column]])
+            hoverEvent = theEvent
+            hoverRequestID += 1
+        } else if gestureType == "request_definition" {
+            document.sendRpcAsync("request_definition", params: ["request_id": definitionRequestID, "position": ["type": "utf8_line_char", "line": position.line, "character": position.column]])
+            definitionEvent = theEvent
+            definitionRequestID += 1
+        } else {
+            document.sendRpcAsync("gesture", params: [
+                "line": position.line,
+                "col": position.column,
+                "ty": gestureType
+                ])
+        }
+
         dragTimer = Timer.scheduledTimer(timeInterval: TimeInterval(1.0/60), target: self, selector: #selector(_autoscrollTimerCallback), userInfo: nil, repeats: true)
         dragEvent = theEvent
     }
@@ -510,7 +556,27 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         dragTimer = nil
         dragEvent = nil
     }
-    
+
+    override func mouseMoved(with theEvent: NSEvent) {
+        if !editView.isFirstResponder {
+            editView.window?.makeFirstResponder(editView)
+        }
+        if hoverTimer == nil && theEvent.modifierFlags.contains([.option]){
+            hoverTimer = Timer.scheduledTimer(timeInterval: TimeInterval(3.0), target: self, selector: #selector(sendHover), userInfo: nil, repeats: false)
+        }
+        hoverEvent = theEvent
+    }
+
+    @objc func sendHover() {
+        if let event = hoverEvent {
+            let hoverPosition = editView.bufferPositionFromPoint(event.locationInWindow)
+            hoverTimer?.invalidate()
+            hoverTimer = nil
+            document.sendRpcAsync("request_hover", params: ["request_id": hoverRequestID, "position": ["type": "utf8_line_char", "line": hoverPosition.line, "character": hoverPosition.column]])
+            hoverRequestID += 1
+        }
+    }
+
     @objc func _autoscrollTimerCallback() {
         if let event = dragEvent {
             mouseDragged(with: event)
@@ -553,6 +619,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     @IBAction func debugPrintSpans(_ sender: AnyObject) {
         document.sendRpcAsync("debug_print_spans", params: [])
     }
+
     @IBAction func debugOverrideWhitespace(_ sender: NSMenuItem) {
         var changes = [String: Any]()
         switch sender.title {
@@ -583,7 +650,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         }
     }
 
-    
     public func pluginStarted(_ plugin: String) {
         self.availablePlugins[plugin] = true
         print("client: plugin started \(plugin)")
