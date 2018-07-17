@@ -330,6 +330,10 @@ class CoreConnection {
             let key = params["key"] as! String
             client?.removeStatusItem(viewIdentifier: viewIdentifier!, key: key)
 
+        case "show_hover":
+            let requestIdentifier = params["request_id"] as! Int
+            let result = params["result"] as! [String: AnyObject]
+            client?.showHover(viewIdentifier: viewIdentifier!, requestIdentifier: requestIdentifier, result: result)
             
         case "find_status":
             let status = params["queries"] as! [[String: AnyObject]]
