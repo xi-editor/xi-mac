@@ -30,6 +30,7 @@ class HoverView: NSTextView {
         self.font = NSFont.systemFont(ofSize: 11)
         self.textColor = NSColor.textColor
         self.needsLayout = true
+        self.isVerticallyResizable = true
     }
 
     required init?(coder: NSCoder) {
@@ -66,6 +67,7 @@ class HoverViewController: NSViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.hoverView.sizeToFit()
     }
 
     func updateHoverViewColors(newBackgroundColor: NSColor, newTextColor: NSColor) {
