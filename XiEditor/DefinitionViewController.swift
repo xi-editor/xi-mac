@@ -16,18 +16,18 @@ import Cocoa
 
 class DefinitionViewController: NSViewController, NSTableViewDataSource, NSTableViewDelegate {
 
-    @IBOutlet weak var definitionTableView: NSTableView!
-    var definitionURIs = [String]()
-    var definitionPositions = [BufferPosition]()
+    @IBOutlet weak var resultTableView: DefinitionTableView!
+    var resultURIs = [String]()
+    var resultPositions = [BufferPosition]()
 
     // Value to pad the definition content width.
-    let definitionTextPadding: CGFloat = 50
+    let contentTextPadding: CGFloat = 50
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        definitionTableView.dataSource = self
-        definitionTableView.delegate = self
+        resultTableView.dataSource = self
+        resultTableView.delegate = self
     }
 
     // Force view controller to load all its views - including the table view.
@@ -37,18 +37,18 @@ class DefinitionViewController: NSViewController, NSTableViewDataSource, NSTable
     }
 
     func numberOfRows(in tableView: NSTableView) -> Int {
-        return definitionPositions.count
+        return resultPositions.count
     }
 
     func tableView(_ tableView: NSTableView, rowViewForRow row: Int) -> NSTableRowView? {
-        if definitionPositions.isEmpty {
+        if resultPositions.isEmpty {
             return nil
         }
-        let line = definitionPositions[row].line
-        let column = definitionPositions[row].column
+        let line = resultPositions[row].line
+        let column = resultPositions[row].column
 
         if let cell = tableView.makeView(withIdentifier: .init("DefinitionCellView"), owner: nil) as? DefinitionTableRowView {
-            cell.methodField.stringValue = definitionURIs[row]
+            cell.methodField.stringValue = resultURIs[row]
             cell.locationField.stringValue = "Line: \(line) Column: \(column)"
             return cell
         }
@@ -58,15 +58,15 @@ class DefinitionViewController: NSViewController, NSTableViewDataSource, NSTable
     func widthToFitContents() -> CGFloat {
         var longest: CGFloat = 0
 
-        for row in 0..<definitionTableView.numberOfRows {
-            let view = definitionTableView.rowView(atRow: row, makeIfNecessary: true) as! DefinitionTableRowView
-            let width = ceil(view.methodField.attributedStringValue.size().width + definitionTextPadding)
+        for row in 0..<resultTableView.numberOfRows {
+            let view = resultTableView.rowView(atRow: row, makeIfNecessary: true) as! DefinitionTableRowView
+            let width = ceil(view.methodField.attributedStringValue.size().width + contentTextPadding)
             if longest < width { longest = width }
         }
 
         // We only have one column
-        definitionTableView.tableColumns.first?.width = longest
-        definitionTableView.reloadData()
+        resultTableView.tableColumns.first?.width = longest
+        resultTableView.reloadData()
 
         return longest
     }
@@ -78,18 +78,18 @@ extension EditViewController {
     func showDefinition(withResult result: [String: AnyObject]) {
         let locations = result["locations"] as! [[String: AnyObject]]
 
-        definitionViewController.definitionURIs.removeAll()
-        definitionViewController.definitionPositions.removeAll()
+        definitionViewController.resultURIs.removeAll()
+        definitionViewController.resultPositions.removeAll()
 
         for location in locations {
             let range = location["range"]
             let newPosition = BufferPosition(range!["start"] as! Int, range!["end"] as! Int)
 
-            definitionViewController.definitionURIs.append(location["document_uri"] as! String)
-            definitionViewController.definitionPositions.append(newPosition)
+            definitionViewController.resultURIs.append(location["document_uri"] as! String)
+            definitionViewController.resultPositions.append(newPosition)
         }
 
-        let definitionContentSize = NSSize(width: definitionViewController.widthToFitContents(), height: definitionViewController.definitionTableView.frame.size.height)
+        let definitionContentSize = NSSize(width: definitionViewController.widthToFitContents(), height: definitionViewController.resultTableView.frame.size.height)
 
         infoPopover.contentViewController = definitionViewController
         infoPopover.contentSize = definitionContentSize

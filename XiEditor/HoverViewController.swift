@@ -40,23 +40,22 @@ class HoverView: NSTextView {
 
 class HoverViewController: NSViewController {
 
-
-    lazy var hoverScrollView: NSScrollView = {
+    lazy var scrollView: NSScrollView = {
         let scrollView = NSScrollView(frame: NSRect(x: 0, y: 0, width: hoverPopoverWidth, height: 0))
         scrollView.borderType = .noBorder
         scrollView.hasVerticalScroller = true
         scrollView.autoresizingMask = [.height]
         return scrollView
     }()
-    var hoverContent: String
+    var resultContent: String
     var hoverView: HoverView
     let hoverPopoverWidth: CGFloat = 500 // XCode size
 
     init(content: String) {
-        self.hoverContent = content
-        self.hoverView = HoverView(content: self.hoverContent)
+        self.resultContent = content
+        self.hoverView = HoverView(content: self.resultContent)
         super.init(nibName: nil, bundle: nil)
-        self.hoverScrollView.documentView = hoverView
+        self.scrollView.documentView = hoverView
     }
 
     required init?(coder: NSCoder) {
@@ -65,8 +64,8 @@ class HoverViewController: NSViewController {
 
     // Required to instantiate view controller programmatically.
     override func loadView() {
-        self.view = hoverScrollView
-        hoverView.frame.size = hoverScrollView.contentSize
+        self.view = scrollView
+        hoverView.frame.size = scrollView.contentSize
     }
 
     override func viewDidLoad() {
@@ -96,10 +95,9 @@ extension EditViewController {
     func showHover(withResult result: [String: AnyObject]) {
         let hoverContent = result["content"] as! String
         let hoverViewController = HoverViewController(content: hoverContent)
-
         let hoverContentSize = NSSize(width: hoverViewController.hoverPopoverWidth, height: hoverViewController.heightForContent())
 
-        hoverViewController.hoverScrollView.documentView?.setFrameSize(hoverContentSize)
+        hoverViewController.scrollView.documentView?.setFrameSize(hoverContentSize)
         infoPopover.contentViewController = hoverViewController
         infoPopover.contentSize = hoverContentSize
 
