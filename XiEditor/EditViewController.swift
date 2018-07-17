@@ -47,10 +47,10 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     @IBOutlet weak var editContainerView: EditContainerView!
     @IBOutlet var editView: EditView!
     @IBOutlet weak var shadowView: ShadowView!
-    
+
     @IBOutlet weak var editViewHeight: NSLayoutConstraint!
     @IBOutlet weak var editViewWidth: NSLayoutConstraint!
-    
+
     lazy var findViewController: FindViewController! = {
         let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
         let controller = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Find View Controller")) as! FindViewController
@@ -71,7 +71,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     var textMetrics: TextDrawingMetrics {
         return (NSApplication.shared.delegate as! AppDelegate).textMetrics
     }
-    
+
     var gutterWidth: CGFloat = 0 {
         didSet {
             shadowView.leftShadowMinX = gutterWidth
@@ -109,7 +109,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             }
         }
     }
-    
+
     /// the minimum distance between the cursor and the right edge of the view
     var rightTextPadding: CGFloat {
         return 2 * textMetrics.fontWidth
@@ -135,19 +135,18 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             }
         }
     }
-  
+
     var unifiedTitlebar = false {
         didSet {
             // Dont check if value is same as previous
             // so when theme updates, background color still changes
             if let window = self.view.window {
                 let color = self.theme.background
-        
+
                 window.titlebarAppearsTransparent = unifiedTitlebar
                 window.backgroundColor = unifiedTitlebar ? color : nil
 
                 statusBar.updateStatusBarColor(newBackgroundColor: self.theme.background, newTextColor: self.theme.foreground, newUnifiedTitlebar: unifiedTitlebar)
-                findViewController.updateColor(newBackgroundColor: self.theme.background, unifiedTitlebar: unifiedTitlebar)
 
                 if color.isDark && unifiedTitlebar {
                     window.appearance = NSAppearance(named: NSAppearance.Name.vibrantDark)
@@ -163,9 +162,29 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     private var dragTimer: Timer?
     private var dragEvent: NSEvent?
 
+    // timers to manage hovers
+    private var hoverTimer: Timer?
+    var hoverEvent: NSEvent?
+
     let statusBar = StatusBar(frame: .zero)
 
+    // Popover that manages hover views.
+    lazy var infoPopover: NSPopover = {
+        let popover = NSPopover()
+        if let window = self.view.window {
+            popover.appearance = window.appearance
+        }
+        popover.behavior = .semitransient
+        return popover
+    }()
+
+    // Incrementing request identifiers to be used with hover definition requests.
+    var hoverRequestID = 0
+
     override func viewDidLoad() {
+        if let path = ProcessInfo.processInfo.environment["PATH"] {
+            print(path)
+        }
         super.viewDidLoad()
         shadowView.wantsLayer = true
         editView.dataSource = self
@@ -174,12 +193,12 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         scrollView.hasHorizontalScroller = true
         scrollView.usesPredominantAxisScrolling = true
         (scrollView.contentView as? XiClipView)?.delegate = self
-
     }
 
     override func viewDidAppear() {
         super.viewDidAppear()
         setupStatusBar()
+        editView.updateTrackingAreas()
         shadowView.setup()
         NotificationCenter.default.addObserver(self, selector: #selector(EditViewController.frameDidChangeNotification(_:)), name: NSView.frameDidChangeNotification, object: scrollView)
         // call to set initial scroll position once we know view size
@@ -220,6 +239,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         updateEditViewHeight()
         willScroll(to: scrollView.contentView.bounds.origin)
         updateViewportSize()
+        editView.updateTrackingAreas()
         statusBar.checkItemsFitFor(windowWidth: self.view.frame.width)
     }
 
@@ -273,7 +293,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         let inval = lineCache.applyUpdate(update: update)
         let hasNoUnsavedChanges = update["pristine"] as? Bool ?? false
         let revision = lineCache.revision
-        
+
         DispatchQueue.main.async { [weak self] in
             self?.document.updateChangeCount(hasNoUnsavedChanges ? .changeCleared : .changeDone)
             self?.lineCount = self?.lines.height ?? 0
@@ -298,7 +318,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
                                 height: textMetrics.linespace + textMetrics.descent).integral
         editContainerView.scrollToVisible(scrollRect)
     }
-    
+
     // MARK: - System Events
 
     /// Mapping of selectors to simple no-parameter commands.
@@ -353,7 +373,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         "yank:": "yank",
         "cancelOperation:": "cancel_operation",
         ]
-    
+
     override func doCommand(by aSelector: Selector) {
         // Although this function is only called when a command originates in a keyboard event,
         // several commands (such as uppercaseWord:) are accessible from both a system binding
@@ -384,27 +404,27 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         editView.inputContext?.discardMarkedText()
         document.sendRpcAsync("select_all", params: [])
     }
-    
+
     override func uppercaseWord(_ sender: Any?) {
         document.sendRpcAsync("uppercase", params: [])
     }
-    
+
     override func lowercaseWord(_ sender: Any?) {
         document.sendRpcAsync("lowercase", params: [])
     }
-    
+
     @objc func undo(_ sender: AnyObject?) {
         document.sendRpcAsync("undo", params: [])
     }
-    
+
     @objc func redo(_ sender: AnyObject?) {
         document.sendRpcAsync("redo", params: [])
     }
-    
+
     @objc func cut(_ sender: AnyObject?) {
         cutCopy("cut")
     }
-    
+
     @objc func copy(_ sender: AnyObject?) {
         cutCopy("copy")
     }
@@ -448,11 +468,11 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     override func keyDown(with theEvent: NSEvent) {
         self.editView.inputContext?.handleEvent(theEvent);
     }
-    
+
     // Determines the gesture type based on flags and click count.
     private func clickGestureType(event: NSEvent) -> String {
         let clickCount = event.clickCount
-        
+
         if event.modifierFlags.contains(NSEvent.ModifierFlags.command) {
             switch (clickCount) {
             case 2:
@@ -464,7 +484,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             }
         } else if (event.modifierFlags.contains(NSEvent.ModifierFlags.shift)) {
             return "range_select"
-        } else {
+        } else if (event.modifierFlags.contains(NSEvent.ModifierFlags.option)) {
+            return "request_hover"
+        }  else {
             switch (clickCount) {
             case 2:
                 return "word_select"
@@ -480,21 +502,30 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         if !editView.isFirstResponder {
             editView.window?.makeFirstResponder(editView)
         }
+        infoPopover.performClose(self)
         editView.unmarkText()
         editView.inputContext?.discardMarkedText()
         let position  = editView.bufferPositionFromPoint(theEvent.locationInWindow)
         lastDragPosition = position
-        
-        document.sendRpcAsync("gesture", params: [
-            "line": position.line,
-            "col": position.column,
-            "ty": clickGestureType(event: theEvent)
-        ])
-        
+
+        let gestureType = clickGestureType(event: theEvent)
+
+        if gestureType == "request_hover" {
+            document.sendRpcAsync("request_hover", params: ["request_id": hoverRequestID, "position": ["type": "utf8_line_char", "line": position.line, "character": position.column]])
+            hoverEvent = theEvent
+            hoverRequestID += 1
+        } else {
+            document.sendRpcAsync("gesture", params: [
+                "line": position.line,
+                "col": position.column,
+                "ty": gestureType
+                ])
+        }
+
         dragTimer = Timer.scheduledTimer(timeInterval: TimeInterval(1.0/60), target: self, selector: #selector(_autoscrollTimerCallback), userInfo: nil, repeats: true)
         dragEvent = theEvent
     }
-    
+
     override func mouseDragged(with theEvent: NSEvent) {
         editView.autoscroll(with: theEvent)
         let dragPosition = editView.bufferPositionFromPoint(theEvent.locationInWindow)
@@ -505,19 +536,39 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         }
         dragEvent = theEvent
     }
-    
+
     override func mouseUp(with theEvent: NSEvent) {
         dragTimer?.invalidate()
         dragTimer = nil
         dragEvent = nil
     }
-    
+
+    override func mouseMoved(with theEvent: NSEvent) {
+        if !editView.isFirstResponder {
+            editView.window?.makeFirstResponder(editView)
+        }
+        if hoverTimer == nil && theEvent.modifierFlags.contains([.option]){
+            hoverTimer = Timer.scheduledTimer(timeInterval: TimeInterval(3.0), target: self, selector: #selector(sendHover), userInfo: nil, repeats: false)
+        }
+        hoverEvent = theEvent
+    }
+
+    @objc func sendHover() {
+        if let event = hoverEvent {
+            let hoverPosition = editView.bufferPositionFromPoint(event.locationInWindow)
+            hoverTimer?.invalidate()
+            hoverTimer = nil
+            document.sendRpcAsync("request_hover", params: ["request_id": hoverRequestID, "position": ["type": "utf8_line_char", "line": hoverPosition.line, "character": hoverPosition.column]])
+            hoverRequestID += 1
+        }
+    }
+
     @objc func _autoscrollTimerCallback() {
         if let event = dragEvent {
             mouseDragged(with: event)
         }
     }
-    
+
     // used mostly for paste
     override func insertText(_ insertString: Any) {
         document.sendRpcAsync("insert", params: insertedStringToJson(insertString as! NSString))
@@ -534,7 +585,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         // pass the message to the intended recipient
         NSDocumentController.shared.newDocument(sender)
     }
-    
+
     override func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
         // disable the New Tab menu item when running in 10.12
         if menuItem.tag == 10 {
@@ -554,6 +605,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     @IBAction func debugPrintSpans(_ sender: AnyObject) {
         document.sendRpcAsync("debug_print_spans", params: [])
     }
+
     @IBAction func debugOverrideWhitespace(_ sender: NSMenuItem) {
         var changes = [String: Any]()
         switch sender.title {
@@ -584,12 +636,11 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         }
     }
 
-    
     public func pluginStarted(_ plugin: String) {
         self.availablePlugins[plugin] = true
         print("client: plugin started \(plugin)")
     }
-    
+
     public func pluginStopped(_ plugin: String) {
         self.availablePlugins[plugin] = false
         let pluginStatusItems = self.statusBar.currentItems.values
@@ -601,7 +652,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     public func updateCommands(plugin: String, commands: [Command]) {
         self.availableCommands[plugin] = commands
     }
-    
+
     public func configChanged(changes: [String: AnyObject]) {
         for (key, _) in changes {
             switch key {
@@ -611,16 +662,16 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
             case "scroll_past_end":
                 self.scrollPastEnd = changes["scroll_past_end"] as! Bool
-            
+
             case "unified_titlebar":
                 self.unifiedTitlebar = changes["unified_titlebar"] as! Bool
-                
+
             default:
                 break
             }
         }
     }
-    
+
     func handleFontChange(fontName: String?, fontSize: CGFloat?) {
         (NSApplication.shared.delegate as! AppDelegate).handleFontChange(fontName: fontName,
                                                                          fontSize: fontSize)
@@ -705,7 +756,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     @IBAction func gotoLine(_ sender: AnyObject) {
         guard let window = self.view.window else { return }
-        
+
         let alert = NSAlert.init()
         alert.addButton(withTitle: "Ok")
         alert.addButton(withTitle: "Cancel")
@@ -714,11 +765,11 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         let text = NSTextField.init(frame: NSRect.init(x: 0, y: 0, width: 200, height: 24))
         alert.accessoryView = text
         alert.window.initialFirstResponder = text
-        
+
         alert.beginSheetModal(for: window) { response in
             if (response == NSApplication.ModalResponse.alertFirstButtonReturn) {
                 let line = text.intValue
-                
+
                 if line > 0 {
                     self.document.sendRpcAsync("goto_line", params: ["line": line - 1])
                 }
@@ -753,10 +804,9 @@ extension NSColor {
         let red = self.redComponent
         let green = self.greenComponent
         let blue = self.blueComponent
-    
+
         // Formula taken from https://www.w3.org/WAI/ER/WD-AERT/#color-contrast
         let brightness = ((red * 299) + (green * 587) + (blue * 114)) / 1000
         return brightness < 0.5
     }
 }
-
