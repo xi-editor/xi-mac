@@ -30,7 +30,7 @@ class XiDocumentController: NSDocumentController {
         super.init(coder: coder)
         self.setup()
     }
-    
+
     func setup() {
         NotificationCenter.default.addObserver(
             self,
@@ -85,12 +85,25 @@ class XiDocumentController: NSDocumentController {
         return openViews[viewIdentifier]
     }
 
-    /// Associates the given view with the given identifier. Should only be called when
-    /// the `ViewIdentifier` is first set.
-    func setIdentifier(_ viewIdentifier: ViewIdentifier, forDocument document: Document) {
+    // Called when we receive the `new_view` core->client RPC
+    func addDocument(withIdentifier identifier: ViewIdentifier, url: URL?) {
         lock.lock()
-        openViews[viewIdentifier] = document
-        lock.unlock()
+        defer { lock.unlock() }
+        do {
+            let newDocument = try makeUntitledDocument(ofType: defaultType!) as! Document
+            newDocument.coreViewIdentifier = identifier
+            openViews[identifier] = newDocument
+            newDocument.fileModificationDate = nil
+            newDocument.fileURL = url
+            DispatchQueue.main.async {
+                newDocument.makeWindowControllers()
+                newDocument.showWindows()
+            }
+        } catch let err {
+            DispatchQueue.main.async {
+                (NSApp.delegate as? AppDelegate)?.alert(text: "error creating view \(err)")
+            }
+        }
     }
 
     override func removeDocument(_ document: NSDocument) {
@@ -105,83 +118,63 @@ class XiDocumentController: NSDocumentController {
         }
         super.removeDocument(document)
     }
-    
-    override func openDocument(withContentsOf url: URL,
-                               display displayDocument: Bool,
-                               completionHandler: @escaping (NSDocument?, Bool, Error?) -> Void) {
-        // reuse empty view if foremost
-        if let currentDocument = self.currentDocument as? Document, currentDocument.isEmpty,
-            self.document(for: url) == nil {
-            // close the existing view before reusing
-            if let oldId = currentDocument.coreViewIdentifier {
-                Events.CloseView(viewIdentifier: oldId).dispatch(currentDocument.dispatcher!)
-            }
-            currentDocument.coreViewIdentifier = nil;
 
-            Events.NewView(path: url.path).dispatchWithCallback(currentDocument.dispatcher!) { (response) in
-                DispatchQueue.main.sync {
+    override func openDocument(_ sender: Any?) {
+        let urls = urlsFromRunningOpenPanel();
+        for url in urls ?? [] {
+            openDocumentAsync(atUrl: url)
+        }
+    }
 
-                    switch response {
-                    case .ok(let result):
-                        let result = result as! String
-                        currentDocument.coreViewIdentifier = result
-                        currentDocument.fileURL = url
-                        self.setIdentifier(result, forDocument: currentDocument)
-                        currentDocument.editViewController!.redrawEverything()
-                        completionHandler(currentDocument, false, nil)
-
-                    case .error(let error):
-                        let userInfo = [NSLocalizedDescriptionKey: error.message]
-                        let nsError = NSError(domain: "xi.io.error", code: error.code,
-                                              userInfo: userInfo)
-                        completionHandler(nil, false, nsError)
-                        currentDocument.close()
-                    }
-                }
-            }
+    /// Asks core to open the specified document. On success, we will receive
+    /// the `new_view` notification.
+    func openDocumentAsync(atUrl url: URL?) {
+        if let url = url, let existing = self.document(for: url) {
+            existing.showWindows()
         } else {
-            super.openDocument(withContentsOf: url,
-                               display: displayDocument,
-                               completionHandler: completionHandler)
+            let delegate = (NSApp.delegate as! AppDelegate)
+            let params = url == nil ? [:] : ["file_path": url!.path]
+            delegate.dispatcher?.coreConnection
+                .sendRpcAsync("new_view_async", params: params)
         }
     }
 
-    override func makeUntitledDocument(ofType typeName: String) throws -> NSDocument {
-        let document = try Document(type: typeName)
-        setupDocument(document, forUrl: nil)
-        return document
-    }
-
-    override func makeDocument(withContentsOf url: URL, ofType typeName: String) throws -> NSDocument {
-        let document = try Document(contentsOf: url, ofType: typeName)
-        setupDocument(document, forUrl: url)
-        return document
-    }
-
-    // this is called when documents are restored on startup
-    override func makeDocument(for urlOrNil: URL?, withContentsOf contentsURL: URL, ofType typeName: String) throws -> NSDocument {
-        if urlOrNil == contentsURL {
-            return try self.makeDocument(withContentsOf: contentsURL, ofType: typeName)
-        }
-        fatalError("Xi does not currently support document duplication")
-    }
-
-    func setupDocument(_ document: Document, forUrl url: URL?) {
-        // we nil out this field to opt out of having NSDocument check for changes on disk when saving;
-        // we (theoretically) do that check in xi-core.
-        document.fileModificationDate = nil
-        Events.NewView(path: url?.path).dispatchWithCallback(document.dispatcher!) { (response) in
-            DispatchQueue.main.sync {
+    func makeDocumentSync(atUrl url: URL?) throws -> NSDocument {
+        let newDocument = try makeUntitledDocument(ofType: defaultType!) as! Document
+        Events.NewView(path: url?.path).dispatchWithCallback(newDocument.dispatcher!) { (response) in
+            DispatchQueue.main.async {
                 switch response {
                 case .ok(let result):
                     let viewIdentifier = result as! String
-                    self.setIdentifier(viewIdentifier, forDocument: document)
-                    document.coreViewIdentifier = viewIdentifier
+                    self.lock.lock()
+                    self.openViews[viewIdentifier] = newDocument
+                    newDocument.coreViewIdentifier = viewIdentifier
+                    newDocument.fileURL = url
+                    newDocument.fileModificationDate = nil
+                    self.lock.unlock()
                 case .error(let error):
-                    document.close()
+                    newDocument.close()
                     (NSApplication.shared.delegate as! AppDelegate).alert(text: error.message)
                 }
             }
         }
+        return newDocument
+    }
+
+    // Called when we create a new view, or when a new view is created at startup.
+    override func openUntitledDocumentAndDisplay(_ displayDocument: Bool) throws -> NSDocument {
+        let document = try makeDocumentSync(atUrl: nil)
+        self.addDocument(document)
+        if displayDocument {
+            document.makeWindowControllers()
+            document.showWindows()
+        }
+        return document
+    }
+
+    // this is called when documents are restored on startup. We still use the
+    // sync API for creating a new view because we're still using NSDocumentController.
+    override func makeDocument(for urlOrNil: URL?, withContentsOf contentsURL: URL, ofType typeName: String) throws -> NSDocument {
+        return try makeDocumentSync(atUrl: urlOrNil)
     }
 }

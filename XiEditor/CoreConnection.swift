@@ -262,6 +262,10 @@ class CoreConnection {
         let viewIdentifier = params["view_id"] as? ViewIdentifier
         
         switch method {
+        case "new_view":
+            let path = params["path"] as? String
+            self.client?.newView(viewIdentifier: viewIdentifier!, path: path)
+
         case "update":
             let update = params["update"] as! [String: AnyObject]
             self.client?.update(viewIdentifier: viewIdentifier!, update: update, rev: nil)
