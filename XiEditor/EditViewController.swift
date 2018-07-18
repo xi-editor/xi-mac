@@ -566,8 +566,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     // may be used for IME?
     override func insertText(_ insertString: Any) {
         let text: String
-        if let s = insertString as? NSString {
-            text = s as String
+        if insertString is NSString {
+            text = insertString as! String
         } else if let s = insertString as? NSAttributedString {
             text = s.string as String
         } else {
