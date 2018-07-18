@@ -49,7 +49,7 @@ class HoverViewController: NSViewController {
     }()
     var resultContent: String
     var hoverView: HoverView
-    let hoverPopoverWidth: CGFloat = 500 // XCode size
+    let hoverPopoverWidth: CGFloat = 500 // XCode size for quick help popovers
 
     init(content: String) {
         self.resultContent = content
@@ -81,7 +81,7 @@ class HoverViewController: NSViewController {
     // The text container inset for top and bottom is added to the height required to
     // draw the string.
     func heightForContent() -> CGFloat {
-        // Calculates height required for a view with 500 width.
+        // Calculates height required for a text view with width = 500.
         self.hoverView.setFrameSize(NSSize(width: hoverPopoverWidth, height: 0))
 
         guard let layoutManager = self.hoverView.layoutManager else { return 0 }
