@@ -81,6 +81,9 @@ class HoverViewController: NSViewController {
     // The text container inset for top and bottom is added to the height required to
     // draw the string.
     func heightForContent() -> CGFloat {
+        // Calculates height required for a view with 500 width.
+        self.hoverView.setFrameSize(NSSize(width: hoverPopoverWidth, height: 0))
+
         guard let layoutManager = self.hoverView.layoutManager else { return 0 }
         guard let textContainer = self.hoverView.textContainer else { return 0 }
 
