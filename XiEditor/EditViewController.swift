@@ -554,12 +554,14 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     @objc func sendHover() {
-        if let event = hoverEvent {
-            let hoverPosition = editView.bufferPositionFromPoint(event.locationInWindow)
-            hoverTimer?.invalidate()
-            hoverTimer = nil
-            document.sendRpcAsync("request_hover", params: ["request_id": hoverRequestID, "position": ["type": "utf8_line_char", "line": hoverPosition.line, "character": hoverPosition.column]])
-            hoverRequestID += 1
+        if !infoPopover.isShown {
+            if let event = hoverEvent {
+                let hoverPosition = editView.bufferPositionFromPoint(event.locationInWindow)
+                hoverTimer?.invalidate()
+                hoverTimer = nil
+                document.sendRpcAsync("request_hover", params: ["request_id": hoverRequestID, "position": ["type": "utf8_line_char", "line": hoverPosition.line, "character": hoverPosition.column]])
+                hoverRequestID += 1
+            }
         }
     }
 
