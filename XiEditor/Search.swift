@@ -23,6 +23,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     @IBOutlet weak var doneButton: NSButton!
     @IBOutlet weak var replacePanel: NSStackView!
     @IBOutlet weak var replaceField: NSTextField!
+    @IBOutlet weak var searchReplaceStackView: NSStackView!
 
     let resultCountLabel = Label(title: "")
 
@@ -36,6 +37,9 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     var wrapAround = true
     var regex = false
     var wholeWords = false
+
+    // search fields
+    var queries: [FindQuery] = []
 
     override func viewDidLoad() {
         // add recent searches menu items
@@ -87,11 +91,12 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
         }
     }
 
+    // todo: should be set for specific queries
     @IBAction func selectIgnoreCaseMenuAction(_ sender: NSMenuItem) {
         ignoreCase = !ignoreCase
         redoFind()
     }
-    
+
     @IBAction func selectWrapAroundMenuAction(_ sender: NSMenuItem) {
         wrapAround = !wrapAround
     }
@@ -129,8 +134,23 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     }
 
     @IBAction func searchFieldAction(_ sender: NSSearchField) {
-        findDelegate.find(searchField.stringValue, caseSensitive: !ignoreCase, regex: regex, wholeWords: wholeWords)
+        findDelegate.find(queries)
         findDelegate.findNext(wrapAround: wrapAround, allowSame: false)
+    }
+
+    @IBAction func addSearchFieldAction(_ sender: NSButton) {
+        let searchFieldCopy = NSKeyedArchiver.archivedData(withRootObject: searchField)
+        let newSearchField = NSKeyedUnarchiver.unarchiveObject(with: searchFieldCopy) as! NSSearchField
+
+        queries.append(FindQuery(
+            id: nil,
+            searchField: newSearchField,
+            caseSensitive: false,
+            regex: false,
+            wholeWords: false
+        ))
+
+        searchReplaceStackView.insertView(newSearchField, at: 0, in: NSStackView.Gravity.center)
     }
 
     override func controlTextDidChange(_ obj: Notification) {
@@ -140,7 +160,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     }
 
     func redoFind() {
-        findDelegate.find(searchField.stringValue, caseSensitive: !ignoreCase, regex: regex, wholeWords: wholeWords)
+        findDelegate.find(queries)
         findDelegate.findNext(wrapAround: wrapAround, allowSame: true)
     }
 
@@ -200,23 +220,37 @@ extension EditViewController {
         ])
     }
 
-    func find(_ term: String?, caseSensitive: Bool, regex: Bool, wholeWords: Bool) {
-        var params: [String: Any] = [
-            "case_sensitive": caseSensitive,
-            "regex": regex,
-            "whole_words": wholeWords,
-        ]
+    func find(_ queries: [FindQuery]) {
+        var jsonQueries: [[String: Any]] = []
 
-        if term != nil {
-            params["chars"] = term
+        for query in queries {
+            var jsonQuery: [String: Any] = [
+                "case_sensitive": query.caseSensitive,
+                "regex": query.regex,
+                "whole_words": query.wholeWords
+            ]
+
+            let term = query.searchField.stringValue
+
+            if term != nil {        // todo
+                jsonQuery["chars"] = term
+            }
+
+            if query.id != nil {
+                jsonQuery["id"] = query.id
+            }
+
+            // todo
+//            let shouldClearCount = term == nil || term == ""
+//
+//            if shouldClearCount {
+//                (self.findViewController.searchField as? FindSearchField)?.resultCount = nil
+//            }
+
+            jsonQueries.append(jsonQuery)
         }
 
-        let shouldClearCount = term == nil || term == ""
-
-        if shouldClearCount {
-            (self.findViewController.searchField as? FindSearchField)?.resultCount = nil
-        }
-        document.sendRpcAsync("find", params: params)
+        document.sendRpcAsync("find", params: ["queries": jsonQueries])
     }
     
     func clearFind() {
@@ -224,21 +258,32 @@ extension EditViewController {
     }
     
     func findStatus(status: [[String: AnyObject]]) {
-        if status.first?["chars"] != nil && !(status.first?["chars"] is NSNull) {
-            findViewController.searchField.stringValue = status.first?["chars"] as! String
-        }
-        
-        if status.first?["case_sensitive"] != nil && !(status.first?["case_sensitive"] is NSNull) {
-            findViewController.ignoreCase = status.first?["case_sensitive"] as! Bool
+        for statusQuery in status {
+            var query = findViewController.queries.first(where: { $0.id == statusQuery["id"] as! String })
+
+            if query != nil {
+                if status.first?["chars"] != nil && !(status.first?["chars"] is NSNull) {
+                    query?.searchField.stringValue = statusQuery["chars"] as! String
+                }
+
+                if status.first?["case_sensitive"] != nil && !(status.first?["case_sensitive"] is NSNull) {
+                    query?.caseSensitive = statusQuery["case_sensitive"] as! Bool
+                }
+
+                if status.first?["whole_words"] != nil && !(status.first?["whole_words"] is NSNull) {
+                    query?.wholeWords = statusQuery["whole_words"] as! Bool
+                }
+
+                if let resultCount = statusQuery["matches"] as? Int {
+                    (query?.searchField as? FindSearchField)?.resultCount = resultCount
+                }
+            } else {
+                var newQuery = findViewController.queries.first(where: { $0.id == nil })!
+                newQuery.id = statusQuery["id"] as! String
+            }
         }
 
-        if status.first?["whole_words"] != nil && !(status.first?["whole_words"] is NSNull) {
-            findViewController.wholeWords = status.first?["whole_words"] as! Bool
-        }
-
-        if let resultCount = status.first?["matches"] as? Int {
-            (findViewController.searchField as? FindSearchField)?.resultCount = resultCount
-        }
+        // todo: remove
     }
 
     func replaceNext() {
@@ -342,7 +387,8 @@ class Label: NSTextField {
     }
 
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+//        fatalError("init(coder:) has not been implemented")
+        super.init(coder: coder)
     }
 }
 
@@ -350,6 +396,7 @@ class FindSearchField: NSSearchField {
     let label = Label(title: "")
 
     private var _lastSearchButtonWidth: CGFloat = 22 // known default
+    var id: String? = nil
 
     var resultCount: Int? {
         didSet {

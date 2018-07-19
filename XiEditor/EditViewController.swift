@@ -30,8 +30,17 @@ struct LineAssoc {
     var textLine: TextLine
 }
 
+/// Represents one search query
+struct FindQuery {
+    var id: String?
+    var searchField: NSSearchField
+    var caseSensitive: Bool
+    var regex: Bool
+    var wholeWords: Bool
+}
+
 protocol FindDelegate {
-    func find(_ term: String?, caseSensitive: Bool, regex: Bool, wholeWords: Bool)
+    func find(_ queries: [FindQuery])
     func findNext(wrapAround: Bool, allowSame: Bool)
     func findPrevious(wrapAround: Bool)
     func closeFind()
