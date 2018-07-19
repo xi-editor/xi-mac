@@ -39,7 +39,6 @@ class HoverView: NSTextView {
 }
 
 class HoverViewController: NSViewController {
-
     lazy var scrollView: NSScrollView = {
         let scrollView = NSScrollView(frame: NSRect(x: 0, y: 0, width: hoverPopoverWidth, height: 0))
         scrollView.borderType = .noBorder
@@ -96,20 +95,25 @@ extension EditViewController {
 
     // Puts the popover at the baseline of the chosen hover symbol.
     func showHover(withResult result: [String: AnyObject]) {
+        if infoPopover.isShown {
+            infoPopover.performClose(self)
+        }
+
         let hoverContent = result["content"] as! String
         let hoverViewController = HoverViewController(content: hoverContent)
         let hoverContentSize = NSSize(width: hoverViewController.hoverPopoverWidth, height: hoverViewController.heightForContent())
 
+        hoverViewController.scrollView.setFrameSize(hoverContentSize)
         hoverViewController.scrollView.documentView?.setFrameSize(hoverContentSize)
-        infoPopover.contentViewController = hoverViewController
         infoPopover.contentSize = hoverContentSize
+        infoPopover.contentViewController = hoverViewController
 
         if let event = hoverEvent {
             let hoverLine = editView.bufferPositionFromPoint(event.locationInWindow).line
-            let symbolBaseline = editView.lineIxToBaseline(hoverLine) 
-
+            let symbolBaseline = editView.lineIxToBaseline(hoverLine)
             let positioningPoint = NSPoint(x: event.locationInWindow.x, y: editView.frame.height - symbolBaseline)
             let positioningSize = CGSize(width: 1, height: 1) // Generic size to center popover on cursor
+
             infoPopover.show(relativeTo: NSRect(origin: positioningPoint, size: positioningSize), of: self.view, preferredEdge: .minY)
             hoverEvent = nil
         }
