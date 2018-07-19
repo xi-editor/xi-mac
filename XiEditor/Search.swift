@@ -172,7 +172,7 @@ extension EditViewController {
         let offset = findViewController.view.fittingSize.height
         scrollView.contentInsets = NSEdgeInsetsMake(offset, 0, 0, 0)
 
-        let origin = scrollView.visibleRect.origin
+        let origin = scrollView.contentView.visibleRect.origin
         scrollView.contentView.scroll(to: NSMakePoint(origin.x ,origin.y - offset))
 
         editView.window?.makeFirstResponder(findViewController.searchField)
