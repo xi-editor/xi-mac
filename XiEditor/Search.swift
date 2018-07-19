@@ -183,6 +183,10 @@ extension EditViewController {
             findViewController.view.isHidden = true
             (findViewController.searchField as? FindSearchField)?.resultCount = nil
             scrollView.contentInsets = NSEdgeInsetsZero
+            
+            let offset = findViewController.view.fittingSize.height
+            let origin = scrollView.contentView.visibleRect.origin
+            scrollView.contentView.scroll(to: NSMakePoint(origin.x ,origin.y + offset))
         }
 
         editView.window?.makeFirstResponder(editView)
