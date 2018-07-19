@@ -174,7 +174,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         if let window = self.view.window {
             popover.appearance = window.appearance
         }
-        popover.behavior = .semitransient
+        popover.behavior = .transient
         return popover
     }()
 
@@ -247,6 +247,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     /// Can be called manually with the current visible origin in order to ensure the line cache
     /// is up to date.
     func willScroll(to newOrigin: NSPoint) {
+        if infoPopover.isShown {
+            infoPopover.performClose(self)
+        }
         editView.scrollOrigin = newOrigin
         shadowView.showLeftShadow = newOrigin.x > 0
         shadowView.showRightShadow = (editViewWidth.constant - (newOrigin.x + self.view.bounds.width)) > rightTextPadding

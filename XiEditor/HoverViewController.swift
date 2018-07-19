@@ -15,7 +15,6 @@
 import Cocoa
 
 class HoverView: NSTextView {
-
     // Lets AppKit do all the work when setting up a new text view
     override init(frame frameRect: NSRect, textContainer container: NSTextContainer?) {
         let textView = NSTextView(frame: .zero)
