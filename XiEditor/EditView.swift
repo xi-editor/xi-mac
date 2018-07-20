@@ -134,7 +134,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     var gutterXPad: CGFloat = 8
     var gutterCache: GutterCache?
 
-    var dataSource: EditViewDataSource!
+    weak var dataSource: EditViewDataSource!
 
     var lastDragLineCol: (Int, Int)?
     var timer: Timer?
