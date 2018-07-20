@@ -15,7 +15,7 @@
 import Cocoa
 
 /// The EditViewDataSource protocol describes the properties that an editView uses to determine how to render its contents.
-protocol EditViewDataSource {
+protocol EditViewDataSource: class {
     var lines: LineCache<LineAssoc> { get }
     var styleMap: StyleMap { get }
     var theme: Theme { get }
@@ -147,7 +147,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
                 window.backgroundColor = unifiedTitlebar ? color : nil
 
                 statusBar.updateStatusBarColor(newBackgroundColor: self.theme.background, newTextColor: self.theme.foreground, newUnifiedTitlebar: unifiedTitlebar)
-                findViewController.updateColor(newBackgroundColor: self.theme.background, unifiedTitlebar: unifiedTitlebar)
+//                findViewController.updateColor(newBackgroundColor: self.theme.background, unifiedTitlebar: unifiedTitlebar)
 
                 if color.isDark && unifiedTitlebar {
                     window.appearance = NSAppearance(named: NSAppearance.Name.vibrantDark)

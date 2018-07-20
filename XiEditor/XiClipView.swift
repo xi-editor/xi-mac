@@ -14,12 +14,12 @@
 
 import Cocoa
 
-protocol ScrollInterested {
+protocol ScrollInterested: class {
     func willScroll(to newOrigin: NSPoint);
 }
 
 class XiClipView: NSClipView {
-    var delegate: ScrollInterested?
+    weak var delegate: ScrollInterested?
 
     override func scroll(to newOrigin: NSPoint) {
         delegate?.willScroll(to: newOrigin)

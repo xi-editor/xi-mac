@@ -60,7 +60,7 @@ class Document: NSDocument {
     var tabbingIdentifier: String
     
 	var pendingNotifications: [PendingNotification] = [];
-    var editViewController: EditViewController?
+    weak var editViewController: EditViewController?
 
     /// Returns `true` if this document contains no data.
     var isEmpty: Bool {
