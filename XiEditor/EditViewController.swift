@@ -162,8 +162,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     private var dragTimer: Timer?
     private var dragEvent: NSEvent?
 
-    // timers to manage hovers
-    private var hoverTimer: Timer?
     var hoverEvent: NSEvent?
 
     let statusBar = StatusBar(frame: .zero)
@@ -195,7 +193,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     override func viewDidAppear() {
         super.viewDidAppear()
         setupStatusBar()
-        editView.updateTrackingAreas()
         shadowView.setup()
         NotificationCenter.default.addObserver(self, selector: #selector(EditViewController.frameDidChangeNotification(_:)), name: NSView.frameDidChangeNotification, object: scrollView)
         // call to set initial scroll position once we know view size
@@ -236,7 +233,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         updateEditViewHeight()
         willScroll(to: scrollView.contentView.bounds.origin)
         updateViewportSize()
-        editView.updateTrackingAreas()
         statusBar.checkItemsFitFor(windowWidth: self.view.frame.width)
     }
 
@@ -541,23 +537,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         dragEvent = nil
     }
 
-    override func mouseMoved(with theEvent: NSEvent) {
-        if theEvent.modifierFlags.contains([.option]) {
-            if !editView.isFirstResponder {
-                editView.window?.makeFirstResponder(editView)
-            }
-            if hoverTimer == nil {
-                hoverTimer = Timer.scheduledTimer(timeInterval: TimeInterval(3), target: self, selector: #selector(sendHover), userInfo: nil, repeats: false)
-            }
-            hoverEvent = theEvent
-        }
-    }
-
     @objc func sendHover() {
         if let event = hoverEvent {
             let hoverPosition = editView.bufferPositionFromPoint(event.locationInWindow)
-            hoverTimer?.invalidate()
-            hoverTimer = nil
             document.sendRpcAsync("request_hover", params: ["request_id": hoverRequestID, "position": ["line": hoverPosition.line, "column": hoverPosition.column]])
             hoverRequestID += 1
         }
