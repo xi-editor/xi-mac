@@ -372,6 +372,7 @@ Gw
                     </connections>
                 </viewController>
                 <customObject id="MxZ-GG-2K0" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+                <userDefaultsController representsSharedInstance="YES" id="DVW-4U-qxz"/>
                 <menu title="Find Menu" autoenablesItems="NO" id="0va-ps-fv2">
                     <items>
                         <menuItem title="Ignore Case" state="on" tag="101" id="h8d-fe-rWj">
@@ -403,9 +404,107 @@ Gw
                         <outlet property="delegate" destination="yjF-1R-sp7" id="qJl-NO-p4E"/>
                     </connections>
                 </menu>
-                <userDefaultsController representsSharedInstance="YES" id="DVW-4U-qxz"/>
             </objects>
-            <point key="canvasLocation" x="999.5" y="-170"/>
+            <point key="canvasLocation" x="1104" y="-171"/>
+        </scene>
+        <!--Suplementary Find View Controller-->
+        <scene sceneID="U5d-nr-i4y">
+            <objects>
+                <viewController storyboardIdentifier="Suplementary Find View Controller" id="uoL-yg-E2H" customClass="SuplementaryFindViewController" customModule="XiEditor" customModuleProvider="target" sceneMemberID="viewController">
+                    <visualEffectView key="view" blendingMode="behindWindow" material="appearanceBased" state="inactive" id="Qip-n1-7ch">
+                        <rect key="frame" x="0.0" y="0.0" width="619" height="300"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <stackView distribution="fill" orientation="vertical" alignment="centerX" spacing="4" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Zpd-iM-7eQ">
+                                <rect key="frame" x="8" y="0.0" width="603" height="300"/>
+                                <subviews>
+                                    <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="snt-AV-vR6">
+                                        <rect key="frame" x="101.5" y="4" width="400" height="292"/>
+                                        <subviews>
+                                            <searchField wantsLayer="YES" focusRingType="none" verticalHuggingPriority="750" placeholderIntrinsicWidth="400" placeholderIntrinsicHeight="22" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4N3-Md-ylI" customClass="FindSearchField" customModule="XiEditor" customModuleProvider="target">
+                                                <rect key="frame" x="0.0" y="270" width="400" height="22"/>
+                                                <searchFieldCell key="cell" selectable="YES" editable="YES" borderStyle="bezel" focusRingType="none" bezelStyle="round" recentsAutosaveName="xi-editor-find" id="pVg-29-Xau">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                    <connections>
+                                                        <outlet property="searchMenuTemplate" destination="0va-ps-fv2" id="sL5-QQ-3pV"/>
+                                                    </connections>
+                                                </searchFieldCell>
+                                                <connections>
+                                                    <action selector="searchFieldAction:" target="uoL-yg-E2H" id="RWZ-fZ-ySE"/>
+                                                    <outlet property="searchMenuTemplate" destination="RHe-lc-wA0" id="Ki0-uf-eBV"/>
+                                                </connections>
+                                            </searchField>
+                                        </subviews>
+                                        <visibilityPriorities>
+                                            <integer value="1000"/>
+                                        </visibilityPriorities>
+                                        <customSpacing>
+                                            <real value="3.4028234663852886e+38"/>
+                                        </customSpacing>
+                                    </stackView>
+                                </subviews>
+                                <edgeInsets key="edgeInsets" left="0.0" right="0.0" top="4" bottom="4"/>
+                                <visibilityPriorities>
+                                    <integer value="1000"/>
+                                </visibilityPriorities>
+                                <customSpacing>
+                                    <real value="3.4028234663852886e+38"/>
+                                </customSpacing>
+                            </stackView>
+                            <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="nT1-sD-TQg">
+                                <rect key="frame" x="0.0" y="-2" width="619" height="5"/>
+                            </box>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="Zpd-iM-7eQ" firstAttribute="top" secondItem="Qip-n1-7ch" secondAttribute="top" id="Jdw-e3-ZJj"/>
+                            <constraint firstItem="nT1-sD-TQg" firstAttribute="leading" secondItem="Qip-n1-7ch" secondAttribute="leading" id="OZU-RU-HVE"/>
+                            <constraint firstAttribute="trailing" secondItem="nT1-sD-TQg" secondAttribute="trailing" id="UHq-SH-Yzn"/>
+                            <constraint firstAttribute="trailing" secondItem="Zpd-iM-7eQ" secondAttribute="trailing" constant="8" id="WqI-z1-Lrh"/>
+                            <constraint firstAttribute="bottom" secondItem="nT1-sD-TQg" secondAttribute="bottom" id="fYp-c6-SPy"/>
+                            <constraint firstItem="Zpd-iM-7eQ" firstAttribute="leading" secondItem="Qip-n1-7ch" secondAttribute="leading" constant="8" id="gZn-do-Dl9"/>
+                            <constraint firstAttribute="bottom" secondItem="Zpd-iM-7eQ" secondAttribute="bottom" id="rX3-UF-ohH"/>
+                        </constraints>
+                    </visualEffectView>
+                    <connections>
+                        <outlet property="searchField" destination="4N3-Md-ylI" id="EXI-Ta-lqU"/>
+                    </connections>
+                </viewController>
+                <menu title="Find Menu" autoenablesItems="NO" id="RHe-lc-wA0">
+                    <items>
+                        <menuItem title="Ignore Case" state="on" tag="101" id="kHJ-AD-dbh">
+                            <modifierMask key="keyEquivalentModifierMask"/>
+                            <connections>
+                                <action selector="selectIgnoreCaseMenuAction:" target="uoL-yg-E2H" id="gmM-OH-nDw"/>
+                            </connections>
+                        </menuItem>
+                        <menuItem title="Wrap Around" state="on" tag="102" id="EJI-Cs-6OX">
+                            <modifierMask key="keyEquivalentModifierMask"/>
+                            <connections>
+                                <action selector="selectWrapAroundMenuAction:" target="uoL-yg-E2H" id="PV1-30-DQx"/>
+                            </connections>
+                        </menuItem>
+                        <menuItem title="Regex" tag="103" id="VIf-Ym-c0Y">
+                            <modifierMask key="keyEquivalentModifierMask"/>
+                            <connections>
+                                <action selector="selectRegexMenuAction:" target="uoL-yg-E2H" id="3Bn-YM-hce"/>
+                            </connections>
+                        </menuItem>
+                        <menuItem title="Whole Words" tag="104" id="2x7-aB-YpT">
+                            <modifierMask key="keyEquivalentModifierMask"/>
+                            <connections>
+                                <action selector="selectWholeWordsMenuAction:" target="uoL-yg-E2H" id="wBe-wc-uUk"/>
+                            </connections>
+                        </menuItem>
+                    </items>
+                    <connections>
+                        <outlet property="delegate" destination="4N3-Md-ylI" id="bEf-m9-VXW"/>
+                    </connections>
+                </menu>
+                <customObject id="TEY-bc-0Oc" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1053" y="278"/>
         </scene>
         <!--Application-->
         <scene sceneID="uLn-e8-8sb">

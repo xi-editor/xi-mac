@@ -33,7 +33,7 @@ struct LineAssoc {
 /// Represents one search query
 struct FindQuery {
     var id: String?
-    var searchField: NSSearchField
+    var term: String?
     var caseSensitive: Bool
     var regex: Bool
     var wholeWords: Bool

@@ -18,65 +18,16 @@ import Swift
 class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlTextEditingDelegate {
     var findDelegate: FindDelegate!
 
-    @IBOutlet weak var searchField: NSSearchField!
     @IBOutlet weak var navigationButtons: NSSegmentedControl!
     @IBOutlet weak var doneButton: NSButton!
     @IBOutlet weak var replacePanel: NSStackView!
     @IBOutlet weak var replaceField: NSTextField!
     @IBOutlet weak var searchReplaceStackView: NSStackView!
 
-    let resultCountLabel = Label(title: "")
-
-    // assigned in IB
-    let ignoreCaseMenuTag = 101
-    let wrapAroundMenuTag = 102
-    let regexMenuTag = 103
-    let wholeWordsMenuTag = 104
-
-    var ignoreCase = true
-    var wrapAround = true
-    var regex = false
-    var wholeWords = false
-
-    // search fields
-    var queries: [FindQuery] = []
+    var searchFields: [SuplementaryFindViewController] = []
 
     override func viewDidLoad() {
-        // add recent searches menu items
-        let menu = searchField.searchMenuTemplate!
-        menu.addItem(NSMenuItem.separator())
-
-        let recentTitle = NSMenuItem(title: "Recent Searches", action: nil, keyEquivalent: "")
-        recentTitle.tag = Int(NSSearchField.recentsTitleMenuItemTag)
-        menu.addItem(recentTitle)
-
-        let recentItem = NSMenuItem(title: "", action: nil, keyEquivalent: "")
-        recentItem.tag = Int(NSSearchField.recentsMenuItemTag)
-        menu.addItem(recentItem)
-
-        menu.addItem(NSMenuItem.separator())
-
-        let recentClear = NSMenuItem(title: "Clear Recent Searches", action: nil, keyEquivalent: "")
-        recentClear.tag = Int(NSSearchField.clearRecentsMenuItemTag)
-        menu.addItem(recentClear)
         replacePanel.isHidden = true
-    }
-
-    // we use this to make sure that UI corresponds to our state
-    override func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
-        switch menuItem.tag {
-        case ignoreCaseMenuTag:
-            menuItem.state = ignoreCase ? NSControl.StateValue.on : NSControl.StateValue.off
-        case wrapAroundMenuTag:
-            menuItem.state = wrapAround ? NSControl.StateValue.on : NSControl.StateValue.off
-        case regexMenuTag:
-            menuItem.state = regex ? NSControl.StateValue.on : NSControl.StateValue.off
-        case wholeWordsMenuTag:
-            menuItem.state = wholeWords ? NSControl.StateValue.on : NSControl.StateValue.off
-        default:
-            break
-        }
-        return true
     }
 
     func control(_ control: NSControl, textView: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
@@ -91,35 +42,15 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
         }
     }
 
-    // todo: should be set for specific queries
-    @IBAction func selectIgnoreCaseMenuAction(_ sender: NSMenuItem) {
-        ignoreCase = !ignoreCase
-        redoFind()
-    }
-
-    @IBAction func selectWrapAroundMenuAction(_ sender: NSMenuItem) {
-        wrapAround = !wrapAround
-    }
-
-    @IBAction func selectRegexMenuAction(_ sender: NSMenuItem) {
-        regex = !regex
-        redoFind()
-    }
-
-    @IBAction func selectWholeWordsMenuAction(_ sender: NSMenuItem) {
-        wholeWords = !wholeWords
-        redoFind()
-    }
-
     @IBAction func findSegmentControlAction(_ sender: NSSegmentedControl) {
-        switch sender.selectedSegment {
-        case 0:
-            findDelegate.findPrevious(wrapAround: wrapAround)
-        case 1:
-            findDelegate.findNext(wrapAround: wrapAround, allowSame: false)
-        default:
-            break
-        }
+//        switch sender.selectedSegment {
+//        case 0:
+//            findDelegate.findPrevious(wrapAround: wrapAround)
+//        case 1:
+//            findDelegate.findNext(wrapAround: wrapAround, allowSame: false)
+//        default:
+//            break
+//        }
     }
 
     @IBAction func replaceSegmentControlAction(_ sender: NSSegmentedControl) {
@@ -133,24 +64,21 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
         }
     }
 
-    @IBAction func searchFieldAction(_ sender: NSSearchField) {
-        findDelegate.find(queries)
-        findDelegate.findNext(wrapAround: wrapAround, allowSame: false)
-    }
-
     @IBAction func addSearchFieldAction(_ sender: NSButton) {
-        let searchFieldCopy = NSKeyedArchiver.archivedData(withRootObject: searchField)
-        let newSearchField = NSKeyedUnarchiver.unarchiveObject(with: searchFieldCopy) as! NSSearchField
+        let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
+        let newSearchFieldController = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Suplementary Find View Controller")) as! SuplementaryFindViewController
 
-        queries.append(FindQuery(
-            id: nil,
-            searchField: newSearchField,
-            caseSensitive: false,
-            regex: false,
-            wholeWords: false
-        ))
+//        queries.append(FindQuery(
+//            id: nil,
+//            searchField: newSearchField,
+//            caseSensitive: false,
+//            regex: false,
+//            wholeWords: false
+//        ))
 
-        searchReplaceStackView.insertView(newSearchField, at: 0, in: NSStackView.Gravity.center)
+        newSearchFieldController.parentFindView = self
+        searchFields.append(newSearchFieldController)
+        searchReplaceStackView.insertView(newSearchFieldController.view, at: 0, in: NSStackView.Gravity.center)
     }
 
     override func controlTextDidChange(_ obj: Notification) {
@@ -160,8 +88,8 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     }
 
     func redoFind() {
-        findDelegate.find(queries)
-        findDelegate.findNext(wrapAround: wrapAround, allowSame: true)
+        findDelegate.find(searchFields.map({(v: SuplementaryFindViewController) -> FindQuery in v.toFindQuery()}))
+        findDelegate.findNext(wrapAround: true, allowSame: true)    // todo get option
     }
 
     override func cancelOperation(_ sender: Any?) {
@@ -181,6 +109,98 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     }
 }
 
+class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, NSControlTextEditingDelegate {
+    @IBOutlet weak var searchField: NSSearchField!
+
+    let resultCountLabel = Label(title: "")
+
+    // assigned in IB
+    let ignoreCaseMenuTag = 101
+    let wrapAroundMenuTag = 102
+    let regexMenuTag = 103
+    let wholeWordsMenuTag = 104
+
+    var ignoreCase = true
+    var wrapAround = true
+    var regex = false
+    var wholeWords = false
+    var id: String? = nil
+
+    var parentFindView: FindViewController? = nil
+
+    override func viewDidLoad() {
+        // add recent searches menu items
+        let menu = searchField.searchMenuTemplate!
+        menu.addItem(NSMenuItem.separator())
+
+        let recentTitle = NSMenuItem(title: "Recent Searches", action: nil, keyEquivalent: "")
+        recentTitle.tag = Int(NSSearchField.recentsTitleMenuItemTag)
+        menu.addItem(recentTitle)
+
+        let recentItem = NSMenuItem(title: "", action: nil, keyEquivalent: "")
+        recentItem.tag = Int(NSSearchField.recentsMenuItemTag)
+        menu.addItem(recentItem)
+
+        menu.addItem(NSMenuItem.separator())
+
+        let recentClear = NSMenuItem(title: "Clear Recent Searches", action: nil, keyEquivalent: "")
+        recentClear.tag = Int(NSSearchField.clearRecentsMenuItemTag)
+        menu.addItem(recentClear)
+    }
+
+    // we use this to make sure that UI corresponds to our state
+    override func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
+        switch menuItem.tag {
+        case ignoreCaseMenuTag:
+            menuItem.state = ignoreCase ? NSControl.StateValue.on : NSControl.StateValue.off
+        case wrapAroundMenuTag:
+            menuItem.state = wrapAround ? NSControl.StateValue.on : NSControl.StateValue.off
+        case regexMenuTag:
+            menuItem.state = regex ? NSControl.StateValue.on : NSControl.StateValue.off
+        case wholeWordsMenuTag:
+            menuItem.state = wholeWords ? NSControl.StateValue.on : NSControl.StateValue.off
+        default:
+            break
+        }
+        return true
+    }
+
+    // todo: should be set for specific queries
+    @IBAction func selectIgnoreCaseMenuAction(_ sender: NSMenuItem) {
+        ignoreCase = !ignoreCase
+        parentFindView?.redoFind()
+    }
+
+    @IBAction func selectWrapAroundMenuAction(_ sender: NSMenuItem) {
+        wrapAround = !wrapAround
+        parentFindView?.redoFind()
+    }
+
+    @IBAction func selectRegexMenuAction(_ sender: NSMenuItem) {
+        regex = !regex
+        parentFindView?.redoFind()
+    }
+
+    @IBAction func selectWholeWordsMenuAction(_ sender: NSMenuItem) {
+        wholeWords = !wholeWords
+        parentFindView?.redoFind()
+    }
+
+    @IBAction func searchFieldAction(_ sender: NSSearchField) {
+        parentFindView?.redoFind()
+    }
+
+    public func toFindQuery() -> FindQuery {
+        return FindQuery(
+            id: id,
+            term: searchField.stringValue,
+            caseSensitive: ignoreCase,
+            regex: regex,
+            wholeWords: wholeWords
+        )
+    }
+}
+
 extension EditViewController {
     func openFind(replaceHidden: Bool) {
         if findViewController.view.isHidden {
@@ -191,13 +211,15 @@ extension EditViewController {
         findViewController.replacePanel.isHidden = replaceHidden
         let offset = findViewController.view.fittingSize.height
         scrollView.contentInsets = NSEdgeInsetsMake(offset, 0, 0, 0)
-        editView.window?.makeFirstResponder(findViewController.searchField)
+    editView.window?.makeFirstResponder(findViewController.searchFields.first)
     }
 
     func closeFind() {
         if !findViewController.view.isHidden {
             findViewController.view.isHidden = true
-            (findViewController.searchField as? FindSearchField)?.resultCount = nil
+            for searchFieldView in findViewController.searchFields {
+                (searchFieldView.searchField as? FindSearchField)?.resultCount = nil
+            }
             scrollView.contentInsets = NSEdgeInsetsZero
         }
 
@@ -230,10 +252,8 @@ extension EditViewController {
                 "whole_words": query.wholeWords
             ]
 
-            let term = query.searchField.stringValue
-
-            if term != nil {        // todo
-                jsonQuery["chars"] = term
+            if query.term != nil {        // todo
+                jsonQuery["chars"] = query.term
             }
 
             if query.id != nil {
@@ -258,30 +278,31 @@ extension EditViewController {
     }
     
     func findStatus(status: [[String: AnyObject]]) {
-        for statusQuery in status {
-            var query = findViewController.queries.first(where: { $0.id == statusQuery["id"] as! String })
-
-            if query != nil {
-                if status.first?["chars"] != nil && !(status.first?["chars"] is NSNull) {
-                    query?.searchField.stringValue = statusQuery["chars"] as! String
-                }
-
-                if status.first?["case_sensitive"] != nil && !(status.first?["case_sensitive"] is NSNull) {
-                    query?.caseSensitive = statusQuery["case_sensitive"] as! Bool
-                }
-
-                if status.first?["whole_words"] != nil && !(status.first?["whole_words"] is NSNull) {
-                    query?.wholeWords = statusQuery["whole_words"] as! Bool
-                }
-
-                if let resultCount = statusQuery["matches"] as? Int {
-                    (query?.searchField as? FindSearchField)?.resultCount = resultCount
-                }
-            } else {
-                var newQuery = findViewController.queries.first(where: { $0.id == nil })!
-                newQuery.id = statusQuery["id"] as! String
-            }
-        }
+        print(status)
+//        for statusQuery in status {
+//            var query = findViewController.queries.first(where: { $0.id == statusQuery["id"] as! String })
+//
+//            if query != nil {
+//                if status.first?["chars"] != nil && !(status.first?["chars"] is NSNull) {
+//                    query?.searchField.stringValue = statusQuery["chars"] as! String
+//                }
+//
+//                if status.first?["case_sensitive"] != nil && !(status.first?["case_sensitive"] is NSNull) {
+//                    query?.caseSensitive = statusQuery["case_sensitive"] as! Bool
+//                }
+//
+//                if status.first?["whole_words"] != nil && !(status.first?["whole_words"] is NSNull) {
+//                    query?.wholeWords = statusQuery["whole_words"] as! Bool
+//                }
+//
+//                if let resultCount = statusQuery["matches"] as? Int {
+//                    (query?.searchField as? FindSearchField)?.resultCount = resultCount
+//                }
+//            } else {
+//                var newQuery = findViewController.queries.first(where: { $0.id == nil })!
+//                newQuery.id = statusQuery["id"] as! String
+//            }
+//        }
 
         // todo: remove
     }
@@ -338,10 +359,12 @@ extension EditViewController {
             closeFind()
 
         case .nextMatch:
-            findNext(wrapAround: findViewController.wrapAround, allowSame: false)
+//            findNext(wrapAround: findViewController.wrapAround, allowSame: false)
+            Swift.print("todo")
 
         case .previousMatch:
-            findPrevious(wrapAround: findViewController.wrapAround)
+//            findPrevious(wrapAround: findViewController.wrapAround)
+            Swift.print("todo")
 
         case .replaceAll:
             replaceAll()
