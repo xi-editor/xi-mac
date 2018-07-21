@@ -194,7 +194,7 @@ Gw
                                         <rect key="frame" x="198.5" y="30" width="324" height="200"/>
                                         <subviews>
                                             <stackView distribution="fill" orientation="vertical" alignment="leading" spacing="4" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XV8-8P-X3Z">
-                                                <rect key="frame" x="0.0" y="0.0" width="110" height="200"/>
+                                                <rect key="frame" x="0.0" y="150" width="110" height="50"/>
                                             </stackView>
                                             <stackView distribution="fillEqually" orientation="horizontal" alignment="centerY" spacing="6" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rOR-6k-Bho">
                                                 <rect key="frame" x="118" y="178" width="206" height="22"/>
@@ -388,7 +388,7 @@ Gw
                     </items>
                 </menu>
             </objects>
-            <point key="canvasLocation" x="1104" y="-171"/>
+            <point key="canvasLocation" x="1103.5" y="-171"/>
         </scene>
         <!--Suplementary Find View Controller-->
         <scene sceneID="U5d-nr-i4y">

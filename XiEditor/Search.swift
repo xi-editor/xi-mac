@@ -24,7 +24,6 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     @IBOutlet weak var replaceField: NSTextField!
     @IBOutlet weak var searchFieldsStackView: NSStackView!
 
-
     var searchFields: [SuplementaryFindViewController] = []
 
     override func viewDidLoad() {
@@ -68,14 +67,6 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     @IBAction func addSearchFieldAction(_ sender: NSButton) {
         let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
         let newSearchFieldController = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Suplementary Find View Controller")) as! SuplementaryFindViewController
-
-//        queries.append(FindQuery(
-//            id: nil,
-//            searchField: newSearchField,
-//            caseSensitive: false,
-//            regex: false,
-//            wholeWords: false
-//        ))
 
         newSearchFieldController.parentFindView = self
         searchFields.append(newSearchFieldController)
@@ -279,30 +270,30 @@ extension EditViewController {
     }
     
     func findStatus(status: [[String: AnyObject]]) {
-//        for statusQuery in status {
-//            var query = findViewController.queries.first(where: { $0.id == statusQuery["id"] as! String })
-//
-//            if query != nil {
-//                if status.first?["chars"] != nil && !(status.first?["chars"] is NSNull) {
-//                    query?.searchField.stringValue = statusQuery["chars"] as! String
-//                }
-//
-//                if status.first?["case_sensitive"] != nil && !(status.first?["case_sensitive"] is NSNull) {
-//                    query?.caseSensitive = statusQuery["case_sensitive"] as! Bool
-//                }
-//
-//                if status.first?["whole_words"] != nil && !(status.first?["whole_words"] is NSNull) {
-//                    query?.wholeWords = statusQuery["whole_words"] as! Bool
-//                }
-//
-//                if let resultCount = statusQuery["matches"] as? Int {
-//                    (query?.searchField as? FindSearchField)?.resultCount = resultCount
-//                }
-//            } else {
-//                var newQuery = findViewController.queries.first(where: { $0.id == nil })!
-//                newQuery.id = statusQuery["id"] as! String
-//            }
-//        }
+        for statusQuery in status {
+            let query = findViewController.searchFields.first(where: { $0.id == statusQuery["id"] as? String })
+
+            if query != nil {
+                if status.first?["chars"] != nil && !(status.first?["chars"] is NSNull) {
+                    query?.searchField.stringValue = statusQuery["chars"] as! String
+                }
+
+                if status.first?["case_sensitive"] != nil && !(status.first?["case_sensitive"] is NSNull) {
+                    query?.ignoreCase = statusQuery["case_sensitive"] as! Bool
+                }
+
+                if status.first?["whole_words"] != nil && !(status.first?["whole_words"] is NSNull) {
+                    query?.wholeWords = statusQuery["whole_words"] as! Bool
+                }
+
+                if let resultCount = statusQuery["matches"] as? Int {
+                    (query?.searchField as? FindSearchField)?.resultCount = resultCount
+                }
+            } else {
+                var newQuery = findViewController.searchFields.first(where: { $0.id == nil })!
+                newQuery.id = statusQuery["id"] as? String
+            }
+        }
 
         // todo: remove
     }
