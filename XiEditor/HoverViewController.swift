@@ -103,6 +103,8 @@ extension EditViewController {
         let hoverViewController = HoverViewController(content: hoverContent)
         let hoverContentSize = NSSize(width: hoverViewController.hoverPopoverWidth, height: hoverViewController.heightForContent())
 
+        guard !hoverContent.isEmpty else { return }
+
         hoverViewController.scrollView.setFrameSize(hoverContentSize)
         hoverViewController.scrollView.documentView?.setFrameSize(hoverContentSize)
         infoPopover.contentSize = hoverContentSize
