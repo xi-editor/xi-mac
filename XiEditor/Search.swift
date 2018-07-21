@@ -16,7 +16,7 @@ import Cocoa
 import Swift
 
 class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlTextEditingDelegate {
-    var findDelegate: FindDelegate!
+    weak var findDelegate: FindDelegate!
 
     @IBOutlet weak var searchField: NSSearchField!
     @IBOutlet weak var navigationButtons: NSSegmentedControl!

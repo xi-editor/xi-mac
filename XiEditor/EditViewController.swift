@@ -30,7 +30,7 @@ struct LineAssoc {
     var textLine: TextLine
 }
 
-protocol FindDelegate {
+protocol FindDelegate: class {
     func find(_ term: String?, caseSensitive: Bool, regex: Bool, wholeWords: Bool)
     func findNext(wrapAround: Bool, allowSame: Bool)
     func findPrevious(wrapAround: Bool)
@@ -147,7 +147,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
                 window.backgroundColor = unifiedTitlebar ? color : nil
 
                 statusBar.updateStatusBarColor(newBackgroundColor: self.theme.background, newTextColor: self.theme.foreground, newUnifiedTitlebar: unifiedTitlebar)
-//                findViewController.updateColor(newBackgroundColor: self.theme.background, unifiedTitlebar: unifiedTitlebar)
+                findViewController.updateColor(newBackgroundColor: self.theme.background, unifiedTitlebar: unifiedTitlebar)
 
                 if color.isDark && unifiedTitlebar {
                     window.appearance = NSAppearance(named: NSAppearance.Name.vibrantDark)
