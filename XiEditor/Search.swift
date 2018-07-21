@@ -25,8 +25,10 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     @IBOutlet weak var searchFieldsStackView: NSStackView!
 
     var searchFields: [SuplementaryFindViewController] = []
+    var wrapAround = true   // option same for all search fields
 
     override func viewDidLoad() {
+        addSearchField(nil)         // by default at least one search field is present
         replacePanel.isHidden = true
     }
 
@@ -43,14 +45,14 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     }
 
     @IBAction func findSegmentControlAction(_ sender: NSSegmentedControl) {
-//        switch sender.selectedSegment {
-//        case 0:
-//            findDelegate.findPrevious(wrapAround: wrapAround)
-//        case 1:
-//            findDelegate.findNext(wrapAround: wrapAround, allowSame: false)
-//        default:
-//            break
-//        }
+        switch sender.selectedSegment {
+        case 0:
+            findDelegate.findPrevious(wrapAround: wrapAround)
+        case 1:
+            findDelegate.findNext(wrapAround: wrapAround, allowSame: false)
+        default:
+            break
+        }
     }
 
     @IBAction func replaceSegmentControlAction(_ sender: NSSegmentedControl) {
@@ -79,7 +81,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
         }
 
         searchFields.append(newSearchFieldController)
-        searchFieldsStackView.insertView(newSearchFieldController.view, at: 0, in: NSStackView.Gravity.center)
+        searchFieldsStackView.insertView(newSearchFieldController.view, at: searchFields.count - 1, in: NSStackView.Gravity.center)
     }
 
     override func controlTextDidChange(_ obj: Notification) {
@@ -90,7 +92,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
 
     func redoFind() {
         findDelegate.find(searchFields.map({(v: SuplementaryFindViewController) -> FindQuery in v.toFindQuery()}))
-        findDelegate.findNext(wrapAround: true, allowSame: true)    // todo get option
+        findDelegate.findNext(wrapAround: wrapAround, allowSame: true)
     }
 
     override func cancelOperation(_ sender: Any?) {
@@ -107,6 +109,13 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
 
     public func replaceStatus(status: [String: AnyObject]) {
         findDelegate.replaceStatus(status: status)
+    }
+
+    public func wrapAround(_ wrap: Bool) {
+        wrapAround = wrap
+        for searchField in searchFields {
+            searchField.wrapAround = wrapAround
+        }
     }
 }
 
@@ -166,7 +175,6 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
         return true
     }
 
-    // todo: should be set for specific queries
     @IBAction func selectIgnoreCaseMenuAction(_ sender: NSMenuItem) {
         ignoreCase = !ignoreCase
         parentFindView?.redoFind()
@@ -174,6 +182,7 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
 
     @IBAction func selectWrapAroundMenuAction(_ sender: NSMenuItem) {
         wrapAround = !wrapAround
+        parentFindView?.wrapAround(wrapAround)
         parentFindView?.redoFind()
     }
 
@@ -253,20 +262,13 @@ extension EditViewController {
                 "whole_words": query.wholeWords
             ]
 
-            if query.term != nil {        // todo
+            if query.term != nil {
                 jsonQuery["chars"] = query.term
             }
 
             if query.id != nil {
                 jsonQuery["id"] = query.id
             }
-
-            // todo
-//            let shouldClearCount = term == nil || term == ""
-//
-//            if shouldClearCount {
-//                (self.findViewController.searchField as? FindSearchField)?.resultCount = nil
-//            }
 
             jsonQueries.append(jsonQuery)
         }
@@ -294,6 +296,9 @@ extension EditViewController {
 
             if status.first?["chars"] != nil && !(status.first?["chars"] is NSNull) {
                 query?.searchField.stringValue = statusQuery["chars"] as! String
+            } else {
+                // clear count
+                (query?.searchField as? FindSearchField)?.resultCount = nil
             }
 
             if status.first?["case_sensitive"] != nil && !(status.first?["case_sensitive"] is NSNull) {
@@ -364,11 +369,11 @@ extension EditViewController {
             closeFind()
 
         case .nextMatch:
-//            findNext(wrapAround: findViewController.wrapAround, allowSame: false)
+            findNext(wrapAround: findViewController.wrapAround, allowSame: false)
             Swift.print("todo")
 
         case .previousMatch:
-//            findPrevious(wrapAround: findViewController.wrapAround)
+            findPrevious(wrapAround: findViewController.wrapAround)
             Swift.print("todo")
 
         case .replaceAll:

@@ -359,34 +359,6 @@ Gw
                 </viewController>
                 <customObject id="MxZ-GG-2K0" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
                 <userDefaultsController representsSharedInstance="YES" id="DVW-4U-qxz"/>
-                <menu title="Find Menu" autoenablesItems="NO" id="0va-ps-fv2">
-                    <items>
-                        <menuItem title="Ignore Case" state="on" tag="101" id="h8d-fe-rWj">
-                            <modifierMask key="keyEquivalentModifierMask"/>
-                            <connections>
-                                <action selector="selectIgnoreCaseMenuAction:" target="lKE-xV-0EG" id="DZf-f6-Wbq"/>
-                            </connections>
-                        </menuItem>
-                        <menuItem title="Wrap Around" state="on" tag="102" id="LvD-lr-RfY">
-                            <modifierMask key="keyEquivalentModifierMask"/>
-                            <connections>
-                                <action selector="selectWrapAroundMenuAction:" target="lKE-xV-0EG" id="QPg-E2-dAy"/>
-                            </connections>
-                        </menuItem>
-                        <menuItem title="Regex" tag="103" id="rue-us-4Db">
-                            <modifierMask key="keyEquivalentModifierMask"/>
-                            <connections>
-                                <action selector="selectRegexMenuAction:" target="lKE-xV-0EG" id="dSP-ys-c2Z"/>
-                            </connections>
-                        </menuItem>
-                        <menuItem title="Whole Words" tag="104" id="3oE-F1-ZB2">
-                            <modifierMask key="keyEquivalentModifierMask"/>
-                            <connections>
-                                <action selector="selectWholeWordsMenuAction:" target="lKE-xV-0EG" id="9fd-9F-bg4"/>
-                            </connections>
-                        </menuItem>
-                    </items>
-                </menu>
             </objects>
             <point key="canvasLocation" x="1103.5" y="-171"/>
         </scene>
@@ -410,9 +382,6 @@ Gw
                                                     <font key="font" metaFont="system"/>
                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                    <connections>
-                                                        <outlet property="searchMenuTemplate" destination="0va-ps-fv2" id="sL5-QQ-3pV"/>
-                                                    </connections>
                                                 </searchFieldCell>
                                                 <connections>
                                                     <action selector="searchFieldAction:" target="uoL-yg-E2H" id="RWZ-fZ-ySE"/>
