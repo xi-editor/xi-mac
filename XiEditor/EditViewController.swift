@@ -182,9 +182,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     var hoverRequestID = 0
 
     override func viewDidLoad() {
-        if let path = ProcessInfo.processInfo.environment["PATH"] {
-            print(path)
-        }
         super.viewDidLoad()
         shadowView.wantsLayer = true
         editView.dataSource = self
@@ -514,9 +511,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         let gestureType = clickGestureType(event: theEvent)
 
         if gestureType == "request_hover" {
-            document.sendRpcAsync("request_hover", params: ["request_id": hoverRequestID, "position": ["type": "utf8_line_char", "line": position.line, "character": position.column]])
-            hoverEvent = theEvent
-            hoverRequestID += 1
+            sendHover()
         } else {
             document.sendRpcAsync("gesture", params: [
                 "line": position.line,
@@ -547,24 +542,24 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     override func mouseMoved(with theEvent: NSEvent) {
-        if !editView.isFirstResponder {
-            editView.window?.makeFirstResponder(editView)
+        if theEvent.modifierFlags.contains([.option]) {
+            if !editView.isFirstResponder {
+                editView.window?.makeFirstResponder(editView)
+            }
+            if hoverTimer == nil {
+                hoverTimer = Timer.scheduledTimer(timeInterval: TimeInterval(3), target: self, selector: #selector(sendHover), userInfo: nil, repeats: false)
+            }
+            hoverEvent = theEvent
         }
-        if hoverTimer == nil && theEvent.modifierFlags.contains([.option]){
-            hoverTimer = Timer.scheduledTimer(timeInterval: TimeInterval(3.0), target: self, selector: #selector(sendHover), userInfo: nil, repeats: false)
-        }
-        hoverEvent = theEvent
     }
 
     @objc func sendHover() {
-        if !infoPopover.isShown {
-            if let event = hoverEvent {
-                let hoverPosition = editView.bufferPositionFromPoint(event.locationInWindow)
-                hoverTimer?.invalidate()
-                hoverTimer = nil
-                document.sendRpcAsync("request_hover", params: ["request_id": hoverRequestID, "position": ["type": "utf8_line_char", "line": hoverPosition.line, "character": hoverPosition.column]])
-                hoverRequestID += 1
-            }
+        if let event = hoverEvent {
+            let hoverPosition = editView.bufferPositionFromPoint(event.locationInWindow)
+            hoverTimer?.invalidate()
+            hoverTimer = nil
+            document.sendRpcAsync("request_hover", params: ["request_id": hoverRequestID, "position": ["line": hoverPosition.line, "column": hoverPosition.column]])
+            hoverRequestID += 1
         }
     }
 
