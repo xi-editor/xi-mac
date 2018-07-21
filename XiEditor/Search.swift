@@ -22,7 +22,8 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     @IBOutlet weak var doneButton: NSButton!
     @IBOutlet weak var replacePanel: NSStackView!
     @IBOutlet weak var replaceField: NSTextField!
-    @IBOutlet weak var searchReplaceStackView: NSStackView!
+    @IBOutlet weak var searchFieldsStackView: NSStackView!
+
 
     var searchFields: [SuplementaryFindViewController] = []
 
@@ -78,7 +79,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
 
         newSearchFieldController.parentFindView = self
         searchFields.append(newSearchFieldController)
-        searchReplaceStackView.insertView(newSearchFieldController.view, at: 0, in: NSStackView.Gravity.center)
+        searchFieldsStackView.insertView(newSearchFieldController.view, at: 0, in: NSStackView.Gravity.center)
     }
 
     override func controlTextDidChange(_ obj: Notification) {
@@ -278,7 +279,6 @@ extension EditViewController {
     }
     
     func findStatus(status: [[String: AnyObject]]) {
-        print(status)
 //        for statusQuery in status {
 //            var query = findViewController.queries.first(where: { $0.id == statusQuery["id"] as! String })
 //
