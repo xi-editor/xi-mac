@@ -163,16 +163,24 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
 
 extension EditViewController {
     func openFind(replaceHidden: Bool) {
+        let replaceHiddenChanged = findViewController.replacePanel.isHidden != replaceHidden
+        findViewController.replacePanel.isHidden = replaceHidden
+
+        if !findViewController.view.isHidden && replaceHiddenChanged {
+            let offset = findViewController.view.fittingSize.height
+            let origin = scrollView.contentView.visibleRect.origin
+            scrollView.contentView.scroll(to: NSMakePoint(origin.x ,origin.y + offset))
+        }
+
         let offset = findViewController.view.fittingSize.height
 
-        if findViewController.view.isHidden {
+        if findViewController.view.isHidden || replaceHiddenChanged {
             findViewController.view.isHidden = false
             let origin = scrollView.contentView.visibleRect.origin
             scrollView.contentView.scroll(to: NSMakePoint(origin.x ,origin.y - offset))
             document.sendRpcAsync("highlight_find", params: ["visible": true])
         }
 
-        findViewController.replacePanel.isHidden = replaceHidden
         scrollView.contentInsets = NSEdgeInsetsMake(offset, 0, 0, 0)
 
         editView.window?.makeFirstResponder(findViewController.searchField)
