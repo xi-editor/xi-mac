@@ -164,7 +164,6 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
 extension EditViewController {
     func openFind(replaceHidden: Bool) {
         let replaceHiddenChanged = findViewController.replacePanel.isHidden != replaceHidden
-        findViewController.replacePanel.isHidden = replaceHidden
 
         if !findViewController.view.isHidden && replaceHiddenChanged {
             let offset = findViewController.view.fittingSize.height
@@ -172,6 +171,7 @@ extension EditViewController {
             scrollView.contentView.scroll(to: NSMakePoint(origin.x ,origin.y + offset))
         }
 
+        findViewController.replacePanel.isHidden = replaceHidden
         let offset = findViewController.view.fittingSize.height
 
         if findViewController.view.isHidden || replaceHiddenChanged {
