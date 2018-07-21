@@ -238,15 +238,6 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         self.showBlinkingCursor = self.isFrontmostView && self.isFirstResponder
     }
 
-    override func updateTrackingAreas() {
-        for area in self.trackingAreas {
-            self.removeTrackingArea(area)
-        }
-        let newTrackingArea = NSTrackingArea(rect: self.bounds, options: [.activeInActiveApp, .mouseMoved], owner: self, userInfo: nil)
-        self.addTrackingArea(newTrackingArea)
-        super.updateTrackingAreas()
-    }
-
     // MARK: - NSTextInputClient protocol
     func insertText(_ aString: Any, replacementRange: NSRange) {
         self.removeMarkedText()
@@ -259,8 +250,6 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
 
     func replacementMarkedRange(_ replacementRange: NSRange) -> NSRange {
         var markedRange = _markedRange
-
-
         if (markedRange.location == NSNotFound) {
             markedRange = _selectedRange
         }
