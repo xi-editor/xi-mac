@@ -154,5 +154,8 @@ class TextPlaneLayer : NSOpenGLLayer, FpsObserver {
         renderer.endDraw()
     }
 
+    override func releaseCGLPixelFormat(_ pf: CGLPixelFormatObj) {
+        // CGLPixelFormats already seem to be released; leaving the default implementation causes a crash.
+    }
 }
 
