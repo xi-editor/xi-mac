@@ -461,6 +461,14 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     //MARK: Other system events
+    override func flagsChanged(with event: NSEvent) {
+        if event.modifierFlags.contains(.option) {
+            NSCursor.crosshair.set()
+        } else {
+            NSCursor.arrow.set()
+        }
+    }
+
     override func keyDown(with theEvent: NSEvent) {
         self.editView.inputContext?.handleEvent(theEvent);
     }
