@@ -191,7 +191,7 @@ Gw
                                 <rect key="frame" x="8" y="0.0" width="721" height="234"/>
                                 <subviews>
                                     <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="87Z-4W-agC">
-                                        <rect key="frame" x="198.5" y="30" width="324" height="200"/>
+                                        <rect key="frame" x="199" y="30" width="324" height="200"/>
                                         <subviews>
                                             <stackView distribution="fill" orientation="vertical" alignment="leading" spacing="4" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XV8-8P-X3Z">
                                                 <rect key="frame" x="0.0" y="150" width="110" height="50"/>
@@ -271,7 +271,7 @@ Gw
                                         </customSpacing>
                                     </stackView>
                                     <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eFo-Od-w1I">
-                                        <rect key="frame" x="53.5" y="4" width="614" height="22"/>
+                                        <rect key="frame" x="54" y="4" width="614" height="22"/>
                                         <subviews>
                                             <textField focusRingType="none" verticalHuggingPriority="750" ambiguous="YES" placeholderIntrinsicWidth="400" placeholderIntrinsicHeight="22" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="C06-uM-0mq">
                                                 <rect key="frame" x="0.0" y="0.0" width="400" height="22"/>
@@ -354,7 +354,6 @@ Gw
                         <outlet property="replaceField" destination="C06-uM-0mq" id="MRI-qt-pvO"/>
                         <outlet property="replacePanel" destination="eFo-Od-w1I" id="5Bk-VY-upm"/>
                         <outlet property="searchFieldsStackView" destination="XV8-8P-X3Z" id="eDz-vQ-fqa"/>
-                        <outlet property="searchReplaceStackView" destination="0fT-ae-quE" id="VPG-MU-uO7"/>
                     </connections>
                 </viewController>
                 <customObject id="MxZ-GG-2K0" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
@@ -374,7 +373,7 @@ Gw
                                 <rect key="frame" x="0.0" y="0.0" width="619" height="300"/>
                                 <subviews>
                                     <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="snt-AV-vR6">
-                                        <rect key="frame" x="109.5" y="0.0" width="400" height="300"/>
+                                        <rect key="frame" x="110" y="0.0" width="400" height="300"/>
                                         <subviews>
                                             <searchField wantsLayer="YES" focusRingType="none" verticalHuggingPriority="750" placeholderIntrinsicWidth="400" placeholderIntrinsicHeight="22" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4N3-Md-ylI" customClass="FindSearchField" customModule="XiEditor" customModuleProvider="target">
                                                 <rect key="frame" x="0.0" y="278" width="400" height="22"/>
@@ -444,6 +443,13 @@ Gw
                             <modifierMask key="keyEquivalentModifierMask"/>
                             <connections>
                                 <action selector="selectWholeWordsMenuAction:" target="uoL-yg-E2H" id="wBe-wc-uUk"/>
+                            </connections>
+                        </menuItem>
+                        <menuItem isSeparatorItem="YES" id="55L-KG-cNd"/>
+                        <menuItem title="Remove" onStateImage="NSRemoveTemplate" offStateImage="NSRemoveTemplate" mixedStateImage="NSRemoveTemplate" tag="105" id="ec5-pL-ku6" userLabel="Remove">
+                            <modifierMask key="keyEquivalentModifierMask"/>
+                            <connections>
+                                <action selector="selectRemoveSearchQuery:" target="uoL-yg-E2H" id="bJu-D6-vLW"/>
                             </connections>
                         </menuItem>
                     </items>
@@ -1130,6 +1136,7 @@ Gw
     </scenes>
     <resources>
         <image name="NSLeftFacingTriangleTemplate" width="9" height="12"/>
+        <image name="NSRemoveTemplate" width="11" height="11"/>
         <image name="NSRightFacingTriangleTemplate" width="9" height="12"/>
     </resources>
 </document>

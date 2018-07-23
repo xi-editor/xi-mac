@@ -28,7 +28,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     var wrapAround = true   // option same for all search fields
 
     override func viewDidLoad() {
-        addSearchField(nil)         // by default at least one search field is present
+        addSearchField(nil, disableRemove: true)         // by default at least one search field is present
         replacePanel.isHidden = true
     }
 
@@ -67,20 +67,22 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     }
 
     @IBAction func addSearchFieldAction(_ sender: NSButton) {
-        addSearchField(nil)
+        addSearchField(nil, disableRemove: false)
     }
 
-    public func addSearchField(_ id: String?) {
+    public func addSearchField(_ id: String?, disableRemove: Bool) {
         let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
         let newSearchFieldController = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Suplementary Find View Controller")) as! SuplementaryFindViewController
 
         newSearchFieldController.parentFindView = self
 
+        searchFields.append(newSearchFieldController)
+        newSearchFieldController.disableRemove = disableRemove
+
         if id != nil {
             newSearchFieldController.id = id
         }
 
-        searchFields.append(newSearchFieldController)
         searchFieldsStackView.insertView(newSearchFieldController.view, at: searchFields.count - 1, in: NSStackView.Gravity.center)
     }
 
@@ -101,6 +103,12 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     
     public func findStatus(status: [[String: AnyObject]]) {
         findDelegate.findStatus(status: status)
+    }
+
+    public func removeSearchField(searchField: SuplementaryFindViewController) {
+        searchFieldsStackView.removeView(searchField.view)
+        searchFields.remove(at: searchFields.index(of: searchField)!)
+        redoFind()
     }
 
     @IBAction func replaceFieldAction(_ sender: NSTextField) {
@@ -129,12 +137,14 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
     let wrapAroundMenuTag = 102
     let regexMenuTag = 103
     let wholeWordsMenuTag = 104
+    let removeMenuTag = 105
 
     var ignoreCase = true
     var wrapAround = true
     var regex = false
     var wholeWords = false
     var id: String? = nil
+    var disableRemove = false
 
     var parentFindView: FindViewController? = nil
 
@@ -169,6 +179,8 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
             menuItem.state = regex ? NSControl.StateValue.on : NSControl.StateValue.off
         case wholeWordsMenuTag:
             menuItem.state = wholeWords ? NSControl.StateValue.on : NSControl.StateValue.off
+        case removeMenuTag:
+             menuItem.isHidden = disableRemove
         default:
             break
         }
@@ -198,6 +210,10 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
 
     @IBAction func searchFieldAction(_ sender: NSSearchField) {
         parentFindView?.redoFind()
+    }
+
+    @IBAction func selectRemoveSearchQuery(_ sender: NSMenuItem) {
+        parentFindView?.removeSearchField(searchField: self)
     }
 
     public func toFindQuery() -> FindQuery {
@@ -276,10 +292,6 @@ extension EditViewController {
         document.sendRpcAsync("find", params: ["queries": jsonQueries])
     }
     
-    func clearFind() {
-        document.sendRpcAsync("find", params: ["chars": "", "case_sensitive": false])
-    }
-    
     func findStatus(status: [[String: AnyObject]]) {
         for statusQuery in status {
             var query = findViewController.searchFields.first(where: { $0.id == statusQuery["id"] as? String })
@@ -289,7 +301,7 @@ extension EditViewController {
                     newQuery.id = statusQuery["id"] as? String
                     query = newQuery
                 } else {
-                    findViewController.addSearchField(statusQuery["id"] as? String)
+                    findViewController.addSearchField(statusQuery["id"] as? String, disableRemove: false)
                     query = findViewController.searchFields.first(where: { $0.id == statusQuery["id"] as? String })
                 }
             }
@@ -370,11 +382,9 @@ extension EditViewController {
 
         case .nextMatch:
             findNext(wrapAround: findViewController.wrapAround, allowSame: false)
-            Swift.print("todo")
 
         case .previousMatch:
             findPrevious(wrapAround: findViewController.wrapAround)
-            Swift.print("todo")
 
         case .replaceAll:
             replaceAll()
@@ -420,8 +430,7 @@ class Label: NSTextField {
     }
 
     required init?(coder: NSCoder) {
-//        fatalError("init(coder:) has not been implemented")
-        super.init(coder: coder)
+        fatalError("init(coder:) has not been implemented")
     }
 }
 
