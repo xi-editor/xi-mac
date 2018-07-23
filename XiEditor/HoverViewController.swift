@@ -28,6 +28,7 @@ class HoverView: NSTextView {
         self.textContainerInset = NSSize(width: 10, height: 10)
         self.font = NSFont.systemFont(ofSize: 11)
         self.textColor = NSColor.textColor
+        self.drawsBackground = false
         self.needsLayout = true
         self.isVerticallyResizable = true
         self.alignment = .justified
@@ -46,6 +47,7 @@ class HoverViewController: NSViewController {
         scrollView.autoresizingMask = [.height]
         scrollView.contentView.wantsLayer = true
         scrollView.contentView.layer?.masksToBounds = true
+        scrollView.drawsBackground = false
         return scrollView
     }()
     var resultContent: String
