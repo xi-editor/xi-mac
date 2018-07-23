@@ -507,6 +507,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         let gestureType = clickGestureType(event: theEvent)
 
         if gestureType == "request_hover" {
+            hoverEvent = theEvent
             sendHover()
         } else {
             document.sendRpcAsync("gesture", params: [
