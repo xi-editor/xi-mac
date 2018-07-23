@@ -44,6 +44,8 @@ class HoverViewController: NSViewController {
         scrollView.borderType = .noBorder
         scrollView.hasVerticalScroller = true
         scrollView.autoresizingMask = [.height]
+        scrollView.contentView.wantsLayer = true
+        scrollView.contentView.layer?.masksToBounds = true
         return scrollView
     }()
     var resultContent: String
