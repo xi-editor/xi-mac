@@ -550,7 +550,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         if let event = hoverEvent {
             let hoverPosition = editView.bufferPositionFromPoint(event.locationInWindow)
             document.sendRpcAsync("request_hover", params: ["request_id": hoverRequestID, "position": ["line": hoverPosition.line, "column": hoverPosition.column]])
-            hoverRequestID += 1
         }
     }
 
