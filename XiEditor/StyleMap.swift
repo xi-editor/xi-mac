@@ -14,7 +14,7 @@
 
 import Cocoa
 
-let N_RESERVED_STYLES = 2
+let N_RESERVED_STYLES = 8
 
 /// A represents a given text style.
 struct Style {
@@ -169,7 +169,8 @@ class StyleMapState: UnfairLock {
             print("stylemap can't resolve \(id)")
             return
         }
-        if id == 0 || id == 1 {
+
+        if id >= 0 && id < N_RESERVED_STYLES {
             builder.addSelSpan(range: convertRange(range), argb: selColor!)
         } else {
             guard let style = styles[id] else { return }
@@ -188,14 +189,15 @@ class StyleMapState: UnfairLock {
         }
     }
     
-    func applyStyles(builder: TextLineBuilder, styles: [StyleSpan], selColor: ARGBColor, highlightColor: ARGBColor) {
+    func applyStyles(builder: TextLineBuilder, styles: [StyleSpan], selColor: ARGBColor, highlightColors: [ARGBColor]) {
+        print(styles)
         for styleSpan in styles {
             let color: ARGBColor?
             switch styleSpan.style {
             case 0:
                 color = selColor
-            case 1:
-                color = highlightColor
+            case 1...highlightColors.count:
+                color = highlightColors[styleSpan.style - 1]
             default:
                 color = nil
             }
@@ -248,8 +250,8 @@ class StyleMapLocked {
     }
 
     /// Applies the styles to the text line builder.
-    func applyStyles(builder: TextLineBuilder, styles: [StyleSpan], selColor: ARGBColor, highlightColor: ARGBColor) {
-        inner.applyStyles(builder: builder, styles: styles, selColor: selColor, highlightColor: highlightColor)
+    func applyStyles(builder: TextLineBuilder, styles: [StyleSpan], selColor: ARGBColor, highlightColors: [ARGBColor]) {
+        inner.applyStyles(builder: builder, styles: styles, selColor: selColor, highlightColors: highlightColors)
     }
 
     func updateFont(to font: NSFont) {

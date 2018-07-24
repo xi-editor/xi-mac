@@ -325,8 +325,6 @@ extension EditViewController {
                 (query?.searchField as? FindSearchField)?.resultCount = resultCount
             }
         }
-
-        // todo: remove
     }
 
     func replaceNext() {
