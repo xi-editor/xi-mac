@@ -549,6 +549,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     @objc func sendHover() {
         if let event = hoverEvent {
             let hoverPosition = editView.bufferPositionFromPoint(event.locationInWindow)
+            hoverRequestID += 1
             document.sendRpcAsync("request_hover", params: ["request_id": hoverRequestID, "position": ["line": hoverPosition.line, "column": hoverPosition.column]])
         }
     }
