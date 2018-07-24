@@ -48,8 +48,11 @@ class HoverViewController: NSViewController {
         scrollView.contentView.wantsLayer = true
         scrollView.contentView.layer?.masksToBounds = true
         scrollView.drawsBackground = false
+        // At most, scroll view will be as tall as its width.
+        scrollView.heightAnchor.constraint(lessThanOrEqualToConstant: hoverPopoverWidth).isActive = true
         return scrollView
     }()
+
     var resultContent: String
     var hoverView: HoverView
     let hoverPopoverWidth: CGFloat = 500 // XCode size for quick help popovers
@@ -111,6 +114,7 @@ extension EditViewController {
 
         hoverViewController.scrollView.setFrameSize(hoverContentSize)
         hoverViewController.scrollView.documentView?.setFrameSize(hoverContentSize)
+
         infoPopover.contentSize = hoverContentSize
         infoPopover.contentViewController = hoverViewController
 
