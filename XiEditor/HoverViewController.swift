@@ -121,6 +121,7 @@ extension EditViewController {
             let positioningSize = CGSize(width: 1, height: 1) // Generic size to center popover on cursor
 
             infoPopover.show(relativeTo: NSRect(origin: positioningPoint, size: positioningSize), of: self.view, preferredEdge: .minY)
+            hoverRequestID += 1
             hoverEvent = nil
         }
     }
