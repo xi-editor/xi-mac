@@ -172,6 +172,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         if let window = self.view.window {
             popover.appearance = window.appearance
         }
+        popover.animates = false
         popover.behavior = .transient
         return popover
     }()
