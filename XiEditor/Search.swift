@@ -15,6 +15,8 @@
 import Cocoa
 import Swift
 
+let MAX_SEARCH_QUERIES = 7
+
 class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlTextEditingDelegate {
     var findDelegate: FindDelegate!
 
@@ -71,22 +73,24 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     }
 
     public func addSearchField(_ id: String?, disableRemove: Bool) {
-        let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
-        let newSearchFieldController = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Suplementary Find View Controller")) as! SuplementaryFindViewController
+        if searchFields.count < MAX_SEARCH_QUERIES {
+            let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
+            let newSearchFieldController = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Suplementary Find View Controller")) as! SuplementaryFindViewController
 
-        newSearchFieldController.parentFindView = self
+            newSearchFieldController.parentFindView = self
 
-        searchFields.append(newSearchFieldController)
-        newSearchFieldController.disableRemove = disableRemove
+            searchFields.append(newSearchFieldController)
+            newSearchFieldController.disableRemove = disableRemove
 
-        if id != nil {
-            newSearchFieldController.id = id
+            if id != nil {
+                newSearchFieldController.id = id
+            }
+
+            searchFieldsStackView.insertView(newSearchFieldController.view, at: searchFields.count - 1, in: NSStackView.Gravity.center)
+            newSearchFieldController.searchField.becomeFirstResponder()
+
+            searchFieldsNextKeyView()
         }
-
-        searchFieldsStackView.insertView(newSearchFieldController.view, at: searchFields.count - 1, in: NSStackView.Gravity.center)
-        newSearchFieldController.searchField.becomeFirstResponder()
-
-        searchFieldsNextKeyView()
     }
 
     func searchFieldsNextKeyView() {

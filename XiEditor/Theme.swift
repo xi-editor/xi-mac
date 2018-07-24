@@ -35,12 +35,13 @@ struct Theme {
     /// Background color of regions matching the current search.
     let findHighlight: NSColor
     let findHighlights = [      // todo: instead retrieve from theme definition
-        NSColor(red: 0.1, green: 0.8, blue: 1.0, alpha: 1.0),
-        NSColor(red: 0.1, green: 0.1, blue: 1.0, alpha: 1.0),
-        NSColor(red: 0.8, green: 0.1, blue: 1.0, alpha: 1.0),
-        NSColor(red: 0.8, green: 0.5, blue: 1.0, alpha: 1.0),
-        NSColor(red: 1.0, green: 0.1, blue: 0.8, alpha: 1.0),
-        NSColor(red: 1.0, green: 0.5, blue: 0.8, alpha: 1.0),
+        NSColor(red: 0.5, green: 0.8, blue: 1.0, alpha: 0.5),
+        NSColor(red: 0.1, green: 0.1, blue: 1.0, alpha: 0.5),
+        NSColor(red: 0.8, green: 0.1, blue: 1.0, alpha: 0.5),
+        NSColor(red: 0.8, green: 0.5, blue: 1.0, alpha: 0.5),
+        NSColor(red: 1.0, green: 0.1, blue: 0.8, alpha: 0.5),
+        NSColor(red: 1.0, green: 0.5, blue: 0.8, alpha: 0.5),
+        NSColor(red: 0.1, green: 1.0, blue: 0.8, alpha: 0.5),
     ]
     /// Background color of regions matching the current search.
     let findHighlightForeground: NSColor?
