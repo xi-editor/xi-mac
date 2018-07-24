@@ -190,7 +190,6 @@ class StyleMapState: UnfairLock {
     }
     
     func applyStyles(builder: TextLineBuilder, styles: [StyleSpan], selColor: ARGBColor, highlightColors: [ARGBColor]) {
-        print(styles)
         for styleSpan in styles {
             let color: ARGBColor?
             switch styleSpan.style {

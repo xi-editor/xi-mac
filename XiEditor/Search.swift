@@ -84,6 +84,21 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
         }
 
         searchFieldsStackView.insertView(newSearchFieldController.view, at: searchFields.count - 1, in: NSStackView.Gravity.center)
+        newSearchFieldController.searchField.becomeFirstResponder()
+
+        searchFieldsNextKeyView()
+    }
+
+    func searchFieldsNextKeyView() {
+        searchFields.last?.searchField.nextKeyView = replaceField
+        replaceField.nextKeyView = searchFields.first?.searchField
+
+        var prevSearchField = searchFields.first?.searchField
+
+        for searchField in searchFields.dropFirst() {
+            prevSearchField?.nextKeyView = searchField.searchField
+            prevSearchField = searchField.searchField
+        }
     }
 
     override func controlTextDidChange(_ obj: Notification) {
@@ -108,6 +123,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     public func removeSearchField(searchField: SuplementaryFindViewController) {
         searchFieldsStackView.removeView(searchField.view)
         searchFields.remove(at: searchFields.index(of: searchField)!)
+        searchFieldsNextKeyView()
         redoFind()
     }
 
@@ -237,7 +253,7 @@ extension EditViewController {
         findViewController.replacePanel.isHidden = replaceHidden
         let offset = findViewController.view.fittingSize.height
         scrollView.contentInsets = NSEdgeInsetsMake(offset, 0, 0, 0)
-    editView.window?.makeFirstResponder(findViewController.searchFields.first)
+    editView.window?.makeFirstResponder(findViewController.searchFields.first?.searchField)
     }
 
     func closeFind() {
