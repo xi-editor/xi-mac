@@ -64,6 +64,12 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         return controller
     }()
 
+    lazy var autocompleteViewController: AutocompleteViewController! = {
+        let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
+        let controller = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Autocomplete View Controller")) as! AutocompleteViewController
+        return controller
+    }()
+
     var document: Document!
 
     var lines = LineCache<LineAssoc>()
@@ -165,6 +171,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     var hoverEvent: NSEvent?
 
     let statusBar = StatusBar(frame: .zero)
+
 
     // Popover that manages hover views.
     lazy var infoPopover: NSPopover = {
@@ -491,7 +498,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             return "range_select"
         } else if (event.modifierFlags.contains(NSEvent.ModifierFlags.option)) {
             return "request_hover"
-        }  else {
+        }  else if (event.modifierFlags.contains(NSEvent.modifierFlags.control)) {
+            return "autocomplete"
+        } else {
             switch (clickCount) {
             case 2:
                 return "word_select"
@@ -518,6 +527,10 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         if gestureType == "request_hover" {
             hoverEvent = theEvent
             sendHover()
+        }
+        else if gestureType == "autocomplete" {
+            infoPopover.contentViewController = autocompleteViewController
+            infoPopover.show(relativeTo: .zero, of: self.view, preferredEdge: .minX)
         } else {
             document.sendRpcAsync("gesture", params: [
                 "line": position.line,

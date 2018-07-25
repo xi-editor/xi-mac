@@ -12,6 +12,7 @@ class AutocompleteTableView: NSTableView {
 
 }
 
-class AutocompleteTableRowView: NSTableRowView {
-
+class AutocompleteTableCellView: NSTableCellView {
+    @IBOutlet weak var suggestionImageView: NSImageView!
+    @IBOutlet weak var suggestionTextField: NSTextField!
 }
