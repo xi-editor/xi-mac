@@ -34,6 +34,11 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
         replacePanel.isHidden = true
     }
 
+    func updateColor(newBackgroundColor: NSColor, unifiedTitlebar: Bool) {
+        let veryLightGray = CGColor(gray: 246.0/256.0, alpha: 1.0)
+        self.view.layer?.backgroundColor = unifiedTitlebar ? newBackgroundColor.cgColor : veryLightGray
+    }
+
     func control(_ control: NSControl, textView: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
         switch commandSelector {
         case #selector(NSResponder.cancelOperation(_:)):
@@ -114,6 +119,14 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     func redoFind() {
         findDelegate.find(searchFields.map({(v: SuplementaryFindViewController) -> FindQuery in v.toFindQuery()}))
         findDelegate.findNext(wrapAround: wrapAround, allowSame: true)
+    }
+
+    func findNext(reverse: Bool) {
+        if reverse {
+            findDelegate.findPrevious(wrapAround: wrapAround)
+        } else {
+            findDelegate.findNext(wrapAround: wrapAround, allowSame: false)
+        }
     }
 
     override func cancelOperation(_ sender: Any?) {
@@ -230,6 +243,11 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
 
     @IBAction func searchFieldAction(_ sender: NSSearchField) {
         parentFindView?.redoFind()
+        if NSEvent.modifierFlags.contains(.shift) {
+            parentFindView?.findNext(reverse: true)
+        } else {
+            parentFindView?.findNext(reverse: false)
+        }
     }
 
     @IBAction func selectRemoveSearchQuery(_ sender: NSMenuItem) {
