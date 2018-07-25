@@ -118,7 +118,6 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
 
     func redoFind() {
         findDelegate.find(searchFields.map({(v: SuplementaryFindViewController) -> FindQuery in v.toFindQuery()}))
-        findDelegate.findNext(wrapAround: wrapAround, allowSame: true)
     }
 
     func findNext(reverse: Bool) {
