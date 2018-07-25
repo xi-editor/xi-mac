@@ -26,11 +26,11 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     @IBOutlet weak var replaceField: NSTextField!
     @IBOutlet weak var searchFieldsStackView: NSStackView!
 
-    var searchFields: [SuplementaryFindViewController] = []
+    var searchQueries: [SuplementaryFindViewController] = []
     var wrapAround = true   // option same for all search fields
 
     override func viewDidLoad() {
-        addSearchField(nil, disableRemove: true)         // by default at least one search field is present
+        addSearchField(nil, disableRemove: true)     // by default at least one search query is present
         replacePanel.isHidden = true
     }
 
@@ -78,20 +78,19 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     }
 
     public func addSearchField(_ id: String?, disableRemove: Bool) {
-        if searchFields.count < MAX_SEARCH_QUERIES {
+        if searchQueries.count < MAX_SEARCH_QUERIES {
             let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
             let newSearchFieldController = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Suplementary Find View Controller")) as! SuplementaryFindViewController
 
             newSearchFieldController.parentFindView = self
-
-            searchFields.append(newSearchFieldController)
+            searchQueries.append(newSearchFieldController)
             newSearchFieldController.disableRemove = disableRemove
 
             if id != nil {
                 newSearchFieldController.id = id
             }
 
-            searchFieldsStackView.insertView(newSearchFieldController.view, at: searchFields.count - 1, in: NSStackView.Gravity.center)
+            searchFieldsStackView.insertView(newSearchFieldController.view, at: searchQueries.count - 1, in: NSStackView.Gravity.center)
             newSearchFieldController.searchField.becomeFirstResponder()
 
             searchFieldsNextKeyView()
@@ -99,12 +98,12 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     }
 
     func searchFieldsNextKeyView() {
-        searchFields.last?.searchField.nextKeyView = replaceField
-        replaceField.nextKeyView = searchFields.first?.searchField
+        searchQueries.last?.searchField.nextKeyView = replaceField
+        replaceField.nextKeyView = searchQueries.first?.searchField
 
-        var prevSearchField = searchFields.first?.searchField
+        var prevSearchField = searchQueries.first?.searchField
 
-        for searchField in searchFields.dropFirst() {
+        for searchField in searchQueries.dropFirst() {
             prevSearchField?.nextKeyView = searchField.searchField
             prevSearchField = searchField.searchField
         }
@@ -117,7 +116,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     }
 
     func redoFind() {
-        findDelegate.find(searchFields.map({(v: SuplementaryFindViewController) -> FindQuery in v.toFindQuery()}))
+        findDelegate.find(searchQueries.map({(v: SuplementaryFindViewController) -> FindQuery in v.toFindQuery()}))
     }
 
     func findNext(reverse: Bool) {
@@ -138,7 +137,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
 
     public func removeSearchField(searchField: SuplementaryFindViewController) {
         searchFieldsStackView.removeView(searchField.view)
-        searchFields.remove(at: searchFields.index(of: searchField)!)
+        searchQueries.remove(at: searchQueries.index(of: searchField)!)
         searchFieldsNextKeyView()
         redoFind()
     }
@@ -153,8 +152,8 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
 
     public func wrapAround(_ wrap: Bool) {
         wrapAround = wrap
-        for searchField in searchFields {
-            searchField.wrapAround = wrapAround
+        for searchQuery in searchQueries {
+            searchQuery.wrapAround = wrapAround
         }
     }
 }
@@ -274,20 +273,19 @@ extension EditViewController {
         findViewController.replacePanel.isHidden = replaceHidden
         let offset = findViewController.view.fittingSize.height
         scrollView.contentInsets = NSEdgeInsetsMake(offset, 0, 0, 0)
-    editView.window?.makeFirstResponder(findViewController.searchFields.first?.searchField)
+        editView.window?.makeFirstResponder(findViewController.searchQueries.first?.searchField)
     }
 
     func closeFind() {
         if !findViewController.view.isHidden {
             findViewController.view.isHidden = true
-            for searchFieldView in findViewController.searchFields {
+            for searchFieldView in findViewController.searchQueries {
                 (searchFieldView.searchField as? FindSearchField)?.resultCount = nil
             }
             scrollView.contentInsets = NSEdgeInsetsZero
         }
 
         editView.window?.makeFirstResponder(editView)
-
         document.sendRpcAsync("highlight_find", params: ["visible": false])
     }
 
@@ -331,15 +329,15 @@ extension EditViewController {
     
     func findStatus(status: [[String: AnyObject]]) {
         for statusQuery in status {
-            var query = findViewController.searchFields.first(where: { $0.id == statusQuery["id"] as? String })
+            var query = findViewController.searchQueries.first(where: { $0.id == statusQuery["id"] as? String })
 
             if query == nil {
-                if let newQuery = findViewController.searchFields.first(where: { $0.id == nil }) {
+                if let newQuery = findViewController.searchQueries.first(where: { $0.id == nil }) {
                     newQuery.id = statusQuery["id"] as? String
                     query = newQuery
                 } else {
                     findViewController.addSearchField(statusQuery["id"] as? String, disableRemove: false)
-                    query = findViewController.searchFields.first(where: { $0.id == statusQuery["id"] as? String })
+                    query = findViewController.searchQueries.first(where: { $0.id == statusQuery["id"] as? String })
                 }
             }
 
