@@ -498,7 +498,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             return "range_select"
         } else if (event.modifierFlags.contains(NSEvent.ModifierFlags.option)) {
             return "request_hover"
-        }  else if (event.modifierFlags.contains(NSEvent.modifierFlags.control)) {
+        }  else if (event.modifierFlags.contains(NSEvent.ModifierFlags.control)) {
             return "autocomplete"
         } else {
             switch (clickCount) {
@@ -531,6 +531,14 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         else if gestureType == "autocomplete" {
             infoPopover.contentViewController = autocompleteViewController
             infoPopover.show(relativeTo: .zero, of: self.view, preferredEdge: .minX)
+            // Cursor pos is Line/Column
+            if let cursorPos = editView.cursorPos {
+                let cursorX = gutterWidth + editView.colIxToPoint(cursorPos.1) + editView.scrollOrigin.x
+                let cursorY = editView.frame.height - editView.lineIxToBaseline(cursorPos.0) + editView.scrollOrigin.y
+                let positioningPoint = NSPoint(x: cursorX, y: cursorY)
+                infoPopover.contentViewController = autocompleteViewController
+                infoPopover.show(relativeTo: NSRect(origin: positioningPoint, size: NSSize(width: 1, height: 1)), of: self.view, preferredEdge: .minY)
+            }
         } else {
             document.sendRpcAsync("gesture", params: [
                 "line": position.line,

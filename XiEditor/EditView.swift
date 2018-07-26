@@ -368,6 +368,11 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         return CGFloat(lineIx + 1) * dataSource.textMetrics.linespace
     }
 
+    // Converts a column index to an NSPoint x location.
+    func colIxToPoint(_ colIx: Int) -> CGFloat {
+        return CGFloat(colIx + 1) * dataSource.textMetrics.fontWidth
+    }
+
     /// given a point in the containing window's coordinate space, converts it into a line / column position in the current view.
     /// Note: - The returned position is not guaruanteed to be an existing line. For instance, if a buffer does not fill the current window, a point below the last line will return a buffer position with a line number exceeding the number of lines in the file. In this case position.column will always be zero.
     func bufferPositionFromPoint(_ point: NSPoint) -> BufferPosition {
@@ -511,7 +516,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                     let utf16Ix = utf8_offset_to_utf16(line.text, cursor)
                     // Note: It's ugly that cursorPos is set as a side-effect
                     // TODO: disabled until firstRect logic is fixed
-                    //self.cursorPos = (lineIx, utf16Ix)
+                    self.cursorPos = (lineIx, utf16Ix)
                     if (markedRange().location != NSNotFound) {
                         let markRangeStart = utf16Ix - markedRange().length
                         if markRangeStart >= 0 {
