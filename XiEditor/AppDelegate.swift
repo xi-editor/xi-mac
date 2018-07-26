@@ -332,7 +332,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         }
     }
 
-    func showHover(viewIdentifier: String, requestIdentifier: Int, result: [String: AnyObject]) {
+    func showHover(viewIdentifier: String, requestIdentifier: Int, result: String) {
         let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
         if requestIdentifier == document?.editViewController?.hoverRequestID {
             DispatchQueue.main.async {

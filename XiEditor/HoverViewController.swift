@@ -101,12 +101,12 @@ class HoverViewController: NSViewController {
 extension EditViewController {
 
     // Puts the popover at the baseline of the chosen hover symbol.
-    func showHover(withResult result: [String: AnyObject]) {
+    func showHover(withResult result: String) {
         if infoPopover.isShown {
             infoPopover.performClose(self)
         }
 
-        let hoverContent = result["content"] as! String
+        let hoverContent = result
         let hoverViewController = HoverViewController(content: hoverContent)
         let hoverContentSize = NSSize(width: hoverViewController.hoverPopoverWidth, height: hoverViewController.heightForContent())
 

@@ -332,7 +332,7 @@ class CoreConnection {
 
         case "show_hover":
             let requestIdentifier = params["request_id"] as! Int
-            let result = params["result"] as! [String: AnyObject]
+            let result = params["result"] as! String
             client?.showHover(viewIdentifier: viewIdentifier!, requestIdentifier: requestIdentifier, result: result)
             
         case "find_status":
