@@ -45,6 +45,7 @@
 		AED23F181C83CBED002246CE /* EditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AED23F171C83CBEC002246CE /* EditView.swift */; };
 		E10DB28821075C9300B87F90 /* AutocompleteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E10DB28621075C9300B87F90 /* AutocompleteViewController.swift */; };
 		E1288E8020B06E9C0068EEB9 /* StatusBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1288E7F20B06E9C0068EEB9 /* StatusBar.swift */; };
+		E1533C3A210A169400BF0CA5 /* HoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1533C39210A169400BF0CA5 /* HoverViewController.swift */; };
 		F53EA2AD1DCAA8110071ACFD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F53EA2AC1DCAA8110071ACFD /* Main.storyboard */; };
 		F53EA2AF1DCAAA170071ACFD /* EditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53EA2AE1DCAAA170071ACFD /* EditViewController.swift */; };
 		F5BDBF371DCA9D2C0042430B /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5BDBF361DCA9D2C0042430B /* Document.swift */; };
@@ -120,6 +121,7 @@
 		AED23F171C83CBEC002246CE /* EditView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditView.swift; sourceTree = "<group>"; };
 		E10DB28621075C9300B87F90 /* AutocompleteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutocompleteViewController.swift; sourceTree = "<group>"; };
 		E1288E7F20B06E9C0068EEB9 /* StatusBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBar.swift; sourceTree = "<group>"; };
+		E1533C39210A169400BF0CA5 /* HoverViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HoverViewController.swift; sourceTree = "<group>"; };
 		F53EA2AC1DCAA8110071ACFD /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		F53EA2AE1DCAAA170071ACFD /* EditViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = EditViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		F5BDBF361DCA9D2C0042430B /* Document.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
@@ -197,6 +199,7 @@
 				6B90DD211F14110B00DF3CE2 /* UserInputPromptController.swift */,
 				28F1ED491EC4C735008839BE /* Search.swift */,
 				E1288E7F20B06E9C0068EEB9 /* StatusBar.swift */,
+				E1533C39210A169400BF0CA5 /* HoverViewController.swift */,
 				832910D820229C2D0042C32B /* Fps.swift */,
 				965C73D7210820EB007153BB /* AutocompleteTableView.swift */,
 				E10DB28621075C9300B87F90 /* AutocompleteViewController.swift */,
@@ -424,6 +427,7 @@
 				965C73D9210820EB007153BB /* AutocompleteTableView.swift in Sources */,
 				AED22D761FE836880096E7C3 /* TextPlane.swift in Sources */,
 				AE168C5C1E4AD87B008249AE /* LineCache.swift in Sources */,
+				E1533C3A210A169400BF0CA5 /* HoverViewController.swift in Sources */,
 				6B90DD1C1F129C1A00DF3CE2 /* PluginCommand.swift in Sources */,
 				6B53F5F21EF963EB00A4C664 /* Theme.swift in Sources */,
 				AE499DF91C82C835002D68AF /* CoreConnection.swift in Sources */,
