@@ -9,15 +9,28 @@
 import Cocoa
 
 class AutocompleteViewController: NSViewController {
+
     @IBOutlet weak var autocompleteTableView: AutocompleteTableView!
 
-    let completionSuggestions: [[String]]? = [["Hello", "World"]]
+    let completionSuggestions: [[String]]? = [["Hello", "World"], ["Hey", "World"]]
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do view setup here.
+
+        let shadow = NSShadow()
+        shadow.shadowBlurRadius = 5 // macOS default
+        shadow.shadowColor = NSColor.controlShadowColor
+        autocompleteTableView.shadow = shadow
+
+        autocompleteTableView.focusRingType = .none
         autocompleteTableView.dataSource = self
         autocompleteTableView.delegate = self
+    }
+
+    // Force table view to load all of its views on awake from nib.
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        _ = self.view
     }
 
 }

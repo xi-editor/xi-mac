@@ -529,15 +529,13 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             sendHover()
         }
         else if gestureType == "autocomplete" {
-            infoPopover.contentViewController = autocompleteViewController
-            infoPopover.show(relativeTo: .zero, of: self.view, preferredEdge: .minX)
             // Cursor pos is Line/Column
             if let cursorPos = editView.cursorPos {
                 let cursorX = gutterWidth + editView.colIxToPoint(cursorPos.1) + editView.scrollOrigin.x
-                let cursorY = editView.frame.height - editView.lineIxToBaseline(cursorPos.0) + editView.scrollOrigin.y
+                let cursorY = editView.frame.height - autocompleteViewController.autocompleteTableView.frame.height - editView.lineIxToBaseline(cursorPos.0) + editView.scrollOrigin.y
                 let positioningPoint = NSPoint(x: cursorX, y: cursorY)
-                infoPopover.contentViewController = autocompleteViewController
-                infoPopover.show(relativeTo: NSRect(origin: positioningPoint, size: NSSize(width: 1, height: 1)), of: self.view, preferredEdge: .minY)
+                autocompleteViewController.autocompleteTableView.setFrameOrigin(positioningPoint)
+                self.view.addSubview(autocompleteViewController.autocompleteTableView)
             }
         } else {
             document.sendRpcAsync("gesture", params: [

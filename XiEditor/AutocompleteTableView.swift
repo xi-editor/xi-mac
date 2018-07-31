@@ -9,10 +9,14 @@
 import Cocoa
 
 class AutocompleteTableView: NSTableView {
-
+    override func draw(_ dirtyRect: NSRect) {
+    }
 }
 
 class AutocompleteTableCellView: NSTableCellView {
+
     @IBOutlet weak var suggestionImageView: NSImageView!
     @IBOutlet weak var suggestionTextField: NSTextField!
+
+
 }
