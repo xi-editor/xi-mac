@@ -779,6 +779,10 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         }
     }
 
+    @IBAction func splitSelectionIntoLines(_ sender: NSMenuItem) {
+        document.sendRpcAsync("selection_into_lines", params: [])
+    }
+
     @IBAction func addPreviousLineToSelection(_ sender: NSMenuItem) {
         document.sendRpcAsync("add_selection_above", params: [])
     }
