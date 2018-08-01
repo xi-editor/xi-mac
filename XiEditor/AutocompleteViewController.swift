@@ -12,7 +12,7 @@ class AutocompleteViewController: NSViewController {
 
     @IBOutlet weak var autocompleteTableView: AutocompleteTableView!
 
-    let completionSuggestions: [[String]]? = [["Hello", "World"], ["Hey", "World"]]
+    var completionSuggestions = [CompletionItem]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,7 +37,7 @@ extension AutocompleteViewController: NSTableViewDelegate, NSTableViewDataSource
     }
 
     func numberOfRows(in tableView: NSTableView) -> Int {
-        return completionSuggestions?.count ?? 0
+        return completionSuggestions.count
     }
 
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
@@ -46,16 +46,12 @@ extension AutocompleteViewController: NSTableViewDelegate, NSTableViewDataSource
         var text = ""
         var cellIdentifier = ""
 
-        guard let suggestion = completionSuggestions?[row] else {
-            return nil
-        }
-
         // Main autocomplete column
         if tableColumn == tableView.tableColumns[0] {
-            text = suggestion[0]
+            text = completionSuggestions[row].label
             cellIdentifier = CellIdentifiers.SuggestionCell
         } else if tableColumn == tableView.tableColumns[1] {
-            text = suggestion[1]
+            text = completionSuggestions[row].detail ?? ""
             cellIdentifier = CellIdentifiers.ReturnTypeCell
         }
 
@@ -66,5 +62,30 @@ extension AutocompleteViewController: NSTableViewDelegate, NSTableViewDataSource
         }
         return nil
     }
+}
 
+extension EditViewController {
+    func displayCompletions(forItems items: [[String : AnyObject]]) {
+
+        for item in items {
+            let label = item["label"] as! String
+            let detail = item["detail"] as? String
+            let documentation = item["documentation"] as? String
+
+            let completionItem = CompletionItem(label: label, detail: detail, documentation: documentation)
+            autocompleteViewController.completionSuggestions.append(completionItem)
+        }
+
+        if let cursorPos = editView.cursorPos {
+            let cursorX = gutterWidth + editView.colIxToPoint(cursorPos.1) + editView.scrollOrigin.x
+            let cursorY = editView.frame.height - autocompleteViewController.autocompleteTableView.frame.height - editView.lineIxToBaseline(cursorPos.0) + editView.scrollOrigin.y
+            let positioningPoint = NSPoint(x: cursorX, y: cursorY)
+            autocompleteViewController.autocompleteTableView.setFrameOrigin(positioningPoint)
+            self.view.addSubview(autocompleteViewController.autocompleteTableView)
+        }
+    }
+
+    func hideCompletions() {
+        autocompleteViewController.autocompleteTableView.removeFromSuperview()
+    }
 }

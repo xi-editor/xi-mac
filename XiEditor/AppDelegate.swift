@@ -341,6 +341,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         }
     }
 
+    func completions(viewIdentifier: String, position: Int, selected: Int, items: [[String: AnyObject]]) {
+        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
+        DispatchQueue.main.async {
+            document?.editViewController?.displayCompletions(forItems: items)
+        }
+    }
+
+    func hideCompletions(viewIdentifier: String) {
+        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
+        DispatchQueue.main.async {
+            document?.editViewController?.hideCompletions()
+        }
+    }
+
     func configChanged(viewIdentifier: ViewIdentifier, changes: [String : AnyObject]) {
         let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
         DispatchQueue.main.async {

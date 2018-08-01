@@ -64,6 +64,12 @@ protocol XiClient: AnyObject {
     /// A result, formatted in Markdown, that is returned from a hover request.
     func showHover(viewIdentifier: String, requestIdentifier: Int, result: String)
 
+    /// A list of completions that originate from core, to be displayed in the autocompletion view.
+    func completions(viewIdentifier: String, position: Int, selected: Int, items: [[String: AnyObject]])
+
+    /// A notification to hide the completion view.
+    func hideCompletions(viewIdentifier: String)
+
     /// A notification containing changes to the current config for the given view.
     /// - Note: The first time this message is sent, `changes` contains all defined
     // config keys and their values. Subsequent calls contain only those items which

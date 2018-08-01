@@ -334,6 +334,15 @@ class CoreConnection {
             let requestIdentifier = params["request_id"] as! Int
             let result = params["result"] as! String
             client?.showHover(viewIdentifier: viewIdentifier!, requestIdentifier: requestIdentifier, result: result)
+
+        case "completions":
+            let position = params["pos"] as! Int
+            let selected = params["selected"] as! Int
+            let items = params["items"] as! [[String: AnyObject]]
+            client?.completions(viewIdentifier: viewIdentifier!, position: position, selected: selected, items: items)
+
+        case "hide_completions":
+            client?.hideCompletions(viewIdentifier: viewIdentifier!)
             
         case "find_status":
             let status = params["queries"] as! [[String: AnyObject]]

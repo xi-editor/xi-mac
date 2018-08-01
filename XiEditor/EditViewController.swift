@@ -553,6 +553,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 //                autocompleteViewController.autocompleteTableView.setFrameOrigin(positioningPoint)
 //                self.view.addSubview(autocompleteViewController.autocompleteTableView)
             }
+
         } else {
             document.sendRpcAsync("gesture", params: [
                 "line": position.line,
