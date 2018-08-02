@@ -17,11 +17,6 @@ class AutocompleteViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let shadow = NSShadow()
-        shadow.shadowBlurRadius = 5 // macOS default
-        shadow.shadowColor = NSColor.controlShadowColor
-        autocompleteTableView.shadow = shadow
-
         autocompleteTableView.focusRingType = .none
         autocompleteTableView.dataSource = self
         autocompleteTableView.delegate = self
@@ -32,7 +27,6 @@ class AutocompleteViewController: NSViewController {
         super.awakeFromNib()
         _ = self.view
     }
-
 }
 
 extension AutocompleteViewController: NSTableViewDelegate, NSTableViewDataSource {

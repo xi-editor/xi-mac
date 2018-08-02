@@ -46,6 +46,7 @@
 		E10DB28821075C9300B87F90 /* AutocompleteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E10DB28621075C9300B87F90 /* AutocompleteViewController.swift */; };
 		E1288E8020B06E9C0068EEB9 /* StatusBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1288E7F20B06E9C0068EEB9 /* StatusBar.swift */; };
 		E1533C3A210A169400BF0CA5 /* HoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1533C39210A169400BF0CA5 /* HoverViewController.swift */; };
+		E1BB435921133E3200937AFB /* AutocompleteWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1BB435821133E3200937AFB /* AutocompleteWindowController.swift */; };
 		F53EA2AD1DCAA8110071ACFD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F53EA2AC1DCAA8110071ACFD /* Main.storyboard */; };
 		F53EA2AF1DCAAA170071ACFD /* EditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53EA2AE1DCAAA170071ACFD /* EditViewController.swift */; };
 		F5BDBF371DCA9D2C0042430B /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5BDBF361DCA9D2C0042430B /* Document.swift */; };
@@ -122,6 +123,7 @@
 		E10DB28621075C9300B87F90 /* AutocompleteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutocompleteViewController.swift; sourceTree = "<group>"; };
 		E1288E7F20B06E9C0068EEB9 /* StatusBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBar.swift; sourceTree = "<group>"; };
 		E1533C39210A169400BF0CA5 /* HoverViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HoverViewController.swift; sourceTree = "<group>"; };
+		E1BB435821133E3200937AFB /* AutocompleteWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutocompleteWindowController.swift; sourceTree = "<group>"; };
 		F53EA2AC1DCAA8110071ACFD /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		F53EA2AE1DCAAA170071ACFD /* EditViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = EditViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		F5BDBF361DCA9D2C0042430B /* Document.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
@@ -201,6 +203,7 @@
 				E1288E7F20B06E9C0068EEB9 /* StatusBar.swift */,
 				E1533C39210A169400BF0CA5 /* HoverViewController.swift */,
 				832910D820229C2D0042C32B /* Fps.swift */,
+				E1BB435821133E3200937AFB /* AutocompleteWindowController.swift */,
 				965C73D7210820EB007153BB /* AutocompleteTableView.swift */,
 				E10DB28621075C9300B87F90 /* AutocompleteViewController.swift */,
 				AE499DD61C82BB2B002D68AF /* Info.plist */,
@@ -441,6 +444,7 @@
 				AEC4F6B31FF5AF130060E10E /* UnfairLock.swift in Sources */,
 				28F1ED4A1EC4C735008839BE /* Search.swift in Sources */,
 				F5BDBF371DCA9D2C0042430B /* Document.swift in Sources */,
+				E1BB435921133E3200937AFB /* AutocompleteWindowController.swift in Sources */,
 				6B0C298B2033C39500EA07AF /* XiWindow.swift in Sources */,
 				6038770720057B4500AABF17 /* XiDocumentController.swift in Sources */,
 				6B90DD221F14110B00DF3CE2 /* UserInputPromptController.swift in Sources */,

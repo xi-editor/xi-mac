@@ -9,7 +9,14 @@
 import Cocoa
 
 class AutocompleteTableView: NSTableView {
-    override func draw(_ dirtyRect: NSRect) {
+
+    override func viewDidMoveToWindow() {
+        self.needsLayout = true
+        self.layoutSubtreeIfNeeded()
+
+        let newFittingSize = NSSize(width: self.frame.width, height: self.fittingSize.height)
+        self.setFrameSize(newFittingSize)
+
     }
 }
 
@@ -17,6 +24,5 @@ class AutocompleteTableCellView: NSTableCellView {
 
     @IBOutlet weak var suggestionImageView: NSImageView!
     @IBOutlet weak var suggestionTextField: NSTextField!
-
 
 }

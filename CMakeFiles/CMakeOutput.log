@@ -1,0 +1,354 @@
+The system is: Darwin - 18.0.0 - x86_64
+Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+Compiler: /usr/bin/cc 
+Build flags: ;-ffunction-sections;-fdata-sections;-fPIC;-m64
+Id flags:  
+
+The output was:
+0
+
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.out"
+
+The C compiler identification is AppleClang, found in "/Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/3.11.4/CompilerIdC/a.out"
+
+Determining if the C compiler works passed with the following output:
+Change Dir: /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_1598e/fast"
+/Applications/Xcode-beta.app/Contents/Developer/usr/bin/make -f CMakeFiles/cmTC_1598e.dir/build.make CMakeFiles/cmTC_1598e.dir/build
+Building C object CMakeFiles/cmTC_1598e.dir/testCCompiler.c.o
+/usr/bin/cc   -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk   -o CMakeFiles/cmTC_1598e.dir/testCCompiler.c.o   -c /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CMakeTmp/testCCompiler.c
+Linking C executable cmTC_1598e
+/usr/local/Cellar/cmake/3.11.4/bin/cmake -E cmake_link_script CMakeFiles/cmTC_1598e.dir/link.txt --verbose=1
+/usr/bin/cc  -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/cmTC_1598e.dir/testCCompiler.c.o  -o cmTC_1598e 
+
+
+Detecting C compiler ABI info compiled with the following output:
+Change Dir: /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_e850d/fast"
+/Applications/Xcode-beta.app/Contents/Developer/usr/bin/make -f CMakeFiles/cmTC_e850d.dir/build.make CMakeFiles/cmTC_e850d.dir/build
+Building C object CMakeFiles/cmTC_e850d.dir/CMakeCCompilerABI.c.o
+/usr/bin/cc   -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk   -o CMakeFiles/cmTC_e850d.dir/CMakeCCompilerABI.c.o   -c /usr/local/Cellar/cmake/3.11.4/share/cmake/Modules/CMakeCCompilerABI.c
+Linking C executable cmTC_e850d
+/usr/local/Cellar/cmake/3.11.4/bin/cmake -E cmake_link_script CMakeFiles/cmTC_e850d.dir/link.txt --verbose=1
+/usr/bin/cc  -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names  -v -Wl,-v CMakeFiles/cmTC_e850d.dir/CMakeCCompilerABI.c.o  -o cmTC_e850d 
+Apple LLVM version 10.0.0 (clang-1000.10.38)
+Target: x86_64-apple-darwin18.0.0
+Thread model: posix
+InstalledDir: /Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
+ "/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld" -demangle -lto_library /Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libLTO.dylib -dynamic -arch x86_64 -macosx_version_min 10.14.0 -syslibroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk -o cmTC_e850d -search_paths_first -headerpad_max_install_names -v CMakeFiles/cmTC_e850d.dir/CMakeCCompilerABI.c.o -lSystem /Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.0/lib/darwin/libclang_rt.osx.a
+@(#)PROGRAM:ld  PROJECT:ld64-408.1
+BUILD 23:53:13 Jun 30 2018
+configured to support archs: armv6 armv7 armv7s arm64 i386 x86_64 x86_64h armv6m armv7k armv7m armv7em
+Library search paths:
+	/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/usr/lib
+Framework search paths:
+	/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/
+
+
+Parsed C implicit link information from above output:
+  link line regex: [^( *|.*[/\])(ld|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command:"/usr/bin/make" "cmTC_e850d/fast"]
+  ignore line: [/Applications/Xcode-beta.app/Contents/Developer/usr/bin/make -f CMakeFiles/cmTC_e850d.dir/build.make CMakeFiles/cmTC_e850d.dir/build]
+  ignore line: [Building C object CMakeFiles/cmTC_e850d.dir/CMakeCCompilerABI.c.o]
+  ignore line: [/usr/bin/cc   -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk   -o CMakeFiles/cmTC_e850d.dir/CMakeCCompilerABI.c.o   -c /usr/local/Cellar/cmake/3.11.4/share/cmake/Modules/CMakeCCompilerABI.c]
+  ignore line: [Linking C executable cmTC_e850d]
+  ignore line: [/usr/local/Cellar/cmake/3.11.4/bin/cmake -E cmake_link_script CMakeFiles/cmTC_e850d.dir/link.txt --verbose=1]
+  ignore line: [/usr/bin/cc  -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names  -v -Wl,-v CMakeFiles/cmTC_e850d.dir/CMakeCCompilerABI.c.o  -o cmTC_e850d ]
+  ignore line: [Apple LLVM version 10.0.0 (clang-1000.10.38)]
+  ignore line: [Target: x86_64-apple-darwin18.0.0]
+  ignore line: [Thread model: posix]
+  ignore line: [InstalledDir: /Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin]
+  link line: [ "/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld" -demangle -lto_library /Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libLTO.dylib -dynamic -arch x86_64 -macosx_version_min 10.14.0 -syslibroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk -o cmTC_e850d -search_paths_first -headerpad_max_install_names -v CMakeFiles/cmTC_e850d.dir/CMakeCCompilerABI.c.o -lSystem /Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.0/lib/darwin/libclang_rt.osx.a]
+    arg [/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld] ==> ignore
+    arg [-demangle] ==> ignore
+    arg [-lto_library] ==> ignore, skip following value
+    arg [/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libLTO.dylib] ==> skip value of -lto_library
+    arg [-dynamic] ==> ignore
+    arg [-arch] ==> ignore
+    arg [x86_64] ==> ignore
+    arg [-macosx_version_min] ==> ignore
+    arg [10.14.0] ==> ignore
+    arg [-syslibroot] ==> ignore
+    arg [/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk] ==> ignore
+    arg [-o] ==> ignore
+    arg [cmTC_e850d] ==> ignore
+    arg [-search_paths_first] ==> ignore
+    arg [-headerpad_max_install_names] ==> ignore
+    arg [-v] ==> ignore
+    arg [CMakeFiles/cmTC_e850d.dir/CMakeCCompilerABI.c.o] ==> ignore
+    arg [-lSystem] ==> lib [System]
+    arg [/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.0/lib/darwin/libclang_rt.osx.a] ==> lib [/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.0/lib/darwin/libclang_rt.osx.a]
+  Library search paths: [;/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/usr/lib]
+  Framework search paths: [;/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/]
+  remove lib [System]
+  remove lib [/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.0/lib/darwin/libclang_rt.osx.a]
+  collapse library dir [/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/usr/lib] ==> [/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/usr/lib]
+  collapse framework dir [/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/] ==> [/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks]
+  implicit libs: []
+  implicit dirs: [/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/usr/lib]
+  implicit fwks: [/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks]
+
+
+
+
+Detecting C [-std=c11] compiler features compiled with the following output:
+Change Dir: /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_3b06f/fast"
+/Applications/Xcode-beta.app/Contents/Developer/usr/bin/make -f CMakeFiles/cmTC_3b06f.dir/build.make CMakeFiles/cmTC_3b06f.dir/build
+Building C object CMakeFiles/cmTC_3b06f.dir/feature_tests.c.o
+/usr/bin/cc   -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk   -std=c11 -o CMakeFiles/cmTC_3b06f.dir/feature_tests.c.o   -c /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/feature_tests.c
+Linking C executable cmTC_3b06f
+/usr/local/Cellar/cmake/3.11.4/bin/cmake -E cmake_link_script CMakeFiles/cmTC_3b06f.dir/link.txt --verbose=1
+/usr/bin/cc  -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/cmTC_3b06f.dir/feature_tests.c.o  -o cmTC_3b06f 
+
+
+    Feature record: C_FEATURE:1c_function_prototypes
+    Feature record: C_FEATURE:1c_restrict
+    Feature record: C_FEATURE:1c_static_assert
+    Feature record: C_FEATURE:1c_variadic_macros
+
+
+Detecting C [-std=c99] compiler features compiled with the following output:
+Change Dir: /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_2444d/fast"
+/Applications/Xcode-beta.app/Contents/Developer/usr/bin/make -f CMakeFiles/cmTC_2444d.dir/build.make CMakeFiles/cmTC_2444d.dir/build
+Building C object CMakeFiles/cmTC_2444d.dir/feature_tests.c.o
+/usr/bin/cc   -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk   -std=c99 -o CMakeFiles/cmTC_2444d.dir/feature_tests.c.o   -c /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/feature_tests.c
+Linking C executable cmTC_2444d
+/usr/local/Cellar/cmake/3.11.4/bin/cmake -E cmake_link_script CMakeFiles/cmTC_2444d.dir/link.txt --verbose=1
+/usr/bin/cc  -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/cmTC_2444d.dir/feature_tests.c.o  -o cmTC_2444d 
+
+
+    Feature record: C_FEATURE:1c_function_prototypes
+    Feature record: C_FEATURE:1c_restrict
+    Feature record: C_FEATURE:0c_static_assert
+    Feature record: C_FEATURE:1c_variadic_macros
+
+
+Detecting C [-std=c90] compiler features compiled with the following output:
+Change Dir: /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_a9246/fast"
+/Applications/Xcode-beta.app/Contents/Developer/usr/bin/make -f CMakeFiles/cmTC_a9246.dir/build.make CMakeFiles/cmTC_a9246.dir/build
+Building C object CMakeFiles/cmTC_a9246.dir/feature_tests.c.o
+/usr/bin/cc   -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk   -std=c90 -o CMakeFiles/cmTC_a9246.dir/feature_tests.c.o   -c /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/feature_tests.c
+Linking C executable cmTC_a9246
+/usr/local/Cellar/cmake/3.11.4/bin/cmake -E cmake_link_script CMakeFiles/cmTC_a9246.dir/link.txt --verbose=1
+/usr/bin/cc  -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/cmTC_a9246.dir/feature_tests.c.o  -o cmTC_a9246 
+
+
+    Feature record: C_FEATURE:1c_function_prototypes
+    Feature record: C_FEATURE:0c_restrict
+    Feature record: C_FEATURE:0c_static_assert
+    Feature record: C_FEATURE:0c_variadic_macros
+Determining if files alloca.h exist passed with the following output:
+Change Dir: /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_4aef6/fast"
+/Applications/Xcode-beta.app/Contents/Developer/usr/bin/make -f CMakeFiles/cmTC_4aef6.dir/build.make CMakeFiles/cmTC_4aef6.dir/build
+Building C object CMakeFiles/cmTC_4aef6.dir/HAVE_ALLOCA_H.c.o
+/usr/bin/cc   -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk   -o CMakeFiles/cmTC_4aef6.dir/HAVE_ALLOCA_H.c.o   -c /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CheckIncludeFiles/HAVE_ALLOCA_H.c
+Linking C executable cmTC_4aef6
+/usr/local/Cellar/cmake/3.11.4/bin/cmake -E cmake_link_script CMakeFiles/cmTC_4aef6.dir/link.txt --verbose=1
+/usr/bin/cc  -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/cmTC_4aef6.dir/HAVE_ALLOCA_H.c.o  -o cmTC_4aef6 
+
+
+Determining if files stdarg.h exist passed with the following output:
+Change Dir: /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_90b8d/fast"
+/Applications/Xcode-beta.app/Contents/Developer/usr/bin/make -f CMakeFiles/cmTC_90b8d.dir/build.make CMakeFiles/cmTC_90b8d.dir/build
+Building C object CMakeFiles/cmTC_90b8d.dir/HAVE_STDARG_PROTOTYPES.c.o
+/usr/bin/cc   -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk   -o CMakeFiles/cmTC_90b8d.dir/HAVE_STDARG_PROTOTYPES.c.o   -c /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CheckIncludeFiles/HAVE_STDARG_PROTOTYPES.c
+Linking C executable cmTC_90b8d
+/usr/local/Cellar/cmake/3.11.4/bin/cmake -E cmake_link_script CMakeFiles/cmTC_90b8d.dir/link.txt --verbose=1
+/usr/bin/cc  -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/cmTC_90b8d.dir/HAVE_STDARG_PROTOTYPES.c.o  -o cmTC_90b8d 
+
+
+Determining if files stdint.h exist passed with the following output:
+Change Dir: /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_93ed9/fast"
+/Applications/Xcode-beta.app/Contents/Developer/usr/bin/make -f CMakeFiles/cmTC_93ed9.dir/build.make CMakeFiles/cmTC_93ed9.dir/build
+Building C object CMakeFiles/cmTC_93ed9.dir/HAVE_STDINT_H.c.o
+/usr/bin/cc   -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk   -o CMakeFiles/cmTC_93ed9.dir/HAVE_STDINT_H.c.o   -c /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CheckIncludeFiles/HAVE_STDINT_H.c
+Linking C executable cmTC_93ed9
+/usr/local/Cellar/cmake/3.11.4/bin/cmake -E cmake_link_script CMakeFiles/cmTC_93ed9.dir/link.txt --verbose=1
+/usr/bin/cc  -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/cmTC_93ed9.dir/HAVE_STDINT_H.c.o  -o cmTC_93ed9 
+
+
+Determining if files stdlib.h exist passed with the following output:
+Change Dir: /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_52410/fast"
+/Applications/Xcode-beta.app/Contents/Developer/usr/bin/make -f CMakeFiles/cmTC_52410.dir/build.make CMakeFiles/cmTC_52410.dir/build
+Building C object CMakeFiles/cmTC_52410.dir/HAVE_STDLIB_H.c.o
+/usr/bin/cc   -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk   -o CMakeFiles/cmTC_52410.dir/HAVE_STDLIB_H.c.o   -c /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CheckIncludeFiles/HAVE_STDLIB_H.c
+Linking C executable cmTC_52410
+/usr/local/Cellar/cmake/3.11.4/bin/cmake -E cmake_link_script CMakeFiles/cmTC_52410.dir/link.txt --verbose=1
+/usr/bin/cc  -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/cmTC_52410.dir/HAVE_STDLIB_H.c.o  -o cmTC_52410 
+
+
+Determining if files strings.h exist passed with the following output:
+Change Dir: /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_8255a/fast"
+/Applications/Xcode-beta.app/Contents/Developer/usr/bin/make -f CMakeFiles/cmTC_8255a.dir/build.make CMakeFiles/cmTC_8255a.dir/build
+Building C object CMakeFiles/cmTC_8255a.dir/HAVE_STRINGS_H.c.o
+/usr/bin/cc   -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk   -o CMakeFiles/cmTC_8255a.dir/HAVE_STRINGS_H.c.o   -c /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CheckIncludeFiles/HAVE_STRINGS_H.c
+Linking C executable cmTC_8255a
+/usr/local/Cellar/cmake/3.11.4/bin/cmake -E cmake_link_script CMakeFiles/cmTC_8255a.dir/link.txt --verbose=1
+/usr/bin/cc  -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/cmTC_8255a.dir/HAVE_STRINGS_H.c.o  -o cmTC_8255a 
+
+
+Determining if files string.h exist passed with the following output:
+Change Dir: /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_36cda/fast"
+/Applications/Xcode-beta.app/Contents/Developer/usr/bin/make -f CMakeFiles/cmTC_36cda.dir/build.make CMakeFiles/cmTC_36cda.dir/build
+Building C object CMakeFiles/cmTC_36cda.dir/HAVE_STRING_H.c.o
+/usr/bin/cc   -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk   -o CMakeFiles/cmTC_36cda.dir/HAVE_STRING_H.c.o   -c /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CheckIncludeFiles/HAVE_STRING_H.c
+Linking C executable cmTC_36cda
+/usr/local/Cellar/cmake/3.11.4/bin/cmake -E cmake_link_script CMakeFiles/cmTC_36cda.dir/link.txt --verbose=1
+/usr/bin/cc  -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/cmTC_36cda.dir/HAVE_STRING_H.c.o  -o cmTC_36cda 
+
+
+Determining if files limits.h exist passed with the following output:
+Change Dir: /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_b8702/fast"
+/Applications/Xcode-beta.app/Contents/Developer/usr/bin/make -f CMakeFiles/cmTC_b8702.dir/build.make CMakeFiles/cmTC_b8702.dir/build
+Building C object CMakeFiles/cmTC_b8702.dir/HAVE_LIMITS_H.c.o
+/usr/bin/cc   -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk   -o CMakeFiles/cmTC_b8702.dir/HAVE_LIMITS_H.c.o   -c /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CheckIncludeFiles/HAVE_LIMITS_H.c
+Linking C executable cmTC_b8702
+/usr/local/Cellar/cmake/3.11.4/bin/cmake -E cmake_link_script CMakeFiles/cmTC_b8702.dir/link.txt --verbose=1
+/usr/bin/cc  -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/cmTC_b8702.dir/HAVE_LIMITS_H.c.o  -o cmTC_b8702 
+
+
+Determining if files sys/times.h exist passed with the following output:
+Change Dir: /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_081ca/fast"
+/Applications/Xcode-beta.app/Contents/Developer/usr/bin/make -f CMakeFiles/cmTC_081ca.dir/build.make CMakeFiles/cmTC_081ca.dir/build
+Building C object CMakeFiles/cmTC_081ca.dir/HAVE_SYS_TIMES_H.c.o
+/usr/bin/cc   -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk   -o CMakeFiles/cmTC_081ca.dir/HAVE_SYS_TIMES_H.c.o   -c /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CheckIncludeFiles/HAVE_SYS_TIMES_H.c
+Linking C executable cmTC_081ca
+/usr/local/Cellar/cmake/3.11.4/bin/cmake -E cmake_link_script CMakeFiles/cmTC_081ca.dir/link.txt --verbose=1
+/usr/bin/cc  -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/cmTC_081ca.dir/HAVE_SYS_TIMES_H.c.o  -o cmTC_081ca 
+
+
+Determining if files sys/time.h exist passed with the following output:
+Change Dir: /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_2aaee/fast"
+/Applications/Xcode-beta.app/Contents/Developer/usr/bin/make -f CMakeFiles/cmTC_2aaee.dir/build.make CMakeFiles/cmTC_2aaee.dir/build
+Building C object CMakeFiles/cmTC_2aaee.dir/HAVE_SYS_TIME_H.c.o
+/usr/bin/cc   -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk   -o CMakeFiles/cmTC_2aaee.dir/HAVE_SYS_TIME_H.c.o   -c /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CheckIncludeFiles/HAVE_SYS_TIME_H.c
+Linking C executable cmTC_2aaee
+/usr/local/Cellar/cmake/3.11.4/bin/cmake -E cmake_link_script CMakeFiles/cmTC_2aaee.dir/link.txt --verbose=1
+/usr/bin/cc  -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/cmTC_2aaee.dir/HAVE_SYS_TIME_H.c.o  -o cmTC_2aaee 
+
+
+Determining if files sys/types.h exist passed with the following output:
+Change Dir: /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_9d25d/fast"
+/Applications/Xcode-beta.app/Contents/Developer/usr/bin/make -f CMakeFiles/cmTC_9d25d.dir/build.make CMakeFiles/cmTC_9d25d.dir/build
+Building C object CMakeFiles/cmTC_9d25d.dir/HAVE_SYS_TYPES_H.c.o
+/usr/bin/cc   -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk   -o CMakeFiles/cmTC_9d25d.dir/HAVE_SYS_TYPES_H.c.o   -c /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CheckIncludeFiles/HAVE_SYS_TYPES_H.c
+Linking C executable cmTC_9d25d
+/usr/local/Cellar/cmake/3.11.4/bin/cmake -E cmake_link_script CMakeFiles/cmTC_9d25d.dir/link.txt --verbose=1
+/usr/bin/cc  -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/cmTC_9d25d.dir/HAVE_SYS_TYPES_H.c.o  -o cmTC_9d25d 
+
+
+Determining if files unistd.h exist passed with the following output:
+Change Dir: /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_2329c/fast"
+/Applications/Xcode-beta.app/Contents/Developer/usr/bin/make -f CMakeFiles/cmTC_2329c.dir/build.make CMakeFiles/cmTC_2329c.dir/build
+Building C object CMakeFiles/cmTC_2329c.dir/HAVE_UNISTD_H.c.o
+/usr/bin/cc   -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk   -o CMakeFiles/cmTC_2329c.dir/HAVE_UNISTD_H.c.o   -c /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CheckIncludeFiles/HAVE_UNISTD_H.c
+Linking C executable cmTC_2329c
+/usr/local/Cellar/cmake/3.11.4/bin/cmake -E cmake_link_script CMakeFiles/cmTC_2329c.dir/link.txt --verbose=1
+/usr/bin/cc  -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/cmTC_2329c.dir/HAVE_UNISTD_H.c.o  -o cmTC_2329c 
+
+
+Determining if files inttypes.h exist passed with the following output:
+Change Dir: /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_91891/fast"
+/Applications/Xcode-beta.app/Contents/Developer/usr/bin/make -f CMakeFiles/cmTC_91891.dir/build.make CMakeFiles/cmTC_91891.dir/build
+Building C object CMakeFiles/cmTC_91891.dir/HAVE_INTTYPES_H.c.o
+/usr/bin/cc   -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk   -o CMakeFiles/cmTC_91891.dir/HAVE_INTTYPES_H.c.o   -c /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CheckIncludeFiles/HAVE_INTTYPES_H.c
+Linking C executable cmTC_91891
+/usr/local/Cellar/cmake/3.11.4/bin/cmake -E cmake_link_script CMakeFiles/cmTC_91891.dir/link.txt --verbose=1
+/usr/bin/cc  -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/cmTC_91891.dir/HAVE_INTTYPES_H.c.o  -o cmTC_91891 
+
+
+Determining if the include file stddef.h exists passed with the following output:
+Change Dir: /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_b838e/fast"
+/Applications/Xcode-beta.app/Contents/Developer/usr/bin/make -f CMakeFiles/cmTC_b838e.dir/build.make CMakeFiles/cmTC_b838e.dir/build
+Building C object CMakeFiles/cmTC_b838e.dir/CheckIncludeFile.c.o
+/usr/bin/cc   -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk   -o CMakeFiles/cmTC_b838e.dir/CheckIncludeFile.c.o   -c /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CMakeTmp/CheckIncludeFile.c
+Linking C executable cmTC_b838e
+/usr/local/Cellar/cmake/3.11.4/bin/cmake -E cmake_link_script CMakeFiles/cmTC_b838e.dir/link.txt --verbose=1
+/usr/bin/cc  -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/cmTC_b838e.dir/CheckIncludeFile.c.o  -o cmTC_b838e 
+
+
+Determining size of int passed with the following output:
+Change Dir: /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_e574f/fast"
+/Applications/Xcode-beta.app/Contents/Developer/usr/bin/make -f CMakeFiles/cmTC_e574f.dir/build.make CMakeFiles/cmTC_e574f.dir/build
+Building C object CMakeFiles/cmTC_e574f.dir/SIZEOF_INT.c.o
+/usr/bin/cc   -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk   -o CMakeFiles/cmTC_e574f.dir/SIZEOF_INT.c.o   -c /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CheckTypeSize/SIZEOF_INT.c
+Linking C executable cmTC_e574f
+/usr/local/Cellar/cmake/3.11.4/bin/cmake -E cmake_link_script CMakeFiles/cmTC_e574f.dir/link.txt --verbose=1
+/usr/bin/cc  -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/cmTC_e574f.dir/SIZEOF_INT.c.o  -o cmTC_e574f 
+
+
+Determining size of long passed with the following output:
+Change Dir: /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_da345/fast"
+/Applications/Xcode-beta.app/Contents/Developer/usr/bin/make -f CMakeFiles/cmTC_da345.dir/build.make CMakeFiles/cmTC_da345.dir/build
+Building C object CMakeFiles/cmTC_da345.dir/SIZEOF_LONG.c.o
+/usr/bin/cc   -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk   -o CMakeFiles/cmTC_da345.dir/SIZEOF_LONG.c.o   -c /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CheckTypeSize/SIZEOF_LONG.c
+Linking C executable cmTC_da345
+/usr/local/Cellar/cmake/3.11.4/bin/cmake -E cmake_link_script CMakeFiles/cmTC_da345.dir/link.txt --verbose=1
+/usr/bin/cc  -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/cmTC_da345.dir/SIZEOF_LONG.c.o  -o cmTC_da345 
+
+
+Determining size of short passed with the following output:
+Change Dir: /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_3cb6c/fast"
+/Applications/Xcode-beta.app/Contents/Developer/usr/bin/make -f CMakeFiles/cmTC_3cb6c.dir/build.make CMakeFiles/cmTC_3cb6c.dir/build
+Building C object CMakeFiles/cmTC_3cb6c.dir/SIZEOF_SHORT.c.o
+/usr/bin/cc   -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk   -o CMakeFiles/cmTC_3cb6c.dir/SIZEOF_SHORT.c.o   -c /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CheckTypeSize/SIZEOF_SHORT.c
+Linking C executable cmTC_3cb6c
+/usr/local/Cellar/cmake/3.11.4/bin/cmake -E cmake_link_script CMakeFiles/cmTC_3cb6c.dir/link.txt --verbose=1
+/usr/bin/cc  -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/cmTC_3cb6c.dir/SIZEOF_SHORT.c.o  -o cmTC_3cb6c 
+
+
+Determining if files stdlib.h;stdarg.h;string.h;float.h exist passed with the following output:
+Change Dir: /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_ed8fa/fast"
+/Applications/Xcode-beta.app/Contents/Developer/usr/bin/make -f CMakeFiles/cmTC_ed8fa.dir/build.make CMakeFiles/cmTC_ed8fa.dir/build
+Building C object CMakeFiles/cmTC_ed8fa.dir/STDC_HEADERS.c.o
+/usr/bin/cc   -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk   -o CMakeFiles/cmTC_ed8fa.dir/STDC_HEADERS.c.o   -c /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CheckIncludeFiles/STDC_HEADERS.c
+Linking C executable cmTC_ed8fa
+/usr/local/Cellar/cmake/3.11.4/bin/cmake -E cmake_link_script CMakeFiles/cmTC_ed8fa.dir/link.txt --verbose=1
+/usr/bin/cc  -ffunction-sections -fdata-sections -fPIC -m64  -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/cmTC_ed8fa.dir/STDC_HEADERS.c.o  -o cmTC_ed8fa 
+
+

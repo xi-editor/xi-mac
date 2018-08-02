@@ -64,12 +64,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         return controller
     }()
 
-    lazy var autocompleteViewController: AutocompleteViewController! = {
-        let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
-        let controller = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Autocomplete View Controller")) as! AutocompleteViewController
-        return controller
-    }()
-
     var document: Document!
 
     var lines = LineCache<LineAssoc>()
@@ -172,6 +166,19 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     let statusBar = StatusBar(frame: .zero)
 
+    var autocompleteWindowController: AutocompleteWindowController?
+
+    lazy var autocompleteViewController: AutocompleteViewController! = {
+        let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
+        let controller = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Autocomplete View Controller")) as! AutocompleteViewController
+        return controller
+    }()
+
+    lazy var autocompleteWindow: AutocompleteWindow = {
+        let window = AutocompleteWindow(contentViewController: autocompleteViewController)
+        window.styleMask = [.borderless, .fullSizeContentView]
+        return window
+    }()
 
     // Popover that manages hover views.
     lazy var infoPopover: NSPopover = {
@@ -201,6 +208,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     override func viewDidAppear() {
         super.viewDidAppear()
         setupStatusBar()
+        setupAutocompleteWindow()
         shadowView.setup()
         NotificationCenter.default.addObserver(self, selector: #selector(EditViewController.frameDidChangeNotification(_:)), name: NSView.frameDidChangeNotification, object: scrollView)
         // call to set initial scroll position once we know view size
@@ -217,6 +225,12 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             statusBar.trailingAnchor.constraint(equalTo: editView.trailingAnchor),
             statusBar.bottomAnchor.constraint(equalTo: editView.bottomAnchor)
             ])
+    }
+
+    func setupAutocompleteWindow() {
+        let autocompleteWindowController = AutocompleteWindowController(window: autocompleteWindow)
+        autocompleteWindowController.editViewController = self
+        self.autocompleteWindowController = autocompleteWindowController
     }
 
     func updateGutterWidth() {
@@ -530,12 +544,14 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         }
         else if gestureType == "autocomplete" {
             // Cursor pos is Line/Column
+
             if let cursorPos = editView.cursorPos {
-                let cursorX = gutterWidth + editView.colIxToPoint(cursorPos.1) + editView.scrollOrigin.x
-                let cursorY = editView.frame.height - autocompleteViewController.autocompleteTableView.frame.height - editView.lineIxToBaseline(cursorPos.0) + editView.scrollOrigin.y
-                let positioningPoint = NSPoint(x: cursorX, y: cursorY)
-                autocompleteViewController.autocompleteTableView.setFrameOrigin(positioningPoint)
-                self.view.addSubview(autocompleteViewController.autocompleteTableView)
+                autocompleteWindowController?.showCompletions(forPosition: cursorPos)
+//                let cursorX = gutterWidth + editView.colIxToPoint(cursorPos.1) + editView.scrollOrigin.x
+//                let cursorY = editView.frame.height - autocompleteViewController.autocompleteTableView.frame.height - editView.lineIxToBaseline(cursorPos.0) + editView.scrollOrigin.y
+//                let positioningPoint = NSPoint(x: cursorX, y: cursorY)
+//                autocompleteViewController.autocompleteTableView.setFrameOrigin(positioningPoint)
+//                self.view.addSubview(autocompleteViewController.autocompleteTableView)
             }
         } else {
             document.sendRpcAsync("gesture", params: [

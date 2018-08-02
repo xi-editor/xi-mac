@@ -1,0 +1,30 @@
+Determining if the function alloca exists failed with the following output:
+Change Dir: /Users/nangtrongvuon/Documents/Projects/xi-mac/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_f187e/fast"
+/Applications/Xcode-beta.app/Contents/Developer/usr/bin/make -f CMakeFiles/cmTC_f187e.dir/build.make CMakeFiles/cmTC_f187e.dir/build
+Building C object CMakeFiles/cmTC_f187e.dir/CheckFunctionExists.c.o
+/usr/bin/cc   -ffunction-sections -fdata-sections -fPIC -m64 -DCHECK_FUNCTION_EXISTS=alloca -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk   -o CMakeFiles/cmTC_f187e.dir/CheckFunctionExists.c.o   -c /usr/local/Cellar/cmake/3.11.4/share/cmake/Modules/CheckFunctionExists.c
+/usr/local/Cellar/cmake/3.11.4/share/cmake/Modules/CheckFunctionExists.c:7:3: warning: incompatible redeclaration of library function 'alloca' [-Wincompatible-library-redeclaration]
+  CHECK_FUNCTION_EXISTS(void);
+  ^
+<command line>:1:31: note: expanded from here
+#define CHECK_FUNCTION_EXISTS alloca
+                              ^
+/usr/local/Cellar/cmake/3.11.4/share/cmake/Modules/CheckFunctionExists.c:7:3: note: 'alloca' is a builtin with type 'void *(unsigned long)'
+<command line>:1:31: note: expanded from here
+#define CHECK_FUNCTION_EXISTS alloca
+                              ^
+1 warning generated.
+Linking C executable cmTC_f187e
+/usr/local/Cellar/cmake/3.11.4/bin/cmake -E cmake_link_script CMakeFiles/cmTC_f187e.dir/link.txt --verbose=1
+/usr/bin/cc  -ffunction-sections -fdata-sections -fPIC -m64 -DCHECK_FUNCTION_EXISTS=alloca -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/cmTC_f187e.dir/CheckFunctionExists.c.o  -o cmTC_f187e 
+Undefined symbols for architecture x86_64:
+  "_alloca", referenced from:
+      _main in CheckFunctionExists.c.o
+ld: symbol(s) not found for architecture x86_64
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+make[1]: *** [cmTC_f187e] Error 1
+make: *** [cmTC_f187e/fast] Error 2
+
+
