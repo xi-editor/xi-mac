@@ -545,16 +545,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             sendHover()
         }
         else if gestureType == "autocomplete" {
-            // Cursor pos is Line/Column
-
-            if let cursorPos = editView.cursorPos {
-                autocompleteWindowController?.showCompletions(forPosition: cursorPos)
-//                let cursorX = gutterWidth + editView.colIxToPoint(cursorPos.1) + editView.scrollOrigin.x
-//                let cursorY = editView.frame.height - autocompleteViewController.autocompleteTableView.frame.height - editView.lineIxToBaseline(cursorPos.0) + editView.scrollOrigin.y
-//                let positioningPoint = NSPoint(x: cursorX, y: cursorY)
-//                autocompleteViewController.autocompleteTableView.setFrameOrigin(positioningPoint)
-//                self.view.addSubview(autocompleteViewController.autocompleteTableView)
-            }
+            // TODO: Send debug completion RPC here
 
         } else {
             document.sendRpcAsync("gesture", params: [
