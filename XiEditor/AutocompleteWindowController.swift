@@ -8,11 +8,6 @@
 
 import Cocoa
 
-class AutocompleteWindow: NSWindow {
-    override var canBecomeKey: Bool { return true }
-    override var canBecomeMain: Bool { return false }
-}
-
 class AutocompleteWindowController: NSWindowController {
 
     var editViewController: EditViewController!

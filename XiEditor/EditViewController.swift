@@ -174,12 +174,13 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         return controller
     }()
 
-    lazy var autocompleteWindow: AutocompleteWindow = {
-        let window = AutocompleteWindow(contentViewController: autocompleteViewController)
-        window.styleMask = [.nonactivatingPanel]
-        window.isOpaque = false
-        window.backgroundColor = .clear
-        return window
+    lazy var autocompletePanel: NSPanel = {
+        let panel = NSPanel(contentViewController: autocompleteViewController)
+        panel.styleMask = [.nonactivatingPanel]
+        panel.isOpaque = false
+        panel.level = .floating
+        panel.backgroundColor = .clear
+        return panel
     }()
 
     // Popover that manages hover views.
@@ -230,7 +231,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     func setupAutocompleteWindow() {
-        let autocompleteWindowController = AutocompleteWindowController(window: autocompleteWindow)
+        let autocompleteWindowController = AutocompleteWindowController(window: autocompletePanel)
         autocompleteWindowController.editViewController = self
         self.autocompleteWindowController = autocompleteWindowController
     }
