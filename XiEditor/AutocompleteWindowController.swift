@@ -15,7 +15,7 @@ class AutocompleteWindowController: NSWindowController {
         return editViewController.autocompleteViewController
     }
 
-    func showCompletions(forPosition cursorPos: BufferPosition) {
+    func showCompletionWindow(forPosition cursorPos: BufferPosition) {
         guard let editVC = editViewController else { return }
         guard let editView = editVC.editView else { return }
         guard let mainWindow = editView.window else { return }
@@ -32,6 +32,7 @@ class AutocompleteWindowController: NSWindowController {
 
         self.window?.setFrameTopLeftPoint(screenRect.origin)
         editVC.view.window?.addChildWindow(self.window!, ordered: .above)
+        self.window?.makeKey()
     }
 
     func hideCompletionWindow() {

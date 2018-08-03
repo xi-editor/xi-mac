@@ -80,18 +80,24 @@ extension AutocompleteViewController: NSTableViewDelegate, NSTableViewDataSource
 extension EditViewController {
     func displayCompletions(forItems items: [[String : AnyObject]]) {
 
-        for item in items {
-            let label = item["label"] as! String
-            let detail = item["detail"] as? String
-            let documentation = item["documentation"] as? String
-
-            let completionItem = CompletionItem(label: label, detail: detail, documentation: documentation)
-            autocompleteViewController.completionSuggestions.append(completionItem)
-            autocompleteViewController.autocompleteTableView.reloadData()
-        }
+//        for item in items {
+//            let label = item["label"] as! String
+//            let detail = item["detail"] as? String
+//            let documentation = item["documentation"] as? String
+//
+//            let completionItem = CompletionItem(label: label, detail: detail, documentation: documentation)
+//            autocompleteViewController.completionSuggestions.append(completionItem)
+//            autocompleteViewController.autocompleteTableView.reloadData()
+//        }
+        let completionItem = CompletionItem(label: "Hello", detail: "hi", documentation: nil)
+        autocompleteViewController.completionSuggestions.append(completionItem)
+        autocompleteViewController.completionSuggestions.append(completionItem)
+        autocompleteViewController.completionSuggestions.append(completionItem)
+        autocompleteViewController.completionSuggestions.append(completionItem)
+        autocompleteViewController.autocompleteTableView.reloadData()
 
         if let cursorPos = editView.cursorPos {
-            autocompleteWindowController?.showCompletions(forPosition: cursorPos)
+            autocompleteWindowController?.showCompletionWindow(forPosition: cursorPos)
         }
     }
 

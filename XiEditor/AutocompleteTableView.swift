@@ -9,7 +9,8 @@
 import Cocoa
 
 class AutocompleteTableView: NSTableView {
-
+    override var needsPanelToBecomeKey: Bool { return true }
+    override var acceptsFirstResponder: Bool { return true }
 }
 
 class AutocompleteTableCellView: NSTableCellView {

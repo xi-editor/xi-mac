@@ -179,6 +179,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         panel.styleMask = [.nonactivatingPanel]
         panel.isOpaque = false
         panel.level = .floating
+        panel.hidesOnDeactivate = true
+        panel.becomesKeyOnlyIfNeeded = true
         panel.backgroundColor = .clear
         return panel
     }()
@@ -211,7 +213,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     override func viewDidAppear() {
         super.viewDidAppear()
         setupStatusBar()
-        setupAutocompleteWindow()
+        setupAutocompletePanel()
         shadowView.setup()
         NotificationCenter.default.addObserver(self, selector: #selector(EditViewController.frameDidChangeNotification(_:)), name: NSView.frameDidChangeNotification, object: scrollView)
         // call to set initial scroll position once we know view size
@@ -230,7 +232,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             ])
     }
 
-    func setupAutocompleteWindow() {
+    func setupAutocompletePanel() {
         let autocompleteWindowController = AutocompleteWindowController(window: autocompletePanel)
         autocompleteWindowController.editViewController = self
         self.autocompleteWindowController = autocompleteWindowController
@@ -546,8 +548,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             sendHover()
         }
         else if gestureType == "autocomplete" {
-            document.sendRpcAsync("debug_show_completions", params: [])
-
+//            document.sendRpcAsync("debug_show_completions", params: [])
+            let items = [[String: AnyObject]]()
+            displayCompletions(forItems: items)
         } else {
             document.sendRpcAsync("gesture", params: [
                 "line": position.line,
