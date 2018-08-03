@@ -17,9 +17,22 @@ class AutocompleteViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        roundCompletionViewCorners()
+
+        autocompleteTableView.wantsLayer = true
         autocompleteTableView.focusRingType = .none
         autocompleteTableView.dataSource = self
         autocompleteTableView.delegate = self
+    }
+
+    func roundCompletionViewCorners() {
+        let scrollView = autocompleteTableView.enclosingScrollView!
+
+        scrollView.wantsLayer = true
+        scrollView.layer?.cornerRadius = 7
+
+        scrollView.contentView.wantsLayer = true
+        scrollView.contentView.layer?.cornerRadius = 7
     }
 
     // Force table view to load all of its views on awake from nib.
@@ -74,14 +87,11 @@ extension EditViewController {
 
             let completionItem = CompletionItem(label: label, detail: detail, documentation: documentation)
             autocompleteViewController.completionSuggestions.append(completionItem)
+            autocompleteViewController.autocompleteTableView.reloadData()
         }
 
         if let cursorPos = editView.cursorPos {
-            let cursorX = gutterWidth + editView.colIxToPoint(cursorPos.1) + editView.scrollOrigin.x
-            let cursorY = editView.frame.height - autocompleteViewController.autocompleteTableView.frame.height - editView.lineIxToBaseline(cursorPos.0) + editView.scrollOrigin.y
-            let positioningPoint = NSPoint(x: cursorX, y: cursorY)
-            autocompleteViewController.autocompleteTableView.setFrameOrigin(positioningPoint)
-            self.view.addSubview(autocompleteViewController.autocompleteTableView)
+            autocompleteWindowController?.showCompletions(forPosition: cursorPos)
         }
     }
 
