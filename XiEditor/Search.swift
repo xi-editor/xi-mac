@@ -77,7 +77,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
         addSearchField(nil, disableRemove: false)
     }
 
-    public func addSearchField(_ id: String?, disableRemove: Bool) {
+    public func addSearchField(_ id: Int?, disableRemove: Bool) {
         if searchQueries.count < MAX_SEARCH_QUERIES {
             let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
             let newSearchFieldController = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Suplementary Find View Controller")) as! SuplementaryFindViewController
@@ -174,7 +174,7 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
     var wrapAround = true
     var regex = false
     var wholeWords = false
-    var id: String? = nil
+    var id: Int? = nil
     var disableRemove = false
 
     var parentFindView: FindViewController? = nil
@@ -329,15 +329,15 @@ extension EditViewController {
     
     func findStatus(status: [[String: AnyObject]]) {
         for statusQuery in status {
-            var query = findViewController.searchQueries.first(where: { $0.id == statusQuery["id"] as? String })
+            var query = findViewController.searchQueries.first(where: { $0.id == statusQuery["id"] as? Int })
 
             if query == nil {
                 if let newQuery = findViewController.searchQueries.first(where: { $0.id == nil }) {
-                    newQuery.id = statusQuery["id"] as? String
+                    newQuery.id = statusQuery["id"] as? Int
                     query = newQuery
                 } else {
-                    findViewController.addSearchField(statusQuery["id"] as? String, disableRemove: false)
-                    query = findViewController.searchQueries.first(where: { $0.id == statusQuery["id"] as? String })
+                    findViewController.addSearchField(statusQuery["id"] as? Int, disableRemove: false)
+                    query = findViewController.searchQueries.first(where: { $0.id == statusQuery["id"] as? Int })
                 }
             }
 

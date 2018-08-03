@@ -32,7 +32,7 @@ struct LineAssoc {
 
 /// Represents one search query
 struct FindQuery {
-    var id: String?
+    var id: Int?
     var term: String?
     var caseSensitive: Bool
     var regex: Bool
