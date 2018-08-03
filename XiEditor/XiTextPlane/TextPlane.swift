@@ -111,6 +111,7 @@ class TextPlaneLayer : NSOpenGLLayer, FpsObserver {
 
     override func copyCGLPixelFormat(forDisplayMask mask: UInt32) -> CGLPixelFormatObj {
         let attr = [
+            NSOpenGLPixelFormatAttribute(NSOpenGLPFAAllowOfflineRenderers),
             NSOpenGLPixelFormatAttribute(NSOpenGLPFAOpenGLProfile),
             NSOpenGLPixelFormatAttribute(NSOpenGLProfileVersion3_2Core),
             NSOpenGLPixelFormatAttribute(NSOpenGLPFAColorSize), 24,
