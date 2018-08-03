@@ -23,12 +23,19 @@ class AutocompleteWindowController: NSWindowController {
     func showCompletions(forPosition cursorPos: BufferPosition) {
         guard let editVC = editViewController else { return }
         guard let editView = editVC.editView else { return }
+        guard let mainWindow = editView.window else { return }
 
-        let cursorX = editVC.gutterWidth + editView.colIxToPoint(cursorPos.1) + editView.scrollOrigin.x
-        let cursorY = editView.frame.height - autocompleteViewController.autocompleteTableView.frame.height - editView.lineIxToBaseline(cursorPos.0) + editView.scrollOrigin.y
+        let cursorX = editVC.gutterWidth + editView.colIxToPoint(cursorPos.1)
+        let cursorY = editView.lineIxToBaseline(cursorPos.0)
         let positioningPoint = NSPoint(x: cursorX, y: cursorY)
+        let positioningRect = NSRect(origin: positioningPoint, size: CGSize(width: 1, height: 1))
 
-        self.window?.setFrameOrigin(positioningPoint)
+        // Convert our calculated position to the main window's coordinates,
+        // thus positioning the completion window relative to the main window itself.
+        var screenRect = editView.convert(positioningRect, to: nil)
+        screenRect = mainWindow.convertToScreen(screenRect)
+
+        self.window?.setFrameTopLeftPoint(screenRect.origin)
         editVC.view.window?.addChildWindow(self.window!, ordered: .above)
     }
 

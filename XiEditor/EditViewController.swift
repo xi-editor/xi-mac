@@ -176,7 +176,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     lazy var autocompleteWindow: AutocompleteWindow = {
         let window = AutocompleteWindow(contentViewController: autocompleteViewController)
-        window.styleMask = [.borderless, .fullSizeContentView]
+        window.styleMask = [.nonactivatingPanel]
         return window
     }()
 
