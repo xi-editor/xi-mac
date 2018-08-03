@@ -546,7 +546,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             sendHover()
         }
         else if gestureType == "autocomplete" {
-            // TODO: Send debug completion RPC here
+            document.sendRpcAsync("debug_show_completions", params: [])
 
         } else {
             document.sendRpcAsync("gesture", params: [
