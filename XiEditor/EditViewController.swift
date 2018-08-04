@@ -119,10 +119,10 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     func maxWidthChanged(toWidth width: Double) {
         let width = CGFloat(width) + gutterWidth + editView.x0 + rightTextPadding
         // to prevent scroll jump, we don't dynamically decrease view width
+        editViewWidth.constant = width
         if width > editViewWidth.constant {
-            editViewWidth.constant = width
             shadowView.showRightShadow = true
-        }
+        } 
     }
 
     // visible scroll region
@@ -132,6 +132,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         didSet {
             if scrollPastEnd != oldValue {
                 updateEditViewHeight()
+                updateEditViewWidth()
             }
         }
     }
@@ -265,6 +266,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         editViewWidth.constant = self.view.bounds.width
         updateGutterWidth()
         updateEditViewHeight()
+        updateEditViewWidth()
         lines.locked().flushAssoc()
         willScroll(to: scrollView.contentView.bounds.origin)
         updateViewportSize()
@@ -282,6 +284,15 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
                 - textMetrics.linespace - 2 * textMetrics.descent;
         }
     }
+    
+    fileprivate func updateEditViewWidth() {
+        let maxLineWidth = CGFloat(lines.maxLineWidth)
+        self.editViewWidth.constant = max(maxLineWidth, scrollView.bounds.width)
+        if scrollPastEnd {
+            self.editViewWidth.constant += min(maxLineWidth, scrollView.bounds.width)
+                - gutterWidth - editView.x0 - rightTextPadding
+        }
+    }
 
     // MARK: - Core Commands
 
@@ -295,6 +306,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         DispatchQueue.main.async { [weak self] in
             self?.document.updateChangeCount(hasNoUnsavedChanges ? .changeCleared : .changeDone)
             self?.lineCount = self?.lines.height ?? 0
+            self?.updateEditViewWidth()
             self?.updateEditViewHeight()
             self?.editView.resetCursorTimer()
             if let lastRev = self?.editView.lastRevisionRendered, lastRev < revision {
