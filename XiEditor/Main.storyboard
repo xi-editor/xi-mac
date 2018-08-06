@@ -411,6 +411,12 @@ Gw
                                                 <action selector="openPreferences:" target="7er-QZ-amI" id="dzf-4q-1J8"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem title="Install Command Line Shortcut" id="Rhk-UC-PWm">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="installShortcut:" target="azf-ih-6fI" id="s8S-bc-cEL"/>
+                                            </connections>
+                                        </menuItem>
                                         <menuItem isSeparatorItem="YES" id="gsd-kb-HGJ"/>
                                         <menuItem title="Services" id="LDz-hM-BVt">
                                             <modifierMask key="keyEquivalentModifierMask"/>
