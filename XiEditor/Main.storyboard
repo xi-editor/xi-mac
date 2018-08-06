@@ -183,7 +183,7 @@ Gw
         <scene sceneID="CRJ-r2-SVm">
             <objects>
                 <viewController storyboardIdentifier="Find View Controller" id="lKE-xV-0EG" customClass="FindViewController" customModule="XiEditor" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" id="NrM-ac-2ZW" wantsLayer="YES">
+                    <view key="view" wantsLayer="YES" id="NrM-ac-2ZW">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="56"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                         <subviews>
@@ -409,6 +409,12 @@ Gw
                                         <menuItem title="Preferences…" keyEquivalent="," id="EAv-yV-wz8">
                                             <connections>
                                                 <action selector="openPreferences:" target="7er-QZ-amI" id="dzf-4q-1J8"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Install Command Line Shortcut" id="Rhk-UC-PWm">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="installShortcut:" target="azf-ih-6fI" id="s8S-bc-cEL"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="gsd-kb-HGJ"/>
