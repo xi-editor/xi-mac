@@ -21,6 +21,7 @@
 		6BA1873B1FDDD7B6008220DA /* XiClipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA1873A1FDDD7B6008220DA /* XiClipView.swift */; };
 		6BF9575B1FD70C420010BAE6 /* Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF9575A1FD70C420010BAE6 /* Client.swift */; };
 		832910D920229C2D0042C32B /* Fps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 832910D820229C2D0042C32B /* Fps.swift */; };
+		AB9A25602118C42D0023DE75 /* shortcut in Resources */ = {isa = PBXBuildFile; fileRef = AB9A255F2118C42D0023DE75 /* shortcut */; };
 		AE0243F61E4BDF8A00641BDA /* StyleMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE0243F51E4BDF8A00641BDA /* StyleMap.swift */; };
 		AE041BA61D4327EB0069AB8B /* plugins in Resources */ = {isa = PBXBuildFile; fileRef = AE041BA51D4327EB0069AB8B /* plugins */; };
 		AE168C5C1E4AD87B008249AE /* LineCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE168C5B1E4AD87B008249AE /* LineCache.swift */; };
@@ -88,6 +89,7 @@
 		6BA1873A1FDDD7B6008220DA /* XiClipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiClipView.swift; sourceTree = "<group>"; };
 		6BF9575A1FD70C420010BAE6 /* Client.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Client.swift; sourceTree = "<group>"; };
 		832910D820229C2D0042C32B /* Fps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fps.swift; sourceTree = "<group>"; };
+		AB9A255F2118C42D0023DE75 /* shortcut */ = {isa = PBXFileReference; lastKnownFileType = folder; path = shortcut; sourceTree = "<group>"; };
 		AE0243F51E4BDF8A00641BDA /* StyleMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StyleMap.swift; sourceTree = "<group>"; };
 		AE041B971D4323460069AB8B /* build-rust-xcode.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-rust-xcode.sh"; sourceTree = "<group>"; };
 		AE041BA51D4327EB0069AB8B /* plugins */ = {isa = PBXFileReference; lastKnownFileType = text; path = plugins; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -157,6 +159,7 @@
 				AE499DDE1C82BB2B002D68AF /* XiEditorTests */,
 				AE499DE91C82BB2B002D68AF /* XiEditorUITests */,
 				AE499DCD1C82BB2B002D68AF /* Products */,
+				AB9A255F2118C42D0023DE75 /* shortcut */,
 			);
 			sourceTree = "<group>";
 		};
@@ -385,6 +388,7 @@
 				6B1D39101FC53F5C008CCA35 /* client_example.toml in Resources */,
 				AED22D811FE84B4B0096E7C3 /* solid.f.glsl in Resources */,
 				AED22D831FE84B4B0096E7C3 /* text.v.glsl in Resources */,
+				AB9A25602118C42D0023DE75 /* shortcut in Resources */,
 				AED22D821FE84B4B0096E7C3 /* solid.v.glsl in Resources */,
 				AE041BA61D4327EB0069AB8B /* plugins in Resources */,
 				AE499DD21C82BB2B002D68AF /* Assets.xcassets in Resources */,

@@ -215,6 +215,28 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         dispatcher.coreConnection.sendRpcAsync(req.method, params: req.params!)
         Trace.shared.trace("appWillLaunch", .main, .end)
         documentController = XiDocumentController()
+
+        // Install the `xi` command-line shortcut if it's not already there.
+        installShortcut()
+    }
+
+    func installShortcut() {
+        let destPath = "/usr/local/bin/xi"
+        if FileManager.default.fileExists(atPath: destPath) {
+            return
+        }
+
+        do {
+            let srcPath = Bundle.main.bundlePath + "/Contents/Resources/shortcut/xi"
+            try FileManager.default.copyItem(atPath: srcPath, toPath: destPath)
+
+            // 0o755 allows read and execute for everyone, write for the owner (-rwxr-xr-x)
+            let attrs = [FileAttributeKey.posixPermissions: 0o755]
+            try FileManager.default.setAttributes(attrs, ofItemAtPath: destPath)
+        } catch let err {
+            print("Unable to install command line shortcut. \(err)")
+        }
+
     }
 
     // Clean up temporary Xi stderr log
