@@ -138,7 +138,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
         if NSEvent.modifierFlags.contains(.shift) {
             findDelegate.findPrevious(wrapAround: wrapAround)
         } else {
-            findDelegate.findNext(wrapAround: wrapAround, allowSame: true)
+            findDelegate.findNext(wrapAround: wrapAround, allowSame: false)
         }
     }
 
