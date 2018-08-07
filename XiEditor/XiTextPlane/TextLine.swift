@@ -186,7 +186,7 @@ struct TextLine {
     func scatterGather<C: Collection>(indices glyphIndices: C, font: CTFont)
             -> TextLine where C.Element == Int {
         var newGlyphs = Array<GlyphInstance>()
-        newGlyphs.reserveCapacity(glyphIndices.count)
+        newGlyphs.reserveCapacity(Int(glyphIndices.count))
 
         var glyphPosition = 0
         var newWidth = 0.0
