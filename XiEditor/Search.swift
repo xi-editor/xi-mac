@@ -172,14 +172,28 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
 
 extension EditViewController {
     func openFind(replaceHidden: Bool) {
-        if findViewController.view.isHidden {
-            findViewController.view.isHidden = false
-            document.sendRpcAsync("highlight_find", params: ["visible": true])
+        var offset: CGFloat
+        var origin: CGPoint
+        let replaceHiddenChanged = findViewController.replacePanel.isHidden != replaceHidden
+
+        if !findViewController.view.isHidden && replaceHiddenChanged {
+            offset = findViewController.view.fittingSize.height
+            origin = scrollView.contentView.visibleRect.origin
+            scrollView.contentView.scroll(to: NSMakePoint(origin.x ,origin.y + offset))
         }
 
         findViewController.replacePanel.isHidden = replaceHidden
-        let offset = findViewController.view.fittingSize.height
+        offset = findViewController.view.fittingSize.height
+
+        if findViewController.view.isHidden || replaceHiddenChanged {
+            findViewController.view.isHidden = false
+            origin = scrollView.contentView.visibleRect.origin
+            scrollView.contentView.scroll(to: NSMakePoint(origin.x ,origin.y - offset))
+            document.sendRpcAsync("highlight_find", params: ["visible": true])
+        }
+
         scrollView.contentInsets = NSEdgeInsetsMake(offset, 0, 0, 0)
+
         editView.window?.makeFirstResponder(findViewController.searchField)
     }
 
@@ -188,6 +202,10 @@ extension EditViewController {
             findViewController.view.isHidden = true
             (findViewController.searchField as? FindSearchField)?.resultCount = nil
             scrollView.contentInsets = NSEdgeInsetsZero
+            
+            let offset = findViewController.view.fittingSize.height
+            let origin = scrollView.contentView.visibleRect.origin
+            scrollView.contentView.scroll(to: NSMakePoint(origin.x ,origin.y + offset))
         }
 
         editView.window?.makeFirstResponder(editView)
