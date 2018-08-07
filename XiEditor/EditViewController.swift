@@ -548,9 +548,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             sendHover()
         }
         else if gestureType == "autocomplete" {
-//            document.sendRpcAsync("debug_show_completions", params: [])
-            let items = [[String: AnyObject]]()
-            displayCompletions(forItems: items)
+            document.sendRpcAsync("debug_show_completions", params: [])
         } else {
             document.sendRpcAsync("gesture", params: [
                 "line": position.line,
