@@ -199,6 +199,11 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         NotificationCenter.default.addObserver(self, selector: #selector(EditViewController.frameDidChangeNotification(_:)), name: NSView.frameDidChangeNotification, object: scrollView)
         // call to set initial scroll position once we know view size
         redrawEverything()
+
+        if #available(OSX 10.12, *) {
+            // tabbingMode may have been overridden previously
+            self.view.window?.tabbingMode = .automatic
+        }
     }
 
     func setupStatusBar() {
@@ -578,11 +583,16 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     // we intercept this method to check if we should open a new tab
     @objc func newDocument(_ sender: NSMenuItem?) {
-        // this tag is a property of the New Tab menu item, set in interface builder
-        if sender?.tag == 10 {
-            Document.preferredTabbingIdentifier = document.tabbingIdentifier
-        } else {
-            Document.preferredTabbingIdentifier = nil
+        if #available(OSX 10.12, *) {
+            if sender?.tag == 10 {
+                // Tag 10 is the New Tab menu item
+                Document.tabbingMode = .preferred
+            } else if sender?.tag == 11 {
+                // Tag 11 is the New Window menu item
+                Document.tabbingMode = .disallowed
+            } else {
+                Document.tabbingMode = .automatic
+            }
         }
         // pass the message to the intended recipient
         NSDocumentController.shared.newDocument(sender)

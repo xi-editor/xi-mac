@@ -447,7 +447,7 @@ Gw
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="File" id="zqD-KZ-Zvt">
                                     <items>
-                                        <menuItem title="New" keyEquivalent="n" id="vc6-rD-brY">
+                                        <menuItem title="New Window" tag="11" keyEquivalent="n" id="vc6-rD-brY">
                                             <connections>
                                                 <action selector="newDocument:" target="7er-QZ-amI" id="RMh-4o-lEC"/>
                                             </connections>
