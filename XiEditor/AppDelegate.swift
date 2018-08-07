@@ -351,7 +351,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
     func hideCompletions(viewIdentifier: String) {
         let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
         DispatchQueue.main.async {
-            document?.editViewController?.hideCompletions()
+            document?.editViewController?.closeCompletion()
         }
     }
 

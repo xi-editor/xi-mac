@@ -94,7 +94,7 @@ extension EditViewController {
         }
     }
 
-    func hideCompletions() {
-        autocompleteViewController.autocompleteTableView.removeFromSuperview()
+    func closeCompletion() {
+        autocompleteWindowController?.closeCompletionWindow()
     }
 }

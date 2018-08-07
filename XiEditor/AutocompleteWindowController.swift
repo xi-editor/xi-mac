@@ -35,7 +35,12 @@ class AutocompleteWindowController: NSWindowController {
         self.window?.makeKey()
     }
 
-    func hideCompletionWindow() {
-        self.window?.close()
+    func closeCompletionWindow() {
+        if let editViewWindow = editViewController.view.window {
+            self.window?.orderOut(nil)
+            self.window?.close()
+            editViewWindow.removeChildWindow(self.window!)
+            editViewWindow.makeKeyAndOrderFront(nil)
+        }
     }
 }

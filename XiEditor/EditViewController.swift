@@ -416,6 +416,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     override func cancelOperation(_ sender: Any?) {
         if !findViewController.view.isHidden {
             closeFind()
+        } else if autocompletePanel.isVisible {
+            closeCompletion()
         } else {
             document.sendRpcAsync("cancel_operation", params: [])
         }
