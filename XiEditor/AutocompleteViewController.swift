@@ -75,6 +75,12 @@ extension AutocompleteViewController: NSTableViewDelegate, NSTableViewDataSource
         }
         return nil
     }
+
+    func tableViewSelectionDidChange(_ notification: Notification) {
+        let autocompleteTableView = notification.object as? AutocompleteTableView
+        //TODO: Send select_completions RPC to core
+        print(autocompleteTableView?.selectedRow)
+    }
 }
 
 extension EditViewController {
