@@ -23,6 +23,8 @@ class AutocompleteViewController: NSViewController {
         autocompleteTableView.focusRingType = .none
         autocompleteTableView.dataSource = self
         autocompleteTableView.delegate = self
+        autocompleteTableView.doubleAction = #selector(selectCompletion)
+        autocompleteTableView.target = self
     }
 
     func roundCompletionViewCorners() {
@@ -39,6 +41,11 @@ class AutocompleteViewController: NSViewController {
     override func awakeFromNib() {
         super.awakeFromNib()
         _ = self.view
+    }
+
+    @objc func selectCompletion() {
+        let selectedRow = autocompleteTableView.selectedRow
+        print("selected completion: \(completionSuggestions[selectedRow].label)")
     }
 }
 
@@ -77,9 +84,11 @@ extension AutocompleteViewController: NSTableViewDelegate, NSTableViewDataSource
     }
 
     func tableViewSelectionDidChange(_ notification: Notification) {
-        let autocompleteTableView = notification.object as? AutocompleteTableView
-        //TODO: Send select_completions RPC to core
-        print(autocompleteTableView?.selectedRow)
+        if let autocompleteTableView = notification.object as? AutocompleteTableView {
+            //TODO: Send select_completions RPC to core
+            let selectedRow = autocompleteTableView.selectedRow
+            print("current highlighted row: \(selectedRow)")
+        }
     }
 }
 
