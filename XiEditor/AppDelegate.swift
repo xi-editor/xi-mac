@@ -219,7 +219,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
 
     @IBAction func installShortcut(_ sender: Any?) {
         let destPath = "/usr/local/bin/xi"
-        if !FileManager.default.fileExists(atPath: destPath) {
+        var message = "Shortcut installed"
+        var info = "Type \"xi\" at the command line."
+        if FileManager.default.fileExists(atPath: destPath) {
+            message = "Shortcut already installed"
+            info = "The file /usr/local/bin/xi already exists."
+        } else {
             do {
                 let srcPath = Bundle.main.bundlePath + "/Contents/Resources/shortcut/xi"
                 try FileManager.default.copyItem(atPath: srcPath, toPath: destPath)
@@ -235,8 +240,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         let alert = NSAlert()
         alert.addButton(withTitle: "OK")
         alert.alertStyle = .informational
-        alert.messageText = "Shortcut installed"
-        alert.informativeText = "Type \"xi\" at the command line."
+        alert.messageText = message
+        alert.informativeText = info
         alert.runModal()
     }
 
