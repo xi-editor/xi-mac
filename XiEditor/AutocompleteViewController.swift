@@ -94,6 +94,8 @@ extension AutocompleteViewController: NSTableViewDelegate, NSTableViewDataSource
 
 extension EditViewController {
     func displayCompletions(forItems items: [[String : AnyObject]]) {
+
+        autocompleteViewController.completionSuggestions.removeAll()
         for item in items {
             let label = item["label"] as! String
             let detail = item["detail"] as? String
