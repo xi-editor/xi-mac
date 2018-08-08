@@ -32,7 +32,7 @@ class AutocompleteWindowController: NSWindowController {
 
         self.window?.setFrameTopLeftPoint(screenRect.origin)
         editVC.view.window?.addChildWindow(self.window!, ordered: .above)
-        self.window?.makeKey()
+        self.window?.makeKeyAndOrderFront(nil)
     }
 
     func closeCompletionWindow() {

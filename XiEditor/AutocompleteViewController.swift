@@ -8,11 +8,19 @@
 
 import Cocoa
 
+protocol AutocompleteDelegate {
+    func showCompletion()
+    func selectCompletion(atIndex index: Int)
+    func insertCompletion(atIndex index: Int)
+    func closeCompletion()
+}
+
 class AutocompleteViewController: NSViewController {
 
     @IBOutlet weak var autocompleteTableView: AutocompleteTableView!
 
     var completionSuggestions = [CompletionItem]()
+    var autocompleteDelegate: AutocompleteDelegate!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,6 +54,7 @@ class AutocompleteViewController: NSViewController {
     @objc func selectCompletion() {
         let selectedRow = autocompleteTableView.selectedRow
         print("selected completion: \(completionSuggestions[selectedRow].label)")
+        autocompleteDelegate.selectCompletion(atIndex: selectedRow)
     }
 }
 
@@ -92,7 +101,15 @@ extension AutocompleteViewController: NSTableViewDelegate, NSTableViewDataSource
     }
 }
 
-extension EditViewController {
+extension EditViewController: AutocompleteDelegate {
+    func selectCompletion(atIndex index: Int) {
+        document.sendRpcAsync("completions_select", params: ["index": index])
+    }
+
+    func insertCompletion(atIndex index: Int) {
+        document.sendRpcAsync("completions_insert", params: ["index": index])
+    }
+
     func displayCompletions(forItems items: [[String : AnyObject]]) {
 
         autocompleteViewController.completionSuggestions.removeAll()
@@ -111,7 +128,12 @@ extension EditViewController {
         }
     }
 
+    func showCompletion() {
+        document.sendRpcAsync("completions_show", params: [])
+    }
+
     func closeCompletion() {
+        document.sendRpcAsync("completions_cancel", params: [])
         autocompleteWindowController?.closeCompletionWindow()
     }
 }

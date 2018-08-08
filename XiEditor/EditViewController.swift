@@ -171,6 +171,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     lazy var autocompleteViewController: AutocompleteViewController! = {
         let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
         let controller = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Autocomplete View Controller")) as! AutocompleteViewController
+        controller.autocompleteDelegate = self
         return controller
     }()
 
@@ -550,7 +551,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             sendHover()
         }
         else if gestureType == "autocomplete" {
-            document.sendRpcAsync("debug_show_completions", params: [])
+            document.sendRpcAsync("completions_show", params: [])
         } else {
             document.sendRpcAsync("gesture", params: [
                 "line": position.line,
