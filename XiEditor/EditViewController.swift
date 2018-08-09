@@ -402,9 +402,20 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         // Although this function is only called when a command originates in a keyboard event,
         // several commands (such as uppercaseWord:) are accessible from both a system binding
         // _and_ a menu; if there's a concrete implementation of such a method we just call it directly.
+
         if (self.responds(to: aSelector)) {
             self.perform(aSelector, with: self)
         } else {
+            if (autocompletePanel.isVisible) {
+                if aSelector == #selector(moveUp(_:)) {
+                    autocompleteViewController.autocompleteTableView.keyDown(with: NSApp.currentEvent!)
+                    return
+                } else if aSelector == #selector(moveDown(_:)) {
+                    autocompleteViewController.autocompleteTableView.keyDown(with: NSApp.currentEvent!)
+                    return
+                }
+            }
+
             if let commandName = EditViewController.selectorToCommand[aSelector.description] {
                 document.sendRpcAsync(commandName, params: []);
             } else {
