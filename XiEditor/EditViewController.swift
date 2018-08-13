@@ -407,15 +407,11 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             self.perform(aSelector, with: self)
         } else {
             if (autocompletePanel.isVisible) {
-                if aSelector == #selector(moveUp(_:)) {
-                    autocompleteViewController.autocompleteTableView.keyDown(with: NSApp.currentEvent!)
-                    return
-                } else if aSelector == #selector(moveDown(_:)) {
+                if aSelector == #selector(moveUp(_:)) || aSelector == #selector(moveDown(_:)) {
                     autocompleteViewController.autocompleteTableView.keyDown(with: NSApp.currentEvent!)
                     return
                 }
             }
-
             if let commandName = EditViewController.selectorToCommand[aSelector.description] {
                 document.sendRpcAsync(commandName, params: []);
             } else {
