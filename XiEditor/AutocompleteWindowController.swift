@@ -15,6 +15,23 @@ class AutocompleteWindowController: NSWindowController {
         return editViewController.autocompleteViewController
     }
 
+    // Setups autocomplete panel
+    override init(window: NSWindow?) {
+        super.init(window: window)
+        if let panel = window as? NSPanel {
+            panel.styleMask = [.nonactivatingPanel]
+            panel.isOpaque = false
+            panel.level = .floating
+            panel.hidesOnDeactivate = true
+            panel.becomesKeyOnlyIfNeeded = true
+            panel.backgroundColor = .clear
+        }
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     func showCompletionWindow(forPosition cursorPos: BufferPosition) {
         guard let editVC = editViewController else { return }
         guard let editView = editVC.editView else { return }

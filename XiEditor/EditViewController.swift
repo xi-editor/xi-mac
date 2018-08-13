@@ -166,24 +166,13 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     let statusBar = StatusBar(frame: .zero)
 
-    var autocompleteWindowController: AutocompleteWindowController?
+    var autocompleteWindowController: AutocompleteWindowController!
 
     lazy var autocompleteViewController: AutocompleteViewController! = {
         let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
         let controller = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Autocomplete View Controller")) as! AutocompleteViewController
         controller.autocompleteDelegate = self
         return controller
-    }()
-
-    lazy var autocompletePanel: NSPanel = {
-        let panel = NSPanel(contentViewController: autocompleteViewController)
-        panel.styleMask = [.nonactivatingPanel]
-        panel.isOpaque = false
-        panel.level = .floating
-        panel.hidesOnDeactivate = true
-        panel.becomesKeyOnlyIfNeeded = true
-        panel.backgroundColor = .clear
-        return panel
     }()
 
     // Popover that manages hover views.
@@ -234,6 +223,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     func setupAutocompletePanel() {
+        let autocompletePanel = NSPanel(contentViewController: autocompleteViewController)
         let autocompleteWindowController = AutocompleteWindowController(window: autocompletePanel)
         autocompleteWindowController.editViewController = self
         self.autocompleteWindowController = autocompleteWindowController
@@ -406,9 +396,13 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         if (self.responds(to: aSelector)) {
             self.perform(aSelector, with: self)
         } else {
-            if (autocompletePanel.isVisible) {
+            if (autocompleteWindowController.window!.isVisible) {
                 if aSelector == #selector(moveUp(_:)) || aSelector == #selector(moveDown(_:)) {
                     autocompleteViewController.autocompleteTableView.keyDown(with: NSApp.currentEvent!)
+                    return
+                    // Pressing enter while completion view is visible activates the completion
+                } else if aSelector == #selector(insertNewline(_:)) {
+                    self.insertCompletion(atIndex: autocompleteViewController.autocompleteTableView.selectedRow)
                     return
                 }
             }
@@ -424,7 +418,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     override func cancelOperation(_ sender: Any?) {
         if !findViewController.view.isHidden {
             closeFind()
-        } else if autocompletePanel.isVisible {
+        } else if autocompleteWindowController.window!.isVisible {
             closeCompletion()
         } else {
             document.sendRpcAsync("cancel_operation", params: [])
