@@ -344,7 +344,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
     func completions(viewIdentifier: String, position: Int, selected: Int, items: [[String: AnyObject]]) {
         let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
         DispatchQueue.main.async {
-            document?.editViewController?.displayCompletions(forItems: items)
+            document?.editViewController?.activateCompletions(forItems: items)
         }
     }
 

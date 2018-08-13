@@ -24,9 +24,7 @@ class AutocompleteViewController: NSViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         roundCompletionViewCorners()
-
         autocompleteTableView.wantsLayer = true
         autocompleteTableView.focusRingType = .none
         autocompleteTableView.dataSource = self
@@ -37,10 +35,8 @@ class AutocompleteViewController: NSViewController {
 
     func roundCompletionViewCorners() {
         let scrollView = autocompleteTableView.enclosingScrollView!
-
         scrollView.wantsLayer = true
         scrollView.layer?.cornerRadius = 7
-
         scrollView.contentView.wantsLayer = true
         scrollView.contentView.layer?.cornerRadius = 7
     }
@@ -102,6 +98,16 @@ extension AutocompleteViewController: NSTableViewDelegate, NSTableViewDataSource
 }
 
 extension EditViewController: AutocompleteDelegate {
+
+    func showCompletion() {
+        document.sendRpcAsync("completions_show", params: [])
+    }
+
+    func closeCompletion() {
+        document.sendRpcAsync("completions_cancel", params: [])
+        autocompleteWindowController?.closeCompletion()
+    }
+
     func selectCompletion(atIndex index: Int) {
         document.sendRpcAsync("completions_select", params: ["index": index])
     }
@@ -110,8 +116,7 @@ extension EditViewController: AutocompleteDelegate {
         document.sendRpcAsync("completions_insert", params: ["index": index])
     }
 
-    func displayCompletions(forItems items: [[String : AnyObject]]) {
-
+    func activateCompletions(forItems items: [[String : AnyObject]]) {
         autocompleteViewController.completionSuggestions.removeAll()
         for item in items {
             let label = item["label"] as! String
@@ -124,16 +129,7 @@ extension EditViewController: AutocompleteDelegate {
         autocompleteViewController.autocompleteTableView.reloadData()
 
         if let cursorPos = editView.cursorPos {
-            autocompleteWindowController?.showCompletionWindow(forPosition: cursorPos)
+            autocompleteWindowController?.showCompletion(forPosition: cursorPos)
         }
-    }
-
-    func showCompletion() {
-        document.sendRpcAsync("completions_show", params: [])
-    }
-
-    func closeCompletion() {
-        document.sendRpcAsync("completions_cancel", params: [])
-        autocompleteWindowController?.closeCompletionWindow()
     }
 }

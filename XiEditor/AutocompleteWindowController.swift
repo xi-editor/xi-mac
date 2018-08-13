@@ -32,7 +32,7 @@ class AutocompleteWindowController: NSWindowController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func showCompletionWindow(forPosition cursorPos: BufferPosition) {
+    func showCompletion(forPosition cursorPos: BufferPosition) {
         guard let editVC = editViewController else { return }
         guard let editView = editVC.editView else { return }
         guard let mainWindow = editView.window else { return }
@@ -52,12 +52,24 @@ class AutocompleteWindowController: NSWindowController {
         self.window?.makeKeyAndOrderFront(nil)
     }
 
-    func closeCompletionWindow() {
+    func closeCompletion() {
         if let editViewWindow = editViewController.view.window {
             self.window?.orderOut(nil)
             self.window?.close()
             editViewWindow.removeChildWindow(self.window!)
             editViewWindow.makeKeyAndOrderFront(nil)
         }
+    }
+
+    override func moveUp(_ sender: Any?) {
+        self.autocompleteViewController.autocompleteTableView.keyDown(with: NSApp.currentEvent!)
+    }
+
+    override func moveDown(_ sender: Any?) {
+        self.autocompleteViewController.autocompleteTableView.keyDown(with: NSApp.currentEvent!)
+    }
+
+    override func insertNewline(_ sender: Any?) {
+        self.editViewController.insertCompletion(atIndex: autocompleteViewController.autocompleteTableView.selectedRow)
     }
 }

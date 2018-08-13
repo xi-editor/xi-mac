@@ -396,17 +396,19 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         if (self.responds(to: aSelector)) {
             self.perform(aSelector, with: self)
         } else {
+            // Forwards key events to completion view if in mid completion
             if (autocompleteWindowController.window!.isVisible) {
-                if aSelector == #selector(moveUp(_:)) || aSelector == #selector(moveDown(_:)) {
-                    autocompleteViewController.autocompleteTableView.keyDown(with: NSApp.currentEvent!)
-                    return
-                    // Pressing enter while completion view is visible activates the completion
-                } else if aSelector == #selector(insertNewline(_:)) {
-                    self.insertCompletion(atIndex: autocompleteViewController.autocompleteTableView.selectedRow)
-                    return
+                switch aSelector {
+                case #selector(moveUp(_:)):
+                    autocompleteWindowController.moveUp(self)
+                case #selector(moveDown(_:)):
+                    autocompleteWindowController.moveDown(self)
+                case #selector(insertNewline(_:)):
+                    autocompleteWindowController.insertNewline(self)
+                default:
+                    break
                 }
-            }
-            if let commandName = EditViewController.selectorToCommand[aSelector.description] {
+            } else if let commandName = EditViewController.selectorToCommand[aSelector.description] {
                 document.sendRpcAsync(commandName, params: []);
             } else {
                 Swift.print("Unhandled selector: \(aSelector.description)")
