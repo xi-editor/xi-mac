@@ -19,6 +19,17 @@ frustration later on.
 All submissions, including submissions by project members, require review. We
 use Github pull requests for this purpose.
 
+Please see [the xi-editor contribution guidelines](https://github.com/google/xi-editor/blob/master/CONTRIBUTING.md) about guidelines for contributors with write access.
+
+If your name does not already appear in the [AUTHORS] file, please feel free to
+add it as part of your patch.
+
+### Code of conduct
+
+We are committed to preserving and fostering a diverse, welcoming community. This
+project follows the
+[Fuchsia Code of Conduct](https://fuchsia.googlesource.com/docs/+/master/CODE_OF_CONDUCT.md).
+
 ### The small print
 Contributions made by corporations are covered by a different agreement than
 the one above, the Software Grant and Corporate Contributor License Agreement.
