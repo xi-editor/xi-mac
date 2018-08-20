@@ -238,6 +238,16 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         self.showBlinkingCursor = self.isFrontmostView && self.isFirstResponder
     }
 
+    // Adds tracking areas for the edit view, used to check for mouse hovers on definition.
+    override func updateTrackingAreas() {
+        for area in self.trackingAreas {
+            self.removeTrackingArea(area)
+        }
+        let newTrackingArea = NSTrackingArea(rect: self.bounds, options: [.activeInActiveApp, .mouseMoved], owner: self, userInfo: nil)
+        self.addTrackingArea(newTrackingArea)
+        super.updateTrackingAreas()
+    }
+
     // MARK: - NSTextInputClient protocol
     func insertText(_ aString: Any, replacementRange: NSRange) {
         self.removeMarkedText()

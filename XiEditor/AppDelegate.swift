@@ -341,6 +341,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         }
     }
 
+    func showDefinition(viewIdentifier: String, requestIdentifier: Int, result: [String: AnyObject]) {
+        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
+        DispatchQueue.main.async {
+            document?.editViewController?.showDefinition(withResult: result)
+        }
+    }
+
     func configChanged(viewIdentifier: ViewIdentifier, changes: [String : AnyObject]) {
         let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
         DispatchQueue.main.async {

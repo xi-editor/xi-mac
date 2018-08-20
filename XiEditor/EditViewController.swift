@@ -64,6 +64,12 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         return controller
     }()
 
+    lazy var definitionViewController: DefinitionViewController! = {
+        let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
+        let controller = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Definition View Controller")) as! DefinitionViewController
+        return controller
+    }()
+
     var document: Document!
 
     var lines = LineCache<LineAssoc>()
@@ -163,6 +169,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     private var dragEvent: NSEvent?
 
     var hoverEvent: NSEvent?
+    var definitionEvent: NSEvent?
 
     let statusBar = StatusBar(frame: .zero)
 
@@ -177,8 +184,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         return popover
     }()
 
-    // Incrementing request identifiers to be used with hover definition requests.
+    // Incrementing request identifiers to be used with hover/definition requests.
     var hoverRequestID = 0
+    var definitionRequestID = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -194,6 +202,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     override func viewDidAppear() {
         super.viewDidAppear()
         setupStatusBar()
+        editView.updateTrackingAreas()
         shadowView.setup()
         NotificationCenter.default.addObserver(self, selector: #selector(EditViewController.frameDidChangeNotification(_:)), name: NSView.frameDidChangeNotification, object: scrollView)
         // call to set initial scroll position once we know view size
@@ -234,6 +243,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         updateEditViewHeight()
         willScroll(to: scrollView.contentView.bounds.origin)
         updateViewportSize()
+        editView.updateTrackingAreas()
         statusBar.checkItemsFitFor(windowWidth: self.view.frame.width)
     }
 
@@ -489,9 +499,11 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             }
         } else if (event.modifierFlags.contains(NSEvent.ModifierFlags.shift)) {
             return "range_select"
+        } else if (event.modifierFlags.contains(NSEvent.ModifierFlags.command)) {
+            return "request_definition"
         } else if (event.modifierFlags.contains(NSEvent.ModifierFlags.option)) {
             return "request_hover"
-        }  else {
+        } else {
             switch (clickCount) {
             case 2:
                 return "word_select"
@@ -552,6 +564,14 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             let hoverPosition = editView.bufferPositionFromPoint(event.locationInWindow)
             hoverRequestID += 1
             document.sendRpcAsync("request_hover", params: ["request_id": hoverRequestID, "position": ["line": hoverPosition.line, "column": hoverPosition.column]])
+        }
+    }
+
+    @objc func sendDefinitionRequest() {
+        if let event = definitionEvent {
+            let definitionPosition = editView.bufferPositionFromPoint(event.locationInWindow)
+            definitionRequestID += 1
+            document.sendRpcAsync("request_definition", params: ["request_id": definitionRequestID, "position": ["type": "utf8_line_char", "line": definitionPosition.line, "column": definitionPosition.column]])
         }
     }
 
