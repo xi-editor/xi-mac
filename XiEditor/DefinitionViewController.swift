@@ -78,6 +78,15 @@ extension EditViewController {
     func showDefinition(withResult result: [[String: AnyObject]]) {
         let locations = result
 
+        // Shows message if locations are empty.
+        if locations.count == 0 {
+            let emptyDefinitionResult = "No definition location found."
+            hoverEvent = definitionEvent
+            showHover(withResult: emptyDefinitionResult)
+            definitionEvent = nil
+            return
+        }
+
         definitionViewController.resultURIs.removeAll()
         definitionViewController.resultPositions.removeAll()
 
