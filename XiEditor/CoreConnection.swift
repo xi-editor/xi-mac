@@ -335,10 +335,10 @@ class CoreConnection {
             let result = params["result"] as! String
             client?.showHover(viewIdentifier: viewIdentifier!, requestIdentifier: requestIdentifier, result: result)
 
-        case "show_definition":
+        case "handle_definition":
             let requestIdentifier = params["request_id"] as! Int
             let result = params["result"] as! [[String: AnyObject]]
-            client?.showDefinition(viewIdentifier: viewIdentifier!, requestIdentifier: requestIdentifier, result: result)
+            client?.handleDefinition(viewIdentifier: viewIdentifier!, requestIdentifier: requestIdentifier, result: result)
             
         case "find_status":
             let status = params["queries"] as! [[String: AnyObject]]

@@ -14,14 +14,15 @@
 
 import Cocoa
 
-class DefinitionViewController: NSViewController, NSTableViewDataSource, NSTableViewDelegate {
+class DefinitionViewController: NSViewController, NSTableViewDataSource {
 
     @IBOutlet weak var resultTableView: DefinitionTableView!
     var resultURIs = [String]()
     var resultPositions = [BufferPosition]()
 
-    // Value to pad the definition content width.
     let contentTextPadding: CGFloat = 50
+    let definitionPopoverWidth: CGFloat = 500 // Similar to Hover size
+    let definitionRowHeight: CGFloat = 51 
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,8 +37,38 @@ class DefinitionViewController: NSViewController, NSTableViewDataSource, NSTable
         _ = self.view
     }
 
+
+
+    func sizeToFitContents() -> NSSize {
+        var longest: CGFloat = 0
+
+        for row in 0..<resultTableView.numberOfRows {
+            let view = resultTableView.rowView(atRow: row, makeIfNecessary: true) as! DefinitionTableRowView
+            let width = ceil(view.methodField.attributedStringValue.size().width + contentTextPadding)
+            if longest < width { longest = width }
+        }
+
+        // We only have one column
+        resultTableView.tableColumns.first?.width = longest
+        resultTableView.reloadData()
+
+        if longest < definitionPopoverWidth {
+            longest = definitionPopoverWidth
+        }
+
+        let contentSize = NSSize(width: longest, height: CGFloat(resultTableView.numberOfRows) * resultTableView.rowHeight)
+
+        return contentSize
+    }
+}
+
+extension DefinitionViewController: NSTableViewDelegate {
     func numberOfRows(in tableView: NSTableView) -> Int {
         return resultPositions.count
+    }
+
+    func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
+        return definitionRowHeight
     }
 
     func tableView(_ tableView: NSTableView, rowViewForRow row: Int) -> NSTableRowView? {
@@ -54,28 +85,12 @@ class DefinitionViewController: NSViewController, NSTableViewDataSource, NSTable
         }
         return nil
     }
-
-    func widthToFitContents() -> CGFloat {
-        var longest: CGFloat = 0
-
-        for row in 0..<resultTableView.numberOfRows {
-            let view = resultTableView.rowView(atRow: row, makeIfNecessary: true) as! DefinitionTableRowView
-            let width = ceil(view.methodField.attributedStringValue.size().width + contentTextPadding)
-            if longest < width { longest = width }
-        }
-
-        // We only have one column
-        resultTableView.tableColumns.first?.width = longest
-        resultTableView.reloadData()
-
-        return longest
-    }
 }
 
 extension EditViewController {
 
     // Puts the popover at the baseline of the chosen defintition symbol.
-    func showDefinition(withResult result: [[String: AnyObject]]) {
+    func handleDefinition(withResult result: [[String: AnyObject]]) {
         let locations = result
 
         // Shows message if locations are empty.
@@ -98,16 +113,17 @@ extension EditViewController {
             definitionViewController.resultPositions.append(newPosition)
         }
 
-        let definitionContentSize = NSSize(width: definitionViewController.widthToFitContents(), height: definitionViewController.resultTableView.frame.size.height)
+        let definitionContentSize = definitionViewController.sizeToFitContents()
 
         infoPopover.contentViewController = definitionViewController
         infoPopover.contentSize = definitionContentSize
 
         if let event = definitionEvent {
             let definitionLine = editView.bufferPositionFromPoint(event.locationInWindow).line
-            let symbolBaseline = editView.lineIxToBaseline(definitionLine) * CGFloat(definitionLine)
-            let positioningPoint = NSPoint(x: event.locationInWindow.x, y: editView.frame.height - symbolBaseline)
+            let symbolBaseline = editView.lineIxToBaseline(definitionLine)
+            let positioningPoint = NSPoint(x: event.locationInWindow.x, y: editView.frame.height + editView.scrollOrigin.y - symbolBaseline)
             let positioningSize = CGSize(width: 1, height: 1) // Generic size to center popover on cursor
+
             infoPopover.show(relativeTo: NSRect(origin: positioningPoint, size: positioningSize), of: self.view, preferredEdge: .minY)
             definitionEvent = nil
         }

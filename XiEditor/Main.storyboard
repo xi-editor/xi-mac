@@ -1073,11 +1073,11 @@ Gw
                             <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="53" horizontalPageScroll="10" verticalLineScroll="53" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mnO-RR-3qD">
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="291"/>
                                 <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="lg8-HZ-6IL">
-                                    <rect key="frame" x="0.0" y="25" width="600" height="266"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="600" height="291"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowHeight="51" rowSizeStyle="automatic" headerView="NuK-sq-BhA" viewBased="YES" floatsGroupRows="NO" id="RWi-3T-K0a" customClass="DefinitionTableView" customModule="XiEditor" customModuleProvider="target">
-                                            <rect key="frame" x="0.0" y="0.0" width="600" height="266"/>
+                                        <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowHeight="51" rowSizeStyle="automatic" viewBased="YES" floatsGroupRows="NO" id="RWi-3T-K0a" customClass="DefinitionTableView" customModule="XiEditor" customModuleProvider="target">
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="291"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <size key="intercellSpacing" width="3" height="2"/>
                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -1128,8 +1128,8 @@ Gw
                                                                 <constraint firstItem="pMR-3s-Zy9" firstAttribute="centerX" secondItem="mN7-DF-HaQ" secondAttribute="centerX" id="zbW-O5-glX"/>
                                                             </constraints>
                                                             <connections>
-                                                                <outlet property="locationField" destination="giy-3h-ypC" id="pon-0K-N7I"/>
-                                                                <outlet property="methodField" destination="pMR-3s-Zy9" id="7Jw-4a-nqy"/>
+                                                                <outlet property="locationField" destination="giy-3h-ypC" id="Kog-Yw-nbB"/>
+                                                                <outlet property="methodField" destination="pMR-3s-Zy9" id="5Ik-5e-FWZ"/>
                                                             </connections>
                                                         </tableCellView>
                                                     </prototypeCellViews>
@@ -1147,10 +1147,6 @@ Gw
                                     <rect key="frame" x="224" y="17" width="15" height="102"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
-                                <tableHeaderView key="headerView" id="NuK-sq-BhA">
-                                    <rect key="frame" x="0.0" y="0.0" width="600" height="25"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </tableHeaderView>
                             </scrollView>
                         </subviews>
                         <constraints>
@@ -1161,7 +1157,7 @@ Gw
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="resultTableView" destination="RWi-3T-K0a" id="ypc-Jx-gkw"/>
+                        <outlet property="resultTableView" destination="RWi-3T-K0a" id="njX-aA-XYv"/>
                     </connections>
                 </viewController>
             </objects>
