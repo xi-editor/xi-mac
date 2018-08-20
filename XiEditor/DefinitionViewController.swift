@@ -75,8 +75,8 @@ class DefinitionViewController: NSViewController, NSTableViewDataSource, NSTable
 extension EditViewController {
 
     // Puts the popover at the baseline of the chosen defintition symbol.
-    func showDefinition(withResult result: [String: AnyObject]) {
-        let locations = result["locations"] as! [[String: AnyObject]]
+    func showDefinition(withResult result: [[String: AnyObject]]) {
+        let locations = result
 
         definitionViewController.resultURIs.removeAll()
         definitionViewController.resultPositions.removeAll()
@@ -85,7 +85,7 @@ extension EditViewController {
             let range = location["range"]
             let newPosition = BufferPosition(range!["start"] as! Int, range!["end"] as! Int)
 
-            definitionViewController.resultURIs.append(location["document_uri"] as! String)
+            definitionViewController.resultURIs.append(location["file_uri"] as! String)
             definitionViewController.resultPositions.append(newPosition)
         }
 

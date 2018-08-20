@@ -499,7 +499,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             }
         } else if (event.modifierFlags.contains(NSEvent.ModifierFlags.shift)) {
             return "range_select"
-        } else if (event.modifierFlags.contains(NSEvent.ModifierFlags.command)) {
+        } else if (event.modifierFlags.contains(NSEvent.ModifierFlags.control)) {
             return "request_definition"
         } else if (event.modifierFlags.contains(NSEvent.ModifierFlags.option)) {
             return "request_hover"
@@ -530,6 +530,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         if gestureType == "request_hover" {
             hoverEvent = theEvent
             sendHover()
+        } else if gestureType == "request_definition"  {
+            definitionEvent = theEvent
+            sendDefinitionRequest()
         } else {
             document.sendRpcAsync("gesture", params: [
                 "line": position.line,
