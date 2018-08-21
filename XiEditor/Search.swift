@@ -30,7 +30,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     var wrapAround = true   // option same for all search fields
 
     override func viewDidLoad() {
-        addSearchField(nil, disableRemove: true)     // by default at least one search query is present
+        addSearchField(true)     // by default at least one search query is present
         replacePanel.isHidden = true
     }
 
@@ -74,10 +74,10 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     }
 
     @IBAction func addSearchFieldAction(_ sender: NSButton) {
-        addSearchField(nil, disableRemove: false)
+        addSearchField(false)
     }
 
-    public func addSearchField(_ id: Int?, disableRemove: Bool) {
+    @objc @discardableResult public func addSearchField(_ disableRemove: Bool) -> FindSearchField? {
         if searchQueries.count < MAX_SEARCH_QUERIES {
             let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
             let newSearchFieldController = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Suplementary Find View Controller")) as! SuplementaryFindViewController
@@ -85,16 +85,15 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
             newSearchFieldController.parentFindView = self
             searchQueries.append(newSearchFieldController)
             newSearchFieldController.disableRemove = disableRemove
-
-            if id != nil {
-                newSearchFieldController.id = id
-            }
-
             searchFieldsStackView.insertView(newSearchFieldController.view, at: searchQueries.count - 1, in: NSStackView.Gravity.center)
             newSearchFieldController.searchField.becomeFirstResponder()
 
             searchFieldsNextKeyView()
+
+            return newSearchFieldController.searchField as! FindSearchField
         }
+
+        return nil
     }
 
     func searchFieldsNextKeyView() {
@@ -135,7 +134,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
         findDelegate.findStatus(status: status)
     }
 
-    public func removeSearchField(searchField: SuplementaryFindViewController) {
+    @objc public func removeSearchField(searchField: SuplementaryFindViewController) {
         searchFieldsStackView.removeView(searchField.view)
         searchQueries.remove(at: searchQueries.index(of: searchField)!)
         searchFieldsNextKeyView()
@@ -197,6 +196,7 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
         let recentClear = NSMenuItem(title: "Clear Recent Searches", action: nil, keyEquivalent: "")
         recentClear.tag = Int(NSSearchField.clearRecentsMenuItemTag)
         menu.addItem(recentClear)
+        (searchField as! FindSearchField).parentFindView = self
     }
 
     // we use this to make sure that UI corresponds to our state
@@ -248,8 +248,12 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
         }
     }
 
-    @IBAction func selectRemoveSearchQuery(_ sender: NSMenuItem) {
+    @objc public func removeSearchQuery() {
         parentFindView?.removeSearchField(searchField: self)
+    }
+
+    @objc public func addSearchQuery() {
+        parentFindView?.addSearchField(false)
     }
 
     public func toFindQuery() -> FindQuery {
@@ -336,7 +340,8 @@ extension EditViewController {
                     newQuery.id = statusQuery["id"] as? Int
                     query = newQuery
                 } else {
-                    findViewController.addSearchField(statusQuery["id"] as? Int, disableRemove: false)
+                    let searchField = findViewController.addSearchField(false)
+                    searchField!.id = statusQuery["id"] as! String
                     query = findViewController.searchQueries.first(where: { $0.id == statusQuery["id"] as? Int })
                 }
             }
@@ -472,6 +477,7 @@ class FindSearchField: NSSearchField {
     var rightPadding: CGFloat = 0    // tracks how much space on the right side of the search field is occupied by buttons
     let defaultButtonWidth: CGFloat = 22
     let inlineButtonSpacing: CGFloat = 2
+    var parentFindView: SuplementaryFindViewController? = nil
 
     private var _lastSearchButtonWidth: CGFloat = 22 // known default
     var id: String? = nil
@@ -495,8 +501,8 @@ class FindSearchField: NSSearchField {
         centersPlaceholder = false
         sendsSearchStringImmediately = true
 
-        addInlineButton(title: "+")
-        addInlineButton(title: "-")
+        addInlineButton(title: "-", action: #selector(self.delete))
+        addInlineButton(title: "+", action: #selector(self.add))
 
         self.addSubview(label)
         label.textColor = NSColor.lightGray
@@ -506,11 +512,21 @@ class FindSearchField: NSSearchField {
         label.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
     }
 
-    private func addInlineButton(title: String) {   // todo: selector action
+    @objc func add() {
+        parentFindView?.addSearchQuery()
+    }
+
+    @objc func delete() {
+        parentFindView?.removeSearchQuery()
+    }
+
+    private func addInlineButton(title: String, action: Selector) {
         let button = NSButton(frame: NSRect(x: 0, y: 0, width: defaultButtonWidth, height: defaultButtonWidth))
         self.addSubview(button)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.title = title
+        button.action = action
+        button.target = self
         (button.cell as! NSButtonCell).bezelStyle = NSButton.BezelStyle.roundRect
         button.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -inlineButtonSpacing - rightPadding).isActive = true
         button.topAnchor.constraint(equalTo: self.topAnchor, constant: inlineButtonSpacing).isActive = true
