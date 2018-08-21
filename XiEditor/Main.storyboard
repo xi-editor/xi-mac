@@ -183,21 +183,21 @@ Gw
         <scene sceneID="CRJ-r2-SVm">
             <objects>
                 <viewController storyboardIdentifier="Find View Controller" id="lKE-xV-0EG" customClass="FindViewController" customModule="XiEditor" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" id="NrM-ac-2ZW" wantsLayer="YES">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="56"/>
+                    <view key="view" wantsLayer="YES" id="NrM-ac-2ZW">
+                        <rect key="frame" x="0.0" y="0.0" width="737" height="130"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <stackView distribution="fill" orientation="vertical" alignment="centerX" spacing="4" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" placeholderIntrinsicWidth="721" placeholderIntrinsicHeight="100" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0fT-ae-quE">
-                                <rect key="frame" x="8" y="0.0" width="721" height="100"/>
+                                <rect key="frame" x="8" y="0.0" width="721" height="130"/>
                                 <subviews>
                                     <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="87Z-4W-agC">
-                                        <rect key="frame" x="199" y="30" width="324" height="66"/>
+                                        <rect key="frame" x="198.5" y="30" width="324" height="96"/>
                                         <subviews>
                                             <stackView distribution="fill" orientation="vertical" alignment="leading" spacing="4" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" placeholderIntrinsicWidth="110" placeholderIntrinsicHeight="22" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XV8-8P-X3Z">
-                                                <rect key="frame" x="0.0" y="44" width="110" height="22"/>
+                                                <rect key="frame" x="0.0" y="74" width="110" height="22"/>
                                             </stackView>
                                             <stackView distribution="fillEqually" orientation="horizontal" alignment="centerY" spacing="6" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" placeholderIntrinsicWidth="206" placeholderIntrinsicHeight="22" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rOR-6k-Bho">
-                                                <rect key="frame" x="118" y="44" width="206" height="22"/>
+                                                <rect key="frame" x="118" y="74" width="206" height="22"/>
                                                 <subviews>
                                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="wkr-X6-NRF">
                                                         <rect key="frame" x="0.0" y="1" width="22" height="19"/>
@@ -271,7 +271,7 @@ Gw
                                         </customSpacing>
                                     </stackView>
                                     <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" placeholderIntrinsicWidth="614" placeholderIntrinsicHeight="22" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eFo-Od-w1I">
-                                        <rect key="frame" x="54" y="4" width="614" height="22"/>
+                                        <rect key="frame" x="53.5" y="4" width="614" height="22"/>
                                         <subviews>
                                             <textField focusRingType="none" verticalHuggingPriority="750" placeholderIntrinsicWidth="400" placeholderIntrinsicHeight="22" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="C06-uM-0mq">
                                                 <rect key="frame" x="0.0" y="0.0" width="400" height="22"/>
@@ -373,7 +373,7 @@ Gw
                                 <rect key="frame" x="0.0" y="0.0" width="619" height="25"/>
                                 <subviews>
                                     <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="snt-AV-vR6">
-                                        <rect key="frame" x="110" y="0.0" width="400" height="25"/>
+                                        <rect key="frame" x="109.5" y="0.0" width="400" height="25"/>
                                         <subviews>
                                             <searchField wantsLayer="YES" focusRingType="none" verticalHuggingPriority="750" placeholderIntrinsicWidth="400" placeholderIntrinsicHeight="22" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4N3-Md-ylI" customClass="FindSearchField" customModule="XiEditor" customModuleProvider="target">
                                                 <rect key="frame" x="0.0" y="3" width="400" height="22"/>
@@ -459,7 +459,7 @@ Gw
                 </menu>
                 <customObject id="TEY-bc-0Oc" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1053" y="278"/>
+            <point key="canvasLocation" x="1110" y="322"/>
         </scene>
         <!--Application-->
         <scene sceneID="uLn-e8-8sb">
@@ -1132,6 +1132,106 @@ Gw
                 <userDefaultsController id="yco-8S-n0A"/>
             </objects>
             <point key="canvasLocation" x="-295" y="-593"/>
+        </scene>
+        <!--Suplementary Find View Controller-->
+        <scene sceneID="CKa-D5-jP5">
+            <objects>
+                <viewController storyboardIdentifier="Suplementary Find View Controller" id="Pyt-1b-OsD" customClass="SuplementaryFindViewController" customModule="XiEditor" customModuleProvider="target" sceneMemberID="viewController">
+                    <visualEffectView key="view" blendingMode="behindWindow" material="appearanceBased" state="inactive" id="86B-ZG-3gw">
+                        <rect key="frame" x="0.0" y="0.0" width="619" height="25"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <stackView distribution="fill" orientation="vertical" alignment="centerX" spacing="4" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="z9g-jw-uHE">
+                                <rect key="frame" x="0.0" y="0.0" width="619" height="25"/>
+                                <subviews>
+                                    <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cR4-Hf-HA9">
+                                        <rect key="frame" x="109.5" y="0.0" width="400" height="25"/>
+                                        <subviews>
+                                            <searchField wantsLayer="YES" focusRingType="none" verticalHuggingPriority="750" placeholderIntrinsicWidth="400" placeholderIntrinsicHeight="22" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bt8-9O-7bR" customClass="FindSearchField" customModule="XiEditor" customModuleProvider="target">
+                                                <rect key="frame" x="0.0" y="3" width="400" height="22"/>
+                                                <searchFieldCell key="cell" selectable="YES" editable="YES" borderStyle="bezel" focusRingType="none" bezelStyle="round" recentsAutosaveName="xi-editor-find" id="jzQ-6k-458">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </searchFieldCell>
+                                                <connections>
+                                                    <action selector="searchFieldAction:" target="Pyt-1b-OsD" id="pYA-iS-sVI"/>
+                                                    <outlet property="searchMenuTemplate" destination="RHe-lc-wA0" id="mCY-ba-yc9"/>
+                                                </connections>
+                                            </searchField>
+                                        </subviews>
+                                        <visibilityPriorities>
+                                            <integer value="1000"/>
+                                        </visibilityPriorities>
+                                        <customSpacing>
+                                            <real value="3.4028234663852886e+38"/>
+                                        </customSpacing>
+                                    </stackView>
+                                </subviews>
+                                <visibilityPriorities>
+                                    <integer value="1000"/>
+                                </visibilityPriorities>
+                                <customSpacing>
+                                    <real value="3.4028234663852886e+38"/>
+                                </customSpacing>
+                            </stackView>
+                            <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="ZrU-1s-kX3">
+                                <rect key="frame" x="0.0" y="-277" width="619" height="5"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            </box>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="z9g-jw-uHE" firstAttribute="top" secondItem="86B-ZG-3gw" secondAttribute="top" id="FRn-IW-8eR"/>
+                            <constraint firstAttribute="bottom" secondItem="z9g-jw-uHE" secondAttribute="bottom" id="Fut-Ow-Vpg"/>
+                            <constraint firstAttribute="trailing" secondItem="z9g-jw-uHE" secondAttribute="trailing" id="dy4-aq-MgH"/>
+                            <constraint firstItem="z9g-jw-uHE" firstAttribute="leading" secondItem="86B-ZG-3gw" secondAttribute="leading" id="hFp-JZ-5og"/>
+                        </constraints>
+                    </visualEffectView>
+                    <connections>
+                        <outlet property="searchField" destination="bt8-9O-7bR" id="c6d-FD-vcc"/>
+                    </connections>
+                </viewController>
+                <menu title="Find Menu" autoenablesItems="NO" id="2z9-tj-UpC">
+                    <items>
+                        <menuItem title="Ignore Case" state="on" tag="101" id="3tE-0T-bZb">
+                            <modifierMask key="keyEquivalentModifierMask"/>
+                            <connections>
+                                <action selector="selectIgnoreCaseMenuAction:" target="Pyt-1b-OsD" id="eNn-CZ-f5S"/>
+                            </connections>
+                        </menuItem>
+                        <menuItem title="Wrap Around" state="on" tag="102" id="UKb-GB-g6M">
+                            <modifierMask key="keyEquivalentModifierMask"/>
+                            <connections>
+                                <action selector="selectWrapAroundMenuAction:" target="Pyt-1b-OsD" id="nhi-ff-XrO"/>
+                            </connections>
+                        </menuItem>
+                        <menuItem title="Regex" tag="103" id="ANp-RE-nif">
+                            <modifierMask key="keyEquivalentModifierMask"/>
+                            <connections>
+                                <action selector="selectRegexMenuAction:" target="Pyt-1b-OsD" id="Hbk-2k-R7d"/>
+                            </connections>
+                        </menuItem>
+                        <menuItem title="Whole Words" tag="104" id="tWM-tX-hFR">
+                            <modifierMask key="keyEquivalentModifierMask"/>
+                            <connections>
+                                <action selector="selectWholeWordsMenuAction:" target="Pyt-1b-OsD" id="xFa-WX-nUc"/>
+                            </connections>
+                        </menuItem>
+                        <menuItem isSeparatorItem="YES" id="Uxg-Zu-G0l"/>
+                        <menuItem title="Remove" onStateImage="NSRemoveTemplate" offStateImage="NSRemoveTemplate" mixedStateImage="NSRemoveTemplate" tag="105" id="wnJ-Ac-teC" userLabel="Remove">
+                            <modifierMask key="keyEquivalentModifierMask"/>
+                            <connections>
+                                <action selector="selectRemoveSearchQuery:" target="Pyt-1b-OsD" id="P81-s7-UKV"/>
+                            </connections>
+                        </menuItem>
+                    </items>
+                    <connections>
+                        <outlet property="delegate" destination="bt8-9O-7bR" id="yJu-XY-CYI"/>
+                    </connections>
+                </menu>
+                <customObject id="Zwc-fZ-DtD" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1110" y="322"/>
         </scene>
     </scenes>
     <resources>

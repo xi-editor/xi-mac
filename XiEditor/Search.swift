@@ -469,6 +469,9 @@ class Label: NSTextField {
 
 class FindSearchField: NSSearchField {
     let label = Label(title: "")
+    var rightPadding: CGFloat = 0    // tracks how much space on the right side of the search field is occupied by buttons
+    let defaultButtonWidth: CGFloat = 22
+    let inlineButtonSpacing: CGFloat = 2
 
     private var _lastSearchButtonWidth: CGFloat = 22 // known default
     var id: String? = nil
@@ -492,15 +495,28 @@ class FindSearchField: NSSearchField {
         centersPlaceholder = false
         sendsSearchStringImmediately = true
 
+        addInlineButton(title: "+")
+        addInlineButton(title: "-")
+
         self.addSubview(label)
         label.textColor = NSColor.lightGray
         label.font = NSFont.systemFont(ofSize: 12)
         label.translatesAutoresizingMaskIntoConstraints = false
-
-        let defaultButtonWidth: CGFloat = 22;
-
-        label.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -defaultButtonWidth).isActive = true
+        label.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -defaultButtonWidth - rightPadding).isActive = true
         label.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
+    }
+
+    private func addInlineButton(title: String) {   // todo: selector action
+        let button = NSButton(frame: NSRect(x: 0, y: 0, width: defaultButtonWidth, height: defaultButtonWidth))
+        self.addSubview(button)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.title = title
+        (button.cell as! NSButtonCell).bezelStyle = NSButton.BezelStyle.roundRect
+        button.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -inlineButtonSpacing - rightPadding).isActive = true
+        button.topAnchor.constraint(equalTo: self.topAnchor, constant: inlineButtonSpacing).isActive = true
+        button.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -inlineButtonSpacing).isActive = true
+        button.widthAnchor.constraint(equalToConstant: defaultButtonWidth).isActive = true
+        rightPadding += defaultButtonWidth + inlineButtonSpacing
     }
 
     // required override; on 10.13(?) accessory icons aren't
@@ -513,6 +529,12 @@ class FindSearchField: NSSearchField {
         let rect = super.rectForSearchButton(whenCentered: isCentered)
         _lastSearchButtonWidth = rect.width
         return rect
+    }
+
+    override func rectForCancelButton(whenCentered isCentered: Bool) -> NSRect {
+        let rect = super.rectForCancelButton(whenCentered: isCentered)
+
+        return NSRect(x: rect.origin.x - rightPadding, y: rect.origin.y, width: rect.width, height: rect.height)
     }
 
     // the search text is drawn too close to the search button by default
