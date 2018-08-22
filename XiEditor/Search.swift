@@ -31,7 +31,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     var showMultipleSearchQueries = false   // activates/deactives 
 
     override func viewDidLoad() {
-        addSearchField(true)     // by default at least one search query is present
+        addSearchField()     // by default at least one search query is present
         replacePanel.isHidden = true
     }
 
@@ -75,27 +75,38 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     }
 
     @IBAction func addSearchFieldAction(_ sender: NSButton) {
-        addSearchField(false)
+        addSearchField()
     }
 
-    @objc @discardableResult public func addSearchField(_ disableRemove: Bool) -> FindSearchField? {
+    @objc @discardableResult public func addSearchField() -> FindSearchField? {
         if searchQueries.count < MAX_SEARCH_QUERIES {
             let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
             let newSearchFieldController = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Suplementary Find View Controller")) as! SuplementaryFindViewController
 
             newSearchFieldController.parentFindView = self
             searchQueries.append(newSearchFieldController)
-            newSearchFieldController.disableRemove = disableRemove
             searchFieldsStackView.insertView(newSearchFieldController.view, at: searchQueries.count - 1, in: NSStackView.Gravity.center)
             newSearchFieldController.searchField.becomeFirstResponder()
             (newSearchFieldController.searchField as! FindSearchField).showInlineButtons(show: (newSearchFieldController.parentFindView?.showMultipleSearchQueries)!)
 
             searchFieldsNextKeyView()
+            searchFieldsInlineButtonsState()
 
             return newSearchFieldController.searchField as! FindSearchField
         }
 
+        searchFieldsInlineButtonsState()
         return nil
+    }
+
+    func searchFieldsInlineButtonsState() {
+        for searchQuery in searchQueries {
+            (searchQuery.searchField as! FindSearchField).disableAddButton(disabled: searchQueries.count >= MAX_SEARCH_QUERIES)
+        }
+
+        for searchQuery in searchQueries {
+            (searchQuery.searchField as! FindSearchField).disableDeleteButton(disabled: searchQueries.count <= 1)
+        }
     }
 
     func searchFieldsNextKeyView() {
@@ -141,6 +152,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
         searchQueries.remove(at: searchQueries.index(of: searchField)!)
         searchFieldsNextKeyView()
         redoFind()
+        searchFieldsInlineButtonsState()
     }
 
     @IBAction func replaceFieldAction(_ sender: NSTextField) {
@@ -255,7 +267,7 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
     }
 
     @objc public func addSearchQuery() {
-        parentFindView?.addSearchField(false)
+        parentFindView?.addSearchField()
     }
 
     public func toFindQuery() -> FindQuery {
@@ -342,7 +354,7 @@ extension EditViewController {
                     newQuery.id = statusQuery["id"] as? Int
                     query = newQuery
                 } else {
-                    let searchField = findViewController.addSearchField(false)
+                    let searchField = findViewController.addSearchField()
                     searchField!.id = statusQuery["id"] as! String
                     query = findViewController.searchQueries.first(where: { $0.id == statusQuery["id"] as? Int })
                 }
@@ -532,7 +544,23 @@ class FindSearchField: NSSearchField {
         parentFindView?.removeSearchQuery()
     }
 
-    private func addInlineButton(title: String, action: Selector) {
+    func disableDeleteButton(disabled: Bool) {
+        for button in inlineButtons {
+            if button.title == "-" {
+                button.isEnabled = !disabled
+            }
+        }
+    }
+
+    func disableAddButton(disabled: Bool) {
+        for button in inlineButtons {
+            if button.title == "+" {
+                button.isEnabled = !disabled
+            }
+        }
+    }
+
+    private func addInlineButton(title: String, action: Selector) -> NSButton {
         let button = NSButton(frame: NSRect(x: 0, y: 0, width: defaultButtonWidth, height: defaultButtonWidth))
         self.addSubview(button)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -546,6 +574,7 @@ class FindSearchField: NSSearchField {
         button.widthAnchor.constraint(equalToConstant: defaultButtonWidth).isActive = true
         rightPadding += defaultButtonWidth + inlineButtonSpacing
         inlineButtons.append(button)
+        return button
     }
 
     func showInlineButtons(show: Bool) {
