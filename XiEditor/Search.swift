@@ -28,6 +28,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
 
     var searchQueries: [SuplementaryFindViewController] = []
     var wrapAround = true   // option same for all search fields
+    var showMultipleSearchQueries = false   // activates/deactives 
 
     override func viewDidLoad() {
         addSearchField(true)     // by default at least one search query is present
@@ -87,6 +88,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
             newSearchFieldController.disableRemove = disableRemove
             searchFieldsStackView.insertView(newSearchFieldController.view, at: searchQueries.count - 1, in: NSStackView.Gravity.center)
             newSearchFieldController.searchField.becomeFirstResponder()
+            (newSearchFieldController.searchField as! FindSearchField).showInlineButtons(show: (newSearchFieldController.parentFindView?.showMultipleSearchQueries)!)
 
             searchFieldsNextKeyView()
 
@@ -407,6 +409,13 @@ extension EditViewController {
         document.sendRpcAsync("selection_for_replace", params: [])
     }
 
+    @IBAction func multipleSearchQueries(_ sender: AnyObject?) {
+        findViewController.showMultipleSearchQueries = !findViewController.showMultipleSearchQueries
+        for query in findViewController.searchQueries {
+            (query.searchField as! FindSearchField).showInlineButtons(show: findViewController.showMultipleSearchQueries)
+        }
+    }
+
     @IBAction func performCustomFinderAction(_ sender: Any?) {
         guard let tag = (sender as AnyObject).value(forKey: "tag") as? Int,
             let action = NSTextFinder.Action(rawValue: tag) else { return }
@@ -478,6 +487,8 @@ class FindSearchField: NSSearchField {
     let defaultButtonWidth: CGFloat = 22
     let inlineButtonSpacing: CGFloat = 2
     var parentFindView: SuplementaryFindViewController? = nil
+    var inlineButtons: [NSButton] = []
+    var labelConstraint: NSLayoutConstraint? = nil
 
     private var _lastSearchButtonWidth: CGFloat = 22 // known default
     var id: String? = nil
@@ -508,7 +519,8 @@ class FindSearchField: NSSearchField {
         label.textColor = NSColor.lightGray
         label.font = NSFont.systemFont(ofSize: 12)
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -defaultButtonWidth - rightPadding).isActive = true
+        labelConstraint = label.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -defaultButtonWidth - rightPadding)
+        labelConstraint?.isActive = true
         label.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
     }
 
@@ -533,6 +545,23 @@ class FindSearchField: NSSearchField {
         button.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -inlineButtonSpacing).isActive = true
         button.widthAnchor.constraint(equalToConstant: defaultButtonWidth).isActive = true
         rightPadding += defaultButtonWidth + inlineButtonSpacing
+        inlineButtons.append(button)
+    }
+
+    func showInlineButtons(show: Bool) {
+        rightPadding = 0
+        for button in inlineButtons {
+            button.isHidden = !show
+
+            if show {
+                rightPadding += (defaultButtonWidth + inlineButtonSpacing) * CGFloat(inlineButtons.count - 1)
+            }
+        }
+
+        labelConstraint?.isActive = false
+        labelConstraint = label.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -defaultButtonWidth - rightPadding)
+        labelConstraint?.isActive = true
+        self.updateCell(self.cell!)
     }
 
     // required override; on 10.13(?) accessory icons aren't
@@ -558,7 +587,7 @@ class FindSearchField: NSSearchField {
         let rect = super.rectForSearchText(whenCentered: isCentered)
         let delta = max(0, _lastSearchButtonWidth - rect.origin.x)
         let originX = rect.origin.x + delta
-        var width = label.frame.minX - originX
+        var width = rect.width - originX - rightPadding - defaultButtonWidth
 
         // the label's frame is at 0,0 the first time we open this view
         if width < 0 {
