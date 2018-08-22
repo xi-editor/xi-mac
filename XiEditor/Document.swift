@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 The xi-editor Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,18 +22,8 @@ struct PendingNotification {
 
 class Document: NSDocument {
 
-    /// used internally to keep track of groups of tabs
-    static fileprivate var _nextTabbingIdentifier = 0
-
-    /// returns the next available tab group identifer. When we create a new window,
-    /// if it is not part of an existing tab group it is assigned a new one.
-    static private func nextTabbingIdentifier() -> String {
-        _nextTabbingIdentifier += 1
-        return "tab-group-\(_nextTabbingIdentifier)"
-    }
-
-    /// if set, should be used as the tabbingIdentifier of new documents' windows.
-    static var preferredTabbingIdentifier: String?
+    @available(OSX 10.12, *)
+    static var tabbingMode = NSWindow.TabbingMode.automatic
 
     // minimum size for a new or resized window
     static var minWinSize = NSSize(width: 240, height: 160)
@@ -51,16 +41,9 @@ class Document: NSDocument {
             self.pendingNotifications.removeAll()
         }
     }
-    
-    /// Identifier used to group windows together into tabs.
-    /// - Todo: I suspect there is some potential confusion here around dragging tabs into and out of windows? 
-    /// I.e I'm not sure if the system ever modifies the tabbingIdentifier on our windows,
-    /// which means these could get out of sync. But: nothing obviously bad happens when I test it.
-    /// If this is problem we could use KVO to keep these in sync.
-    var tabbingIdentifier: String
-    
-	var pendingNotifications: [PendingNotification] = [];
-    var editViewController: EditViewController?
+
+    var pendingNotifications: [PendingNotification] = [];
+    weak var editViewController: EditViewController?
 
     /// Returns `true` if this document contains no data.
     var isEmpty: Bool {
@@ -69,7 +52,6 @@ class Document: NSDocument {
     
     override init() {
         dispatcher = (NSApplication.shared.delegate as? AppDelegate)?.dispatcher
-        tabbingIdentifier = Document.preferredTabbingIdentifier ?? Document.nextTabbingIdentifier()
         super.init()
         // I'm not 100% sure this is necessary but it can't _hurt_
         self.hasUndoManager = false
@@ -84,11 +66,11 @@ class Document: NSDocument {
             withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Document Window Controller")) as! NSWindowController
         
         if #available(OSX 10.12, *) {
-            windowController.window?.tabbingIdentifier = NSWindow.TabbingIdentifier(rawValue: tabbingIdentifier)
-            // preferredTabbingIdentifier is set when a new document is created with cmd-T. When this is the case, set the window's tabbingMode.
-            if Document.preferredTabbingIdentifier != nil {
-                windowController.window?.tabbingMode = .preferred
-            }
+            windowController.window?.tabbingIdentifier = NSWindow.TabbingIdentifier(rawValue: "xi-global-tab-group")
+            // Temporarily override the user's preference based on which menu item was selected
+            windowController.window?.tabbingMode = Document.tabbingMode
+            // Reset for next time
+            Document.tabbingMode = .automatic
         }
         
         windowController.window?.setFrame(newFrame, display: true)
@@ -173,7 +155,11 @@ class Document: NSDocument {
     }
         
     func sendWillScroll(first: Int, last: Int) {
-        self.sendRpcAsync("scroll", params: [first, last])
+        sendRpcAsync("scroll", params: [first, last])
+    }
+
+    func sendPaste(_ pasteString: String) {
+        sendRpcAsync("paste", params: ["chars": pasteString])
     }
 
     func updateAsync(update: [String: AnyObject]) {

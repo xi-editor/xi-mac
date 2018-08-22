@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 The xi-editor Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,16 +23,16 @@ class BoolToControlStateValueTransformer: ValueTransformer {
     override class func transformedValueClass() -> AnyClass {
         return NSNumber.self
     }
-    
+
     override class func allowsReverseTransformation() -> Bool {
         return false
     }
-    
+
     override func transformedValue(_ value: Any?) -> Any? {
         guard let boolValue = value as? Bool else { return NSControl.StateValue.mixed }
         return boolValue ? NSControl.StateValue.on : NSControl.StateValue.off
     }
-    
+
     override func reverseTransformedValue(_ value: Any?) -> Any? {
         guard let type = value as? NSControl.StateValue else { return false }
         return type == NSControl.StateValue.on ? true : false
@@ -137,13 +137,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
             } catch let err  {
                 fatalError("Failed to create application support directory \(applicationDirectory.path). \(err)")
             }
-        } 
+        }
         return applicationDirectory
     }()
-    
+
     // The default name for XiEditor's error logs
     let defaultCoreLogName = "xi_tmp.log"
-    
+
     lazy var errorLogDirectory: URL? = {
         let logDirectory = FileManager.default.urls(
             for: .libraryDirectory,
@@ -156,8 +156,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         guard logDirectory != nil else { return nil }
         do {
             try FileManager.default.createDirectory(at: logDirectory!,
-                                                     withIntermediateDirectories: true,
-                                                     attributes: nil)
+                                                    withIntermediateDirectories: true,
+                                                    attributes: nil)
         } catch {
             // Returns nil if the log directory can't be created
             return nil
@@ -171,7 +171,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
                                                   textColor: theme.foreground)
         }
     }
-    
+
     override init() {
         ValueTransformer.setValueTransformer(
             BoolToControlStateValueTransformer(),
@@ -180,7 +180,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
 
     func applicationWillFinishLaunching(_ aNotification: Notification) {
         let collectSamplesOnBoot = true
-        
+
         self.collectTracingSamplesEnabled = collectSamplesOnBoot
         Trace.shared.trace("appWillLaunch", .main, .begin)
 
@@ -201,7 +201,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
                       "config_dir": getUserConfigDirectory()]
         dispatcher.coreConnection.sendRpcAsync("client_started",
                                                params: params)
-        
+
         // fallback values used by NSUserDefaults
         let defaultDefaults: [String: Any] = [
             USER_DEFAULTS_THEME_KEY: "InspiredGitHub",
@@ -216,7 +216,35 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         Trace.shared.trace("appWillLaunch", .main, .end)
         documentController = XiDocumentController()
     }
-    
+
+    @IBAction func installShortcut(_ sender: Any?) {
+        let destPath = "/usr/local/bin/xi"
+        var message = "Shortcut installed"
+        var info = "Type \"xi\" at the command line."
+        if FileManager.default.fileExists(atPath: destPath) {
+            message = "Shortcut already installed"
+            info = "The file /usr/local/bin/xi already exists."
+        } else {
+            do {
+                let srcPath = Bundle.main.bundlePath + "/Contents/Resources/shortcut/xi"
+                try FileManager.default.copyItem(atPath: srcPath, toPath: destPath)
+
+                // 0o755 allows read and execute for everyone, write for the owner (-rwxr-xr-x)
+                let attrs = [FileAttributeKey.posixPermissions: 0o755]
+                try FileManager.default.setAttributes(attrs, ofItemAtPath: destPath)
+            } catch let err {
+                NSApplication.shared.presentError(err)
+                return
+            }
+        }
+        let alert = NSAlert()
+        alert.addButton(withTitle: "OK")
+        alert.alertStyle = .informational
+        alert.messageText = message
+        alert.informativeText = info
+        alert.runModal()
+    }
+
     // Clean up temporary Xi stderr log
     func applicationWillTerminate(_ notification: Notification) {
         if let tmpErrLogFile = errorLogDirectory?.appendingPathComponent(defaultCoreLogName) {
@@ -332,6 +360,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         }
     }
 
+    func showHover(viewIdentifier: String, requestIdentifier: Int, result: String) {
+        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
+        if requestIdentifier == document?.editViewController?.hoverRequestID {
+            DispatchQueue.main.async {
+                document?.editViewController?.showHover(withResult: result)
+            }
+        }
+    }
+
     func configChanged(viewIdentifier: ViewIdentifier, changes: [String : AnyObject]) {
         let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
         DispatchQueue.main.async {
@@ -342,7 +379,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
     func measureWidth(args: [[String : AnyObject]]) -> [[Double]] {
         return styleMap.locked().measureWidths(args)
     }
-    
+
     func findStatus(viewIdentifier: ViewIdentifier, status: [[String : AnyObject]]) {
         let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
         DispatchQueue.main.async {
@@ -434,7 +471,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
             scrollTesters.updateValue(ScrollTester(topmostDocument), forKey: topmostDocument)
         }
     }
-    
+
     func updateRpcTracingConfig(_ enabled: Bool) {
         guard let dispatcher = self.dispatcher else { return }
         Events.TracingConfig(enabled: enabled).dispatch(dispatcher)
@@ -463,7 +500,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
             Events.SaveTrace(destination: destination, frontendSamples: Trace.shared.snapshot()).dispatch(self.dispatcher!)
         }
     }
-    
+
     @IBAction func openErrorLogFolder(_ sender: Any) {
         if let errorLogPath = errorLogDirectory?.path {
             NSWorkspace.shared.selectFile(nil, inFileViewerRootedAtPath: errorLogPath)

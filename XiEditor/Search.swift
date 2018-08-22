@@ -1,4 +1,4 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 The xi-editor Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -283,13 +283,26 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
 
 extension EditViewController {
     func openFind(replaceHidden: Bool) {
-        if findViewController.view.isHidden {
-            findViewController.view.isHidden = false
-            document.sendRpcAsync("highlight_find", params: ["visible": true])
+        var offset: CGFloat
+        var origin: CGPoint
+        let replaceHiddenChanged = findViewController.replacePanel.isHidden != replaceHidden
+
+        if !findViewController.view.isHidden && replaceHiddenChanged {
+            offset = findViewController.view.fittingSize.height
+            origin = scrollView.contentView.visibleRect.origin
+            scrollView.contentView.scroll(to: NSMakePoint(origin.x ,origin.y + offset))
         }
 
         findViewController.replacePanel.isHidden = replaceHidden
-        let offset = findViewController.view.fittingSize.height
+        offset = findViewController.view.fittingSize.height
+
+        if findViewController.view.isHidden || replaceHiddenChanged {
+            findViewController.view.isHidden = false
+            origin = scrollView.contentView.visibleRect.origin
+            scrollView.contentView.scroll(to: NSMakePoint(origin.x ,origin.y - offset))
+            document.sendRpcAsync("highlight_find", params: ["visible": true])
+        }
+
         scrollView.contentInsets = NSEdgeInsetsMake(offset, 0, 0, 0)
         editView.window?.makeFirstResponder(findViewController.searchQueries.first?.searchField)
     }
@@ -301,6 +314,10 @@ extension EditViewController {
                 (searchFieldView.searchField as? FindSearchField)?.resultCount = nil
             }
             scrollView.contentInsets = NSEdgeInsetsZero
+            
+            let offset = findViewController.view.fittingSize.height
+            let origin = scrollView.contentView.visibleRect.origin
+            scrollView.contentView.scroll(to: NSMakePoint(origin.x ,origin.y + offset))
         }
 
         editView.window?.makeFirstResponder(editView)

@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 The xi-editor Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -330,6 +330,10 @@ class CoreConnection {
             let key = params["key"] as! String
             client?.removeStatusItem(viewIdentifier: viewIdentifier!, key: key)
 
+        case "show_hover":
+            let requestIdentifier = params["request_id"] as! Int
+            let result = params["result"] as! String
+            client?.showHover(viewIdentifier: viewIdentifier!, requestIdentifier: requestIdentifier, result: result)
             
         case "find_status":
             let status = params["queries"] as! [[String: AnyObject]]

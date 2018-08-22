@@ -1,4 +1,4 @@
-// Copyright 2017 Google LLC
+// Copyright 2017 The xi-editor Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -111,6 +111,7 @@ class TextPlaneLayer : NSOpenGLLayer, FpsObserver {
 
     override func copyCGLPixelFormat(forDisplayMask mask: UInt32) -> CGLPixelFormatObj {
         let attr = [
+            NSOpenGLPixelFormatAttribute(NSOpenGLPFAAllowOfflineRenderers),
             NSOpenGLPixelFormatAttribute(NSOpenGLPFAOpenGLProfile),
             NSOpenGLPixelFormatAttribute(NSOpenGLProfileVersion3_2Core),
             NSOpenGLPixelFormatAttribute(NSOpenGLPFAColorSize), 24,
@@ -154,5 +155,8 @@ class TextPlaneLayer : NSOpenGLLayer, FpsObserver {
         renderer.endDraw()
     }
 
+    override func releaseCGLPixelFormat(_ pf: CGLPixelFormatObj) {
+        // CGLPixelFormats already seem to be released; leaving the default implementation causes a crash.
+    }
 }
 

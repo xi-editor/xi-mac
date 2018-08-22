@@ -1,4 +1,4 @@
-// Copyright 2018 Google LLC
+// Copyright 2018 The xi-editor Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -61,6 +61,9 @@ protocol XiClient: AnyObject {
     func updateStatusItem(viewIdentifier: String, key: String, value: String);
     func removeStatusItem(viewIdentifier: String, key: String);
 
+    /// A result, formatted in Markdown, that is returned from a hover request.
+    func showHover(viewIdentifier: String, requestIdentifier: Int, result: String)
+
     /// A notification containing changes to the current config for the given view.
     /// - Note: The first time this message is sent, `changes` contains all defined
     // config keys and their values. Subsequent calls contain only those items which
@@ -71,7 +74,7 @@ protocol XiClient: AnyObject {
     /// where `style` is the id of the style and `strings` is an array of strings to
     /// measure. The result is an array of arrays of width measurements, in macOS "points".
     func measureWidth(args: [[String: AnyObject]]) -> [[Double]]
-    
+
     /// A notification containing the current find status.
     func findStatus(viewIdentifier: String, status: [[String: AnyObject]])
 

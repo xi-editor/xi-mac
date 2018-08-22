@@ -1,4 +1,4 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 The xi-editor Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,12 +14,12 @@
 
 import Cocoa
 
-protocol ScrollInterested {
+protocol ScrollInterested: class {
     func willScroll(to newOrigin: NSPoint);
 }
 
 class XiClipView: NSClipView {
-    var delegate: ScrollInterested?
+    weak var delegate: ScrollInterested?
 
     override func scroll(to newOrigin: NSPoint) {
         delegate?.willScroll(to: newOrigin)

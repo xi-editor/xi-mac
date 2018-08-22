@@ -21,6 +21,7 @@
 		6BA1873B1FDDD7B6008220DA /* XiClipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA1873A1FDDD7B6008220DA /* XiClipView.swift */; };
 		6BF9575B1FD70C420010BAE6 /* Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF9575A1FD70C420010BAE6 /* Client.swift */; };
 		832910D920229C2D0042C32B /* Fps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 832910D820229C2D0042C32B /* Fps.swift */; };
+		AB9A25602118C42D0023DE75 /* shortcut in Resources */ = {isa = PBXBuildFile; fileRef = AB9A255F2118C42D0023DE75 /* shortcut */; };
 		AE0243F61E4BDF8A00641BDA /* StyleMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE0243F51E4BDF8A00641BDA /* StyleMap.swift */; };
 		AE041BA61D4327EB0069AB8B /* plugins in Resources */ = {isa = PBXBuildFile; fileRef = AE041BA51D4327EB0069AB8B /* plugins */; };
 		AE168C5C1E4AD87B008249AE /* LineCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE168C5B1E4AD87B008249AE /* LineCache.swift */; };
@@ -43,6 +44,7 @@
 		AED22D861FE877000096E7C3 /* TextLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AED22D851FE877000096E7C3 /* TextLine.swift */; };
 		AED23F181C83CBED002246CE /* EditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AED23F171C83CBEC002246CE /* EditView.swift */; };
 		E1288E8020B06E9C0068EEB9 /* StatusBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1288E7F20B06E9C0068EEB9 /* StatusBar.swift */; };
+		E16BB89820FE42A700A0D7A1 /* HoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E16BB89720FE42A600A0D7A1 /* HoverViewController.swift */; };
 		F53EA2AD1DCAA8110071ACFD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F53EA2AC1DCAA8110071ACFD /* Main.storyboard */; };
 		F53EA2AF1DCAAA170071ACFD /* EditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53EA2AE1DCAAA170071ACFD /* EditViewController.swift */; };
 		F5BDBF371DCA9D2C0042430B /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5BDBF361DCA9D2C0042430B /* Document.swift */; };
@@ -87,6 +89,7 @@
 		6BA1873A1FDDD7B6008220DA /* XiClipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiClipView.swift; sourceTree = "<group>"; };
 		6BF9575A1FD70C420010BAE6 /* Client.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Client.swift; sourceTree = "<group>"; };
 		832910D820229C2D0042C32B /* Fps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fps.swift; sourceTree = "<group>"; };
+		AB9A255F2118C42D0023DE75 /* shortcut */ = {isa = PBXFileReference; lastKnownFileType = folder; path = shortcut; sourceTree = "<group>"; };
 		AE0243F51E4BDF8A00641BDA /* StyleMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StyleMap.swift; sourceTree = "<group>"; };
 		AE041B971D4323460069AB8B /* build-rust-xcode.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-rust-xcode.sh"; sourceTree = "<group>"; };
 		AE041BA51D4327EB0069AB8B /* plugins */ = {isa = PBXFileReference; lastKnownFileType = text; path = plugins; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -116,6 +119,7 @@
 		AED22D851FE877000096E7C3 /* TextLine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextLine.swift; sourceTree = "<group>"; };
 		AED23F171C83CBEC002246CE /* EditView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditView.swift; sourceTree = "<group>"; };
 		E1288E7F20B06E9C0068EEB9 /* StatusBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBar.swift; sourceTree = "<group>"; };
+		E16BB89720FE42A600A0D7A1 /* HoverViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HoverViewController.swift; sourceTree = "<group>"; };
 		F53EA2AC1DCAA8110071ACFD /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		F53EA2AE1DCAAA170071ACFD /* EditViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = EditViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		F5BDBF361DCA9D2C0042430B /* Document.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
@@ -155,6 +159,7 @@
 				AE499DDE1C82BB2B002D68AF /* XiEditorTests */,
 				AE499DE91C82BB2B002D68AF /* XiEditorUITests */,
 				AE499DCD1C82BB2B002D68AF /* Products */,
+				AB9A255F2118C42D0023DE75 /* shortcut */,
 			);
 			sourceTree = "<group>";
 		};
@@ -194,6 +199,7 @@
 				28F1ED491EC4C735008839BE /* Search.swift */,
 				E1288E7F20B06E9C0068EEB9 /* StatusBar.swift */,
 				832910D820229C2D0042C32B /* Fps.swift */,
+				E16BB89720FE42A600A0D7A1 /* HoverViewController.swift */,
 				AE499DD61C82BB2B002D68AF /* Info.plist */,
 				F53EA2AC1DCAA8110071ACFD /* Main.storyboard */,
 				AE499DD11C82BB2B002D68AF /* Assets.xcassets */,
@@ -382,6 +388,7 @@
 				6B1D39101FC53F5C008CCA35 /* client_example.toml in Resources */,
 				AED22D811FE84B4B0096E7C3 /* solid.f.glsl in Resources */,
 				AED22D831FE84B4B0096E7C3 /* text.v.glsl in Resources */,
+				AB9A25602118C42D0023DE75 /* shortcut in Resources */,
 				AED22D821FE84B4B0096E7C3 /* solid.v.glsl in Resources */,
 				AE041BA61D4327EB0069AB8B /* plugins in Resources */,
 				AE499DD21C82BB2B002D68AF /* Assets.xcassets in Resources */,
@@ -416,6 +423,7 @@
 				AE0243F61E4BDF8A00641BDA /* StyleMap.swift in Sources */,
 				AED22D761FE836880096E7C3 /* TextPlane.swift in Sources */,
 				AE168C5C1E4AD87B008249AE /* LineCache.swift in Sources */,
+				E16BB89820FE42A700A0D7A1 /* HoverViewController.swift in Sources */,
 				6B90DD1C1F129C1A00DF3CE2 /* PluginCommand.swift in Sources */,
 				6B53F5F21EF963EB00A4C664 /* Theme.swift in Sources */,
 				AE499DF91C82C835002D68AF /* CoreConnection.swift in Sources */,

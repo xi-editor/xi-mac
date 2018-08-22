@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 The xi-editor Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -134,7 +134,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     var gutterXPad: CGFloat = 8
     var gutterCache: GutterCache?
 
-    var dataSource: EditViewDataSource!
+    weak var dataSource: EditViewDataSource!
 
     var lastDragLineCol: (Int, Int)?
     var timer: Timer?
@@ -250,8 +250,6 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
 
     func replacementMarkedRange(_ replacementRange: NSRange) -> NSRange {
         var markedRange = _markedRange
-
-
         if (markedRange.location == NSNotFound) {
             markedRange = _selectedRange
         }
@@ -555,7 +553,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         for lineIx in first..<last {
             let relLineIx = lineIx - first
             guard let line = lines[relLineIx] else {
-              continue
+                continue
             }
 
             let gutterNumber = UInt(lineIx) + 1

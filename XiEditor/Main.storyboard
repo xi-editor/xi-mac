@@ -461,6 +461,12 @@ Gw
                                                 <action selector="openPreferences:" target="7er-QZ-amI" id="dzf-4q-1J8"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem title="Install Command Line Shortcut" id="Rhk-UC-PWm">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="installShortcut:" target="azf-ih-6fI" id="s8S-bc-cEL"/>
+                                            </connections>
+                                        </menuItem>
                                         <menuItem isSeparatorItem="YES" id="gsd-kb-HGJ"/>
                                         <menuItem title="Services" id="LDz-hM-BVt">
                                             <modifierMask key="keyEquivalentModifierMask"/>
@@ -497,7 +503,7 @@ Gw
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="File" id="zqD-KZ-Zvt">
                                     <items>
-                                        <menuItem title="New" keyEquivalent="n" id="vc6-rD-brY">
+                                        <menuItem title="New Window" tag="11" keyEquivalent="n" id="vc6-rD-brY">
                                             <connections>
                                                 <action selector="newDocument:" target="7er-QZ-amI" id="RMh-4o-lEC"/>
                                             </connections>
@@ -610,10 +616,15 @@ Gw
                                                 <action selector="selectAll:" target="7er-QZ-amI" id="4lC-y2-6Hm"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Add Previous Line" keyEquivalent="" id="jXq-9f-cwS">
+                                        <menuItem title="Split Selection Into Lines" keyEquivalent="L" id="jXq-9f-cwS">
+                                            <connections>
+                                                <action selector="splitSelectionIntoLines:" target="7er-QZ-amI" id="BdM-gr-QAB"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Add Previous Line" keyEquivalent="" id="e6b-XR-kYK">
                                             <modifierMask key="keyEquivalentModifierMask" shift="YES" control="YES"/>
                                             <connections>
-                                                <action selector="addPreviousLineToSelection:" target="7er-QZ-amI" id="vJn-Lb-7GS"/>
+                                                <action selector="addPreviousLineToSelection:" target="7er-QZ-amI" id="BdN-gr-QAB"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Add Next Line" keyEquivalent="" id="G15-4N-dih">
