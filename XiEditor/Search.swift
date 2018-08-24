@@ -283,23 +283,18 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
 
 extension EditViewController {
     func openFind(replaceHidden: Bool) {
-        var offset: CGFloat
-        var origin: CGPoint
         let replaceHiddenChanged = findViewController.replacePanel.isHidden != replaceHidden
 
         if !findViewController.view.isHidden && replaceHiddenChanged {
-            offset = findViewController.view.fittingSize.height
-            origin = scrollView.contentView.visibleRect.origin
-            scrollView.contentView.scroll(to: NSMakePoint(origin.x ,origin.y + offset))
+            updateScrollPosition(previousOffset: findViewController.view.fittingSize.height)
         }
 
         findViewController.replacePanel.isHidden = replaceHidden
-        offset = findViewController.view.fittingSize.height
+        let offset = findViewController.view.fittingSize.height
 
         if findViewController.view.isHidden || replaceHiddenChanged {
             findViewController.view.isHidden = false
-            origin = scrollView.contentView.visibleRect.origin
-            scrollView.contentView.scroll(to: NSMakePoint(origin.x ,origin.y - offset))
+            updateScrollPosition(previousOffset: 0)
             document.sendRpcAsync("highlight_find", params: ["visible": true])
         }
 
@@ -325,7 +320,7 @@ extension EditViewController {
     }
 
     func updateScrollPosition(previousOffset: CGFloat) {
-        if findViewController != nil && !findViewController.view.isHidden {
+        if !findViewController.view.isHidden {
             let origin = scrollView.contentView.visibleRect.origin
             scrollView.contentView.scroll(to: NSMakePoint(origin.x, origin.y - (findViewController.view.fittingSize.height - previousOffset)))
         }
