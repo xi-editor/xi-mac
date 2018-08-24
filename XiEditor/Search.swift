@@ -74,10 +74,6 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
         }
     }
 
-    @IBAction func addSearchFieldAction(_ sender: NSButton) {
-        addSearchField()
-    }
-
     @objc @discardableResult public func addSearchField() -> FindSearchField? {
         if searchQueries.count < MAX_SEARCH_QUERIES {
             let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
@@ -263,11 +259,15 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
     }
 
     @objc public func removeSearchQuery() {
+        let offset = parentFindView?.view.fittingSize.height
         parentFindView?.removeSearchField(searchField: self)
+        parentFindView?.findDelegate.updateScrollPosition(previousOffset: offset!)
     }
 
     @objc public func addSearchQuery() {
+        let offset = parentFindView?.view.fittingSize.height
         parentFindView?.addSearchField()
+        parentFindView?.findDelegate.updateScrollPosition(previousOffset: offset!)
     }
 
     public func toFindQuery() -> FindQuery {
@@ -322,6 +322,13 @@ extension EditViewController {
 
         editView.window?.makeFirstResponder(editView)
         document.sendRpcAsync("highlight_find", params: ["visible": false])
+    }
+
+    func updateScrollPosition(previousOffset: CGFloat) {
+        if findViewController != nil && !findViewController.view.isHidden {
+            let origin = scrollView.contentView.visibleRect.origin
+            scrollView.contentView.scroll(to: NSMakePoint(origin.x, origin.y - (findViewController.view.fittingSize.height - previousOffset)))
+        }
     }
 
     func findNext(wrapAround: Bool, allowSame: Bool) {

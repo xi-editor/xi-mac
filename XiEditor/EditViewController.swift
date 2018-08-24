@@ -49,6 +49,7 @@ protocol FindDelegate {
     func replace(_ term: String?)
     func replaceNext()
     func replaceAll()
+    func updateScrollPosition(previousOffset: CGFloat)
 }
 
 class EditViewController: NSViewController, EditViewDataSource, FindDelegate, ScrollInterested {
