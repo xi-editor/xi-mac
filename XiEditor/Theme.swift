@@ -33,16 +33,7 @@ struct Theme {
 
 
     /// Background color of regions matching the current search.
-    let findHighlight: NSColor
-    let findHighlights = [      // todo: instead retrieve from theme definition
-        NSColor(red: 0.5, green: 0.8, blue: 1.0, alpha: 0.5),
-        NSColor(red: 0.1, green: 0.1, blue: 1.0, alpha: 0.5),
-        NSColor(red: 0.8, green: 0.1, blue: 1.0, alpha: 0.5),
-        NSColor(red: 0.8, green: 0.5, blue: 1.0, alpha: 0.5),
-        NSColor(red: 1.0, green: 0.1, blue: 0.8, alpha: 0.5),
-        NSColor(red: 1.0, green: 0.5, blue: 0.8, alpha: 0.5),
-        NSColor(red: 0.1, green: 1.0, blue: 0.8, alpha: 0.5),
-    ]
+    let findHighlights: [NSColor]?
     /// Background color of regions matching the current search.
     let findHighlightForeground: NSColor?
 
@@ -72,7 +63,7 @@ extension Theme {
               background: NSColor.white,
               caret: NSColor.black,
               lineHighlight: nil,
-              findHighlight: NSColor(deviceWhite: 0.8, alpha: 0.4),
+              findHighlights: [NSColor(deviceWhite: 0.8, alpha: 0.4)],
               findHighlightForeground: nil,
               gutter: NSColor(deviceWhite: 0.9, alpha: 1.0),
               gutterForeground: NSColor(deviceWhite: 0.5, alpha: 1.0),
@@ -91,7 +82,7 @@ extension Theme {
         let caret = NSColor(jsonRgbaColor: dict["caret"] as? [String: AnyObject] ?? [:])
         let line_highlight = NSColor(jsonRgbaColor: dict["line_highlight"] as? [String: AnyObject] ?? [:])
 
-        let find_highlight = NSColor(jsonRgbaColor: dict["find_highlight"] as? [String: AnyObject] ?? [:])
+        let find_highlight: NSColor? = NSColor(jsonRgbaColor: dict["find_highlight"] as? [String: AnyObject] ?? [:])
         let find_highlight_foreground = NSColor(jsonRgbaColor: dict["find_highlight_foreground"] as? [String: AnyObject] ?? [:])
         let gutter = NSColor(jsonRgbaColor: dict["gutter"] as? [String: AnyObject] ?? [:])
         let gutter_foreground = NSColor(jsonRgbaColor: dict["gutter_foreground"] as? [String: AnyObject] ?? [:])
@@ -109,7 +100,7 @@ extension Theme {
             background: background ?? defaults.background,
             caret: caret ?? defaults.caret,
             lineHighlight: line_highlight ?? defaults.lineHighlight,
-            findHighlight: find_highlight ?? defaults.findHighlight,
+            findHighlights: Theme.generateHighlightColors(findHighlight: find_highlight ?? defaults.findHighlights?.first!),
             findHighlightForeground: find_highlight_foreground ?? defaults.findHighlightForeground,
             gutter: gutter ?? defaults.gutter,
             gutterForeground: gutter_foreground ?? defaults.gutterForeground,
@@ -119,6 +110,20 @@ extension Theme {
             inactiveSelection: inactive_selection ?? defaults.inactiveSelection,
             inactiveSelectionForeground: inactive_selection_foreground ?? defaults.inactiveSelectionForeground,
             shadow: shadow ?? defaults.shadow)
+    }
+
+    // Helper function to generate highlight colors for multiple search queries. This is required because custom fields cannot be retrieved from themes. Therefore, it is not possible to define multiple highlight colors.
+    static func generateHighlightColors(findHighlight: NSColor?) -> [NSColor]? {
+        return findHighlight.map({(defaultHighlight: NSColor) -> [NSColor] in
+            var hue: CGFloat = 0.0
+            var saturation: CGFloat = 0.0
+            var brightness: CGFloat = 0.0
+            var alpha: CGFloat = 0.0
+            defaultHighlight.usingColorSpaceName(NSColorSpaceName.calibratedRGB)?.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
+            return [defaultHighlight] + (0..<Style.N_RESERVED_STYLES).map({
+                return NSColor.init(hue: CGFloat((1.0 / Double(Style.N_RESERVED_STYLES)) * Double($0)), saturation: 1, brightness: brightness, alpha: alpha)
+            })
+        })
     }
 }
 

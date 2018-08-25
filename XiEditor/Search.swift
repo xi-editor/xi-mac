@@ -15,10 +15,10 @@
 import Cocoa
 import Swift
 
-let MAX_SEARCH_QUERIES = 7
 
 class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlTextEditingDelegate {
     var findDelegate: FindDelegate!
+    static let MAX_SEARCH_QUERIES = 7
 
     @IBOutlet weak var navigationButtons: NSSegmentedControl!
     @IBOutlet weak var doneButton: NSButton!
@@ -75,7 +75,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     }
 
     @objc @discardableResult public func addSearchField() -> FindSearchField? {
-        if searchQueries.count < MAX_SEARCH_QUERIES {
+        if searchQueries.count < FindViewController.MAX_SEARCH_QUERIES {
             let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
             let newSearchFieldController = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Suplementary Find View Controller")) as! SuplementaryFindViewController
 
@@ -97,7 +97,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
 
     func searchFieldsInlineButtonsState() {
         for searchQuery in searchQueries {
-            (searchQuery.searchField as! FindSearchField).disableAddButton(disabled: searchQueries.count >= MAX_SEARCH_QUERIES)
+            (searchQuery.searchField as! FindSearchField).disableAddButton(disabled: searchQueries.count >= FindViewController.MAX_SEARCH_QUERIES)
         }
 
         for searchQuery in searchQueries {
@@ -124,7 +124,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     }
 
     func redoFind() {
-        findDelegate.find(searchQueries.map({(v: SuplementaryFindViewController) -> FindQuery in v.toFindQuery()}))
+        findDelegate.find(searchQueries.map({ $0.toFindQuery() }))
     }
 
     func findNext(reverse: Bool) {

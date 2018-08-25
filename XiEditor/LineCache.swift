@@ -28,7 +28,7 @@ struct Line<T> {
     /// A Boolean value representing whether this line contains selected/highlighted text.
     /// This is used to determine whether we should pre-draw its background.
     var containsReservedStyle: Bool {
-        return styles.contains { $0.style < N_RESERVED_STYLES }
+        return styles.contains { $0.style < Style.N_RESERVED_STYLES }
     }
 
     /// A Boolean indicating whether this line contains a cursor.

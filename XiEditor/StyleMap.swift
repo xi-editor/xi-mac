@@ -14,7 +14,6 @@
 
 import Cocoa
 
-let N_RESERVED_STYLES = 8
 
 /// A represents a given text style.
 struct Style {
@@ -26,6 +25,7 @@ struct Style {
     var weight: Int?
     var attributes: [NSAttributedStringKey: Any] = [:]
     var fakeItalic = false
+    static let N_RESERVED_STYLES = 8
 
     init(font fromFont: NSFont, fgColor: NSColor?, bgColor: NSColor?, underline: Bool, italic: Bool, weight: Int?) {
         if let fgColor = fgColor {
@@ -170,7 +170,7 @@ class StyleMapState: UnfairLock {
             return
         }
 
-        if id >= 0 && id < N_RESERVED_STYLES {
+        if id >= 0 && id < Style.N_RESERVED_STYLES {
             builder.addSelSpan(range: convertRange(range), argb: selColor!)
         } else {
             guard let style = styles[id] else { return }
