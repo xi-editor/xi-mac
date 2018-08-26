@@ -357,17 +357,17 @@ Gw
             <objects>
                 <viewController storyboardIdentifier="Suplementary Find View Controller" id="uoL-yg-E2H" customClass="SuplementaryFindViewController" customModule="XiEditor" customModuleProvider="target" sceneMemberID="viewController">
                     <visualEffectView key="view" blendingMode="behindWindow" material="appearanceBased" state="inactive" id="Qip-n1-7ch">
-                        <rect key="frame" x="0.0" y="0.0" width="619" height="25"/>
+                        <rect key="frame" x="0.0" y="0.0" width="649" height="110"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <stackView distribution="fill" orientation="vertical" alignment="centerX" spacing="4" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Zpd-iM-7eQ">
-                                <rect key="frame" x="0.0" y="0.0" width="619" height="25"/>
+                                <rect key="frame" x="0.0" y="0.0" width="649" height="110"/>
                                 <subviews>
-                                    <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="snt-AV-vR6">
-                                        <rect key="frame" x="109.5" y="0.0" width="400" height="25"/>
+                                    <stackView distribution="fill" orientation="horizontal" alignment="top" spacing="4" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="snt-AV-vR6">
+                                        <rect key="frame" x="96.5" y="0.0" width="456" height="110"/>
                                         <subviews>
                                             <searchField wantsLayer="YES" focusRingType="none" verticalHuggingPriority="750" placeholderIntrinsicWidth="400" placeholderIntrinsicHeight="22" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4N3-Md-ylI" customClass="FindSearchField" customModule="XiEditor" customModuleProvider="target">
-                                                <rect key="frame" x="0.0" y="3" width="400" height="22"/>
+                                                <rect key="frame" x="0.0" y="88" width="400" height="22"/>
                                                 <searchFieldCell key="cell" selectable="YES" editable="YES" borderStyle="bezel" focusRingType="none" bezelStyle="round" recentsAutosaveName="xi-editor-find" id="pVg-29-Xau">
                                                     <font key="font" metaFont="system"/>
                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -378,11 +378,50 @@ Gw
                                                     <outlet property="searchMenuTemplate" destination="RHe-lc-wA0" id="Ki0-uf-eBV"/>
                                                 </connections>
                                             </searchField>
+                                            <stackView distribution="fill" orientation="horizontal" alignment="bottom" spacing="2" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="YGp-T4-eoX">
+                                                <rect key="frame" x="404" y="90" width="52" height="20"/>
+                                                <subviews>
+                                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="WtA-NA-zjT">
+                                                        <rect key="frame" x="0.0" y="-1" width="25" height="19"/>
+                                                        <buttonCell key="cell" type="roundRect" title="+" bezelStyle="roundedRect" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="8uK-5I-cZg">
+                                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                            <font key="font" metaFont="system" size="16"/>
+                                                        </buttonCell>
+                                                        <connections>
+                                                            <action selector="addSearchField:" target="uoL-yg-E2H" id="0zi-0Z-ZCs"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="V7s-ei-piI">
+                                                        <rect key="frame" x="27" y="-1" width="25" height="19"/>
+                                                        <buttonCell key="cell" type="roundRect" title="-" bezelStyle="roundedRect" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="0dQ-No-w5x">
+                                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                            <font key="font" metaFont="system" size="16"/>
+                                                        </buttonCell>
+                                                        <connections>
+                                                            <action selector="removeSearchField:" target="uoL-yg-E2H" id="9Wq-QC-w07"/>
+                                                        </connections>
+                                                    </button>
+                                                </subviews>
+                                                <edgeInsets key="edgeInsets" left="0.0" right="0.0" top="2" bottom="0.0"/>
+                                                <constraints>
+                                                    <constraint firstItem="V7s-ei-piI" firstAttribute="width" secondItem="WtA-NA-zjT" secondAttribute="width" id="x7P-v4-0CW"/>
+                                                </constraints>
+                                                <visibilityPriorities>
+                                                    <integer value="1000"/>
+                                                    <integer value="1000"/>
+                                                </visibilityPriorities>
+                                                <customSpacing>
+                                                    <real value="3.4028234663852886e+38"/>
+                                                    <real value="3.4028234663852886e+38"/>
+                                                </customSpacing>
+                                            </stackView>
                                         </subviews>
                                         <visibilityPriorities>
                                             <integer value="1000"/>
+                                            <integer value="1000"/>
                                         </visibilityPriorities>
                                         <customSpacing>
+                                            <real value="3.4028234663852886e+38"/>
                                             <real value="3.4028234663852886e+38"/>
                                         </customSpacing>
                                     </stackView>
@@ -395,7 +434,7 @@ Gw
                                 </customSpacing>
                             </stackView>
                             <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="nT1-sD-TQg">
-                                <rect key="frame" x="0.0" y="-277" width="619" height="5"/>
+                                <rect key="frame" x="0.0" y="-192" width="619" height="5"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             </box>
                         </subviews>
@@ -407,6 +446,8 @@ Gw
                         </constraints>
                     </visualEffectView>
                     <connections>
+                        <outlet property="addButton" destination="WtA-NA-zjT" id="sBs-ZU-83X"/>
+                        <outlet property="deleteButton" destination="V7s-ei-piI" id="cWW-x6-p20"/>
                         <outlet property="searchField" destination="4N3-Md-ylI" id="EXI-Ta-lqU"/>
                     </connections>
                 </viewController>

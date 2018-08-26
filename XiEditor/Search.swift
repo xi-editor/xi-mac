@@ -31,7 +31,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     var showMultipleSearchQueries = false   // activates/deactives 
 
     override func viewDidLoad() {
-        addSearchField()     // by default at least one search field is present
+        addSearchField(searchField: nil)     // by default at least one search field is present
         replacePanel.isHidden = true
     }
 
@@ -74,36 +74,43 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
         }
     }
 
-    @objc @discardableResult public func addSearchField() -> FindSearchField? {
+    @objc @discardableResult public func addSearchField(searchField: SuplementaryFindViewController?) -> FindSearchField? {
         if searchQueries.count < FindViewController.MAX_SEARCH_QUERIES {
             let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
             let newSearchFieldController = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Suplementary Find View Controller")) as! SuplementaryFindViewController
 
             newSearchFieldController.parentFindView = self
-            searchQueries.append(newSearchFieldController)
-            searchFieldsStackView.insertView(newSearchFieldController.view, at: searchQueries.count - 1, in: NSStackView.Gravity.center)
+
+            if searchField != nil {
+                searchQueries.insert(newSearchFieldController, at: searchQueries.index(of: searchField!)! + 1)
+                searchFieldsStackView.insertView(newSearchFieldController.view, at: searchQueries.index(of: searchField!)! + 1, in: NSStackView.Gravity.center)
+            } else {
+                searchQueries.append(newSearchFieldController)
+                searchFieldsStackView.insertView(newSearchFieldController.view, at: searchQueries.count - 1, in: NSStackView.Gravity.center)
+            }
+            
             newSearchFieldController.searchField.becomeFirstResponder()
             // show/hide +/- button depending on user settings
-            (newSearchFieldController.searchField as! FindSearchField).showInlineButtons(show: (newSearchFieldController.parentFindView?.showMultipleSearchQueries)!)
+            newSearchFieldController.showButtons(show: (newSearchFieldController.parentFindView?.showMultipleSearchQueries)!)
 
             searchFieldsNextKeyView()
-            searchFieldsInlineButtonsState()
+            searchFieldsButtonsState()
 
             return newSearchFieldController.searchField as? FindSearchField
         }
 
-        searchFieldsInlineButtonsState()
+        searchFieldsButtonsState()
         return nil
     }
 
     // Disables/enables add and delete buttons depending on whether some conditions are fulfilled.
-    func searchFieldsInlineButtonsState() {
+    func searchFieldsButtonsState() {
         for searchQuery in searchQueries {
-            (searchQuery.searchField as! FindSearchField).disableAddButton(disabled: searchQueries.count >= FindViewController.MAX_SEARCH_QUERIES)
+            searchQuery.disableAddButton(disable: searchQueries.count >= FindViewController.MAX_SEARCH_QUERIES)
         }
 
         for searchQuery in searchQueries {
-            (searchQuery.searchField as! FindSearchField).disableDeleteButton(disabled: searchQueries.count <= 1)
+            searchQuery.disableDeleteButton(disable: searchQueries.count <= 1)
         }
     }
 
@@ -151,7 +158,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
         searchQueries.remove(at: searchQueries.index(of: searchField)!)
         searchFieldsNextKeyView()
         redoFind()
-        searchFieldsInlineButtonsState()
+        searchFieldsButtonsState()
     }
 
     @IBAction func replaceFieldAction(_ sender: NSTextField) {
@@ -172,6 +179,8 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
 
 class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, NSControlTextEditingDelegate {
     @IBOutlet weak var searchField: NSSearchField!
+    @IBOutlet weak var addButton: NSButton!
+    @IBOutlet weak var deleteButton: NSButton!
 
     let resultCountLabel = Label(title: "")
 
@@ -209,7 +218,6 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
         let recentClear = NSMenuItem(title: "Clear Recent Searches", action: nil, keyEquivalent: "")
         recentClear.tag = Int(NSSearchField.clearRecentsMenuItemTag)
         menu.addItem(recentClear)
-        (searchField as! FindSearchField).parentFindView = self
     }
 
     // we use this to make sure that UI corresponds to our state
@@ -229,6 +237,31 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
             break
         }
         return true
+    }
+
+    func showButtons(show: Bool) {
+        addButton.isHidden = !show
+        deleteButton.isHidden = !show
+    }
+
+    func disableAddButton(disable: Bool) {
+        addButton.isEnabled = !disable
+    }
+
+    func disableDeleteButton(disable: Bool) {
+        deleteButton.isEnabled = !disable
+    }
+
+    @IBAction func addSearchField(_ sender: NSButton) {
+        let offset = parentFindView?.view.fittingSize.height
+        parentFindView?.addSearchField(searchField: self)
+        parentFindView?.findDelegate.updateScrollPosition(previousOffset: offset!)
+    }
+
+    @IBAction func removeSearchField(_ sender: NSButton) {
+        let offset = parentFindView?.view.fittingSize.height
+        parentFindView?.removeSearchField(searchField: self)
+        parentFindView?.findDelegate.updateScrollPosition(previousOffset: offset!)
     }
 
     @IBAction func selectIgnoreCaseMenuAction(_ sender: NSMenuItem) {
@@ -259,18 +292,6 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
         } else {
             parentFindView?.findNext(reverse: false)
         }
-    }
-
-    @objc public func removeSearchQuery() {
-        let offset = parentFindView?.view.fittingSize.height
-        parentFindView?.removeSearchField(searchField: self)
-        parentFindView?.findDelegate.updateScrollPosition(previousOffset: offset!)
-    }
-
-    @objc public func addSearchQuery() {
-        let offset = parentFindView?.view.fittingSize.height
-        parentFindView?.addSearchField()
-        parentFindView?.findDelegate.updateScrollPosition(previousOffset: offset!)
     }
 
     public func toFindQuery() -> FindQuery {
@@ -376,7 +397,7 @@ extension EditViewController {
                     newQuery.id = statusQuery["id"] as? Int
                     query = newQuery
                 } else {
-                    let searchField = findViewController.addSearchField()
+                    let searchField = findViewController.addSearchField(searchField: nil)
                     searchField!.id = statusQuery["id"] as? String
                     query = findViewController.searchQueries.first(where: { $0.id == statusQuery["id"] as? Int })
                 }
@@ -446,7 +467,7 @@ extension EditViewController {
     @IBAction func multipleSearchQueries(_ sender: AnyObject?) {
         findViewController.showMultipleSearchQueries = !findViewController.showMultipleSearchQueries
         for query in findViewController.searchQueries {
-            (query.searchField as! FindSearchField).showInlineButtons(show: findViewController.showMultipleSearchQueries)
+            query.showButtons(show: findViewController.showMultipleSearchQueries)
         }
     }
 
@@ -519,10 +540,6 @@ class FindSearchField: NSSearchField {
     let label = Label(title: "")
     var rightPadding: CGFloat = 0    // tracks how much space on the right side of the search field is occupied by buttons
     let defaultButtonWidth: CGFloat = 22
-    let inlineButtonSpacing: CGFloat = 2
-    var parentFindView: SuplementaryFindViewController? = nil
-    var inlineButtons: [NSButton] = []
-    var labelConstraint: NSLayoutConstraint? = nil
 
     private var _lastSearchButtonWidth: CGFloat = 22 // known default
     var id: String? = nil
@@ -546,72 +563,12 @@ class FindSearchField: NSSearchField {
         centersPlaceholder = false
         sendsSearchStringImmediately = true
 
-        addInlineButton(title: "-", action: #selector(self.remove))
-        addInlineButton(title: "+", action: #selector(self.add))
-
         self.addSubview(label)
         label.textColor = NSColor.lightGray
         label.font = NSFont.systemFont(ofSize: 12)
         label.translatesAutoresizingMaskIntoConstraints = false
-        labelConstraint = label.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -defaultButtonWidth - rightPadding)
-        labelConstraint?.isActive = true
+        label.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -defaultButtonWidth - rightPadding).isActive = true
         label.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
-    }
-
-    @objc func add() {
-        parentFindView?.addSearchQuery()
-    }
-
-    @objc func remove() {
-        parentFindView?.removeSearchQuery()
-    }
-
-    func disableDeleteButton(disabled: Bool) {
-        for button in inlineButtons {
-            if button.title == "-" {
-                button.isEnabled = !disabled
-            }
-        }
-    }
-
-    func disableAddButton(disabled: Bool) {
-        for button in inlineButtons {
-            if button.title == "+" {
-                button.isEnabled = !disabled
-            }
-        }
-    }
-
-    private func addInlineButton(title: String, action: Selector) {
-        let button = NSButton(frame: NSRect(x: 0, y: 0, width: defaultButtonWidth, height: defaultButtonWidth))
-        self.addSubview(button)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.title = title
-        button.action = action
-        button.target = self
-        (button.cell as! NSButtonCell).bezelStyle = NSButton.BezelStyle.roundRect
-        button.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -inlineButtonSpacing - rightPadding).isActive = true
-        button.topAnchor.constraint(equalTo: self.topAnchor, constant: inlineButtonSpacing).isActive = true
-        button.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -inlineButtonSpacing).isActive = true
-        button.widthAnchor.constraint(equalToConstant: defaultButtonWidth).isActive = true
-        rightPadding += defaultButtonWidth + inlineButtonSpacing
-        inlineButtons.append(button)
-    }
-
-    func showInlineButtons(show: Bool) {
-        rightPadding = 0
-        for button in inlineButtons {
-            button.isHidden = !show
-
-            if show {
-                rightPadding += (defaultButtonWidth + inlineButtonSpacing) * CGFloat(inlineButtons.count - 1)
-            }
-        }
-
-        labelConstraint?.isActive = false
-        labelConstraint = label.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -defaultButtonWidth - rightPadding)
-        labelConstraint?.isActive = true
-        self.updateCell(self.cell!)
     }
 
     // required override; on 10.13(?) accessory icons aren't
