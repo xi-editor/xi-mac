@@ -31,7 +31,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     var showMultipleSearchQueries = false   // activates/deactives 
 
     override func viewDidLoad() {
-        addSearchField()     // by default at least one search query is present
+        addSearchField()     // by default at least one search field is present
         replacePanel.isHidden = true
     }
 
@@ -83,6 +83,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
             searchQueries.append(newSearchFieldController)
             searchFieldsStackView.insertView(newSearchFieldController.view, at: searchQueries.count - 1, in: NSStackView.Gravity.center)
             newSearchFieldController.searchField.becomeFirstResponder()
+            // show/hide +/- button depending on user settings
             (newSearchFieldController.searchField as! FindSearchField).showInlineButtons(show: (newSearchFieldController.parentFindView?.showMultipleSearchQueries)!)
 
             searchFieldsNextKeyView()
@@ -95,6 +96,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
         return nil
     }
 
+    // Disables/enables add and delete buttons depending on whether some conditions are fulfilled.
     func searchFieldsInlineButtonsState() {
         for searchQuery in searchQueries {
             (searchQuery.searchField as! FindSearchField).disableAddButton(disabled: searchQueries.count >= FindViewController.MAX_SEARCH_QUERIES)
@@ -105,6 +107,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
         }
     }
 
+    // Sets for each search field which search field should be selected after "tab" is pressed
     func searchFieldsNextKeyView() {
         searchQueries.last?.searchField.nextKeyView = replaceField
         replaceField.nextKeyView = searchQueries.first?.searchField
@@ -543,7 +546,7 @@ class FindSearchField: NSSearchField {
         centersPlaceholder = false
         sendsSearchStringImmediately = true
 
-        addInlineButton(title: "-", action: #selector(self.delete))
+        addInlineButton(title: "-", action: #selector(self.remove))
         addInlineButton(title: "+", action: #selector(self.add))
 
         self.addSubview(label)
@@ -559,7 +562,7 @@ class FindSearchField: NSSearchField {
         parentFindView?.addSearchQuery()
     }
 
-    @objc func delete() {
+    @objc func remove() {
         parentFindView?.removeSearchQuery()
     }
 
