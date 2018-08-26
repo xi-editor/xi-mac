@@ -89,7 +89,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
             searchFieldsNextKeyView()
             searchFieldsInlineButtonsState()
 
-            return newSearchFieldController.searchField as! FindSearchField
+            return newSearchFieldController.searchField as? FindSearchField
         }
 
         searchFieldsInlineButtonsState()
@@ -377,7 +377,7 @@ extension EditViewController {
                     query = newQuery
                 } else {
                     let searchField = findViewController.addSearchField()
-                    searchField!.id = statusQuery["id"] as! String
+                    searchField!.id = statusQuery["id"] as? String
                     query = findViewController.searchQueries.first(where: { $0.id == statusQuery["id"] as? Int })
                 }
             }
@@ -390,7 +390,7 @@ extension EditViewController {
             }
 
             if status.first?["case_sensitive"] != nil && !(status.first?["case_sensitive"] is NSNull) {
-                query?.ignoreCase = !(statusQuery["case_sensitive"] != nil) as! Bool
+                query?.ignoreCase = !(statusQuery["case_sensitive"] != nil)
             }
 
             if status.first?["whole_words"] != nil && !(status.first?["whole_words"] is NSNull) {
@@ -582,7 +582,7 @@ class FindSearchField: NSSearchField {
         }
     }
 
-    private func addInlineButton(title: String, action: Selector) -> NSButton {
+    private func addInlineButton(title: String, action: Selector) {
         let button = NSButton(frame: NSRect(x: 0, y: 0, width: defaultButtonWidth, height: defaultButtonWidth))
         self.addSubview(button)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -596,7 +596,6 @@ class FindSearchField: NSSearchField {
         button.widthAnchor.constraint(equalToConstant: defaultButtonWidth).isActive = true
         rightPadding += defaultButtonWidth + inlineButtonSpacing
         inlineButtons.append(button)
-        return button
     }
 
     func showInlineButtons(show: Bool) {
