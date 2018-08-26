@@ -274,7 +274,7 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
         return FindQuery(
             id: id,
             term: searchField.stringValue,
-            caseSensitive: ignoreCase,
+            caseSensitive: !ignoreCase,
             regex: regex,
             wholeWords: wholeWords
         )
@@ -387,7 +387,7 @@ extension EditViewController {
             }
 
             if status.first?["case_sensitive"] != nil && !(status.first?["case_sensitive"] is NSNull) {
-                query?.ignoreCase = statusQuery["case_sensitive"] as! Bool
+                query?.ignoreCase = !(statusQuery["case_sensitive"] != nil) as! Bool
             }
 
             if status.first?["whole_words"] != nil && !(status.first?["whole_words"] is NSNull) {
