@@ -800,6 +800,10 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     @IBAction func addNextLineToSelection(_ sender: NSMenuItem) {
         document.sendRpcAsync("add_selection_below", params: [])
     }
+
+    @IBAction func duplicateLine(_ sender: NSMenuItem) {
+        document.sendRpcAsync("duplicate_line", params: [])
+    }
 }
 
 // we set this in Document.swift when we load a new window or tab.
