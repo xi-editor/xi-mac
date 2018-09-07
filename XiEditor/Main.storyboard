@@ -583,6 +583,11 @@ Gw
                                                 <action selector="addNextLineToSelection:" target="7er-QZ-amI" id="ddj-hT-V4x"/>
                                             </connections>
                                         </menuItem>
+					<menuItem title="Duplicate Line" keyEquivalent="D" id="QTn-ya-Cvd">
+					    <connections>
+                                                <action selector="duplicateLine:" target="7er-QZ-amI" id="djj-hT-V4x"/>
+					    </connections>
+					</menuItem>
                                         <menuItem isSeparatorItem="YES" id="PN7-qq-hhD"/>
                                         <menuItem title="Find" id="EPp-zI-3PW">
                                             <modifierMask key="keyEquivalentModifierMask"/>
@@ -636,7 +641,7 @@ Gw
                                                             <action selector="addNextToSelection:" target="7er-QZ-amI" id="dcA-Ho-qnI"/>
                                                         </connections>
                                                     </menuItem>
-                                                    <menuItem title="Add Next and Remove Current..." tag="7" keyEquivalent="D" id="9DI-GT-19Y" userLabel="Add Next and Remove Current Selection">
+                                                    <menuItem title="Add Next and Remove Current..." tag="7" keyEquivalent="K" id="9DI-GT-19Y" userLabel="Add Next and Remove Current Selection">
                                                         <connections>
                                                             <action selector="addNextToSelectionRemoveCurrent:" target="7er-QZ-amI" id="3aA-qn-leZ"/>
                                                         </connections>
