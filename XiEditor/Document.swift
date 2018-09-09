@@ -77,6 +77,9 @@ class Document: NSDocument {
         windowController.window?.minSize = Document.minWinSize
 
         self.editViewController = windowController.contentViewController as? EditViewController
+        if let config = (NSApplication.shared.delegate as? AppDelegate)?.configCache {
+            editViewController?.configChanged(changes: config)
+        }
         editViewController?.document = self
         windowController.window?.delegate = editViewController
         self.addWindowController(windowController)
