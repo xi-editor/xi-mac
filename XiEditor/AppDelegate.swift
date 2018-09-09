@@ -369,7 +369,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         }
     }
 
+    // Stores the config dict so new windows don't have to wait for core to send it.
+    // The main purpose of this is ensuring that `unified_titlebar` applies immediately.
+    var configCache: [String: AnyObject] = [:]
+
     func configChanged(viewIdentifier: ViewIdentifier, changes: [String : AnyObject]) {
+        for (key, value) in changes {
+            self.configCache[key] = value
+        }
         let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
         DispatchQueue.main.async {
             document?.editViewController?.configChanged(changes: changes)
