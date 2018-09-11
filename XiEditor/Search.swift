@@ -336,7 +336,7 @@ extension EditViewController {
             
             let offset = findViewController.view.fittingSize.height
             let origin = scrollView.contentView.visibleRect.origin
-            scrollView.contentView.scroll(to: NSMakePoint(origin.x ,origin.y + offset))
+            scrollView.contentView.scroll(to: NSMakePoint(origin.x, origin.y + offset))
         }
 
         editView.window?.makeFirstResponder(editView)
