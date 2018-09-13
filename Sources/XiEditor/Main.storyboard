@@ -1029,6 +1029,19 @@ Gw
                                                             <action selector="unindent:" target="7er-QZ-amI" id="83I-gO-x7f"/>
                                                         </connections>
                                                     </menuItem>
+                                                    <menuItem isSeparatorItem="YES" id="uSe-8D-WGb"/>
+                                                    <menuItem title="Move Line Up" keyEquivalent="" id="qQT-vY-sws" userLabel="Indent">
+                                                        <modifierMask key="keyEquivalentModifierMask" shift="YES" option="YES"/>
+                                                        <connections>
+                                                            <action selector="moveLineUp:" target="7er-QZ-amI" id="Hjo-Mq-IUk"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                    <menuItem title="Move Line Down" keyEquivalent="" id="ebt-v7-xTi" userLabel="Indent">
+                                                        <modifierMask key="keyEquivalentModifierMask" shift="YES" option="YES"/>
+                                                        <connections>
+                                                            <action selector="moveLineDown:" target="7er-QZ-amI" id="byE-V5-pSw"/>
+                                                        </connections>
+                                                    </menuItem>
                                                 </items>
                                             </menu>
                                         </menuItem>
