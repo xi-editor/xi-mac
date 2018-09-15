@@ -15,6 +15,11 @@
 import Cocoa
 import Swift
 
+extension NSColor {
+    // Used for the background of the find panel
+    static var veryLightGray = NSColor(white: 246.0/256.0, alpha: 1.0)
+}
+
 class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlTextEditingDelegate {
     weak var findDelegate: FindDelegate!
 
@@ -56,6 +61,8 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
         recentClear.tag = Int(NSSearchField.clearRecentsMenuItemTag)
         menu.addItem(recentClear)
         replacePanel.isHidden = true
+
+        self.view.layer?.backgroundColor = NSColor.veryLightGray.cgColor
     }
 
     // we use this to make sure that UI corresponds to our state
@@ -76,8 +83,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     }
 
     func updateColor(newBackgroundColor: NSColor, unifiedTitlebar: Bool) {
-        let veryLightGray = CGColor(gray: 246.0/256.0, alpha: 1.0)
-        self.view.layer?.backgroundColor = unifiedTitlebar ? newBackgroundColor.cgColor : veryLightGray
+        self.view.layer?.backgroundColor = unifiedTitlebar ? newBackgroundColor.cgColor : NSColor.veryLightGray.cgColor
     }
 
     func control(_ control: NSControl, textView: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
