@@ -923,9 +923,11 @@ extension EditViewController: NSWindowDelegate {
 
 extension NSColor {
     var isDark: Bool {
-        let red = self.redComponent
-        let green = self.greenComponent
-        let blue = self.blueComponent
+        guard let srgb = self.usingColorSpace(.sRGB) else { return false }
+
+        let red = srgb.redComponent
+        let green = srgb.greenComponent
+        let blue = srgb.blueComponent
 
         // Formula taken from https://www.w3.org/WAI/ER/WD-AERT/#color-contrast
         let brightness = ((red * 299) + (green * 587) + (blue * 114)) / 1000
