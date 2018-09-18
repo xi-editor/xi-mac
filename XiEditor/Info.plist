@@ -49,5 +49,9 @@
 	<string>NSApplication</string>
 	<key>ATSApplicationFontsPath</key>
 	<string>fonts</string>
+	<key>CFBundleHelpBookFolder</key>
+	<string>XiEditor.help</string>
+	<key>CFBundleHelpBookName</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER).help</string>
 </dict>
 </plist>
