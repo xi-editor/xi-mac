@@ -480,9 +480,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     //MARK: Other system events
     override func flagsChanged(with event: NSEvent) {
         if event.modifierFlags.contains(.option) {
-            NSCursor.crosshair.set()
+            scrollView.contentView.documentCursor = NSCursor.crosshair
         } else {
-            NSCursor.arrow.set()
+            scrollView.contentView.documentCursor = NSCursor.iBeam
         }
     }
 
