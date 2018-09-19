@@ -35,7 +35,7 @@ out vec2 uv;
 
 vec3 to_linear(vec3 srgb) {
     // 1 if srgb <= 0.04045
-    vec3 selection = step(-0.04045, -srgb);
+    vec3 selection = step(0.04045, srgb);
     vec3 a = srgb / 12.92;
     vec3 b = pow((srgb + 0.055) / 1.055, vec3(2.4));
     // a for components where linear <= 0.04045, b for others
