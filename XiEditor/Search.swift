@@ -310,7 +310,7 @@ extension EditViewController {
         let replaceHiddenChanged = findViewController.replacePanel.isHidden != replaceHidden
 
         if !findViewController.view.isHidden && replaceHiddenChanged {
-            updateScrollPosition(previousOffset: findViewController.view.fittingSize.height)
+            updateScrollPosition(previousOffset: findViewController.replacePanel.fittingSize.height)
         }
 
         findViewController.replacePanel.isHidden = replaceHidden
