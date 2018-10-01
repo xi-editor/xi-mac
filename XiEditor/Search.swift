@@ -42,6 +42,10 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     func updateColor(newBackgroundColor: NSColor, unifiedTitlebar: Bool) {
         let veryLightGray = CGColor(gray: 246.0/256.0, alpha: 1.0)
         self.view.layer?.backgroundColor = unifiedTitlebar ? newBackgroundColor.cgColor : veryLightGray
+
+//        for query in searchQueries {
+//            query.view.layer?.backgroundColor = NSColor(red: 255.0, green: 255.0, blue: 255.0, alpha: 1.0)
+//        }
     }
 
     func control(_ control: NSControl, textView: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
@@ -185,6 +189,7 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
     @IBOutlet weak var searchField: NSSearchField!
     @IBOutlet weak var addButton: NSButton!
     @IBOutlet weak var deleteButton: NSButton!
+    @IBOutlet weak var sv: NSStackView!
 
     let resultCountLabel = Label(title: "")
 
@@ -223,6 +228,8 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
         recentClear.tag = Int(NSSearchField.clearRecentsMenuItemTag)
         menu.addItem(recentClear)
 
+        print("bgcolor")
+        let veryLightGray = CGColor(red: 0.0, green: 0.0, blue: 255.0, alpha: 1.0)
         self.view.layer?.backgroundColor = NSColor.veryLightGray.cgColor
     }
 
@@ -246,6 +253,7 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
     }
 
     func updateColor(newBackgroundColor: NSColor, unifiedTitlebar: Bool) {
+        print("update")
         self.view.layer?.backgroundColor = unifiedTitlebar ? newBackgroundColor.cgColor : NSColor.veryLightGray.cgColor
     }
 
