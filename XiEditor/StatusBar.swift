@@ -72,6 +72,8 @@ class StatusBar: NSView {
     var lastLeftItem: StatusItem?
     var lastRightItem: StatusItem?
 
+    var hideTimer: Timer?
+
     var hasUnifiedTitlebar: Bool?
 
     var backgroundColor: NSColor = NSColor.windowBackgroundColor
@@ -212,7 +214,17 @@ class StatusBar: NSView {
 
     // Hides the status bar if there is no item currently.
     func checkStatusBarVisibility() {
-        self.isHidden = currentItems.isEmpty
+        if !currentItems.isEmpty {
+            self.hideTimer?.invalidate()
+            self.isHidden = false
+        } else if !self.isHidden {
+            if #available(OSX 10.12, *) {
+                hideTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false,
+                                   block: {(t: Timer) -> Void in self.isHidden = true})
+            } else {
+                self.isHidden = true
+            }
+        }
     }
 
     // When items are added, expanded or removed, the status bar checks if
