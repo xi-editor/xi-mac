@@ -583,11 +583,11 @@ Gw
                                                 <action selector="addNextLineToSelection:" target="7er-QZ-amI" id="ddj-hT-V4x"/>
                                             </connections>
                                         </menuItem>
-					<menuItem title="Duplicate Line" keyEquivalent="D" id="QTn-ya-Cvd">
-					    <connections>
+                                        <menuItem title="Duplicate Line" keyEquivalent="D" id="QTn-ya-Cvd">
+                                            <connections>
                                                 <action selector="duplicateLine:" target="7er-QZ-amI" id="djj-hT-V4x"/>
-					    </connections>
-					</menuItem>
+                                            </connections>
+                                        </menuItem>
                                         <menuItem isSeparatorItem="YES" id="PN7-qq-hhD"/>
                                         <menuItem title="Find" id="EPp-zI-3PW">
                                             <modifierMask key="keyEquivalentModifierMask"/>
