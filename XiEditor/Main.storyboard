@@ -191,7 +191,7 @@ Gw
                                 <rect key="frame" x="8" y="0.0" width="721" height="130"/>
                                 <subviews>
                                     <stackView distribution="fill" orientation="horizontal" alignment="top" spacing="4" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="87Z-4W-agC">
-                                        <rect key="frame" x="53.5" y="104" width="614" height="22"/>
+                                        <rect key="frame" x="54" y="104" width="614" height="22"/>
                                         <subviews>
                                             <stackView distribution="fill" orientation="vertical" alignment="leading" spacing="4" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" placeholderIntrinsicWidth="110" placeholderIntrinsicHeight="22" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XV8-8P-X3Z">
                                                 <rect key="frame" x="0.0" y="0.0" width="404" height="22"/>
@@ -200,7 +200,7 @@ Gw
                                                 <rect key="frame" x="408" y="0.0" width="206" height="22"/>
                                                 <subviews>
                                                     <segmentedControl verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="usm-aH-bgF">
-                                                        <rect key="frame" x="-1" y="1" width="66.5" height="20"/>
+                                                        <rect key="frame" x="-1" y="1" width="66" height="20"/>
                                                         <segmentedCell key="cell" borderStyle="border" alignment="left" style="roundRect" trackingMode="momentary" id="53c-PL-hc5">
                                                             <font key="font" metaFont="cellTitle"/>
                                                             <segments>
@@ -213,7 +213,7 @@ Gw
                                                         </connections>
                                                     </segmentedControl>
                                                     <button verticalHuggingPriority="750" tag="9" translatesAutoresizingMaskIntoConstraints="NO" id="OLd-3g-GU4" userLabel="Find All Button">
-                                                        <rect key="frame" x="70.5" y="1" width="65" height="19"/>
+                                                        <rect key="frame" x="70" y="1" width="65" height="19"/>
                                                         <buttonCell key="cell" type="roundRect" title="Find All" bezelStyle="roundedRect" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="wFY-L9-Tvu">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="cellTitle"/>
@@ -223,7 +223,7 @@ Gw
                                                         </connections>
                                                     </button>
                                                     <button verticalHuggingPriority="750" tag="11" translatesAutoresizingMaskIntoConstraints="NO" id="5rw-0w-Suw">
-                                                        <rect key="frame" x="141.5" y="1" width="64.5" height="19"/>
+                                                        <rect key="frame" x="141" y="1" width="65" height="19"/>
                                                         <buttonCell key="cell" type="roundRect" title="Done" bezelStyle="roundedRect" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="FOD-1e-hKW">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="cellTitle"/>
@@ -262,7 +262,7 @@ Gw
                                         </customSpacing>
                                     </stackView>
                                     <stackView distribution="fill" orientation="horizontal" alignment="top" spacing="4" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" placeholderIntrinsicWidth="614" placeholderIntrinsicHeight="22" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eFo-Od-w1I">
-                                        <rect key="frame" x="53.5" y="4" width="614" height="96"/>
+                                        <rect key="frame" x="54" y="4" width="614" height="96"/>
                                         <subviews>
                                             <textField focusRingType="none" verticalHuggingPriority="750" placeholderIntrinsicWidth="400" placeholderIntrinsicHeight="22" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="C06-uM-0mq">
                                                 <rect key="frame" x="0.0" y="74" width="404" height="22"/>
@@ -366,7 +366,7 @@ Gw
                                 <rect key="frame" x="0.0" y="0.0" width="469" height="59"/>
                                 <subviews>
                                     <searchField wantsLayer="YES" focusRingType="none" verticalHuggingPriority="750" ambiguous="YES" placeholderIntrinsicWidth="400" placeholderIntrinsicHeight="22" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4N3-Md-ylI" customClass="FindSearchField" customModule="XiEditor" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="18.5" width="400" height="22"/>
+                                        <rect key="frame" x="0.0" y="19" width="400" height="22"/>
                                         <constraints>
                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="1" id="lYr-Tb-9Us"/>
                                         </constraints>
@@ -381,10 +381,10 @@ Gw
                                         </connections>
                                     </searchField>
                                     <stackView distribution="fill" orientation="horizontal" alignment="bottom" spacing="2" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="YGp-T4-eoX">
-                                        <rect key="frame" x="400" y="19.5" width="69" height="20"/>
+                                        <rect key="frame" x="400" y="21" width="69" height="18"/>
                                         <subviews>
                                             <button verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="WtA-NA-zjT">
-                                                <rect key="frame" x="4" y="-1" width="31.5" height="19"/>
+                                                <rect key="frame" x="4" y="-1" width="32" height="19"/>
                                                 <buttonCell key="cell" type="roundRect" title="+" bezelStyle="roundedRect" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="8uK-5I-cZg">
                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                     <font key="font" metaFont="system" size="16"/>
@@ -394,7 +394,7 @@ Gw
                                                 </connections>
                                             </button>
                                             <button verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="V7s-ei-piI">
-                                                <rect key="frame" x="37.5" y="-1" width="31.5" height="19"/>
+                                                <rect key="frame" x="38" y="-1" width="31" height="19"/>
                                                 <buttonCell key="cell" type="roundRect" title="-" bezelStyle="roundedRect" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="0dQ-No-w5x">
                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                     <font key="font" metaFont="system" size="16"/>
@@ -404,7 +404,7 @@ Gw
                                                 </connections>
                                             </button>
                                         </subviews>
-                                        <edgeInsets key="edgeInsets" left="4" right="0.0" top="2" bottom="0.0"/>
+                                        <edgeInsets key="edgeInsets" left="4" right="0.0" top="0.0" bottom="0.0"/>
                                         <constraints>
                                             <constraint firstItem="V7s-ei-piI" firstAttribute="width" secondItem="WtA-NA-zjT" secondAttribute="width" id="x7P-v4-0CW"/>
                                         </constraints>
@@ -439,7 +439,6 @@ Gw
                         <outlet property="addButton" destination="WtA-NA-zjT" id="sBs-ZU-83X"/>
                         <outlet property="deleteButton" destination="V7s-ei-piI" id="cWW-x6-p20"/>
                         <outlet property="searchField" destination="4N3-Md-ylI" id="EXI-Ta-lqU"/>
-                        <outlet property="sv" destination="YGp-T4-eoX" id="rAI-wX-nbF"/>
                     </connections>
                 </viewController>
                 <menu title="Find Menu" autoenablesItems="NO" id="RHe-lc-wA0">
@@ -693,7 +692,7 @@ Gw
                                                             <action selector="performCustomFinderAction:" target="7er-QZ-amI" id="jr1-Fw-19B"/>
                                                         </connections>
                                                     </menuItem>
-                                                    <menuItem title="Multiple Search Queries…" tag="1" id="P7X-TB-2Dh">
+                                                    <menuItem title="Multiple Search Queries" tag="1" id="P7X-TB-2Dh">
                                                         <modifierMask key="keyEquivalentModifierMask"/>
                                                         <connections>
                                                             <action selector="multipleSearchQueries:" target="7er-QZ-amI" id="jr1-Fw-18B"/>

@@ -42,10 +42,6 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     func updateColor(newBackgroundColor: NSColor, unifiedTitlebar: Bool) {
         let veryLightGray = CGColor(gray: 246.0/256.0, alpha: 1.0)
         self.view.layer?.backgroundColor = unifiedTitlebar ? newBackgroundColor.cgColor : veryLightGray
-
-//        for query in searchQueries {
-//            query.view.layer?.backgroundColor = NSColor(red: 255.0, green: 255.0, blue: 255.0, alpha: 1.0)
-//        }
     }
 
     func control(_ control: NSControl, textView: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
@@ -165,7 +161,6 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
         searchFieldsStackView.removeView(searchField.view)
         searchQueries.remove(at: searchQueries.index(of: searchField)!)
         searchFieldsNextKeyView()
-        redoFind()
         searchFieldsButtonsState()
     }
 
@@ -189,7 +184,6 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
     @IBOutlet weak var searchField: NSSearchField!
     @IBOutlet weak var addButton: NSButton!
     @IBOutlet weak var deleteButton: NSButton!
-    @IBOutlet weak var sv: NSStackView!
 
     let resultCountLabel = Label(title: "")
 
@@ -227,10 +221,6 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
         let recentClear = NSMenuItem(title: "Clear Recent Searches", action: nil, keyEquivalent: "")
         recentClear.tag = Int(NSSearchField.clearRecentsMenuItemTag)
         menu.addItem(recentClear)
-
-        print("bgcolor")
-        let veryLightGray = CGColor(red: 0.0, green: 0.0, blue: 255.0, alpha: 1.0)
-        self.view.layer?.backgroundColor = NSColor.veryLightGray.cgColor
     }
 
     // we use this to make sure that UI corresponds to our state
@@ -253,7 +243,6 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
     }
 
     func updateColor(newBackgroundColor: NSColor, unifiedTitlebar: Bool) {
-        print("update")
         self.view.layer?.backgroundColor = unifiedTitlebar ? newBackgroundColor.cgColor : NSColor.veryLightGray.cgColor
     }
 
@@ -280,6 +269,7 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
         let offset = parentFindView?.view.fittingSize.height
         parentFindView?.removeSearchField(searchField: self)
         parentFindView?.findDelegate.updateScrollPosition(previousOffset: offset!)
+        parentFindView?.redoFind()
     }
 
     @IBAction func selectIgnoreCaseMenuAction(_ sender: NSMenuItem) {
@@ -365,6 +355,9 @@ extension EditViewController {
         if !findViewController.view.isHidden {
             let origin = scrollView.contentView.visibleRect.origin
             scrollView.contentView.scroll(to: NSMakePoint(origin.x, origin.y - (findViewController.view.fittingSize.height - previousOffset)))
+
+            scrollView.contentInsets = NSEdgeInsetsMake(findViewController.view.fittingSize.height, 0, 0, 0)
+
         }
     }
 
@@ -383,26 +376,7 @@ extension EditViewController {
     }
 
     func find(_ queries: [FindQuery]) {
-        var jsonQueries: [[String: Any]] = []
-
-        for query in queries {
-            var jsonQuery: [String: Any] = [
-                "case_sensitive": query.caseSensitive,
-                "regex": query.regex,
-                "whole_words": query.wholeWords
-            ]
-
-            if query.term != nil {
-                jsonQuery["chars"] = query.term
-            }
-
-            if query.id != nil {
-                jsonQuery["id"] = query.id
-            }
-
-            jsonQueries.append(jsonQuery)
-        }
-
+        let jsonQueries = queries.map({ $0.toJson() })
         document.sendRpcAsync("find", params: ["queries": jsonQueries])
     }
     
@@ -484,6 +458,22 @@ extension EditViewController {
 
     @IBAction func multipleSearchQueries(_ sender: AnyObject?) {
         findViewController.showMultipleSearchQueries = !findViewController.showMultipleSearchQueries
+        openFind(replaceHidden: findViewController.replacePanel.isHidden)
+
+        if (findViewController.showMultipleSearchQueries) {
+            (sender as! NSMenuItem).state = .on
+        } else {
+            (sender as! NSMenuItem).state = .off
+
+            let offset = findViewController.view.fittingSize.height
+            // if multiple search queries get deactivated then remove additional queries
+            for searchField in findViewController.searchQueries[1...] {
+                findViewController.removeSearchField(searchField: searchField)
+            }
+            findViewController.findDelegate.updateScrollPosition(previousOffset: offset)
+            findViewController.redoFind()
+        }
+
         for query in findViewController.searchQueries {
             query.showButtons(show: findViewController.showMultipleSearchQueries)
         }

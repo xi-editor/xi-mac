@@ -37,6 +37,24 @@ struct FindQuery {
     var caseSensitive: Bool
     var regex: Bool
     var wholeWords: Bool
+
+    func toJson() -> [String: Any] {
+        var jsonQuery: [String: Any] = [
+            "case_sensitive": caseSensitive,
+            "regex": regex,
+            "whole_words": wholeWords
+        ]
+
+        if term != nil {
+            jsonQuery["chars"] = term
+        }
+
+        if id != nil {
+            jsonQuery["id"] = id
+        }
+
+        return jsonQuery
+    }
 }
 
 protocol FindDelegate {

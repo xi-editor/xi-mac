@@ -112,7 +112,7 @@ extension Theme {
             shadow: shadow ?? defaults.shadow)
     }
 
-    // Helper function to generate highlight colors for multiple search queries. This is required because custom fields cannot be retrieved from themes. Therefore, it is not possible to define multiple highlight colors.
+    /// Helper function to generate highlight colors for multiple search queries. This is required because custom fields cannot be retrieved from themes. Therefore, it is not possible to define multiple highlight colors.
     static func generateHighlightColors(findHighlight: NSColor?) -> [NSColor]? {
         return findHighlight.map({(defaultHighlight: NSColor) -> [NSColor] in
             var hue: CGFloat = 0.0
