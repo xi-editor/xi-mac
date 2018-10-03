@@ -75,6 +75,29 @@ extension Theme {
               shadow: nil
             )
     }
+    
+    static func systemTheme() -> Theme {
+        if #available(OSX 10.13, *) {
+            return Theme(foreground: NSColor.textColor,
+                         background: NSColor.textBackgroundColor,
+                         caret: NSColor.red, // Seems to be ignored
+                         lineHighlight: NSColor.green, // Seems to be ignored
+                         findHighlight: NSColor.blue, // Seems to be ignored
+                         findHighlightForeground: NSColor.purple, // Seems to be ignored
+                         gutter: NSColor.textBackgroundColor,
+                         gutterForeground: NSColor.secondaryLabelColor,
+                         selection: NSColor.selectedTextBackgroundColor,
+                         selectionForeground: NSColor.systemPink, // Seems to be ignored
+                         selectionBorder: NSColor.yellow, // Seems to be ignored
+                         inactiveSelection: NSColor.brown, // Seems to be ignored
+                         inactiveSelectionForeground: NSColor.cyan, // Seems to be ignored
+                         shadow: NSColor.magenta // Seems to be ignored
+            )
+        } else {
+            // Fallback on earlier versions
+            return defaultTheme()
+        }
+    }
 
     init(jsonObject dict: [String: AnyObject]) {
         let foreground = NSColor(jsonRgbaColor: dict["foreground"] as? [String: AnyObject] ?? [:])
