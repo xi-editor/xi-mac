@@ -1,13 +1,20 @@
 <h1 align="center">
-  <a href="https://github.com/google/xi-editor"><img src="icons/xi-editor.png" alt="Xi Editor" width="256" height="256"/></a><br>
-  <a href="https://github.com/google/xi-editor">Xi Editor</a>
+  <a href="http://xi-editor.io/xi-editor"><img src="icons/xi-editor.png" alt="Xi Editor" width="256" height="256"/></a><br>
+  <a href="http://xi-editor.io/xi-editor">Xi Editor</a>
 </h1>
+
+<p align="center"><em>(pronounced "Zigh")</em></p>
 
 <h4 align="center">A modern editor with a backend written in Rust.</h4>
 
-The xi editor project is an attempt to build a high quality text editor,
-using modern software engineering techniques. It is initially built for
-macOS, using Cocoa for the user interface, but other targets are planned.
+***Note:*** *This project is still in an early state. Prebuilt binaries will be made available once we start creating versioned releases.*
+
+The xi-editor project is an attempt to build a high quality text editor,
+using modern software engineering techniques. This reference frontend is
+built for macOS, using Cocoa for the user interface, but there are work
+in progress frontends for other platforms as well. Consult the
+[list in the xi-editor core README](https://github.com/xi-editor/xi-editor#frontends)
+for details.
 
 Goals include:
 
@@ -28,29 +35,30 @@ Screenshot (will need to be updated as syntax coloring and UI polish is added):
 
 ![xi screenshot](/doc/img/xi-mac-screenshot.png?raw=true)
 
+
 ## Getting started
 
 ### Requirements
 - [Xcode 9.x](https://developer.apple.com/xcode/)
 - [Rust](https://www.rust-lang.org/). We test against the latest stable version,
 and recommend installing through [rustup](https://rustup.rs).
-- `cmake`. We recommend installing through homebrew, with `brew install cmake`.
 
 
-Note: the front-end and back-end are now split into two separate repositories. This
-is the front-end, and the back-end (or core) is now in:
-[xi-editor](https://github.com/google/xi-editor). Make sure to have that checked out
+Note: the front-end and back-end are split into two separate repositories. This
+is the front-end, and the back-end (or core) is now in
+[xi-editor](https://github.com/xi-editor/xi-editor). Make sure to have that checked out
 as a subdirectory.
 
 ```
-> git clone https://github.com/google/xi-mac
+> git clone https://github.com/xi-editor/xi-mac
 > cd xi-mac
-> git clone https://github.com/google/xi-editor
+> git clone https://github.com/xi-editor/xi-editor
 > xcodebuild
 > open build/Release/XiEditor.app
 ```
 
 Or `open XiEditor.xcodeproj` and hit the Run button.
+
 
 ### Troubleshooting
 
@@ -65,9 +73,10 @@ User settings are currently stored in files; the general preferences are
 located at `~/Library/Application Support/XiEditor/preferences.xiconfig`.
 This file can be opened from File > Preferences (⌘ + ,).
 
-The default font for Xi is 
+The default font for XiEditor is 
 [Inconsolata](http://levien.com/type/myfonts/inconsolata.html), which
 is bundled with the app.
+
 
 ### Theme
 
@@ -78,7 +87,10 @@ custom themes.
 
 ## Authors
 
-The main author is Raph Levien.
+The xi-editor project was started by Raph Levien but has since received
+contributions from a number of other people. See the [AUTHORS](AUTHORS)
+file for details.
+
 
 ## License
 
@@ -86,13 +98,12 @@ This project is licensed under the Apache 2 [license](LICENSE). The bundled font
 different license, the Open Font License. See the [fonts](fonts) directory for the fonts and associated
 license.
 
+
 ## Contributions
 
-We gladly accept contributions via GitHub pull requests, as long as the author
-has signed the Google Contributor License. Please see
+We gladly accept contributions via GitHub pull requests. Please see
 [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 
-### Disclaimer
-
-This is not an official Google product (experimental or otherwise), it
-is just code that happens to be owned by Google.
+If you are interested in contributing but not sure where to start, there is
+an active IRC channel at #xi on irc.mozilla.org. There is also a subreddit at
+[/r/xi_editor](https://www.reddit.com/r/xi_editor/).
