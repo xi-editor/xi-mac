@@ -212,7 +212,7 @@ class StatusBar: NSView {
         self.needsDisplay = true
     }
 
-    // Shows/hides the statusbar based on whether it has any contents
+    // Shows/hides the statusbar based on whether it has any contents.
     func updateStatusBarVisibility() {
         if !currentItems.isEmpty {
             self.hideTimer?.invalidate()
@@ -221,7 +221,7 @@ class StatusBar: NSView {
             // Wait a moment before hiding the bar to avoid blinking in the case
             // that a single item is added and removed repeatedly in rapid succession.
             if #available(OSX 10.12, *) {
-                hideTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) {_ in self.isHidden = true}
+                hideTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { _ in self.isHidden = true }
             } else {
                 self.isHidden = true
             }
