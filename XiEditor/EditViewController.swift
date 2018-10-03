@@ -57,7 +57,7 @@ struct FindQuery {
     }
 }
 
-protocol FindDelegate {
+protocol FindDelegate: class {
     func find(_ queries: [FindQuery])
     func findNext(wrapAround: Bool, allowSame: Bool)
     func findPrevious(wrapAround: Bool)

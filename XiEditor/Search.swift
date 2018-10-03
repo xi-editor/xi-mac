@@ -21,7 +21,7 @@ extension NSColor {
 }
 
 class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlTextEditingDelegate {
-    var findDelegate: FindDelegate!
+    weak var findDelegate: FindDelegate!
     static let MAX_SEARCH_QUERIES = 7
 
     @IBOutlet weak var navigationButtons: NSSegmentedControl!
@@ -107,7 +107,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
         return nil
     }
 
-    // Disables/enables add and delete buttons depending on whether some conditions are fulfilled.
+    /// Disables/enables add and delete buttons depending on whether some conditions are fulfilled.
     func searchFieldsButtonsState() {
         for searchQuery in searchQueries {
             searchQuery.disableAddButton(disable: searchQueries.count >= FindViewController.MAX_SEARCH_QUERIES)
@@ -118,7 +118,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
         }
     }
 
-    // Sets for each search field which search field should be selected after "tab" is pressed
+    /// Sets for each search field which search field should be selected after "tab" is pressed
     func searchFieldsNextKeyView() {
         searchQueries.last?.searchField.nextKeyView = replaceField
         replaceField.nextKeyView = searchQueries.first?.searchField
