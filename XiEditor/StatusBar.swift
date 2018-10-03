@@ -101,7 +101,7 @@ class StatusBar: NSView {
     override init(frame frameRect: NSRect) {
         super.init(frame: .zero)
         self.translatesAutoresizingMaskIntoConstraints = false
-        checkStatusBarVisibility()
+        updateStatusBarVisibility()
     }
 
     required init?(coder decoder: NSCoder) {
@@ -120,7 +120,7 @@ class StatusBar: NSView {
         currentItems[item.key] = item
         self.needsUpdateConstraints = true
         checkItemsFitFor(windowWidth: self.bounds.width)
-        checkStatusBarVisibility()
+        updateStatusBarVisibility()
     }
 
     // Update a status bar item with a new value.
@@ -141,7 +141,7 @@ class StatusBar: NSView {
             currentItems.removeValue(forKey: key)
             self.needsUpdateConstraints = true
             checkItemsFitFor(windowWidth: self.bounds.width)
-            checkStatusBarVisibility()
+            updateStatusBarVisibility()
         } else {
             print("tried to remove item with \(key) that doesn't exist")
             return
@@ -212,15 +212,16 @@ class StatusBar: NSView {
         self.needsDisplay = true
     }
 
-    // Hides the status bar if there is no item currently.
-    func checkStatusBarVisibility() {
+    // Shows/hides the statusbar based on whether it has any contents
+    func updateStatusBarVisibility() {
         if !currentItems.isEmpty {
             self.hideTimer?.invalidate()
             self.isHidden = false
         } else if !self.isHidden {
+            // Wait a moment before hiding the bar to avoid blinking in the case
+            // that a single item is added and removed repeatedly in rapid succession.
             if #available(OSX 10.12, *) {
-                hideTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false,
-                                   block: {(t: Timer) -> Void in self.isHidden = true})
+                hideTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) {_ in self.isHidden = true}
             } else {
                 self.isHidden = true
             }
