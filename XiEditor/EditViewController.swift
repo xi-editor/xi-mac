@@ -416,6 +416,10 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         document.sendRpcAsync("lowercase", params: [])
     }
 
+    override func capitalizeWord(_ sender: Any?) {
+        document.sendRpcAsync("capitalize", params: [])
+    }
+
     @objc func undo(_ sender: AnyObject?) {
         document.sendRpcAsync("undo", params: [])
     }
