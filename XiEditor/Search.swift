@@ -381,6 +381,14 @@ extension EditViewController {
     }
     
     func findStatus(status: [[String: AnyObject]]) {
+        // status has the following expected format:
+        // [{
+        //      id: Int,
+        //      chars: String,
+        //      case_sensitive: Boolean,
+        //      whole_words: Boolean,
+        //      matches: Int
+        // }]
         for statusQuery in status {
             var query = findViewController.searchQueries.first(where: { $0.id == statusQuery["id"] as? Int })
 
