@@ -50,6 +50,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     @IBOutlet weak var editViewHeight: NSLayoutConstraint!
     @IBOutlet weak var editViewWidth: NSLayoutConstraint!
+    
+    let appDelegate = NSApp.delegate as! AppDelegate
 
     lazy var findViewController: FindViewController! = {
         let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
@@ -618,6 +620,11 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     // MARK: - Debug Methods
     @IBAction func debugSetTheme(_ sender: NSMenuItem) {
         guard sender.state != NSControl.StateValue.on else { print("theme already active"); return }
+        if sender.title == "macOS" {
+            let theme = Theme.systemTheme()
+            appDelegate.themeChanged(name: sender.title, theme: theme)
+            return
+        }
         let req = Events.SetTheme(themeName: sender.title)
         document.dispatcher.coreConnection.sendRpcAsync(req.method, params: req.params!)
     }
@@ -759,6 +766,12 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             .first?.title
 
         pluginsMenu.removeAllItems()
+        
+        let systemThemeMenuItem = NSMenuItem(title: "macOS", action: #selector(EditViewController.debugSetTheme(_:)), keyEquivalent: "")
+        systemThemeMenuItem.state = NSControl.StateValue(rawValue: ("macOS" == currentlyActive) ? 1 : 0)
+        
+        pluginsMenu.addItem(systemThemeMenuItem)
+        pluginsMenu.addItem(NSMenuItem.separator())
         for theme in themes {
             let item = NSMenuItem(title: theme, action: #selector(EditViewController.debugSetTheme(_:)), keyEquivalent: "")
             item.state = NSControl.StateValue(rawValue: (theme == currentlyActive) ? 1 : 0)
