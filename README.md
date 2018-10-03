@@ -9,11 +9,11 @@
 
 ***Note:*** *This project is still in an early state. Prebuilt binaries will be made available once we start creating versioned releases.*
 
-The xi editor project is an attempt to build a high quality text editor,
+The xi-editor project is an attempt to build a high quality text editor,
 using modern software engineering techniques. This reference frontend is
 built for macOS, using Cocoa for the user interface, but there are work
 in progress frontends for other platforms as well. Consult the
-[list in the xi core README](https://github.com/xi-editor/xi-editor#frontends)
+[list in the xi-editor core README](https://github.com/xi-editor/xi-editor#frontends)
 for details.
 
 Goals include:
@@ -42,11 +42,10 @@ Screenshot (will need to be updated as syntax coloring and UI polish is added):
 - [Xcode 9.x](https://developer.apple.com/xcode/)
 - [Rust](https://www.rust-lang.org/). We test against the latest stable version,
 and recommend installing through [rustup](https://rustup.rs).
-- `cmake`. We recommend installing through homebrew, with `brew install cmake`.
 
 
 Note: the front-end and back-end are split into two separate repositories. This
-is the front-end, and the back-end (or core) is now in:
+is the front-end, and the back-end (or core) is now in
 [xi-editor](https://github.com/xi-editor/xi-editor). Make sure to have that checked out
 as a subdirectory.
 
@@ -74,7 +73,7 @@ User settings are currently stored in files; the general preferences are
 located at `~/Library/Application Support/XiEditor/preferences.xiconfig`.
 This file can be opened from File > Preferences (⌘ + ,).
 
-The default font for Xi is 
+The default font for XiEditor is 
 [Inconsolata](http://levien.com/type/myfonts/inconsolata.html), which
 is bundled with the app.
 
@@ -88,7 +87,7 @@ custom themes.
 
 ## Authors
 
-The Xi editor project was started by Raph Levien but has since received
+The xi-editor project was started by Raph Levien but has since received
 contributions from a number of other people. See the [AUTHORS](AUTHORS)
 file for details.
 
