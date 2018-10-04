@@ -62,8 +62,8 @@ class Document: NSDocument {
         let newFrame = frameForNewWindow()
         var windowController: NSWindowController!
         let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
-        windowController = storyboard.instantiateController(
-            withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Document Window Controller")) as! NSWindowController
+        windowController = (storyboard.instantiateController(
+            withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Document Window Controller")) as! NSWindowController)
         
         if #available(OSX 10.12, *) {
             windowController.window?.tabbingIdentifier = NSWindow.TabbingIdentifier(rawValue: "xi-global-tab-group")

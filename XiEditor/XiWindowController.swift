@@ -18,7 +18,8 @@ final class XiWindowController: NSWindowController {
     override func windowTitle(forDocumentDisplayName displayName: String) -> String {
         #if DEBUG
             return "[Debug] \(displayName)"
+        #else
+            return displayName
         #endif
-        return displayName
     }
 }
