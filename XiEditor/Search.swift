@@ -22,68 +22,26 @@ extension NSColor {
 
 class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlTextEditingDelegate {
     weak var findDelegate: FindDelegate!
+    static let MAX_SEARCH_QUERIES = 7
 
-    @IBOutlet weak var searchField: NSSearchField!
     @IBOutlet weak var navigationButtons: NSSegmentedControl!
     @IBOutlet weak var doneButton: NSButton!
     @IBOutlet weak var replacePanel: NSStackView!
     @IBOutlet weak var replaceField: NSTextField!
+    @IBOutlet weak var searchFieldsStackView: NSStackView!
 
-    let resultCountLabel = Label(title: "")
-
-    // assigned in IB
-    let ignoreCaseMenuTag = 101
-    let wrapAroundMenuTag = 102
-    let regexMenuTag = 103
-    let wholeWordsMenuTag = 104
-
-    var ignoreCase = true
-    var wrapAround = true
-    var regex = false
-    var wholeWords = false
+    var searchQueries: [SuplementaryFindViewController] = []
+    var wrapAround = true   // option same for all search fields
+    var showMultipleSearchQueries = false   // activates/deactives 
 
     override func viewDidLoad() {
-        // add recent searches menu items
-        let menu = searchField.searchMenuTemplate!
-        menu.addItem(NSMenuItem.separator())
-
-        let recentTitle = NSMenuItem(title: "Recent Searches", action: nil, keyEquivalent: "")
-        recentTitle.tag = Int(NSSearchField.recentsTitleMenuItemTag)
-        menu.addItem(recentTitle)
-
-        let recentItem = NSMenuItem(title: "", action: nil, keyEquivalent: "")
-        recentItem.tag = Int(NSSearchField.recentsMenuItemTag)
-        menu.addItem(recentItem)
-
-        menu.addItem(NSMenuItem.separator())
-
-        let recentClear = NSMenuItem(title: "Clear Recent Searches", action: nil, keyEquivalent: "")
-        recentClear.tag = Int(NSSearchField.clearRecentsMenuItemTag)
-        menu.addItem(recentClear)
+        addSearchField(searchField: nil)     // by default at least one search field is present
         replacePanel.isHidden = true
-
-        self.view.layer?.backgroundColor = NSColor.veryLightGray.cgColor
-    }
-
-    // we use this to make sure that UI corresponds to our state
-    override func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
-        switch menuItem.tag {
-        case ignoreCaseMenuTag:
-            menuItem.state = ignoreCase ? NSControl.StateValue.on : NSControl.StateValue.off
-        case wrapAroundMenuTag:
-            menuItem.state = wrapAround ? NSControl.StateValue.on : NSControl.StateValue.off
-        case regexMenuTag:
-            menuItem.state = regex ? NSControl.StateValue.on : NSControl.StateValue.off
-        case wholeWordsMenuTag:
-            menuItem.state = wholeWords ? NSControl.StateValue.on : NSControl.StateValue.off
-        default:
-            break
-        }
-        return true
     }
 
     func updateColor(newBackgroundColor: NSColor, unifiedTitlebar: Bool) {
-        self.view.layer?.backgroundColor = unifiedTitlebar ? newBackgroundColor.cgColor : NSColor.veryLightGray.cgColor
+        let veryLightGray = CGColor(gray: 246.0/256.0, alpha: 1.0)
+        self.view.layer?.backgroundColor = unifiedTitlebar ? newBackgroundColor.cgColor : veryLightGray
     }
 
     func control(_ control: NSControl, textView: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
@@ -96,25 +54,6 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
         default:
             return false
         }
-    }
-
-    @IBAction func selectIgnoreCaseMenuAction(_ sender: NSMenuItem) {
-        ignoreCase = !ignoreCase
-        redoFind()
-    }
-    
-    @IBAction func selectWrapAroundMenuAction(_ sender: NSMenuItem) {
-        wrapAround = !wrapAround
-    }
-
-    @IBAction func selectRegexMenuAction(_ sender: NSMenuItem) {
-        regex = !regex
-        redoFind()
-    }
-
-    @IBAction func selectWholeWordsMenuAction(_ sender: NSMenuItem) {
-        wholeWords = !wholeWords
-        redoFind()
     }
 
     @IBAction func findSegmentControlAction(_ sender: NSSegmentedControl) {
@@ -139,12 +78,56 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
         }
     }
 
-    @IBAction func searchFieldAction(_ sender: NSSearchField) {
-        findDelegate.find(searchField.stringValue, caseSensitive: !ignoreCase, regex: regex, wholeWords: wholeWords)
-        if NSEvent.modifierFlags.contains(.shift) {
-            findDelegate.findPrevious(wrapAround: wrapAround)
-        } else {
-            findDelegate.findNext(wrapAround: wrapAround, allowSame: false)
+    @objc @discardableResult public func addSearchField(searchField: SuplementaryFindViewController?) -> FindSearchField? {
+        if searchQueries.count < FindViewController.MAX_SEARCH_QUERIES {
+            let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
+            let newSearchFieldController = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Suplementary Find View Controller")) as! SuplementaryFindViewController
+
+            newSearchFieldController.parentFindView = self
+
+            if searchField != nil {
+                searchQueries.insert(newSearchFieldController, at: searchQueries.index(of: searchField!)! + 1)
+                searchFieldsStackView.insertView(newSearchFieldController.view, at: searchQueries.index(of: searchField!)! + 1, in: NSStackView.Gravity.center)
+            } else {
+                searchQueries.append(newSearchFieldController)
+                searchFieldsStackView.insertView(newSearchFieldController.view, at: searchQueries.count - 1, in: NSStackView.Gravity.center)
+            }
+            
+            newSearchFieldController.searchField.becomeFirstResponder()
+            // show/hide +/- button depending on user settings
+            newSearchFieldController.showButtons(show: (newSearchFieldController.parentFindView?.showMultipleSearchQueries)!)
+
+            searchFieldsNextKeyView()
+            searchFieldsButtonsState()
+
+            return newSearchFieldController.searchField as? FindSearchField
+        }
+
+        searchFieldsButtonsState()
+        return nil
+    }
+
+    /// Disables/enables add and delete buttons depending on whether some conditions are fulfilled.
+    func searchFieldsButtonsState() {
+        for searchQuery in searchQueries {
+            searchQuery.disableAddButton(disable: searchQueries.count >= FindViewController.MAX_SEARCH_QUERIES)
+        }
+
+        for searchQuery in searchQueries {
+            searchQuery.disableDeleteButton(disable: searchQueries.count <= 1)
+        }
+    }
+
+    /// Sets for each search field which search field should be selected after "tab" is pressed
+    func searchFieldsNextKeyView() {
+        searchQueries.last?.searchField.nextKeyView = replaceField
+        replaceField.nextKeyView = searchQueries.first?.searchField
+
+        var prevSearchField = searchQueries.first?.searchField
+
+        for searchField in searchQueries.dropFirst() {
+            prevSearchField?.nextKeyView = searchField.searchField
+            prevSearchField = searchField.searchField
         }
     }
 
@@ -155,8 +138,15 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     }
 
     func redoFind() {
-        findDelegate.find(searchField.stringValue, caseSensitive: !ignoreCase, regex: regex, wholeWords: wholeWords)
-        findDelegate.findNext(wrapAround: wrapAround, allowSame: true)
+        findDelegate.find(searchQueries.map({ $0.toFindQuery() }))
+    }
+
+    func findNext(reverse: Bool) {
+        if reverse {
+            findDelegate.findPrevious(wrapAround: wrapAround)
+        } else {
+            findDelegate.findNext(wrapAround: wrapAround, allowSame: false)
+        }
     }
 
     override func cancelOperation(_ sender: Any?) {
@@ -167,6 +157,13 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
         findDelegate.findStatus(status: status)
     }
 
+    @objc public func removeSearchField(searchField: SuplementaryFindViewController) {
+        searchFieldsStackView.removeView(searchField.view)
+        searchQueries.remove(at: searchQueries.index(of: searchField)!)
+        searchFieldsNextKeyView()
+        searchFieldsButtonsState()
+    }
+
     @IBAction func replaceFieldAction(_ sender: NSTextField) {
         findDelegate.replaceNext()
     }
@@ -174,49 +171,194 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     public func replaceStatus(status: [String: AnyObject]) {
         findDelegate.replaceStatus(status: status)
     }
+
+    public func wrapAround(_ wrap: Bool) {
+        wrapAround = wrap
+        for searchQuery in searchQueries {
+            searchQuery.wrapAround = wrapAround
+        }
+    }
+}
+
+class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, NSControlTextEditingDelegate {
+    @IBOutlet weak var searchField: NSSearchField!
+    @IBOutlet weak var addButton: NSButton!
+    @IBOutlet weak var deleteButton: NSButton!
+
+    let resultCountLabel = Label(title: "")
+
+    // assigned in IB
+    let ignoreCaseMenuTag = 101
+    let wrapAroundMenuTag = 102
+    let regexMenuTag = 103
+    let wholeWordsMenuTag = 104
+    let removeMenuTag = 105
+
+    var ignoreCase = true
+    var wrapAround = true
+    var regex = false
+    var wholeWords = false
+    var id: Int? = nil
+    var disableRemove = false
+
+    weak var parentFindView: FindViewController? = nil
+
+    override func viewDidLoad() {
+        // add recent searches menu items
+        let menu = searchField.searchMenuTemplate!
+        menu.addItem(NSMenuItem.separator())
+
+        let recentTitle = NSMenuItem(title: "Recent Searches", action: nil, keyEquivalent: "")
+        recentTitle.tag = Int(NSSearchField.recentsTitleMenuItemTag)
+        menu.addItem(recentTitle)
+
+        let recentItem = NSMenuItem(title: "", action: nil, keyEquivalent: "")
+        recentItem.tag = Int(NSSearchField.recentsMenuItemTag)
+        menu.addItem(recentItem)
+
+        menu.addItem(NSMenuItem.separator())
+
+        let recentClear = NSMenuItem(title: "Clear Recent Searches", action: nil, keyEquivalent: "")
+        recentClear.tag = Int(NSSearchField.clearRecentsMenuItemTag)
+        menu.addItem(recentClear)
+    }
+
+    // we use this to make sure that UI corresponds to our state
+    override func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
+        switch menuItem.tag {
+        case ignoreCaseMenuTag:
+            menuItem.state = ignoreCase ? NSControl.StateValue.on : NSControl.StateValue.off
+        case wrapAroundMenuTag:
+            menuItem.state = wrapAround ? NSControl.StateValue.on : NSControl.StateValue.off
+        case regexMenuTag:
+            menuItem.state = regex ? NSControl.StateValue.on : NSControl.StateValue.off
+        case wholeWordsMenuTag:
+            menuItem.state = wholeWords ? NSControl.StateValue.on : NSControl.StateValue.off
+        case removeMenuTag:
+             menuItem.isHidden = disableRemove
+        default:
+            break
+        }
+        return true
+    }
+
+    func updateColor(newBackgroundColor: NSColor, unifiedTitlebar: Bool) {
+        self.view.layer?.backgroundColor = unifiedTitlebar ? newBackgroundColor.cgColor : NSColor.veryLightGray.cgColor
+    }
+
+    func showButtons(show: Bool) {
+        addButton.isHidden = !show
+        deleteButton.isHidden = !show
+    }
+
+    func disableAddButton(disable: Bool) {
+        addButton.isEnabled = !disable
+    }
+
+    func disableDeleteButton(disable: Bool) {
+        deleteButton.isEnabled = !disable
+    }
+
+    @IBAction func addSearchField(_ sender: NSButton) {
+        let offset = parentFindView?.view.fittingSize.height
+        parentFindView?.addSearchField(searchField: self)
+        parentFindView?.findDelegate.updateScrollPosition(previousOffset: offset!)
+    }
+
+    @IBAction func removeSearchField(_ sender: NSButton) {
+        let offset = parentFindView?.view.fittingSize.height
+        parentFindView?.removeSearchField(searchField: self)
+        parentFindView?.findDelegate.updateScrollPosition(previousOffset: offset!)
+        parentFindView?.redoFind()
+    }
+
+    @IBAction func selectIgnoreCaseMenuAction(_ sender: NSMenuItem) {
+        ignoreCase = !ignoreCase
+        parentFindView?.redoFind()
+    }
+
+    @IBAction func selectWrapAroundMenuAction(_ sender: NSMenuItem) {
+        wrapAround = !wrapAround
+        parentFindView?.wrapAround(wrapAround)
+        parentFindView?.redoFind()
+    }
+
+    @IBAction func selectRegexMenuAction(_ sender: NSMenuItem) {
+        regex = !regex
+        parentFindView?.redoFind()
+    }
+
+    @IBAction func selectWholeWordsMenuAction(_ sender: NSMenuItem) {
+        wholeWords = !wholeWords
+        parentFindView?.redoFind()
+    }
+
+    @IBAction func searchFieldAction(_ sender: NSSearchField) {
+        parentFindView?.redoFind()
+        if NSEvent.modifierFlags.contains(.shift) {
+            parentFindView?.findNext(reverse: true)
+        } else {
+            parentFindView?.findNext(reverse: false)
+        }
+    }
+
+    public func toFindQuery() -> FindQuery {
+        return FindQuery(
+            id: id,
+            term: searchField.stringValue,
+            caseSensitive: !ignoreCase,
+            regex: regex,
+            wholeWords: wholeWords
+        )
+    }
 }
 
 extension EditViewController {
     func openFind(replaceHidden: Bool) {
-        var offset: CGFloat
-        var origin: CGPoint
         let replaceHiddenChanged = findViewController.replacePanel.isHidden != replaceHidden
 
         if !findViewController.view.isHidden && replaceHiddenChanged {
-            offset = findViewController.view.fittingSize.height
-            origin = scrollView.contentView.visibleRect.origin
-            scrollView.contentView.scroll(to: NSMakePoint(origin.x ,origin.y + offset))
+            updateScrollPosition(previousOffset: findViewController.view.fittingSize.height)
         }
 
         findViewController.replacePanel.isHidden = replaceHidden
-        offset = findViewController.view.fittingSize.height
+        let offset = findViewController.view.fittingSize.height
 
         if findViewController.view.isHidden || replaceHiddenChanged {
             findViewController.view.isHidden = false
-            origin = scrollView.contentView.visibleRect.origin
-            scrollView.contentView.scroll(to: NSMakePoint(origin.x ,origin.y - offset))
+            updateScrollPosition(previousOffset: 0)
             document.sendRpcAsync("highlight_find", params: ["visible": true])
         }
 
         scrollView.contentInsets = NSEdgeInsetsMake(offset, 0, 0, 0)
-
-        editView.window?.makeFirstResponder(findViewController.searchField)
+        editView.window?.makeFirstResponder(findViewController.searchQueries.first?.searchField)
     }
 
     func closeFind() {
         if !findViewController.view.isHidden {
             findViewController.view.isHidden = true
-            (findViewController.searchField as? FindSearchField)?.resultCount = nil
+            for searchFieldView in findViewController.searchQueries {
+                (searchFieldView.searchField as? FindSearchField)?.resultCount = nil
+            }
             scrollView.contentInsets = NSEdgeInsetsZero
             
             let offset = findViewController.view.fittingSize.height
             let origin = scrollView.contentView.visibleRect.origin
-            scrollView.contentView.scroll(to: NSMakePoint(origin.x ,origin.y + offset))
+            scrollView.contentView.scroll(to: NSMakePoint(origin.x, origin.y + offset))
         }
 
         editView.window?.makeFirstResponder(editView)
-
         document.sendRpcAsync("highlight_find", params: ["visible": false])
+    }
+
+    func updateScrollPosition(previousOffset: CGFloat) {
+        if !findViewController.view.isHidden {
+            let origin = scrollView.contentView.visibleRect.origin
+            scrollView.contentView.scroll(to: NSMakePoint(origin.x, origin.y - (findViewController.view.fittingSize.height - previousOffset)))
+
+            scrollView.contentInsets = NSEdgeInsetsMake(findViewController.view.fittingSize.height, 0, 0, 0)
+
+        }
     }
 
     func findNext(wrapAround: Bool, allowSame: Bool) {
@@ -233,44 +375,52 @@ extension EditViewController {
         ])
     }
 
-    func find(_ term: String?, caseSensitive: Bool, regex: Bool, wholeWords: Bool) {
-        var params: [String: Any] = [
-            "case_sensitive": caseSensitive,
-            "regex": regex,
-            "whole_words": wholeWords,
-        ]
-
-        if term != nil {
-            params["chars"] = term
-        }
-
-        let shouldClearCount = term == nil || term == ""
-
-        if shouldClearCount {
-            (self.findViewController.searchField as? FindSearchField)?.resultCount = nil
-        }
-        document.sendRpcAsync("find", params: params)
-    }
-    
-    func clearFind() {
-        document.sendRpcAsync("find", params: ["chars": "", "case_sensitive": false])
+    func find(_ queries: [FindQuery]) {
+        let jsonQueries = queries.map({ $0.toJson() })
+        document.sendRpcAsync("multi_find", params: ["queries": jsonQueries])
     }
     
     func findStatus(status: [[String: AnyObject]]) {
-        if status.first?["chars"] != nil && !(status.first?["chars"] is NSNull) {
-            findViewController.searchField.stringValue = status.first?["chars"] as! String
-        }
-        
-        if status.first?["case_sensitive"] != nil && !(status.first?["case_sensitive"] is NSNull) {
-            findViewController.ignoreCase = status.first?["case_sensitive"] as! Bool
-        }
+        // status has the following expected format:
+        // [{
+        //      id: Int,
+        //      chars: String,
+        //      case_sensitive: Boolean,
+        //      whole_words: Boolean,
+        //      matches: Int
+        // }]
+        for statusQuery in status {
+            var query = findViewController.searchQueries.first(where: { $0.id == statusQuery["id"] as? Int })
 
-        if status.first?["whole_words"] != nil && !(status.first?["whole_words"] is NSNull) {
-            findViewController.wholeWords = status.first?["whole_words"] as! Bool
-        }
+            if query == nil {
+                if let newQuery = findViewController.searchQueries.first(where: { $0.id == nil }) {
+                    newQuery.id = statusQuery["id"] as? Int
+                    query = newQuery
+                } else {
+                    let searchField = findViewController.addSearchField(searchField: nil)
+                    searchField!.id = statusQuery["id"] as? String
+                    query = findViewController.searchQueries.first(where: { $0.id == statusQuery["id"] as? Int })
+                }
+            }
 
-        if let resultCount = status.first?["matches"] as? Int {
-            (findViewController.searchField as? FindSearchField)?.resultCount = resultCount
+            if status.first?["chars"] != nil && !(status.first?["chars"] is NSNull) {
+                query?.searchField.stringValue = statusQuery["chars"] as! String
+            } else {
+                // clear count
+                (query?.searchField as? FindSearchField)?.resultCount = nil
+            }
+
+            if status.first?["case_sensitive"] != nil && !(status.first?["case_sensitive"] is NSNull) {
+                query?.ignoreCase = !(statusQuery["case_sensitive"] != nil)
+            }
+
+            if status.first?["whole_words"] != nil && !(status.first?["whole_words"] is NSNull) {
+                query?.wholeWords = statusQuery["whole_words"] as! Bool
+            }
+
+            if let resultCount = statusQuery["matches"] as? Int {
+                (query?.searchField as? FindSearchField)?.resultCount = resultCount
+            }
         }
     }
 
@@ -312,6 +462,29 @@ extension EditViewController {
 
     @IBAction func selectionForReplace(_ sender: AnyObject?) {
         document.sendRpcAsync("selection_for_replace", params: [])
+    }
+
+    @IBAction func multipleSearchQueries(_ sender: AnyObject?) {
+        findViewController.showMultipleSearchQueries = !findViewController.showMultipleSearchQueries
+        openFind(replaceHidden: findViewController.replacePanel.isHidden)
+
+        if (findViewController.showMultipleSearchQueries) {
+            (sender as! NSMenuItem).state = .on
+        } else {
+            (sender as! NSMenuItem).state = .off
+
+            let offset = findViewController.view.fittingSize.height
+            // if multiple search queries get deactivated then remove additional queries
+            for searchField in findViewController.searchQueries[1...] {
+                findViewController.removeSearchField(searchField: searchField)
+            }
+            findViewController.findDelegate.updateScrollPosition(previousOffset: offset)
+            findViewController.redoFind()
+        }
+
+        for query in findViewController.searchQueries {
+            query.showButtons(show: findViewController.showMultipleSearchQueries)
+        }
     }
 
     @IBAction func performCustomFinderAction(_ sender: Any?) {
@@ -381,8 +554,11 @@ class Label: NSTextField {
 
 class FindSearchField: NSSearchField {
     let label = Label(title: "")
+    var rightPadding: CGFloat = 0    // tracks how much space on the right side of the search field is occupied by buttons
+    let defaultButtonWidth: CGFloat = 22
 
     private var _lastSearchButtonWidth: CGFloat = 22 // known default
+    var id: String? = nil
 
     var resultCount: Int? {
         didSet {
@@ -407,10 +583,7 @@ class FindSearchField: NSSearchField {
         label.textColor = NSColor.lightGray
         label.font = NSFont.systemFont(ofSize: 12)
         label.translatesAutoresizingMaskIntoConstraints = false
-
-        let defaultButtonWidth: CGFloat = 22;
-
-        label.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -defaultButtonWidth).isActive = true
+        label.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -defaultButtonWidth - rightPadding).isActive = true
         label.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
     }
 
@@ -426,12 +599,18 @@ class FindSearchField: NSSearchField {
         return rect
     }
 
+    override func rectForCancelButton(whenCentered isCentered: Bool) -> NSRect {
+        let rect = super.rectForCancelButton(whenCentered: isCentered)
+
+        return NSRect(x: rect.origin.x - rightPadding, y: rect.origin.y, width: rect.width, height: rect.height)
+    }
+
     // the search text is drawn too close to the search button by default
     override func rectForSearchText(whenCentered isCentered: Bool) -> NSRect {
         let rect = super.rectForSearchText(whenCentered: isCentered)
         let delta = max(0, _lastSearchButtonWidth - rect.origin.x)
         let originX = rect.origin.x + delta
-        var width = label.frame.minX - originX
+        var width = rect.width - originX - rightPadding - defaultButtonWidth
 
         // the label's frame is at 0,0 the first time we open this view
         if width < 0 {

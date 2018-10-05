@@ -449,8 +449,11 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         // first pass: create TextLine objects and also draw background rects
         let selectionColor = self.isFrontmostView ? dataSource.theme.selection : dataSource.theme.inactiveSelection ?? dataSource.theme.selection
         let selArgb = colorToArgb(selectionColor)
-        let highlightColor = dataSource.theme.inactiveSelection ?? dataSource.theme.findHighlight
-        let highlightArgb = colorToArgb(highlightColor)
+        let highlightColors = dataSource.theme.findHighlights
+        let highlightsArgb = (highlightColors ?? [])!.map({
+            (highlightColor: NSColor) -> UInt32 in
+            colorToArgb(highlightColor)
+        })
         let foregroundArgb = colorToArgb(dataSource.theme.foreground)
         let gutterArgb = colorToArgb(dataSource.theme.gutterForeground)
 
@@ -473,7 +476,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             } else {
                 let builder = TextLineBuilder(line.text, font: font)
                 builder.setFgColor(argb: foregroundArgb)
-                styleMap.applyStyles(builder: builder, styles: line.styles, selColor: selArgb, highlightColor: highlightArgb)
+                styleMap.applyStyles(builder: builder, styles: line.styles, selColor: selArgb, highlightColors: highlightsArgb)
                 textLine = builder.build(fontCache: renderer.fontCache)
 
                 let assoc = LineAssoc(textLine: textLine)
