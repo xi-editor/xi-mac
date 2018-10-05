@@ -19,7 +19,7 @@ class TextLineBuilder {
     var attrString: NSMutableAttributedString
     var defaultFgColor: UInt32 = 0xff000000
     var fgSpans: [ColorSpan] = []
-    var selSpans: [ColorSpan] = []
+    var bgSpans: [ColorSpan] = []
     var fakeItalicSpans: [SimpleSpan] = []
     var underlineSpans: [UnderlineSpan] = []
     // Note: the font here is used only to get underline metrics, this may change.
@@ -46,9 +46,9 @@ class TextLineBuilder {
         }
     }
 
-    func addSelSpan(range: CountableRange<Int>, argb: ARGBColor) {
+    func addBgSpan(range: CountableRange<Int>, argb: ARGBColor) {
         if !range.isEmpty {
-            selSpans.append(ColorSpan(range: range, payload: argb))
+            bgSpans.append(ColorSpan(range: range, payload: argb))
         }
     }
 
@@ -125,8 +125,8 @@ class TextLineBuilder {
             }
         }
         var bgRange: [(BackgroundColorRange)] = []
-        for selSpan in selSpans {
-            bgRange.append(BackgroundColorRange(range: getCtLineRange(ctLine, selSpan.range), argb: selSpan.payload))
+        for bgSpan in bgSpans {
+            bgRange.append(BackgroundColorRange(range: getCtLineRange(ctLine, bgSpan.range), argb: bgSpan.payload))
         }
         var underlineRanges: [UnderlineRange] = []
         if !underlineSpans.isEmpty {
@@ -149,7 +149,7 @@ class TextLineBuilder {
                 underlineRanges.append(UnderlineRange(range: range, y: y, argb: argb))
             }
         }
-        return TextLine(glyphs: glyphs, ctLine: ctLine, selRanges: bgRange, underlineRanges: underlineRanges, width: nil)
+        return TextLine(glyphs: glyphs, ctLine: ctLine, bgRanges: bgRange, underlineRanges: underlineRanges, width: nil)
     }
 
     /// Measure the total width of the line. Should be consistent with `.build().width`
@@ -164,15 +164,15 @@ struct TextLine {
     var glyphs: [GlyphInstance]
     // The CTLine is kept mostly for caret queries
     var ctLine: CTLine
-    var selRanges: [BackgroundColorRange]
+    var bgRanges: [BackgroundColorRange]
     var underlineRanges: [UnderlineRange]
     let width: Double
 
-    init(glyphs: [GlyphInstance], ctLine: CTLine, selRanges: [BackgroundColorRange], underlineRanges: [UnderlineRange], width: Double?) {
+    init(glyphs: [GlyphInstance], ctLine: CTLine, bgRanges: [BackgroundColorRange], underlineRanges: [UnderlineRange], width: Double?) {
         self.glyphs = glyphs
         self.width = width ?? CTLineGetTypographicBounds(ctLine, nil, nil, nil)
         self.ctLine = ctLine
-        self.selRanges = selRanges
+        self.bgRanges = bgRanges
         self.underlineRanges = underlineRanges
     }
 
@@ -202,7 +202,7 @@ struct TextLine {
             glyphPosition += 1
         }
 
-        return TextLine(glyphs: newGlyphs, ctLine: ctLine, selRanges: [], underlineRanges: [], width: newWidth);
+        return TextLine(glyphs: newGlyphs, ctLine: ctLine, bgRanges: [], underlineRanges: [], width: newWidth);
     }
 }
 

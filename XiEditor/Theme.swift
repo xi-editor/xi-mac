@@ -120,8 +120,10 @@ extension Theme {
             var brightness: CGFloat = 0.0
             var alpha: CGFloat = 0.0
             defaultHighlight.usingColorSpaceName(.calibratedRGB)?.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
-            return [defaultHighlight] + (0..<Style.N_RESERVED_STYLES).map({
-                return NSColor(hue: CGFloat((1.0 / Double(Style.N_RESERVED_STYLES)) * Double($0)), saturation: 1, brightness: brightness, alpha: alpha)
+            // Leave room for default highlight and selection colors
+            let customHighlights = Style.N_RESERVED_STYLES - 2
+            return [defaultHighlight] + (0..<customHighlights).map({
+                return NSColor(hue: CGFloat((1.0 / Double(customHighlights)) * Double($0)), saturation: 1, brightness: brightness, alpha: alpha)
             })
         })
     }
