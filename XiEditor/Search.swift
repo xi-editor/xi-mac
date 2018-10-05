@@ -201,7 +201,7 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
     var id: Int? = nil
     var disableRemove = false
 
-    var parentFindView: FindViewController? = nil
+    weak var parentFindView: FindViewController? = nil
 
     override func viewDidLoad() {
         // add recent searches menu items
