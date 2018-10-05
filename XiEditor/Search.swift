@@ -377,7 +377,7 @@ extension EditViewController {
 
     func find(_ queries: [FindQuery]) {
         let jsonQueries = queries.map({ $0.toJson() })
-        document.sendRpcAsync("find", params: ["queries": jsonQueries])
+        document.sendRpcAsync("multi_find", params: ["queries": jsonQueries])
     }
     
     func findStatus(status: [[String: AnyObject]]) {
