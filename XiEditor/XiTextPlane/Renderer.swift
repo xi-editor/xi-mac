@@ -241,11 +241,11 @@ class Renderer {
 
     /// Draw line background.
     func drawLineBg(line: TextLine, x0: GLfloat, yRange: Range<GLfloat>) {
-        for selRange in line.selRanges {
-            drawSolidRect(x: x0 + selRange.range.lowerBound, y: yRange.lowerBound,
-                          width: selRange.range.upperBound - selRange.range.lowerBound,
+        for bgRange in line.bgRanges {
+            drawSolidRect(x: x0 + bgRange.range.lowerBound, y: yRange.lowerBound,
+                          width: bgRange.range.upperBound - bgRange.range.lowerBound,
                           height: yRange.upperBound - yRange.lowerBound,
-                          argb: selRange.argb)
+                          argb: bgRange.argb)
         }
     }
 

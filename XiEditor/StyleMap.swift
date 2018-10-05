@@ -165,17 +165,21 @@ class StyleMapState: UnfairLock {
     }
 
     func applyStyle(builder: TextLineBuilder, id: Int, range: NSRange, selColor: ARGBColor?) {
-        if id >= styles.count {
+        if id < 0 || id >= styles.count {
             print("stylemap can't resolve \(id)")
             return
         }
 
-        if id >= 0 && id < Style.N_RESERVED_STYLES {
-            builder.addSelSpan(range: convertRange(range), argb: selColor!)
+        if id < Style.N_RESERVED_STYLES {
+            // Ignore foreground color for selection and highlight styles
+            builder.addBgSpan(range: convertRange(range), argb: selColor!)
         } else {
             guard let style = styles[id] else { return }
             if let fgColor = style.fgColor {
                 builder.addFgSpan(range: convertRange(range), argb: colorToArgb(fgColor))
+            }
+            if let bgColor = style.bgColor {
+                builder.addBgSpan(range: convertRange(range), argb: colorToArgb(bgColor))
             }
             if let font = style.font {
                 builder.addFontSpan(range: convertRange(range), font: font)
@@ -190,17 +194,27 @@ class StyleMapState: UnfairLock {
     }
 
     func applyStyles(builder: TextLineBuilder, styles: [StyleSpan], selColor: ARGBColor, highlightColors: [ARGBColor]) {
+        var selectionStyles: [StyleSpan] = []
+        var highlightStyles: [StyleSpan] = []
+
         for styleSpan in styles {
-            let color: ARGBColor?
-            switch styleSpan.style {
-            case 0:
-                color = selColor
-            case 1...highlightColors.count:
-                color = highlightColors[styleSpan.style - 1]
-            default:
-                color = nil
+            if styleSpan.style == 0 {
+                selectionStyles.append(styleSpan)
+            } else if styleSpan.style < Style.N_RESERVED_STYLES {
+                highlightStyles.append(styleSpan)
+            } else {
+                // Theme-provided background colors are rendered first
+                applyStyle(builder: builder, id: styleSpan.style, range: styleSpan.range, selColor: nil)
             }
-            applyStyle(builder: builder, id: styleSpan.style, range: styleSpan.range, selColor: color)
+        }
+        // Find highlights are rendered on top of background color
+        for span in highlightStyles {
+            let color = highlightColors[span.style - 1]
+            applyStyle(builder: builder, id: span.style, range: span.range, selColor: color)
+        }
+        // Selection color is rendered on top of find highlights
+        for span in selectionStyles {
+            applyStyle(builder: builder, id: span.style, range: span.range, selColor: selColor)
         }
     }
 
