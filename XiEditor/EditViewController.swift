@@ -471,6 +471,14 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     @objc func unindent(_ sender: Any?) {
         document.sendRpcAsync("outdent", params: [])
     }
+    
+    @objc func increaseNumber(_ sender: Any?) {
+        document.sendRpcAsync("increase_number", params: [])
+    }
+    
+    @objc func decreaseNumber(_ sender: Any?) {
+        document.sendRpcAsync("decrease_number", params: [])
+    }
 
     fileprivate func cutCopy(_ method: String) {
         if let result = document?.sendRpc(method, params: []) {

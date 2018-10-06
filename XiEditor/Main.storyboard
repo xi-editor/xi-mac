@@ -676,6 +676,18 @@ Gw
                                                 <action selector="duplicateLine:" target="7er-QZ-amI" id="djj-hT-V4x"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem title="Increase Number" keyEquivalent="=" id="JWE-w5-7OX">
+                                            <modifierMask key="keyEquivalentModifierMask" control="YES"/>
+                                            <connections>
+                                                <action selector="increaseNumber:" target="7er-QZ-amI" id="b1W-mf-BYg"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Decrease Number" keyEquivalent="-" id="uYM-Om-Ip7">
+                                            <modifierMask key="keyEquivalentModifierMask" control="YES"/>
+                                            <connections>
+                                                <action selector="decreaseNumber:" target="7er-QZ-amI" id="gdz-W0-fqj"/>
+                                            </connections>
+                                        </menuItem>
                                         <menuItem isSeparatorItem="YES" id="PN7-qq-hhD"/>
                                         <menuItem title="Find" id="EPp-zI-3PW">
                                             <modifierMask key="keyEquivalentModifierMask"/>
