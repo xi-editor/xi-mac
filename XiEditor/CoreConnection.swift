@@ -296,6 +296,10 @@ class CoreConnection {
             let plugins = params["plugins"] as! [[String: AnyObject]]
             client?.availablePlugins(viewIdentifier: viewIdentifier!, plugins: plugins)
             
+        case "available_languages":
+            let languages = params["languages"] as! [String]
+            client?.availableLanguages(languages: languages)
+            
         case "update_cmds":
             let plugin = params["plugin"] as! String
             let cmdsJson = params["cmds"] as! [[String: AnyObject]]

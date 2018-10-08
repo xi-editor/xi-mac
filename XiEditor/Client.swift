@@ -34,6 +34,9 @@ protocol XiClient: AnyObject {
 
     /// A notification containing a list of the names of currently available themes.
     func availableThemes(themes: [String]);
+    
+    /// A notification containing a list of the names of currently available languages.
+    func availableLanguages(languages: [String]);
 
     /// A notification that a given plugin has become active for a given view.
     func pluginStarted(viewIdentifier: String, pluginName: String);

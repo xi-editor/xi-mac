@@ -295,6 +295,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
             }
         }
     }
+    
+    func availableLanguages(languages: [String]) {
+        DispatchQueue.main.async {
+            for doc in NSApplication.shared.orderedDocuments {
+                guard let doc = doc as? Document else { continue }
+                doc.editViewController?.availableLanguagesChanged(languages)
+            }
+        }
+    }
 
     func pluginStarted(viewIdentifier: String, pluginName: String) {
         let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)

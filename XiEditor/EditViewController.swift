@@ -617,6 +617,15 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         let req = Events.SetTheme(themeName: sender.title)
         document.dispatcher.coreConnection.sendRpcAsync(req.method, params: req.params!)
     }
+    
+    @IBAction func debugSetLanguage(_ sender: NSMenuItem) {
+        guard sender.state != NSControl.StateValue.on else { print("language already active"); return }
+        let req = Events.SetLanguage(
+            viewIdentifier: document.coreViewIdentifier!,
+            languageName: sender.title
+        )
+        document.dispatcher.coreConnection.sendRpcAsync(req.method, params: req.params!)
+    }
 
     @IBAction func debugPrintSpans(_ sender: AnyObject) {
         document.sendRpcAsync("debug_print_spans", params: [])
@@ -768,6 +777,22 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             subItem.state = NSControl.StateValue(rawValue: (subItem.title == theme) ? 1 : 0)
         }
         self.unifiedTitlebar = { self.unifiedTitlebar }()
+    }
+    
+    public func availableLanguagesChanged(_ languages: [String]) {
+        let languagesMenu = NSApplication.shared.mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Language")!.submenu!;
+        
+        let currentlyActive = languagesMenu.items
+            .filter { $0.state.rawValue == 1 }
+            .first?.title
+        
+        languagesMenu.removeAllItems()
+        for language in languages {
+            let item = NSMenuItem(title: language, action: #selector(EditViewController.debugSetLanguage(_:)),
+                keyEquivalent: "")
+            item.state = NSControl.StateValue(rawValue: (language == currentlyActive) ? 1 : 0)
+            languagesMenu.addItem(item)
+        }
     }
 
     @IBAction func gotoLine(_ sender: AnyObject) {
