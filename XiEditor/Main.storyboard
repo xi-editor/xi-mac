@@ -1084,6 +1084,9 @@ Gw
                                         <menuItem title="Language" id="yoE-5m-2c1">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <menu key="submenu" title="Language" id="Grc-zS-cSq"/>
+                                            <connections>
+                                                <action selector="debugSetLanguage:" target="7er-QZ-amI" id="tTz-ol-fl7"/>
+                                            </connections>
                                         </menuItem>
                                         <menuItem title="Whitespace" id="QTN-3K-g0d">
                                             <modifierMask key="keyEquivalentModifierMask"/>
