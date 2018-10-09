@@ -656,16 +656,11 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     
     @IBAction func debugSetLanguage(_ sender: NSMenuItem) {
         guard sender.state != NSControl.StateValue.on else { print("language already active"); return }
-        let languageName = sender.title
+
         let req = Events.SetLanguage(
             viewIdentifier: document.coreViewIdentifier!,
-            languageName: languageName
+            languageName: sender.title
         )
-
-        let languageMenu = NSApplication.shared.mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Language");
-        for subItem in (languageMenu?.submenu!.items)! {
-            subItem.state = NSControl.StateValue(rawValue: (subItem.title == languageName) ? 1 : 0)
-        }
 
         document.dispatcher.coreConnection.sendRpcAsync(req.method, params: req.params!)
     }
@@ -820,6 +815,13 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             subItem.state = NSControl.StateValue(rawValue: (subItem.title == theme) ? 1 : 0)
         }
         self.unifiedTitlebar = { self.unifiedTitlebar }()
+    }
+    
+    public func languageChanged(_ languageId: String) {
+        let languagesMenu = NSApplication.shared.mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Language");
+        for subItem in (languagesMenu?.submenu!.items)! {
+            subItem.state = NSControl.StateValue(rawValue: (subItem.title == languageId) ? 1 : 0)
+        }
     }
     
     public func availableLanguagesChanged(_ languages: [String]) {
