@@ -772,7 +772,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
     
     func updateLanguageMenu() {
-        let languageMenu = NSApplication.shared.mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Language");
+        let languageMenu = NSApplication.shared.mainMenu!.item(withTitle: "View")!.submenu!.item(withTitle: "Language");
         
         for subItem in (languageMenu?.submenu!.items)! {
             if let currentLanguage = self.currentLanguage {
@@ -820,7 +820,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }()
 
     public func availableThemesChanged(_ themes: [String]) {
-        let pluginsMenu = NSApplication.shared.mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Theme")!.submenu!;
+        let pluginsMenu = NSApplication.shared.mainMenu!.item(withTitle: "View")!.submenu!.item(withTitle: "Theme")!.submenu!;
 
         let currentlyActive = pluginsMenu.items
             .filter { $0.state.rawValue == 1 }
@@ -835,7 +835,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     public func themeChanged(_ theme: String) {
-        let pluginsMenu = NSApplication.shared.mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Theme");
+        let pluginsMenu = NSApplication.shared.mainMenu!.item(withTitle: "View")!.submenu!.item(withTitle: "Theme");
         for subItem in (pluginsMenu?.submenu!.items)! {
             subItem.state = NSControl.StateValue(rawValue: (subItem.title == theme) ? 1 : 0)
         }
@@ -847,7 +847,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
     
     public func availableLanguagesChanged(_ languages: [String]) {
-        let languagesMenu = NSApplication.shared.mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Language")!.submenu!;
+        let languagesMenu = NSApplication.shared.mainMenu!.item(withTitle: "View")!.submenu!.item(withTitle: "Language")!.submenu!;
         
         let currentlyActive = languagesMenu.items
             .filter { $0.state.rawValue == 1 }

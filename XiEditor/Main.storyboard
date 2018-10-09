@@ -1014,6 +1014,20 @@ Gw
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="View" id="SBh-Xs-jHf">
                                     <items>
+                                        <menuItem title="Theme" id="SUL-oD-daT">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <menu key="submenu" title="Theme" id="Nmo-9S-zy4"/>
+                                            <connections>
+                                                <action selector="debugSetTheme:" target="7er-QZ-amI" id="fX1-d3-1Fg"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Language" id="yoE-5m-2c1">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <menu key="submenu" title="Language" id="Grc-zS-cSq"/>
+                                            <connections>
+                                                <action selector="debugSetLanguage:" target="7er-QZ-amI" id="tTz-ol-fl7"/>
+                                            </connections>
+                                        </menuItem>
                                         <menuItem title="Show Toolbar" keyEquivalent="t" id="DVY-H7-Ng2">
                                             <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                             <connections>
@@ -1073,20 +1087,6 @@ Gw
                                                     </menuItem>
                                                 </items>
                                             </menu>
-                                        </menuItem>
-                                        <menuItem title="Theme" id="SUL-oD-daT">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
-                                            <menu key="submenu" title="Theme" id="Nmo-9S-zy4"/>
-                                            <connections>
-                                                <action selector="debugSetTheme:" target="7er-QZ-amI" id="fX1-d3-1Fg"/>
-                                            </connections>
-                                        </menuItem>
-                                        <menuItem title="Language" id="yoE-5m-2c1">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
-                                            <menu key="submenu" title="Language" id="Grc-zS-cSq"/>
-                                            <connections>
-                                                <action selector="debugSetLanguage:" target="7er-QZ-amI" id="tTz-ol-fl7"/>
-                                            </connections>
                                         </menuItem>
                                         <menuItem title="Whitespace" id="QTN-3K-g0d">
                                             <modifierMask key="keyEquivalentModifierMask"/>
