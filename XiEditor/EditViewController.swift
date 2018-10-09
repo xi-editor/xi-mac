@@ -127,6 +127,13 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             updatePluginMenu()
         }
     }
+    
+    /// Current language used for syntax highlighting
+    var currentLanguage: String? {
+        didSet {
+            updateLanguageMenu()
+        }
+    }
 
     // used to calculate the gutter width. Initial -1 so that a new document
     // still triggers update of gutter width.
@@ -763,6 +770,24 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             }
         }
     }
+    
+    func updateLanguageMenu() {
+        let languageMenu = NSApplication.shared.mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Language");
+        
+        for subItem in (languageMenu?.submenu!.items)! {
+            if let currentLanguage = self.currentLanguage {
+                subItem.state = NSControl.StateValue(rawValue: (subItem.title == currentLanguage) ? 1 : 0)
+            } else {
+                subItem.state = NSControl.StateValue(rawValue: 0)
+            }
+        }
+    }
+    
+    // Gets called when active window changes
+    func updateMenuState() {
+        updatePluginMenu()
+        updateLanguageMenu()
+    }
 
     @objc func handleCommand(_ sender: NSMenuItem) {
         let parent = sender.parent!.title
@@ -818,10 +843,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
     
     public func languageChanged(_ languageId: String) {
-        let languagesMenu = NSApplication.shared.mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Language");
-        for subItem in (languagesMenu?.submenu!.items)! {
-            subItem.state = NSControl.StateValue(rawValue: (subItem.title == languageId) ? 1 : 0)
-        }
+        self.currentLanguage = languageId
     }
     
     public func availableLanguagesChanged(_ languages: [String]) {
@@ -885,7 +907,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 extension EditViewController: NSWindowDelegate {
     func windowDidBecomeKey(_ notification: Notification) {
         editView.isFrontmostView = true
-        updatePluginMenu()
+        updateMenuState()
     }
 
     func windowDidResignKey(_ notification: Notification) {

@@ -294,7 +294,6 @@ class CoreConnection {
         
         case "language_changed":
             let languageId = params["language_id"] as! String
-            print("Lang: \(languageId)")
             client?.languageChanged(viewIdentifier: viewIdentifier!, languageId: languageId)
             
         case "available_plugins":
