@@ -81,8 +81,8 @@ struct StyleSpan {
     /// given a line of text and an array of style values, generate an array of StyleSpans.
     /// see https://github.com/google/xi-editor/blob/protocol_doc/doc/update.md
     static func styles(fromRaw raw: [Int], text: String) -> [StyleSpan] {
-        var out: [StyleSpan] = [];
-        var ix = 0;
+        var out: [StyleSpan] = []
+        var ix = 0
         for i in stride(from: 0, to: raw.count, by: 3) {
             let start = ix + raw[i]
             let end = start + raw[i + 1]

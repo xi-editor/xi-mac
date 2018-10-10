@@ -16,7 +16,7 @@ import Cocoa
 
 let USER_DEFAULTS_THEME_KEY = "io.xi-editor.settings.theme"
 let USER_DEFAULTS_NEW_WINDOW_FRAME = "io.xi-editor.settings.preferredWindowFrame"
-let XI_CONFIG_DIR = "XI_CONFIG_DIR";
+let XI_CONFIG_DIR = "XI_CONFIG_DIR"
 let PREFERENCES_FILE_NAME = "preferences.xiconfig"
 
 class BoolToControlStateValueTransformer: ValueTransformer {
@@ -35,7 +35,7 @@ class BoolToControlStateValueTransformer: ValueTransformer {
 
     override func reverseTransformedValue(_ value: Any?) -> Any? {
         guard let type = value as? NSControl.StateValue else { return false }
-        return type == NSControl.StateValue.on ? true : false
+        return type == .on
     }
 }
 
@@ -65,7 +65,7 @@ class ScrollTester {
                     direction = 1
                 }
                 document.editViewController?.scrollTo(line, 0)
-            });
+            })
         } else {
             timer = nil
         }
@@ -428,7 +428,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
                     if let error = error {
                         print("error opening preferences \(error)")
                     }
-            });
+            })
         }
     }
 
@@ -454,9 +454,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
 
         // if fontName argument is present but the font cannot be found, this will be nil
         let desiredFont = NSFont(name: fontName ?? textMetrics.font.fontName,
-                                 size: fontSize ?? textMetrics.font.pointSize);
+                                 size: fontSize ?? textMetrics.font.pointSize)
         let fallbackFont = NSFont(name: textMetrics.font.fontName,
-                                  size:fontSize ?? textMetrics.font.pointSize);
+                                  size:fontSize ?? textMetrics.font.pointSize)
         if let newFont = desiredFont ?? fallbackFont {
             textMetrics = TextDrawingMetrics(font: newFont, textColor: theme.foreground)
         }

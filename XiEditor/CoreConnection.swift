@@ -124,7 +124,7 @@ class CoreConnection {
         errPipe.fileHandleForReading.readabilityHandler = { handle in
             let data = handle.availableData
             self.errLogWriter?.write(bytes: data)
-            if let errString = String(data: data, encoding: String.Encoding.utf8) {
+            if let errString = String(data: data, encoding: .utf8) {
                 print(errString, terminator: "")
             }
         }
@@ -165,7 +165,7 @@ class CoreConnection {
             for j in scanStart..<recvBufLen {
                 // TODO: using memchr would probably be faster
                 if recvBufBytes[j] == UInt8(ascii:"\n") {
-                    let bufferPointer = UnsafeBufferPointer(start: recvBufBytes.advanced(by: i), count: j + 1 - i);
+                    let bufferPointer = UnsafeBufferPointer(start: recvBufBytes.advanced(by: i), count: j + 1 - i)
                     let dataPacket = Data(bufferPointer)
                     handleRaw(dataPacket)
                     i = j + 1
