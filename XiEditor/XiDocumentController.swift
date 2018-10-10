@@ -34,27 +34,27 @@ class XiDocumentController: NSDocumentController {
     func setup() {
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(XiDocumentController.windowChangedNotification(_:)),
+            selector: #selector(windowChangedNotification),
             name: NSWindow.didMoveNotification, object: nil)
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(XiDocumentController.windowChangedNotification(_:)),
+            selector: #selector(windowChangedNotification),
             name: NSWindow.didEndLiveResizeNotification, object: nil)
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(XiDocumentController.windowChangedNotification(_:)),
+            selector: #selector(windowChangedNotification),
             name: NSWindow.didBecomeKeyNotification, object: nil)
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(XiDocumentController.willEnterFullscreen(_:)),
+            selector: #selector(willEnterFullscreen),
             name: NSWindow.willEnterFullScreenNotification, object: nil)
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(XiDocumentController.didLeaveFullscreen(_:)),
+            selector: #selector(didLeaveFullscreen),
             name: NSWindow.didExitFullScreenNotification, object: nil)
     }
 

@@ -46,7 +46,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
 
     func control(_ control: NSControl, textView: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
         switch commandSelector {
-        case #selector(NSResponder.cancelOperation(_:)):
+        case #selector(NSResponder.cancelOperation):
             // overriding cancelOperation is not enough, because the first Esc would just clear the
             // search field and not call cancelOperation
             findDelegate.closeFind()
@@ -87,10 +87,10 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
 
             if searchField != nil {
                 searchQueries.insert(newSearchFieldController, at: searchQueries.index(of: searchField!)! + 1)
-                searchFieldsStackView.insertView(newSearchFieldController.view, at: searchQueries.index(of: searchField!)! + 1, in: NSStackView.Gravity.center)
+                searchFieldsStackView.insertView(newSearchFieldController.view, at: searchQueries.index(of: searchField!)! + 1, in: .center)
             } else {
                 searchQueries.append(newSearchFieldController)
-                searchFieldsStackView.insertView(newSearchFieldController.view, at: searchQueries.count - 1, in: NSStackView.Gravity.center)
+                searchFieldsStackView.insertView(newSearchFieldController.view, at: searchQueries.count - 1, in: .center)
             }
 
             newSearchFieldController.searchField.becomeFirstResponder()
@@ -580,8 +580,8 @@ class FindSearchField: NSSearchField {
         sendsSearchStringImmediately = true
 
         self.addSubview(label)
-        label.textColor = NSColor.lightGray
-        label.font = NSFont.systemFont(ofSize: 12)
+        label.textColor = .lightGray
+        label.font = .systemFont(ofSize: 12)
         label.translatesAutoresizingMaskIntoConstraints = false
         label.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -defaultButtonWidth - rightPadding).isActive = true
         label.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
