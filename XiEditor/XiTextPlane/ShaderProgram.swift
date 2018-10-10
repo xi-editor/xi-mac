@@ -73,7 +73,7 @@ class ShaderProgram {
     }
 
     func getUniformLocation(name: String) -> GLuint? {
-        let loc = glGetUniformLocation(program, name.cString(using: String.Encoding.utf8))
+        let loc = glGetUniformLocation(program, name.cString(using: .utf8))
         return loc < 0 ? nil : GLuint(loc)
     }
 }

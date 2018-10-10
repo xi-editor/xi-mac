@@ -206,7 +206,7 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
     override func viewDidLoad() {
         // add recent searches menu items
         let menu = searchField.searchMenuTemplate!
-        menu.addItem(NSMenuItem.separator())
+        menu.addItem(.separator())
 
         let recentTitle = NSMenuItem(title: "Recent Searches", action: nil, keyEquivalent: "")
         recentTitle.tag = Int(NSSearchField.recentsTitleMenuItemTag)
@@ -216,7 +216,7 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
         recentItem.tag = Int(NSSearchField.recentsMenuItemTag)
         menu.addItem(recentItem)
 
-        menu.addItem(NSMenuItem.separator())
+        menu.addItem(.separator())
 
         let recentClear = NSMenuItem(title: "Clear Recent Searches", action: nil, keyEquivalent: "")
         recentClear.tag = Int(NSSearchField.clearRecentsMenuItemTag)

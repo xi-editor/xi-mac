@@ -116,7 +116,7 @@ class XiDocumentController: NSDocumentController {
             if let oldId = currentDocument.coreViewIdentifier {
                 Events.CloseView(viewIdentifier: oldId).dispatch(currentDocument.dispatcher!)
             }
-            currentDocument.coreViewIdentifier = nil;
+            currentDocument.coreViewIdentifier = nil
 
             Events.NewView(path: url.path).dispatchWithCallback(currentDocument.dispatcher!) { (response) in
                 DispatchQueue.main.sync {
