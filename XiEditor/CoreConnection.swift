@@ -291,10 +291,21 @@ class CoreConnection {
             let themeJson = params["theme"] as! [String: AnyObject]
             let theme = Theme(jsonObject: themeJson)
             client?.themeChanged(name: name, theme: theme)
-
+        
+        case "language_changed":
+            let languageIdentifier = params["language_id"] as! String
+            client?.languageChanged(
+                viewIdentifier: viewIdentifier!,
+                languageIdentifier: languageIdentifier
+            )
+            
         case "available_plugins":
             let plugins = params["plugins"] as! [[String: AnyObject]]
             client?.availablePlugins(viewIdentifier: viewIdentifier!, plugins: plugins)
+            
+        case "available_languages":
+            let languages = params["languages"] as! [String]
+            client?.availableLanguages(languages: languages)
 
         case "update_cmds":
             let plugin = params["plugin"] as! String

@@ -286,12 +286,28 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
             }
         }
     }
+    
+    func languageChanged(viewIdentifier: String, languageIdentifier: String) {
+        DispatchQueue.main.async { [weak self] in
+            let document = self?.documentForViewIdentifier(viewIdentifier: viewIdentifier)
+            document?.editViewController?.languageChanged(languageIdentifier)
+        }
+    }
 
     func availableThemes(themes: [String]) {
         DispatchQueue.main.async {
             for doc in NSApplication.shared.orderedDocuments {
                 guard let doc = doc as? Document else { continue }
                 doc.editViewController?.availableThemesChanged(themes)
+            }
+        }
+    }
+    
+    func availableLanguages(languages: [String]) {
+        DispatchQueue.main.async {
+            for doc in NSApplication.shared.orderedDocuments {
+                guard let doc = doc as? Document else { continue }
+                doc.editViewController?.availableLanguagesChanged(languages)
             }
         }
     }

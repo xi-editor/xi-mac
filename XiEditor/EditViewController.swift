@@ -131,6 +131,13 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             updatePluginMenu()
         }
     }
+    
+    /// Current language used for syntax highlighting
+    var currentLanguage: String? {
+        didSet {
+            updateLanguageMenu()
+        }
+    }
 
     // used to calculate the gutter width. Initial -1 so that a new document
     // still triggers update of gutter width.
@@ -659,6 +666,17 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         let req = Events.SetTheme(themeName: sender.title)
         document.dispatcher.coreConnection.sendRpcAsync(req.method, params: req.params!)
     }
+    
+    @IBAction func debugSetLanguage(_ sender: NSMenuItem) {
+        guard sender.state != NSControl.StateValue.on else { print("language already active"); return }
+
+        let req = Events.SetLanguage(
+            viewIdentifier: document.coreViewIdentifier!,
+            languageName: sender.title
+        )
+
+        document.dispatcher.coreConnection.sendRpcAsync(req.method, params: req.params!)
+    }
 
     @IBAction func debugPrintSpans(_ sender: AnyObject) {
         document.sendRpcAsync("debug_print_spans", params: [])
@@ -758,6 +776,24 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             }
         }
     }
+    
+    func updateLanguageMenu() {
+        let languageMenu = NSApplication.shared.mainMenu!.item(withTitle: "View")!.submenu!.item(withTitle: "Language");
+        
+        for subItem in (languageMenu?.submenu!.items)! {
+            if let currentLanguage = self.currentLanguage {
+                subItem.state = NSControl.StateValue(rawValue: (subItem.title == currentLanguage) ? 1 : 0)
+            } else {
+                subItem.state = NSControl.StateValue(rawValue: 0)
+            }
+        }
+    }
+    
+    // Gets called when active window changes
+    func updateMenuState() {
+        updatePluginMenu()
+        updateLanguageMenu()
+    }
 
     @objc func handleCommand(_ sender: NSMenuItem) {
         let parent = sender.parent!.title
@@ -811,6 +847,26 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         }
         self.unifiedTitlebar = { self.unifiedTitlebar }()
     }
+    
+    public func languageChanged(_ languageIdentifier: String) {
+        self.currentLanguage = languageIdentifier
+    }
+    
+    public func availableLanguagesChanged(_ languages: [String]) {
+        let languagesMenu = NSApplication.shared.mainMenu!.item(withTitle: "View")!.submenu!.item(withTitle: "Language")!.submenu!;
+        
+        let currentlyActive = languagesMenu.items
+            .filter { $0.state.rawValue == 1 }
+            .first?.title
+        
+        languagesMenu.removeAllItems()
+        for language in languages {
+            let item = NSMenuItem(title: language, action: #selector(EditViewController.debugSetLanguage(_:)),
+                keyEquivalent: "")
+            item.state = NSControl.StateValue(rawValue: (language == currentlyActive) ? 1 : 0)
+            languagesMenu.addItem(item)
+        }
+    }
 
     @IBAction func gotoLine(_ sender: AnyObject) {
         guard let window = self.view.window else { return }
@@ -857,7 +913,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 extension EditViewController: NSWindowDelegate {
     func windowDidBecomeKey(_ notification: Notification) {
         editView.isFrontmostView = true
-        updatePluginMenu()
+        updateMenuState()
     }
 
     func windowDidResignKey(_ notification: Notification) {
