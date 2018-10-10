@@ -42,7 +42,7 @@ class Document: NSDocument {
         }
     }
 
-    var pendingNotifications: [PendingNotification] = [];
+    var pendingNotifications: [PendingNotification] = []
     weak var editViewController: EditViewController?
 
     /// Returns `true` if this document contains no data.
@@ -141,7 +141,7 @@ class Document: NSDocument {
 
     /// Send a custom plugin command.
     func sendPluginRpc(_ method: String, receiver: String, params innerParams: [String: AnyObject]) {
-        var innerParams = innerParams;
+        var innerParams = innerParams
         if innerParams["view"] != nil {
             innerParams["view"] = coreViewIdentifier! as AnyObject
         }

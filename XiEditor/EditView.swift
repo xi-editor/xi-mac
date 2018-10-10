@@ -198,7 +198,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         layer = glLayer
     }
 
-    let x0: CGFloat = 2;
+    let x0: CGFloat = 2
 
     // This needs to be implemented, even though it seems to never be called, to preserve
     // updating on live window resize.
@@ -207,7 +207,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     }
 
     override var acceptsFirstResponder: Bool {
-        return true;
+        return true
     }
 
     override func becomeFirstResponder() -> Bool {
@@ -222,7 +222,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
 
     // we use a flipped coordinate system primarily to get better alignment when scrolling
     override var isFlipped: Bool {
-        return true;
+        return true
     }
 
     override var isOpaque: Bool {
@@ -332,7 +332,7 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     }
 
     func validAttributesForMarkedText() -> [NSAttributedStringKey] {
-        return [NSAttributedStringKey.foregroundColor, NSAttributedStringKey.backgroundColor]
+        return [.foregroundColor, .backgroundColor]
     }
 
     func firstRect(forCharacterRange aRange: NSRange, actualRange: NSRangePointer?) -> NSRect {

@@ -213,7 +213,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         super.viewDidLoad()
         shadowView.wantsLayer = true
         editView.dataSource = self
-        scrollView.contentView.documentCursor = .iBeam;
+        scrollView.contentView.documentCursor = .iBeam
         scrollView.automaticallyAdjustsContentInsets = false
         scrollView.hasHorizontalScroller = true
         scrollView.usesPredominantAxisScrolling = true
@@ -312,7 +312,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         self.editViewHeight.constant = max(contentHeight, scrollView.bounds.height)
         if scrollPastEnd {
             self.editViewHeight.constant += min(contentHeight, scrollView.bounds.height)
-                - textMetrics.linespace - 2 * textMetrics.descent;
+                - textMetrics.linespace - 2 * textMetrics.descent
         }
     }
 
@@ -415,7 +415,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             self.perform(aSelector, with: self)
         } else {
             if let commandName = EditViewController.selectorToCommand[aSelector.description] {
-                document.sendRpcAsync(commandName, params: []);
+                document.sendRpcAsync(commandName, params: [])
             } else {
                 Swift.print("Unhandled selector: \(aSelector.description)")
                 NSSound.beep()
@@ -519,7 +519,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     override func keyDown(with theEvent: NSEvent) {
-        self.editView.inputContext?.handleEvent(theEvent);
+        self.editView.inputContext?.handleEvent(theEvent)
     }
 
     // Determines the gesture type based on flags and click count.
@@ -651,7 +651,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     // MARK: - Debug Methods
     @IBAction func debugSetTheme(_ sender: NSMenuItem) {
-        guard sender.state != NSControl.StateValue.on else { print("theme already active"); return }
+        guard sender.state != .on else { print("theme already active"); return }
         let req = Events.SetTheme(themeName: sender.title)
         document.dispatcher.coreConnection.sendRpcAsync(req.method, params: req.params!)
     }
@@ -732,7 +732,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     func updatePluginMenu() {
-        let pluginsMenu = NSApplication.shared.mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Plugin");
+        let pluginsMenu = NSApplication.shared.mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Plugin")
         pluginsMenu!.submenu?.removeAllItems()
         for (plugin, isRunning) in self.availablePlugins {
             if self.availableCommands[plugin]?.isEmpty ?? true {
@@ -786,7 +786,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }()
 
     public func availableThemesChanged(_ themes: [String]) {
-        let pluginsMenu = NSApplication.shared.mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Theme")!.submenu!;
+        let pluginsMenu = NSApplication.shared.mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Theme")!.submenu!
 
         let currentlyActive = pluginsMenu.items
             .filter { $0.state.rawValue == 1 }
@@ -801,7 +801,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     public func themeChanged(_ theme: String) {
-        let pluginsMenu = NSApplication.shared.mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Theme");
+        let pluginsMenu = NSApplication.shared.mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Theme")
         for subItem in (pluginsMenu?.submenu!.items)! {
             subItem.state = NSControl.StateValue(rawValue: (subItem.title == theme) ? 1 : 0)
         }

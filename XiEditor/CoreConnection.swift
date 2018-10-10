@@ -165,7 +165,7 @@ class CoreConnection {
             for j in scanStart..<recvBufLen {
                 // TODO: using memchr would probably be faster
                 if recvBufBytes[j] == UInt8(ascii:"\n") {
-                    let bufferPointer = UnsafeBufferPointer(start: recvBufBytes.advanced(by: i), count: j + 1 - i);
+                    let bufferPointer = UnsafeBufferPointer(start: recvBufBytes.advanced(by: i), count: j + 1 - i)
                     let dataPacket = Data(bufferPointer)
                     handleRaw(dataPacket)
                     i = j + 1

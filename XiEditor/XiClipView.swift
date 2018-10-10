@@ -15,7 +15,7 @@
 import Cocoa
 
 protocol ScrollInterested: class {
-    func willScroll(to newOrigin: NSPoint);
+    func willScroll(to newOrigin: NSPoint)
 }
 
 class XiClipView: NSClipView {

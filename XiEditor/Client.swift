@@ -20,46 +20,46 @@ protocol XiClient: AnyObject {
     /// An update to the contents of a given view. The structure of the `update`
     /// param is described in detail in the
     // [documentation])https://github.com/google/xi-editor/blob/master/doc/update.md).
-    func update(viewIdentifier: String, update: [String: AnyObject], rev: UInt64?);
+    func update(viewIdentifier: String, update: [String: AnyObject], rev: UInt64?)
 
     /// A notification that a given view should scroll, if necessary, such
     /// that the given line and column are visible.
-    func scroll(viewIdentifier: String, line: Int, column: Int);
+    func scroll(viewIdentifier: String, line: Int, column: Int)
 
     /// A notification containing a new style definition.
-    func defineStyle(style: [String: AnyObject]);
+    func defineStyle(style: [String: AnyObject])
 
     /// A notification that the current theme has changed.
-    func themeChanged(name: String, theme: Theme);
+    func themeChanged(name: String, theme: Theme)
 
     /// A notification containing a list of the names of currently available themes.
-    func availableThemes(themes: [String]);
+    func availableThemes(themes: [String])
 
     /// A notification that a given plugin has become active for a given view.
-    func pluginStarted(viewIdentifier: String, pluginName: String);
+    func pluginStarted(viewIdentifier: String, pluginName: String)
 
     /// A notification that a given plugin has stopped.
-    func pluginStopped(viewIdentifier: String, pluginName: String);
+    func pluginStopped(viewIdentifier: String, pluginName: String)
 
     /// A notification containing a list of plugins available for a given view.
     ///
     /// - Note: Each item in the list is a dictionary with `name` and `running` fields,
     /// where `name` is the name of the plugin, and `running` is a bool indicating
     // whether this plugin is currently running.
-    func availablePlugins(viewIdentifier: String, plugins: [[String: AnyObject]]);
+    func availablePlugins(viewIdentifier: String, plugins: [[String: AnyObject]])
 
     /// A notification containing the currently available commands for the named plugin.
-    func updateCommands(viewIdentifier: String, plugin: String, commands: [Command]);
+    func updateCommands(viewIdentifier: String, plugin: String, commands: [Command])
 
     /// A notification containing an alert message to be shown the user.
-    func alert(text: String);
+    func alert(text: String)
 
     /// A list of notifications that manages status items.
     /// Keys are unique, and alignment (left or right) cannot be
     /// changed after creating the status item.
-    func addStatusItem(viewIdentifier: String, source: String, key: String, value: String, alignment: String);
-    func updateStatusItem(viewIdentifier: String, key: String, value: String);
-    func removeStatusItem(viewIdentifier: String, key: String);
+    func addStatusItem(viewIdentifier: String, source: String, key: String, value: String, alignment: String)
+    func updateStatusItem(viewIdentifier: String, key: String, value: String)
+    func removeStatusItem(viewIdentifier: String, key: String)
 
     /// A result, formatted in Markdown, that is returned from a hover request.
     func showHover(viewIdentifier: String, requestIdentifier: Int, result: String)

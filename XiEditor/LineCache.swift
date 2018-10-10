@@ -71,7 +71,7 @@ fileprivate class LineCacheState<T>: UnfairLock {
 
     var nInvalidBefore = 0;
     var lines: [Line<T>?] = []
-    var nInvalidAfter = 0;
+    var nInvalidAfter = 0
 
     var height: Int {
         return nInvalidBefore + lines.count + nInvalidAfter
@@ -116,7 +116,7 @@ fileprivate class LineCacheState<T>: UnfairLock {
         var newInvalidBefore = 0
         var newLines: [Line<T>?] = []
         var newInvalidAfter = 0
-        var oldIx = 0;
+        var oldIx = 0
         for op in ops as! [[String: AnyObject]] {
             guard let op_type = op["op"] as? String else { return inval }
             guard let n = op["n"] as? Int else { return inval }
@@ -239,7 +239,7 @@ class LineCacheLocked<T> {
     }
 
     /// The maximum time (in milliseconds) to block when missing lines.
-    let MAX_BLOCK_MS = 30;
+    let MAX_BLOCK_MS = 30
 
     var isEmpty: Bool {
         return inner.isEmpty

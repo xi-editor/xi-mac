@@ -33,7 +33,7 @@ func current_thread_name() -> String {
         return name
     }
 
-    let queue_name = __dispatch_queue_get_label(nil);
+    let queue_name = __dispatch_queue_get_label(nil)
     return String(cString: queue_name)
 }
 
@@ -77,7 +77,7 @@ class Trace {
     }
 
     func trace(_ name: String, _ cat: TraceCategory, _ ph: TracePhase) {
-        let timestamp = mach_absolute_time();
+        let timestamp = mach_absolute_time()
 
         mutex.lock()
         defer {
