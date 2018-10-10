@@ -151,7 +151,7 @@ class StyleMapState: UnfairLock {
             // see https://github.com/google/xi-mac/pull/32#discussion_r115114037
             weight = Int(floor(1 + Float(w) * (0.01 + 3e-6 * Float(w))))
         }
-        
+
         let style = Style(font: font, fgColor: fgColor, bgColor: bgColor,
                           underline: underline, italic: italic, weight: weight)
         while styles.count < styleID {
@@ -188,7 +188,7 @@ class StyleMapState: UnfairLock {
             }
         }
     }
-    
+
     func applyStyles(builder: TextLineBuilder, styles: [StyleSpan], selColor: ARGBColor, highlightColors: [ARGBColor]) {
         for styleSpan in styles {
             let color: ARGBColor?

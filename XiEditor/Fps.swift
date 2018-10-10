@@ -17,7 +17,7 @@ import Foundation
 public struct FpsMeasurement {
     fileprivate let start : DispatchTime
     fileprivate let end : DispatchTime
-    
+
     public init(from start: DispatchTime, to end: DispatchTime) {
         self.start = start
         self.end = end
@@ -150,7 +150,7 @@ public class Fps {
             return self.previousSecond
         }
     }
-    
+
     public func startRender() -> FpsTimer {
         return FpsTimer(fps: self)
     }

@@ -229,7 +229,7 @@ class LineCacheLocked<T> {
         inner = mutex
         inner.lock()
     }
-    
+
     deinit {
         inner.unlock()
         if shouldSignal {
@@ -352,7 +352,7 @@ class LineCache<T> {
     func locked() -> LineCacheLocked<T> {
         return LineCacheLocked(state)
     }
-    
+
     /// A boolean value indicating whether or not the linecache contains any text.
     /// - Note: An empty line cache will still contain a single empty line, this
     /// is sent as an update from the core after a new document is created.
@@ -374,7 +374,7 @@ class LineCache<T> {
 /// A set of line numbers, represented as a collection of `LineRange`s.
 class InvalSet {
     private var _ranges: [LineRange] = []
-    
+
     /// The ranges of lines in this set.
     var ranges: [LineRange] {
         return _ranges

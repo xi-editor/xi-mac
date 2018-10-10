@@ -185,9 +185,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
                 findViewController.updateColor(newBackgroundColor: self.theme.background, unifiedTitlebar: unifiedTitlebar)
 
                 if color.isDark && unifiedTitlebar {
-                    window.appearance = NSAppearance(named: NSAppearance.Name.vibrantDark)
+                    window.appearance = NSAppearance(named: .vibrantDark)
                 } else {
-                    window.appearance = NSAppearance(named: NSAppearance.Name.aqua)
+                    window.appearance = NSAppearance(named: .aqua)
                 }
             }
         }
@@ -220,7 +220,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         super.viewDidLoad()
         shadowView.wantsLayer = true
         editView.dataSource = self
-        scrollView.contentView.documentCursor = NSCursor.iBeam;
+        scrollView.contentView.documentCursor = .iBeam;
         scrollView.automaticallyAdjustsContentInsets = false
         scrollView.hasHorizontalScroller = true
         scrollView.usesPredominantAxisScrolling = true
@@ -231,7 +231,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         super.viewDidAppear()
         setupStatusBar()
         shadowView.setup()
-        NotificationCenter.default.addObserver(self, selector: #selector(EditViewController.frameDidChangeNotification(_:)), name: NSView.frameDidChangeNotification, object: scrollView)
+        NotificationCenter.default.addObserver(self, selector: #selector(frameDidChangeNotification), name: NSView.frameDidChangeNotification, object: scrollView)
         // call to set initial scroll position once we know view size
         redrawEverything()
 
@@ -385,11 +385,13 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         "moveToBeginningOfLine:": "move_to_left_end_of_line",
         "moveToBeginningOfLineAndModifySelection:": "move_to_left_end_of_line_and_modify_selection",
         "moveToBeginningOfParagraph:": "move_to_beginning_of_paragraph",
+        "moveToBeginningOfParagraphAndModifySelection:": "move_to_beginning_of_paragraph_and_modify_selection",
         "moveToEndOfDocument:": "move_to_end_of_document",
         "moveToEndOfDocumentAndModifySelection:": "move_to_end_of_document_and_modify_selection",
         "moveToEndOfLine:": "move_to_right_end_of_line",
         "moveToEndOfLineAndModifySelection:": "move_to_right_end_of_line_and_modify_selection",
         "moveToEndOfParagraph:": "move_to_end_of_paragraph",
+        "moveToEndOfParagraphAndModifySelection:": "move_to_end_of_paragraph_and_modify_selection",
         "moveToLeftEndOfLine:": "move_to_left_end_of_line",
         "moveToLeftEndOfLineAndModifySelection:": "move_to_left_end_of_line_and_modify_selection",
         "moveToRightEndOfLine:": "move_to_right_end_of_line",
@@ -416,7 +418,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         // Although this function is only called when a command originates in a keyboard event,
         // several commands (such as uppercaseWord:) are accessible from both a system binding
         // _and_ a menu; if there's a concrete implementation of such a method we just call it directly.
-        if (self.responds(to: aSelector)) {
+        if self.responds(to: aSelector) {
             self.perform(aSelector, with: self)
         } else {
             if let commandName = EditViewController.selectorToCommand[aSelector.description] {
@@ -478,11 +480,11 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     @objc func unindent(_ sender: Any?) {
         document.sendRpcAsync("outdent", params: [])
     }
-    
+
     @objc func increaseNumber(_ sender: Any?) {
         document.sendRpcAsync("increase_number", params: [])
     }
-    
+
     @objc func decreaseNumber(_ sender: Any?) {
         document.sendRpcAsync("decrease_number", params: [])
     }
@@ -517,9 +519,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     //MARK: Other system events
     override func flagsChanged(with event: NSEvent) {
         if event.modifierFlags.contains(.option) {
-            scrollView.contentView.documentCursor = NSCursor.crosshair
+            scrollView.contentView.documentCursor = .crosshair
         } else {
-            scrollView.contentView.documentCursor = NSCursor.iBeam
+            scrollView.contentView.documentCursor = .iBeam
         }
     }
 
@@ -531,8 +533,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     private func clickGestureType(event: NSEvent) -> String {
         let clickCount = event.clickCount
 
-        if event.modifierFlags.contains(NSEvent.ModifierFlags.command) {
-            switch (clickCount) {
+        if event.modifierFlags.contains(.command) {
+            switch clickCount {
             case 2:
                 return "multi_word_select"
             case 3:
@@ -540,12 +542,12 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             default:
                 return "toggle_sel"
             }
-        } else if (event.modifierFlags.contains(NSEvent.ModifierFlags.shift)) {
+        } else if event.modifierFlags.contains(.shift) {
             return "range_select"
-        } else if (event.modifierFlags.contains(NSEvent.ModifierFlags.option)) {
+        } else if event.modifierFlags.contains(.option) {
             return "request_hover"
         }  else {
-            switch (clickCount) {
+            switch clickCount {
             case 2:
                 return "word_select"
             case 3:
@@ -694,10 +696,10 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     @objc func togglePlugin(_ sender: NSMenuItem) {
         switch sender.state {
-        case NSControl.StateValue.off: Events.StartPlugin(
+        case .off: Events.StartPlugin(
             viewIdentifier: document.coreViewIdentifier!,
             plugin: sender.title).dispatch(document.dispatcher)
-        case NSControl.StateValue.on:
+        case .on:
             Events.StopPlugin(
                 viewIdentifier: document.coreViewIdentifier!,
                 plugin: sender.title).dispatch(document.dispatcher)
@@ -752,19 +754,19 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         pluginsMenu!.submenu?.removeAllItems()
         for (plugin, isRunning) in self.availablePlugins {
             if self.availableCommands[plugin]?.isEmpty ?? true {
-                let item = pluginsMenu!.submenu?.addItem(withTitle: plugin, action: #selector(EditViewController.togglePlugin(_:)), keyEquivalent: "")
+                let item = pluginsMenu!.submenu?.addItem(withTitle: plugin, action: #selector(togglePlugin), keyEquivalent: "")
                 item?.state = NSControl.StateValue(rawValue: isRunning ? 1 : 0)
             } else {
                 let item = pluginsMenu!.submenu?.addItem(withTitle: plugin, action: nil, keyEquivalent: "")
                 item?.state = NSControl.StateValue(rawValue: isRunning ? 1 : 0)
                 item?.submenu = NSMenu()
                 item?.submenu?.addItem(withTitle: isRunning ? "Stop" : "Start",
-                                       action: #selector(EditViewController.togglePlugin(_:)),
+                                       action: #selector(togglePlugin),
                                        keyEquivalent: "")
                 item?.submenu?.addItem(NSMenuItem.separator())
                 for cmd in self.availableCommands[plugin]! {
                     item?.submenu?.addItem(withTitle: cmd.title,
-                                           action:#selector(EditViewController.handleCommand(_:)),
+                                           action:#selector(handleCommand),
                                            keyEquivalent: "")
                 }
             }
@@ -828,7 +830,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
         pluginsMenu.removeAllItems()
         for theme in themes {
-            let item = NSMenuItem(title: theme, action: #selector(EditViewController.debugSetTheme(_:)), keyEquivalent: "")
+            let item = NSMenuItem(title: theme, action: #selector(debugSetTheme), keyEquivalent: "")
             item.state = NSControl.StateValue(rawValue: (theme == currentlyActive) ? 1 : 0)
             pluginsMenu.addItem(item)
         }
@@ -865,17 +867,17 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     @IBAction func gotoLine(_ sender: AnyObject) {
         guard let window = self.view.window else { return }
 
-        let alert = NSAlert.init()
+        let alert = NSAlert()
         alert.addButton(withTitle: "Ok")
         alert.addButton(withTitle: "Cancel")
         alert.messageText = "Goto Line"
         alert.informativeText = "Enter line to go to:"
-        let text = NSTextField.init(frame: NSRect.init(x: 0, y: 0, width: 200, height: 24))
+        let text = NSTextField(frame: NSRect(x: 0, y: 0, width: 200, height: 24))
         alert.accessoryView = text
         alert.window.initialFirstResponder = text
 
         alert.beginSheetModal(for: window) { response in
-            if (response == NSApplication.ModalResponse.alertFirstButtonReturn) {
+            if response == .alertFirstButtonReturn {
                 let line = text.intValue
 
                 if line > 0 {

@@ -32,7 +32,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
 
     var searchQueries: [SuplementaryFindViewController] = []
     var wrapAround = true   // option same for all search fields
-    var showMultipleSearchQueries = false   // activates/deactives 
+    var showMultipleSearchQueries = false   // activates/deactives
 
     override func viewDidLoad() {
         addSearchField(searchField: nil)     // by default at least one search field is present
@@ -46,7 +46,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
 
     func control(_ control: NSControl, textView: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
         switch commandSelector {
-        case #selector(NSResponder.cancelOperation(_:)):
+        case #selector(NSResponder.cancelOperation):
             // overriding cancelOperation is not enough, because the first Esc would just clear the
             // search field and not call cancelOperation
             findDelegate.closeFind()
@@ -87,12 +87,12 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
 
             if searchField != nil {
                 searchQueries.insert(newSearchFieldController, at: searchQueries.index(of: searchField!)! + 1)
-                searchFieldsStackView.insertView(newSearchFieldController.view, at: searchQueries.index(of: searchField!)! + 1, in: NSStackView.Gravity.center)
+                searchFieldsStackView.insertView(newSearchFieldController.view, at: searchQueries.index(of: searchField!)! + 1, in: .center)
             } else {
                 searchQueries.append(newSearchFieldController)
-                searchFieldsStackView.insertView(newSearchFieldController.view, at: searchQueries.count - 1, in: NSStackView.Gravity.center)
+                searchFieldsStackView.insertView(newSearchFieldController.view, at: searchQueries.count - 1, in: .center)
             }
-            
+
             newSearchFieldController.searchField.becomeFirstResponder()
             // show/hide +/- button depending on user settings
             newSearchFieldController.showButtons(show: (newSearchFieldController.parentFindView?.showMultipleSearchQueries)!)
@@ -152,7 +152,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     override func cancelOperation(_ sender: Any?) {
         findDelegate.closeFind()
     }
-    
+
     public func findStatus(status: [[String: AnyObject]]) {
         findDelegate.findStatus(status: status)
     }
@@ -227,13 +227,13 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
     override func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
         switch menuItem.tag {
         case ignoreCaseMenuTag:
-            menuItem.state = ignoreCase ? NSControl.StateValue.on : NSControl.StateValue.off
+            menuItem.state = ignoreCase ? .on : .off
         case wrapAroundMenuTag:
-            menuItem.state = wrapAround ? NSControl.StateValue.on : NSControl.StateValue.off
+            menuItem.state = wrapAround ? .on : .off
         case regexMenuTag:
-            menuItem.state = regex ? NSControl.StateValue.on : NSControl.StateValue.off
+            menuItem.state = regex ? .on : .off
         case wholeWordsMenuTag:
-            menuItem.state = wholeWords ? NSControl.StateValue.on : NSControl.StateValue.off
+            menuItem.state = wholeWords ? .on : .off
         case removeMenuTag:
              menuItem.isHidden = disableRemove
         default:
@@ -341,7 +341,7 @@ extension EditViewController {
                 (searchFieldView.searchField as? FindSearchField)?.resultCount = nil
             }
             scrollView.contentInsets = NSEdgeInsetsZero
-            
+
             let offset = findViewController.view.fittingSize.height
             let origin = scrollView.contentView.visibleRect.origin
             scrollView.contentView.scroll(to: NSMakePoint(origin.x, origin.y + offset))
@@ -379,7 +379,7 @@ extension EditViewController {
         let jsonQueries = queries.map({ $0.toJson() })
         document.sendRpcAsync("multi_find", params: ["queries": jsonQueries])
     }
-    
+
     func findStatus(status: [[String: AnyObject]]) {
         // status has the following expected format:
         // [{
@@ -515,7 +515,7 @@ extension EditViewController {
 
         case .setSearchString:
             document.sendRpcAsync("selection_for_find", params: ["case_sensitive": false])
-            
+
         case .replaceAllInSelection:
             Swift.print("replaceAllInSelection not implemented")
 
@@ -541,8 +541,8 @@ class Label: NSTextField {
         self.stringValue = title
         self.isEditable = false
         self.isSelectable = false
-        self.textColor = NSColor.labelColor
-        self.backgroundColor = NSColor.clear
+        self.textColor = .labelColor
+        self.backgroundColor = .clear
         self.lineBreakMode = .byClipping
         self.isBezeled = false
     }
@@ -580,8 +580,8 @@ class FindSearchField: NSSearchField {
         sendsSearchStringImmediately = true
 
         self.addSubview(label)
-        label.textColor = NSColor.lightGray
-        label.font = NSFont.systemFont(ofSize: 12)
+        label.textColor = .lightGray
+        label.font = .systemFont(ofSize: 12)
         label.translatesAutoresizingMaskIntoConstraints = false
         label.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -defaultButtonWidth - rightPadding).isActive = true
         label.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true

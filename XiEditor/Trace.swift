@@ -58,7 +58,7 @@ class Trace {
         // the 1000 is because mach time is ns, and chrome tracing time is us
         mach_time_denom = UInt64(info.denom) * 1000
     }
-    
+
     func isEnabled() -> Bool {
         mutex.lock()
         defer {
@@ -109,7 +109,7 @@ class Trace {
 
         var result : [[String: AnyObject]] = []
         var thread_names_captured = [UInt64: String]()
-        
+
         let pid = getpid()
 
         result.append([

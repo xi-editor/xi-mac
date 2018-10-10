@@ -47,7 +47,7 @@ typealias RpcCallback = (RpcResult) -> ()
 struct FileWriter {
     let path: URL
     let handle: FileHandle
-    
+
     init?(path: String) {
         let path = NSString(string: path).expandingTildeInPath
         if FileManager.default.fileExists(atPath: path) {
@@ -56,7 +56,7 @@ struct FileWriter {
         }
         self.path = URL(fileURLWithPath: path)
         FileManager.default.createFile(atPath: self.path.path, contents: nil, attributes: nil)
-        
+
         do {
             try self.handle = FileHandle(forWritingTo: self.path)
         } catch let err as NSError {
@@ -64,14 +64,14 @@ struct FileWriter {
             return nil
         }
     }
-    
+
     func write(bytes: Data) {
         handle.write(bytes)
     }
 }
 
 class CoreConnection {
-    
+
     let task = Process()
     var inHandle: FileHandle  // stdin of core process
     var recvBuf: Data
@@ -79,12 +79,12 @@ class CoreConnection {
     let rpcLogWriter: FileWriter?
     let errLogWriter: FileWriter?
     let appDelegate = NSApp.delegate as! AppDelegate
-    
+
     // RPC state
     var queue = DispatchQueue(label: "com.levien.xi.CoreConnection", attributes: [])
     var rpcIndex = 0
     var pending = Dictionary<Int, RpcCallback>()
-    
+
     init(path: String) {
         if let rpcLogPath = ProcessInfo.processInfo.environment[XI_RPC_LOG] {
             self.rpcLogWriter = FileWriter(path: rpcLogPath)
@@ -115,12 +115,12 @@ class CoreConnection {
         task.standardError = errPipe
         inHandle = inPipe.fileHandleForWriting
         recvBuf = Data()
-        
+
         outPipe.fileHandleForReading.readabilityHandler = { handle in
             let data = handle.availableData
             self.recvHandler(data)
         }
-        
+
         errPipe.fileHandleForReading.readabilityHandler = { handle in
             let data = handle.availableData
             self.errLogWriter?.write(bytes: data)
@@ -128,12 +128,12 @@ class CoreConnection {
                 print(errString, terminator: "")
             }
         }
-        
+
         // write to log on xi-core crash
         task.terminationHandler = { _ in
             // get current date to use as timestamp
             let dateFormatter = DateFormatter()
-            let currentTime = Date.init()
+            let currentTime = Date()
             dateFormatter.dateFormat = "yyyy-MM-dd-HHMMSS"
             let timeStamp = dateFormatter.string(from: currentTime)
 
@@ -149,7 +149,7 @@ class CoreConnection {
         }
         task.launch()
     }
-    
+
     func recvHandler(_ data: Data) {
         if data.count == 0 {
             print("eof")
@@ -158,7 +158,7 @@ class CoreConnection {
         let scanStart = recvBuf.count
         recvBuf.append(data)
         let recvBufLen = recvBuf.count
-        
+
         var newCount = 0
         recvBuf.withUnsafeMutableBytes { (recvBufBytes: UnsafeMutablePointer<UInt8>) -> Void in
             var i = 0
@@ -178,7 +178,7 @@ class CoreConnection {
         }
         recvBuf.count = newCount
     }
-    
+
     func sendJson(_ json: Any) {
         do {
             let data = try JSONSerialization.data(withJSONObject: json, options: [])
@@ -208,7 +208,7 @@ class CoreConnection {
         }
         Trace.shared.trace("handleRaw", .rpc, .end)
     }
-    
+
     /// handle a JSON RPC call. Determines whether it is a request, response or notification
     /// and executes/responds accordingly
     func handleRpc(_ json: Any) {
@@ -234,7 +234,7 @@ class CoreConnection {
             self.handleNotification(json: obj)
         }
     }
-    
+
     func handleRequest(json: [String: AnyObject]) {
         guard let method = json["method"] as? String, let params = json["params"], let id = json["id"]
             else {
@@ -252,7 +252,7 @@ class CoreConnection {
             print("unknown request \(method)")
         }
     }
-    
+
     func handleNotification(json: [String: AnyObject]) {
         guard let method = json["method"] as? String, let params = json["params"]
             else {
@@ -260,32 +260,32 @@ class CoreConnection {
                 return
         }
         let viewIdentifier = params["view_id"] as? ViewIdentifier
-        
+
         switch method {
         case "update":
             let update = params["update"] as! [String: AnyObject]
             self.client?.update(viewIdentifier: viewIdentifier!, update: update, rev: nil)
-            
+
         case "scroll_to":
             let line = params["line"] as! Int
             let col = params["col"] as! Int
             self.client?.scroll(viewIdentifier: viewIdentifier!, line: line, column: col)
-            
+
         case "def_style":
             client?.defineStyle(style: params as! [String: AnyObject])
-            
+
         case "plugin_started":
             let plugin = params["plugin"] as! String
             client?.pluginStarted(viewIdentifier: viewIdentifier!, pluginName: plugin)
-            
+
         case "plugin_stopped":
             let plugin = params["plugin"] as! String
             client?.pluginStopped(viewIdentifier: viewIdentifier!, pluginName: plugin)
-            
+
         case "available_themes":
             let themes = params["themes"] as! [String]
             client?.availableThemes(themes: themes)
-            
+
         case "theme_changed":
             let name = params["name"] as! String
             let themeJson = params["theme"] as! [String: AnyObject]
@@ -306,21 +306,21 @@ class CoreConnection {
         case "available_languages":
             let languages = params["languages"] as! [String]
             client?.availableLanguages(languages: languages)
-            
+
         case "update_cmds":
             let plugin = params["plugin"] as! String
             let cmdsJson = params["cmds"] as! [[String: AnyObject]]
             let cmds = cmdsJson.map { Command(jsonObject: $0) }
                 .filter { $0 != nil }
                 .map { $0! }
-            
+
             client?.updateCommands(viewIdentifier: viewIdentifier!,
                                    plugin: plugin, commands: cmds)
-            
+
         case "config_changed":
             let changes = params["changes"] as! [String: AnyObject]
             client?.configChanged(viewIdentifier: viewIdentifier!, changes: changes)
-            
+
         case "alert":
             let message = params["msg"] as! String
             client?.alert(text: message)
@@ -345,7 +345,7 @@ class CoreConnection {
             let requestIdentifier = params["request_id"] as! Int
             let result = params["result"] as! String
             client?.showHover(viewIdentifier: viewIdentifier!, requestIdentifier: requestIdentifier, result: result)
-            
+
         case "find_status":
             let status = params["queries"] as! [[String: AnyObject]]
             client?.findStatus(viewIdentifier: viewIdentifier!, status: status)
@@ -353,12 +353,12 @@ class CoreConnection {
         case "replace_status":
             let status = params["status"] as! [String: AnyObject]
             client?.replaceStatus(viewIdentifier: viewIdentifier!, status: status)
-            
+
         default:
             print("unknown notification \(method)")
         }
     }
-    
+
     /// send an RPC request, returning immediately. The callback will be called when the
     /// response comes in, likely from a different thread
     func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback? = nil) {
@@ -375,7 +375,7 @@ class CoreConnection {
         sendJson(req as Any)
         Trace.shared.trace("send \(method)", .rpc, .end)
     }
-    
+
     /// send RPC synchronously, blocking until return. Note: there is no ordering guarantee on
     /// when this function may return. In particular, an async notification sent by the core after
     /// a response to a synchronous RPC may be delivered before it.
@@ -387,7 +387,7 @@ class CoreConnection {
             result = r
             semaphore.signal()
         }
-        let _ = semaphore.wait(timeout: DispatchTime.distantFuture)
+        let _ = semaphore.wait(timeout: .distantFuture)
         return result!
     }
 }
