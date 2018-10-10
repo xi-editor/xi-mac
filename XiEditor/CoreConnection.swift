@@ -124,7 +124,7 @@ class CoreConnection {
         errPipe.fileHandleForReading.readabilityHandler = { handle in
             let data = handle.availableData
             self.errLogWriter?.write(bytes: data)
-            if let errString = String(data: data, encoding: String.Encoding.utf8) {
+            if let errString = String(data: data, encoding: .utf8) {
                 print(errString, terminator: "")
             }
         }

@@ -14,6 +14,10 @@
 
 import Cocoa
 
+extension NSPasteboard.PasteboardType {
+    static let PlainText = NSPasteboard.PasteboardType(rawValue: "public.utf8-plain-text")
+}
+
 /// The EditViewDataSource protocol describes the properties that an editView uses to determine how to render its contents.
 protocol EditViewDataSource: class {
     var lines: LineCache<LineAssoc> { get }
@@ -501,7 +505,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         let pasteboard = NSPasteboard.general
         if let items = pasteboard.pasteboardItems {
             for element in items {
-                if let str = element.string(forType: NSPasteboard.PasteboardType(rawValue: "public.utf8-plain-text")) {
+                if let str = element.string(forType: .PlainText) {
                     document.sendPaste(str)
                     break
                 }
@@ -789,13 +793,13 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         let pluginsMenu = NSApplication.shared.mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Theme")!.submenu!
 
         let currentlyActive = pluginsMenu.items
-            .filter { $0.state.rawValue == 1 }
+            .filter { $0.state == .on }
             .first?.title
 
         pluginsMenu.removeAllItems()
         for theme in themes {
             let item = NSMenuItem(title: theme, action: #selector(debugSetTheme), keyEquivalent: "")
-            item.state = NSControl.StateValue(rawValue: (theme == currentlyActive) ? 1 : 0)
+            item.state = theme == currentlyActive ? .on : .off
             pluginsMenu.addItem(item)
         }
     }

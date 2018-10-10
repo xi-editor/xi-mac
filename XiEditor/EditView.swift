@@ -48,11 +48,11 @@ struct TextDrawingMetrics {
         linespace = ceil(ascent + descent + leading)
         baseline = ceil(ascent)
         fontWidth = font.characterWidth()
-        attributes[NSAttributedStringKey.font] = font
+        attributes[.font] = font
         //FIXME: sometimes some regions of a file have no spans, so they don't have a style,
         // which means they get drawn as black. With this we default to drawing them like plaintext.
         // BUT: why are spans missing?
-        attributes[NSAttributedStringKey.foregroundColor] = textColor
+        attributes[.foregroundColor] = textColor
     }
 }
 
