@@ -167,7 +167,7 @@ struct TextLine {
     var selRanges: [BackgroundColorRange]
     var underlineRanges: [UnderlineRange]
     let width: Double
-    
+
     init(glyphs: [GlyphInstance], ctLine: CTLine, selRanges: [BackgroundColorRange], underlineRanges: [UnderlineRange], width: Double?) {
         self.glyphs = glyphs
         self.width = width ?? CTLineGetTypographicBounds(ctLine, nil, nil, nil)
@@ -175,7 +175,7 @@ struct TextLine {
         self.selRanges = selRanges
         self.underlineRanges = underlineRanges
     }
-    
+
     func offsetForIndex(utf16Ix: Int) -> CGFloat {
         return CTLineGetOffsetForStringIndex(ctLine, utf16Ix, nil)
     }

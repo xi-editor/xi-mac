@@ -29,7 +29,7 @@ class Document: NSDocument {
     static var minWinSize = NSSize(width: 240, height: 160)
 
     var dispatcher: Dispatcher!
-    
+
     /// coreViewIdentifier is the name used to identify this document when communicating with the Core.
     var coreViewIdentifier: ViewIdentifier? {
         didSet {
@@ -49,14 +49,14 @@ class Document: NSDocument {
     var isEmpty: Bool {
         return editViewController?.lines.isEmpty ?? false
     }
-    
+
     override init() {
         dispatcher = (NSApplication.shared.delegate as? AppDelegate)?.dispatcher
         super.init()
         // I'm not 100% sure this is necessary but it can't _hurt_
         self.hasUndoManager = false
     }
- 
+
     override func makeWindowControllers() {
         // save this before instantiating because instantiating overwrites with the default position
         let newFrame = frameForNewWindow()
@@ -64,7 +64,7 @@ class Document: NSDocument {
         let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
         windowController = (storyboard.instantiateController(
             withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Document Window Controller")) as! NSWindowController)
-        
+
         if #available(OSX 10.12, *) {
             windowController.window?.tabbingIdentifier = NSWindow.TabbingIdentifier(rawValue: "xi-global-tab-group")
             // Temporarily override the user's preference based on which menu item was selected
@@ -72,7 +72,7 @@ class Document: NSDocument {
             // Reset for next time
             Document.tabbingMode = .automatic
         }
-        
+
         windowController.window?.setFrame(newFrame, display: true)
         windowController.window?.minSize = Document.minWinSize
 
@@ -99,11 +99,11 @@ class Document: NSDocument {
         }
         super.close()
     }
-    
+
     override var isEntireFileLoaded: Bool {
         return false
     }
-    
+
     override class var autosavesInPlace: Bool {
         return false
     }
@@ -111,11 +111,11 @@ class Document: NSDocument {
     override func read(from data: Data, ofType typeName: String) throws {
         // required override. xi-core handles file reading.
     }
-    
+
     fileprivate func save(_ filename: String) {
         Events.Save(viewIdentifier: coreViewIdentifier!, path: filename).dispatch(dispatcher!)
     }
-    
+
     /// Send a notification specific to the tab. If the tab name hasn't been set, then the
     /// notification is queued, and sent when the tab name arrives.
     func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback? = nil) {
@@ -156,7 +156,7 @@ class Document: NSDocument {
 
         dispatcher.coreConnection.sendRpcAsync("plugin", params: params)
     }
-        
+
     func sendWillScroll(first: Int, last: Int) {
         sendRpcAsync("scroll", params: [first, last])
     }

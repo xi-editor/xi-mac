@@ -57,9 +57,9 @@ class Renderer {
         solidProgram.attachShader(name: "solid.v", type: GL_VERTEX_SHADER)
         solidProgram.attachShader(name: "solid.f", type: GL_FRAGMENT_SHADER)
         solidProgram.link()
-        
+
         solid_u_scale = solidProgram.getUniformLocation(name: "posScale")!
-        
+
         glGenVertexArrays(GLsizei(vertexArrayIds.count), &vertexArrayIds)
         glBindVertexArray(vertexArrayIds[0])
 
@@ -70,12 +70,12 @@ class Renderer {
         glBufferData(GLenum(GL_ARRAY_BUFFER), MemoryLayout<Float>.size * 8, vertices, GLenum(GL_STATIC_DRAW))
         glVertexAttribPointer(0, 2, GLenum(GL_FLOAT), GLboolean(GL_FALSE), 8, nil)
         glEnableVertexAttribArray(0)
-        
+
         // element buffer
         glBindBuffer(GLenum(GL_ELEMENT_ARRAY_BUFFER), bufferIds[elementIndexBufId])
         let indices: [Int32] = [0, 1, 3, 1, 2, 3]
         glBufferData(GLenum(GL_ELEMENT_ARRAY_BUFFER), MemoryLayout<Int32>.size * 6, indices, GLenum(GL_STATIC_DRAW))
-        
+
         // instance buffer
         glBindBuffer(GLenum(GL_ARRAY_BUFFER), bufferIds[solidInstanceBufId])
         let solidInstanceBytes = GLsizei(MemoryLayout<Float>.size * solidInstanceSize)
@@ -93,20 +93,20 @@ class Renderer {
         glEnableVertexAttribArray(3)
         glVertexAttribPointer(3, 4, GLenum(GL_FLOAT), GLboolean(GL_FALSE), solidInstanceBytes, UnsafeRawPointer(bitPattern: MemoryLayout<Float>.size * 4))
         glVertexAttribDivisor(3, 1)
-        
+
         // text blending
         textProgram = ShaderProgram()
         textProgram.attachShader(name: "text.v", type: GL_VERTEX_SHADER)
         textProgram.attachShader(name: "text.f", type: GL_FRAGMENT_SHADER)
         textProgram.link()
-        
+
         text_u_scale = solidProgram.getUniformLocation(name: "posScale")!
-        
+
         glBindVertexArray(vertexArrayIds[1])
         glBindBuffer(GLenum(GL_ARRAY_BUFFER), bufferIds[vertexPositionBufId])
         glVertexAttribPointer(0, 2, GLenum(GL_FLOAT), GLboolean(GL_FALSE), 8, nil)
         glEnableVertexAttribArray(0)
-        
+
         glBindBuffer(GLenum(GL_ARRAY_BUFFER), bufferIds[textInstanceBufId])
         let textInstanceBytes = GLsizei(MemoryLayout<Float>.size * textInstanceSize)
         textInstances = [GLfloat](repeating: 0.0, count: textInstanceSize * maxTextInstances)

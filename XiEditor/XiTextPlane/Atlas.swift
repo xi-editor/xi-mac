@@ -39,7 +39,7 @@ class FontCache {
         }
         return fr!
     }
-    
+
     func flush() {
         for fontInstance in fonts {
             fontInstance.map.removeAll()
@@ -72,14 +72,14 @@ class Atlas {
     let width = 512
     let height = 512
     let uvScale: GLfloat
-    
+
     // key is rounded-up height, value is x, y coords of next alloc
     var strips: [Int: (Int, Int)] = [:]
     var nextStrip = 0
 
     var fontCache = FontCache()
     var fontRefs: [CTFont: FontRef] = [:]
-    
+
     init() {
         glGenTextures(1, &textureId)
         glBindTexture(GLenum(GL_TEXTURE_2D), textureId)
@@ -93,14 +93,14 @@ class Atlas {
         glTexImage2D(GLenum(GL_TEXTURE_2D), 0, GL_RGBA, GLsizei(width), GLsizei(height), 0, GLenum(GL_BGRA), GLenum(GL_UNSIGNED_BYTE), &data)
         uvScale = 1.0 / Float(width)
     }
-    
+
     // Round a value up to the next power-of-2 multiple of a number at most fracBits long
     func roundUp(_ y: Int, fracBits: Int) -> Int {
         if y < 1 << fracBits { return y }
         let mask = 1 << (Int.bitWidth - (y - 1).leadingZeroBitCount - fracBits)
         return y + (-y & (mask - 1))
     }
-    
+
     // Returns x, y coords on successful alloc
     func allocRect(w: Int, h: Int) -> (Int, Int)? {
         if w > width || h > height {
@@ -163,10 +163,10 @@ class Atlas {
             return nil
         }
         var data = [UInt8](repeating: 255, count: widthInt * heightInt * 4)
-        
+
         let colorspace = CGColorSpaceCreateDeviceRGB()
         let bitmapInfo = CGImageAlphaInfo.noneSkipFirst.rawValue | CGBitmapInfo.byteOrder32Little.rawValue
-        
+
         let ctx = CGContext(data: &data, width: widthInt, height: heightInt, bitsPerComponent: 8, bytesPerRow: widthInt * 4, space: colorspace, bitmapInfo: bitmapInfo)!
         ctx.setFillColor(gray: 1.0, alpha: 1.0)
         ctx.fill(CGRect(x: 0, y: 0, width: widthInt, height: heightInt))

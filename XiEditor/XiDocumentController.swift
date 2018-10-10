@@ -20,28 +20,28 @@ class XiDocumentController: NSDocumentController {
     fileprivate var lock = UnfairLock()
     /// Lookup used when routing RPCs to views.
     fileprivate var openViews = [ViewIdentifier: Document]()
-    
+
     override init() {
         super.init()
         self.setup()
     }
-    
+
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         self.setup()
     }
-    
+
     func setup() {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(XiDocumentController.windowChangedNotification(_:)),
             name: NSWindow.didMoveNotification, object: nil)
-        
+
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(XiDocumentController.windowChangedNotification(_:)),
             name: NSWindow.didEndLiveResizeNotification, object: nil)
-        
+
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(XiDocumentController.windowChangedNotification(_:)),
@@ -105,7 +105,7 @@ class XiDocumentController: NSDocumentController {
         }
         super.removeDocument(document)
     }
-    
+
     override func openDocument(withContentsOf url: URL,
                                display displayDocument: Bool,
                                completionHandler: @escaping (NSDocument?, Bool, Error?) -> Void) {

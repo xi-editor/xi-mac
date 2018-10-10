@@ -32,7 +32,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
 
     var searchQueries: [SuplementaryFindViewController] = []
     var wrapAround = true   // option same for all search fields
-    var showMultipleSearchQueries = false   // activates/deactives 
+    var showMultipleSearchQueries = false   // activates/deactives
 
     override func viewDidLoad() {
         addSearchField(searchField: nil)     // by default at least one search field is present
@@ -92,7 +92,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
                 searchQueries.append(newSearchFieldController)
                 searchFieldsStackView.insertView(newSearchFieldController.view, at: searchQueries.count - 1, in: NSStackView.Gravity.center)
             }
-            
+
             newSearchFieldController.searchField.becomeFirstResponder()
             // show/hide +/- button depending on user settings
             newSearchFieldController.showButtons(show: (newSearchFieldController.parentFindView?.showMultipleSearchQueries)!)
@@ -152,7 +152,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     override func cancelOperation(_ sender: Any?) {
         findDelegate.closeFind()
     }
-    
+
     public func findStatus(status: [[String: AnyObject]]) {
         findDelegate.findStatus(status: status)
     }
@@ -341,7 +341,7 @@ extension EditViewController {
                 (searchFieldView.searchField as? FindSearchField)?.resultCount = nil
             }
             scrollView.contentInsets = NSEdgeInsetsZero
-            
+
             let offset = findViewController.view.fittingSize.height
             let origin = scrollView.contentView.visibleRect.origin
             scrollView.contentView.scroll(to: NSMakePoint(origin.x, origin.y + offset))
@@ -379,7 +379,7 @@ extension EditViewController {
         let jsonQueries = queries.map({ $0.toJson() })
         document.sendRpcAsync("multi_find", params: ["queries": jsonQueries])
     }
-    
+
     func findStatus(status: [[String: AnyObject]]) {
         // status has the following expected format:
         // [{
@@ -515,7 +515,7 @@ extension EditViewController {
 
         case .setSearchString:
             document.sendRpcAsync("selection_for_find", params: ["case_sensitive": false])
-            
+
         case .replaceAllInSelection:
             Swift.print("replaceAllInSelection not implemented")
 

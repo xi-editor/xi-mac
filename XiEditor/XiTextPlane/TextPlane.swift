@@ -20,7 +20,7 @@ class TextPlaneDemo: NSView, TextPlaneDelegate {
     var renderer: Renderer?
     var last: Double = 0
     var count = 0
-    
+
     override init(frame: NSRect) {
         super.init(frame: frame)
         wantsLayer = true
@@ -38,18 +38,18 @@ class TextPlaneDemo: NSView, TextPlaneDelegate {
         print("draw \(rect)")
         //render()
     }
-    
+
     override var acceptsFirstResponder: Bool {
         return true
     }
-    
+
     override func keyDown(with theEvent: NSEvent) {
         //print("keyDown \(theEvent)")
         if theEvent.keyCode == 49 {
             self.needsDisplay = true
         }
     }
-    
+
     override var isOpaque: Bool {
         return true
     }
@@ -136,7 +136,7 @@ class TextPlaneLayer : NSOpenGLLayer, FpsObserver {
         print("Fps mean: \(stats.meanFps()), 99%: \(stats.fps(percentile: 0.01)), min: \(stats.minFps()), max: \(stats.maxFps())")
 #endif
     }
-    
+
     var previousFrame : FpsTimer?
 
     override func draw(in context: NSOpenGLContext, pixelFormat: NSOpenGLPixelFormat, forLayerTime t: CFTimeInterval, displayTime ts: UnsafePointer<CVTimeStamp>) {
