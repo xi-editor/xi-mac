@@ -527,7 +527,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         let clickCount = event.clickCount
 
         if event.modifierFlags.contains(.command) {
-            switch (clickCount) {
+            switch clickCount {
             case 2:
                 return "multi_word_select"
             case 3:
@@ -678,10 +678,10 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     @objc func togglePlugin(_ sender: NSMenuItem) {
         switch sender.state {
-        case NSControl.StateValue.off: Events.StartPlugin(
+        case .off: Events.StartPlugin(
             viewIdentifier: document.coreViewIdentifier!,
             plugin: sender.title).dispatch(document.dispatcher)
-        case NSControl.StateValue.on:
+        case .on:
             Events.StopPlugin(
                 viewIdentifier: document.coreViewIdentifier!,
                 plugin: sender.title).dispatch(document.dispatcher)

@@ -227,13 +227,13 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
     override func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
         switch menuItem.tag {
         case ignoreCaseMenuTag:
-            menuItem.state = ignoreCase ? NSControl.StateValue.on : NSControl.StateValue.off
+            menuItem.state = ignoreCase ? .on : .off
         case wrapAroundMenuTag:
-            menuItem.state = wrapAround ? NSControl.StateValue.on : NSControl.StateValue.off
+            menuItem.state = wrapAround ? .on : .off
         case regexMenuTag:
-            menuItem.state = regex ? NSControl.StateValue.on : NSControl.StateValue.off
+            menuItem.state = regex ? .on : .off
         case wholeWordsMenuTag:
-            menuItem.state = wholeWords ? NSControl.StateValue.on : NSControl.StateValue.off
+            menuItem.state = wholeWords ? .on : .off
         case removeMenuTag:
              menuItem.isHidden = disableRemove
         default:
@@ -541,8 +541,8 @@ class Label: NSTextField {
         self.stringValue = title
         self.isEditable = false
         self.isSelectable = false
-        self.textColor = NSColor.labelColor
-        self.backgroundColor = NSColor.clear
+        self.textColor = .labelColor
+        self.backgroundColor = .clear
         self.lineBreakMode = .byClipping
         self.isBezeled = false
     }
