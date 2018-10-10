@@ -133,7 +133,7 @@ class CoreConnection {
         task.terminationHandler = { _ in
             // get current date to use as timestamp
             let dateFormatter = DateFormatter()
-            let currentTime = Date.init()
+            let currentTime = Date()
             dateFormatter.dateFormat = "yyyy-MM-dd-HHMMSS"
             let timeStamp = dateFormatter.string(from: currentTime)
 
@@ -376,7 +376,7 @@ class CoreConnection {
             result = r
             semaphore.signal()
         }
-        let _ = semaphore.wait(timeout: DispatchTime.distantFuture)
+        let _ = semaphore.wait(timeout: .distantFuture)
         return result!
     }
 }

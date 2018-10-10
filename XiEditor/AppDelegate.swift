@@ -331,7 +331,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
 
     func alert(text: String) {
         DispatchQueue.main.async {
-            let alert =  NSAlert.init()
+            let alert =  NSAlert()
             alert.alertStyle = .informational
             alert.messageText = text
             alert.runModal()
@@ -487,7 +487,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
     @IBAction func writeTrace(_ sender: AnyObject) {
         let pid = getpid()
 
-        let saveDialog = NSSavePanel.init()
+        let saveDialog = NSSavePanel()
         saveDialog.nameFieldStringValue = "xi-trace-\(pid)"
         if #available(OSX 10.12, *) {
             saveDialog.directoryURL = errorLogDirectory ?? FileManager.default.temporaryDirectory

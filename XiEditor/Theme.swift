@@ -59,19 +59,19 @@ struct Theme {
 
 extension Theme {
     static func defaultTheme() -> Theme {
-        return Theme(foreground: NSColor.black,
-              background: NSColor.white,
-              caret: NSColor.black,
+        return Theme(foreground: .black,
+              background: .white,
+              caret: .black,
               lineHighlight: nil,
               findHighlights: [NSColor(deviceWhite: 0.8, alpha: 0.4)],
               findHighlightForeground: nil,
               gutter: NSColor(deviceWhite: 0.9, alpha: 1.0),
               gutterForeground: NSColor(deviceWhite: 0.5, alpha: 1.0),
-              selection: NSColor.selectedTextBackgroundColor,
-              selectionForeground: NSColor.selectedTextColor,
+              selection: .selectedTextBackgroundColor,
+              selectionForeground: .selectedTextColor,
               selectionBorder: nil,
               inactiveSelection: NSColor(red: 0.8, green: 0.8, blue: 0.8, alpha: 1.0),
-              inactiveSelectionForeground: NSColor.selectedTextColor,
+              inactiveSelectionForeground: .selectedTextColor,
               shadow: nil
             )
     }
@@ -119,9 +119,9 @@ extension Theme {
             var saturation: CGFloat = 0.0
             var brightness: CGFloat = 0.0
             var alpha: CGFloat = 0.0
-            defaultHighlight.usingColorSpaceName(NSColorSpaceName.calibratedRGB)?.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
+            defaultHighlight.usingColorSpaceName(.calibratedRGB)?.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
             return [defaultHighlight] + (0..<Style.N_RESERVED_STYLES).map({
-                return NSColor.init(hue: CGFloat((1.0 / Double(Style.N_RESERVED_STYLES)) * Double($0)), saturation: 1, brightness: brightness, alpha: alpha)
+                return NSColor(hue: CGFloat((1.0 / Double(Style.N_RESERVED_STYLES)) * Double($0)), saturation: 1, brightness: brightness, alpha: alpha)
             })
         })
     }

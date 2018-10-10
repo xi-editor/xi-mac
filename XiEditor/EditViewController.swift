@@ -811,12 +811,12 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     @IBAction func gotoLine(_ sender: AnyObject) {
         guard let window = self.view.window else { return }
 
-        let alert = NSAlert.init()
+        let alert = NSAlert()
         alert.addButton(withTitle: "Ok")
         alert.addButton(withTitle: "Cancel")
         alert.messageText = "Goto Line"
         alert.informativeText = "Enter line to go to:"
-        let text = NSTextField.init(frame: NSRect.init(x: 0, y: 0, width: 200, height: 24))
+        let text = NSTextField(frame: NSRect(x: 0, y: 0, width: 200, height: 24))
         alert.accessoryView = text
         alert.window.initialFirstResponder = text
 
