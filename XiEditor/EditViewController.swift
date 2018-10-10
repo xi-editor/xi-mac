@@ -820,7 +820,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }()
 
     public func availableThemesChanged(_ themes: [String]) {
-        let pluginsMenu = NSApplication.shared.mainMenu!.item(withTitle: "View")!.submenu!.item(withTitle: "Theme")!.submenu!;
+        let pluginsMenu = NSApplication.shared.mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Theme")!.submenu!;
 
         let currentlyActive = pluginsMenu.items
             .filter { $0.state.rawValue == 1 }
@@ -835,7 +835,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     public func themeChanged(_ theme: String) {
-        let pluginsMenu = NSApplication.shared.mainMenu!.item(withTitle: "View")!.submenu!.item(withTitle: "Theme");
+        let pluginsMenu = NSApplication.shared.mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Theme");
         for subItem in (pluginsMenu?.submenu!.items)! {
             subItem.state = NSControl.StateValue(rawValue: (subItem.title == theme) ? 1 : 0)
         }
