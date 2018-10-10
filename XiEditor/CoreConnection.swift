@@ -293,8 +293,11 @@ class CoreConnection {
             client?.themeChanged(name: name, theme: theme)
         
         case "language_changed":
-            let languageId = params["language_id"] as! String
-            client?.languageChanged(viewIdentifier: viewIdentifier!, languageId: languageId)
+            let languageIdentifier = params["language_id"] as! String
+            client?.languageChanged(
+                viewIdentifier: viewIdentifier!,
+                languageIdentifier: languageIdentifier
+            )
             
         case "available_plugins":
             let plugins = params["plugins"] as! [[String: AnyObject]]

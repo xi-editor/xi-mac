@@ -33,7 +33,7 @@ protocol XiClient: AnyObject {
     func themeChanged(name: String, theme: Theme);
     
     /// A notification that the current language has changed.
-    func languageChanged(viewIdentifier: String, languageId: String);
+    func languageChanged(viewIdentifier: String, languageIdentifier: String);
 
     /// A notification containing a list of the names of currently available themes.
     func availableThemes(themes: [String]);

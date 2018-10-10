@@ -842,8 +842,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         self.unifiedTitlebar = { self.unifiedTitlebar }()
     }
     
-    public func languageChanged(_ languageId: String) {
-        self.currentLanguage = languageId
+    public func languageChanged(_ languageIdentifier: String) {
+        self.currentLanguage = languageIdentifier
     }
     
     public func availableLanguagesChanged(_ languages: [String]) {

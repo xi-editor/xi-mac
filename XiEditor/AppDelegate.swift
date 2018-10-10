@@ -171,8 +171,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
                                                   textColor: theme.foreground)
         }
     }
-    
-    var languageId: String?
 
     override init() {
         ValueTransformer.setValueTransformer(
@@ -289,11 +287,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         }
     }
     
-    func languageChanged(viewIdentifier: String, languageId: String) {
+    func languageChanged(viewIdentifier: String, languageIdentifier: String) {
         DispatchQueue.main.async { [weak self] in
-            self?.languageId = languageId
             let document = self?.documentForViewIdentifier(viewIdentifier: viewIdentifier)
-            document?.editViewController?.languageChanged(languageId)
+            document?.editViewController?.languageChanged(languageIdentifier)
         }
     }
 
