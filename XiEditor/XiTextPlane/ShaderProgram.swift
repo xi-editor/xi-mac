@@ -19,18 +19,18 @@ import OpenGL
 
 class ShaderProgram {
     var program: GLuint
-    
+
     init() {
         program = glCreateProgram()
         if program == 0 {
             NSLog("glCreateProgram failed")
         }
     }
-    
+
     deinit {
         glDeleteProgram(program)
     }
-    
+
     func attachShader(name: String, type: GLint) {
         let path = Bundle.main.path(forResource: name, ofType: "glsl")!
         guard let data = NSData(contentsOfFile: path) else {
@@ -57,7 +57,7 @@ class ShaderProgram {
         }
         glDeleteShader(shader)
     }
-    
+
     func link() {
         glLinkProgram(program)
         var result: GLint = 0
@@ -71,7 +71,7 @@ class ShaderProgram {
     func use() {
         glUseProgram(program)
     }
-    
+
     func getUniformLocation(name: String) -> GLuint? {
         let loc = glGetUniformLocation(program, name.cString(using: String.Encoding.utf8))
         return loc < 0 ? nil : GLuint(loc)
