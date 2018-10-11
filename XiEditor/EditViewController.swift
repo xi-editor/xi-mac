@@ -431,7 +431,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         }
     }
 
-    //MARK: Default menu items
+    // MARK: - Default menu items
     override func selectAll(_ sender: Any?) {
         editView.unmarkText()
         editView.inputContext?.discardMarkedText()
@@ -480,6 +480,18 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     
     @objc func decreaseNumber(_ sender: Any?) {
         document.sendRpcAsync("decrease_number", params: [])
+    }
+
+    @objc func toggleRecording(_ sender: Any?) {
+        document.sendRpcAsync("toggle_recording", params: ["recording_name": "DEFAULT"])
+    }
+
+    @objc func playRecording(_ sender: Any?) {
+        document.sendRpcAsync("play_recording", params: ["recording_name": "DEFAULT"])
+    }
+
+    @objc func clearRecording(_ sender: Any?) {
+        document.sendRpcAsync("clear_recording", params: ["recording_name": "DEFAULT"])
     }
 
     fileprivate func cutCopy(_ method: String) {
