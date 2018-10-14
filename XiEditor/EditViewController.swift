@@ -188,7 +188,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
                 statusBar.updateStatusBarColor(newBackgroundColor: self.theme.background, newTextColor: self.theme.foreground, newUnifiedTitlebar: unifiedTitlebar)
                 findViewController.updateColor(newBackgroundColor: self.theme.background, unifiedTitlebar: unifiedTitlebar)
 
-                if color.isDark && unifiedTitlebar {
+                if color.colorSpace.colorSpaceModel == NSColorSpace.Model.RGB && color.isDark && unifiedTitlebar {
                     window.appearance = NSAppearance(named: .vibrantDark)
                 } else {
                     window.appearance = NSAppearance(named: .aqua)
@@ -315,7 +315,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         editView.gutterCache = nil
         shadowView.updateShadowColor(newColor: theme.shadow)
         editView.needsDisplay = true
-
+        self.scrollPastEnd = ((NSApplication.shared.delegate as! AppDelegate).configCache["scroll_past_end"] as? Bool) ?? false
+        self.unifiedTitlebar = ((NSApplication.shared.delegate as! AppDelegate).configCache["unified_titlebar"] as? Bool) ?? false
     }
 
     fileprivate func updateEditViewHeight() {
