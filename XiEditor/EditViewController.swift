@@ -188,7 +188,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
                 statusBar.updateStatusBarColor(newBackgroundColor: self.theme.background, newTextColor: self.theme.foreground, newUnifiedTitlebar: unifiedTitlebar)
                 findViewController.updateColor(newBackgroundColor: self.theme.background, unifiedTitlebar: unifiedTitlebar)
 
-                if color.colorSpace.colorSpaceModel == NSColorSpace.Model.RGB && color.isDark && unifiedTitlebar {
+                if color.isDark && unifiedTitlebar {
                     window.appearance = NSAppearance(named: .vibrantDark)
                 } else {
                     window.appearance = NSAppearance(named: .aqua)
