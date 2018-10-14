@@ -78,9 +78,6 @@ class Document: NSDocument {
 
         self.editViewController = windowController.contentViewController as? EditViewController
         editViewController?.document = self
-        if let config = (NSApplication.shared.delegate as? AppDelegate)?.configCache {
-            editViewController?.configChanged(changes: config)
-        }
         windowController.window?.delegate = editViewController
         self.addWindowController(windowController)
     }
