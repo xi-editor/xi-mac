@@ -866,6 +866,31 @@ Gw
                                                 </items>
                                             </menu>
                                         </menuItem>
+                                        <menuItem title="Recording" id="Bwl-n2-eW9">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <menu key="submenu" title="Recording" id="ZLR-Sj-bWX">
+                                                <items>
+                                                    <menuItem title="Toggle Recording" keyEquivalent="r" id="Aok-yZ-fud">
+                                                        <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
+                                                        <connections>
+                                                            <action selector="toggleRecording:" target="7er-QZ-amI" id="gdz-W1-fqj"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                    <menuItem title="Play Recording" keyEquivalent="p" id="Jra-ai-sCb">
+                                                        <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
+                                                        <connections>
+                                                            <action selector="playRecording:" target="7er-QZ-amI" id="gdz-W2-fqj"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                    <menuItem title="Clear Recording" keyEquivalent="c" id="f6l-Uo-onv">
+                                                        <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
+                                                        <connections>
+                                                            <action selector="clearRecording:" target="7er-QZ-amI" id="gdz-W3-fqj"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                </items>
+                                            </menu>
+                                        </menuItem>
                                         <menuItem title="Speech" id="vbQ-h3-tPh">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <menu key="submenu" title="Speech" id="1UQ-PW-Rtr">
