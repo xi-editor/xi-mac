@@ -9,7 +9,7 @@
 
 ***Note:*** *This project is still in an early state. Prebuilt binaries will be made available once we start creating versioned releases.*
 
-The xi-editor project is an attempt to build a high quality text editor,
+The xi-editor project is an attempt to build a high quality and fast text editor,
 using modern software engineering techniques. This reference frontend is
 built for macOS, using Cocoa for the user interface, but there are work
 in progress frontends for other platforms as well. Consult the
