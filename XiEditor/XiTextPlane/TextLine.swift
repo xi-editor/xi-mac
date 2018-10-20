@@ -271,5 +271,7 @@ func argbToFloats(argb: UInt32) -> (GLfloat, GLfloat, GLfloat, GLfloat) {
 func getCtLineRange(_ ctLine: CTLine, _ range: CountableRange<Int>) -> Range<GLfloat> {
     let start = GLfloat(CTLineGetOffsetForStringIndex(ctLine, range.startIndex, nil))
     let end = GLfloat(CTLineGetOffsetForStringIndex(ctLine, range.endIndex, nil))
-    return Range(uncheckedBounds: (lower: start, upper: end))
+    let lower = min(start, end)
+    let upper = max(start, end)
+    return lower ..< upper
 }
