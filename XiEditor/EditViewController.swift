@@ -801,11 +801,20 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             }
         }
     }
+
+    func updateFindMenu() {
+        let item = NSApplication.shared.mainMenu!
+            .item(withTitle: "Edit")!.submenu!
+            .item(withTitle: "Find")!.submenu!
+            .item(withTitle: "Multiple Search Queries")!
+        item.state = findViewController.showMultipleSearchQueries ? .on : .off
+    }
     
     // Gets called when active window changes
     func updateMenuState() {
         updatePluginMenu()
         updateLanguageMenu()
+        updateFindMenu()
     }
 
     @objc func handleCommand(_ sender: NSMenuItem) {
