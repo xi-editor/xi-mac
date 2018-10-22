@@ -106,6 +106,11 @@ class XiDocumentController: NSDocumentController {
         super.removeDocument(document)
     }
 
+    override func runModalOpenPanel(_ openPanel: NSOpenPanel, forTypes types: [String]?) -> Int {
+        openPanel.showsHiddenFiles = true
+        return super.runModalOpenPanel(openPanel, forTypes: types)
+    }
+    
     override func openDocument(withContentsOf url: URL,
                                display displayDocument: Bool,
                                completionHandler: @escaping (NSDocument?, Bool, Error?) -> Void) {
