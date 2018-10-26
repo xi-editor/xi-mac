@@ -30,6 +30,7 @@ class TextPlaneDemo: NSView, TextPlaneDelegate {
         layer = glLayer
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("coding not implemented for text plane")
     }
@@ -105,6 +106,7 @@ class TextPlaneLayer : NSOpenGLLayer, FpsObserver {
         super.init(layer: layer)
     }
 
+    @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
