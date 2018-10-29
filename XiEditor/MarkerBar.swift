@@ -16,11 +16,12 @@ import Cocoa
 
 class Marker {
     //let description: String
-    let line: Int
-    //let color: String     todo
+    let relativeY: CGFloat       // 0.0 == top, 1.0 == bottom
+    let color: NSColor
 
-    init(_ line: Int) {
-        self.line = line
+    init(_ relativeY: Double, color: NSColor) {
+        self.relativeY = CGFloat(relativeY)
+        self.color = color
     }
 
     @available(*, unavailable)
@@ -39,6 +40,12 @@ class MarkerBar: NSView, CALayerDelegate {
         }
     }
 
+    var markerHeight: CGFloat = 2 {
+        didSet {
+            self.needsDisplay = true
+        }
+    }
+
     override init(frame frameRect: NSRect) {
         super.init(frame: .zero)
         self.translatesAutoresizingMaskIntoConstraints = false
@@ -50,14 +57,10 @@ class MarkerBar: NSView, CALayerDelegate {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func addMarker(_ item: Marker) {
-        // todo
+    func setMarker(_ items: [Marker]) {
+        markers = items
+        self.needsDisplay = true
     }
-
-    //func removeMarker()
-//    override func updateLayer() {
-//        print("todo")
-//    }
 
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
@@ -70,5 +73,14 @@ class MarkerBar: NSView, CALayerDelegate {
         path.move(to: CGPoint(x: dirtyRect.minX, y: dirtyRect.minY))
         path.line(to: CGPoint(x: dirtyRect.maxX, y: dirtyRect.minY))
         path.stroke()
+
+        for marker in markers {
+            print(marker.relativeY)
+            marker.color.setFill()
+            path.lineWidth = 1
+            path.move(to: CGPoint(x: dirtyRect.minX, y: dirtyRect.minY + marker.relativeY * dirtyRect.maxY))
+            path.line(to: CGPoint(x: dirtyRect.maxX, y: dirtyRect.minY + markerHeight + marker.relativeY * dirtyRect.maxY))
+            path.stroke()
+        }
     }
 }

@@ -202,6 +202,7 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
     var wholeWords = false
     var id: Int? = nil
     var disableRemove = false
+    var lines: [Int] = []
 
     weak var parentFindView: FindViewController? = nil
 
@@ -386,6 +387,9 @@ extension EditViewController {
     }
 
     func findStatus(status: [[String: AnyObject]]) {
+        var findMarker: [Marker] = []
+        let totalLines = self.lines.height
+
         // status has the following expected format:
         // [{
         //      id: Int,
@@ -426,7 +430,16 @@ extension EditViewController {
             if let resultCount = statusQuery["matches"] as? Int {
                 (query?.searchField as? FindSearchField)?.resultCount = resultCount
             }
+
+            if status.first?["lines"] != nil && !(status.first?["lines"] is NSNull) {
+                query?.lines = statusQuery["lines"] as! [Int]
+                for line in (query?.lines)! {
+                    findMarker.append(Marker(Double(line) / Double(totalLines), color: NSColor.red))
+                }
+            }
         }
+
+        markerBar.setMarker(findMarker)
 
         // remove finds that have been removed in core
         let activeFinds = status.map({$0["id"] as? Int})
