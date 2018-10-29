@@ -77,9 +77,10 @@ class MarkerBar: NSView, CALayerDelegate {
         for marker in markers {
             print(marker.relativeY)
             marker.color.setFill()
-            path.lineWidth = 1
+            marker.color.setStroke()
+            path.lineWidth = markerHeight
             path.move(to: CGPoint(x: dirtyRect.minX, y: dirtyRect.minY + marker.relativeY * dirtyRect.maxY))
-            path.line(to: CGPoint(x: dirtyRect.maxX, y: dirtyRect.minY + markerHeight + marker.relativeY * dirtyRect.maxY))
+            path.line(to: CGPoint(x: dirtyRect.maxX, y: dirtyRect.minY + marker.relativeY * dirtyRect.maxY))
             path.stroke()
         }
     }
