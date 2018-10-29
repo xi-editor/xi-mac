@@ -113,6 +113,12 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         }
     }
 
+    var markerBarWidth: CGFloat = 20 {  // todo: 0 width
+        didSet {
+            markerBar.markerBarWidth = markerBarWidth
+        }
+    }
+
     var styleMap: StyleMap {
         return (NSApplication.shared.delegate as! AppDelegate).xiClient.styleMap
     }
@@ -208,6 +214,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     var hoverEvent: NSEvent?
 
     let statusBar = StatusBar(frame: .zero)
+    let markerBar = MarkerBar(frame: .zero)
 
     // Popover that manages hover views.
     lazy var infoPopover: NSPopover = {
@@ -237,6 +244,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     override func viewDidAppear() {
         super.viewDidAppear()
         setupStatusBar()
+        setupMarkerBar()
         shadowView.setup()
         NotificationCenter.default.addObserver(self, selector: #selector(frameDidChangeNotification), name: NSView.frameDidChangeNotification, object: scrollView)
         // call to set initial scroll position once we know view size
@@ -258,6 +266,16 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             statusBar.trailingAnchor.constraint(equalTo: editView.trailingAnchor),
             statusBar.bottomAnchor.constraint(equalTo: editView.bottomAnchor)
             ])
+    }
+
+    func setupMarkerBar() {
+        self.view.addSubview(markerBar)
+        NSLayoutConstraint.activate([
+            markerBar.widthAnchor.constraint(equalToConstant: markerBar.markerBarWidth),
+            markerBar.trailingAnchor.constraint(equalTo: editView.trailingAnchor),
+            markerBar.bottomAnchor.constraint(equalTo: editView.bottomAnchor),
+            markerBar.topAnchor.constraint(equalTo: editView.topAnchor)
+        ])
     }
 
     func updateGutterWidth() {
