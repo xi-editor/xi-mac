@@ -238,6 +238,11 @@ class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         self.showBlinkingCursor = self.isFrontmostView && self.isFirstResponder
     }
 
+    override func resetCursorRects() {
+        let rect = NSRect(x: 0, y: 0, width: dataSource.gutterWidth, height: bounds.size.height)
+        self.addCursorRect(rect, cursor: .arrow)
+    }
+
     // MARK: - NSTextInputClient protocol
     func insertText(_ aString: Any, replacementRange: NSRange) {
         self.removeMarkedText()
