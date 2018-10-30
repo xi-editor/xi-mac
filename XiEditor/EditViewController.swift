@@ -107,6 +107,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     var gutterWidth: CGFloat = 0 {
         didSet {
             shadowView.leftShadowMinX = gutterWidth
+            if oldValue != gutterWidth {
+                self.view.window?.invalidateCursorRects(for: self.view)
+            }
         }
     }
 
@@ -548,28 +551,29 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     // Determines the gesture type based on flags and click count.
     private func clickGestureType(event: NSEvent) -> String {
+        let inGutter = event.locationInWindow.x < self.gutterWidth
         let clickCount = event.clickCount
 
         if event.modifierFlags.contains(.command) {
-            switch clickCount {
-            case 2:
-                return "multi_word_select"
-            case 3:
+            if clickCount >= 3 || inGutter {
                 return "multi_line_select"
-            default:
+            } else if clickCount == 2 {
+                return "multi_word_select"
+            } else {
                 return "toggle_sel"
             }
         } else if event.modifierFlags.contains(.shift) {
+            // TODO: When shift+clicking on the gutter, perform a line range select
+            // (the gesture doesn't exist yet in core)
             return "range_select"
         } else if event.modifierFlags.contains(.option) {
             return "request_hover"
-        }  else {
-            switch clickCount {
-            case 2:
-                return "word_select"
-            case 3:
+        } else {
+            if clickCount >= 3 || inGutter {
                 return "line_select"
-            default:
+            } else if clickCount == 2 {
+                return "word_select"
+            } else {
                 return "point_select"
             }
         }
