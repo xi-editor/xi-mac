@@ -76,6 +76,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0C4460AE21895F980035E3C1 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		28F1ED491EC4C735008839BE /* Search.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
 		4DC153D22165202B000EB215 /* XiWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiWindowController.swift; sourceTree = "<group>"; };
 		4DCB4AEF20576A6E00476F75 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
@@ -152,14 +153,31 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0C4460AC218955400035E3C1 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				AE499DCE1C82BB2B002D68AF /* XiEditor */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		0C4460AD218955700035E3C1 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				AE499DDE1C82BB2B002D68AF /* XiEditorTests */,
+				AE499DE91C82BB2B002D68AF /* XiEditorUITests */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
 		AE499DC31C82BB2B002D68AF = {
 			isa = PBXGroup;
 			children = (
+				0C4460AE21895F980035E3C1 /* Package.swift */,
+				0C4460AC218955400035E3C1 /* Sources */,
+				0C4460AD218955700035E3C1 /* Tests */,
 				4DCB4AEF20576A6E00476F75 /* fonts */,
 				D023DA021CD071B40087EC0A /* xicore */,
-				AE499DCE1C82BB2B002D68AF /* XiEditor */,
-				AE499DDE1C82BB2B002D68AF /* XiEditorTests */,
-				AE499DE91C82BB2B002D68AF /* XiEditorUITests */,
 				AE499DCD1C82BB2B002D68AF /* Products */,
 				AB9A255F2118C42D0023DE75 /* shortcut */,
 			);
@@ -258,17 +276,17 @@
 /* End PBXGroup section */
 
 /* Begin PBXLegacyTarget section */
-		D023D9FE1CD0715E0087EC0A /* xicore */ = {
+		D023D9FE1CD0715E0087EC0A /* XiCore */ = {
 			isa = PBXLegacyTarget;
 			buildArgumentsString = "\"$(SRCROOT)/build-rust-xcode.sh\"";
-			buildConfigurationList = D023DA011CD0715E0087EC0A /* Build configuration list for PBXLegacyTarget "xicore" */;
+			buildConfigurationList = D023DA011CD0715E0087EC0A /* Build configuration list for PBXLegacyTarget "XiCore" */;
 			buildPhases = (
 			);
 			buildToolPath = /bin/bash;
 			buildWorkingDirectory = "xi-editor/rust";
 			dependencies = (
 			);
-			name = xicore;
+			name = XiCore;
 			passBuildSettingsInEnvironment = 1;
 			productName = xicore;
 		};
@@ -372,7 +390,7 @@
 			projectRoot = "";
 			targets = (
 				AE499DCB1C82BB2B002D68AF /* XiEditor */,
-				D023D9FE1CD0715E0087EC0A /* xicore */,
+				D023D9FE1CD0715E0087EC0A /* XiCore */,
 				AE499DDA1C82BB2B002D68AF /* XiEditorTests */,
 				AE499DE51C82BB2B002D68AF /* XiEditorUITests */,
 			);
@@ -482,7 +500,7 @@
 		};
 		D023DA051CD072400087EC0A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = D023D9FE1CD0715E0087EC0A /* xicore */;
+			target = D023D9FE1CD0715E0087EC0A /* XiCore */;
 			targetProxy = D023DA041CD072400087EC0A /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -594,7 +612,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-Debug";
 				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = XiEditor/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/Sources/XiEditor/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				OTHER_SWIFT_FLAGS = "-D DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.levien.XiEditor;
@@ -609,7 +627,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = XiEditor/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/Sources/XiEditor/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.levien.XiEditor;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -623,7 +641,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = XiEditorTests/Info.plist;
+				INFOPLIST_FILE = Tests/XiEditorTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.levien.XiEditorTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -638,7 +656,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = XiEditorTests/Info.plist;
+				INFOPLIST_FILE = Tests/XiEditorTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.levien.XiEditorTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -652,7 +670,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = XiEditorUITests/Info.plist;
+				INFOPLIST_FILE = Tests/XiEditorUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.levien.XiEditorUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -667,7 +685,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = XiEditorUITests/Info.plist;
+				INFOPLIST_FILE = Tests/XiEditorUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.levien.XiEditorUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -731,7 +749,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D023DA011CD0715E0087EC0A /* Build configuration list for PBXLegacyTarget "xicore" */ = {
+		D023DA011CD0715E0087EC0A /* Build configuration list for PBXLegacyTarget "XiCore" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D023D9FF1CD0715E0087EC0A /* Debug */,

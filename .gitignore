@@ -1,5 +1,6 @@
 xcuserdata/
 .DS_Store
 build/
+.build/
 .env
 xi-editor/
