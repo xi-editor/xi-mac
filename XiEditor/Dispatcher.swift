@@ -47,7 +47,7 @@ enum EventDispatchMethod {
 }
 
 protocol Event {
-    //NOTE: output is now unused; this file in general should be considered deprecated.
+    //NOTE: this file in general should be considered deprecated.
     // In the future we would like to move to having a 'XiCore protocol', and then implementing that
     // via CoreConnection or equivalent.
 
