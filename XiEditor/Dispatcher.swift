@@ -21,19 +21,19 @@ class Dispatcher {
         self.coreConnection = coreConnection
     }
 
-    func dispatchSync<E: Event, O>(_ event: E) -> O {
+    func dispatchSync<E: Event>(_ event: E) {
         let rpc = event.rpcRepresentation
-        return coreConnection.sendRpc(rpc.method, params: rpc.params) as! O
+        let _ = coreConnection.sendRpc(rpc.method, params: rpc.params)
     }
 
-    func dispatchAsync<E: Event, O>(_ event: E) -> O {
+    func dispatchAsync<E: Event>(_ event: E) {
         let rpc = event.rpcRepresentation
-        return coreConnection.sendRpcAsync(rpc.method, params: rpc.params) as! O
+        coreConnection.sendRpcAsync(rpc.method, params: rpc.params)
     }
 
     func dispatchWithCallback<E: Event>(_ event: E, callback: @escaping (RpcResult) -> ()) {
         let rpc = event.rpcRepresentation
-        return coreConnection.sendRpcAsync(rpc.method, params: rpc.params) { result in
+        coreConnection.sendRpcAsync(rpc.method, params: rpc.params) { result in
             callback(result)
         }
     }
