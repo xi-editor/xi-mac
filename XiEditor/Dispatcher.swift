@@ -50,14 +50,13 @@ protocol Event {
     //NOTE: output is now unused; this file in general should be considered deprecated.
     // In the future we would like to move to having a 'XiCore protocol', and then implementing that
     // via CoreConnection or equivalent.
-    associatedtype Output
 
     var method: String { get }
     var params: AnyObject? { get }
     var rpcRepresentation: RpcRepresentation { get }
     var dispatchMethod: EventDispatchMethod { get }
 
-    func dispatch(_ dispatcher: Dispatcher) -> Output
+    func dispatch(_ dispatcher: Dispatcher)
 
     func dispatchWithCallback(_ dispatcher: Dispatcher, callback: @escaping (RpcResult) -> ())
 }
@@ -69,7 +68,7 @@ extension Event {
 
     /// Note: sync dispatch is discouraged, as it blocks the main thread, and also provides no
     /// useful ordering guarantee.
-    func dispatch(_ dispatcher: Dispatcher) -> Output {
+    func dispatch(_ dispatcher: Dispatcher) {
         switch dispatchMethod {
         case .sync: return dispatcher.dispatchSync(self)
         case .async: return dispatcher.dispatchAsync(self)
@@ -88,8 +87,6 @@ typealias ViewIdentifier = String
 
 enum Events { // namespace
     struct NewView: Event {
-        typealias Output = String
-
         let path: String?
         let method = "new_view"
         var params: AnyObject? {
@@ -100,8 +97,6 @@ enum Events { // namespace
     }
 
     struct CloseView: Event {
-        typealias Output = Void
-
         let viewIdentifier: ViewIdentifier
 
         let method = "close_view"
@@ -110,8 +105,6 @@ enum Events { // namespace
     }
 
     struct Save: Event {
-        typealias Output = Void
-
         let viewIdentifier: ViewIdentifier
         let path: String
 
@@ -121,7 +114,6 @@ enum Events { // namespace
     }
 
     struct StartPlugin: Event {
-        typealias Output = Void
         let viewIdentifier: ViewIdentifier
         let plugin: String
 
@@ -133,7 +125,6 @@ enum Events { // namespace
     }
 
     struct StopPlugin: Event {
-        typealias Output = Void
         let viewIdentifier: ViewIdentifier
         let plugin: String
 
@@ -145,7 +136,6 @@ enum Events { // namespace
     }
 
     struct InitialPlugins: Event {
-        typealias Output = [String]
         let viewIdentifier: ViewIdentifier
 
         let method = "plugin"
@@ -156,7 +146,6 @@ enum Events { // namespace
     }
 
     struct SetTheme: Event {
-        typealias Output = Void
         let themeName: String
 
         let method = "set_theme"
@@ -167,7 +156,6 @@ enum Events { // namespace
     }
     
     struct SetLanguage: Event {
-        typealias Output = Void
         let viewIdentifier: ViewIdentifier
         let languageName: String
         
@@ -179,7 +167,6 @@ enum Events { // namespace
     }
     
     struct TracingConfig: Event {
-        typealias Output = Void
         let enabled: Bool
         let method = "tracing_config"
         var params: AnyObject? {
@@ -189,7 +176,6 @@ enum Events { // namespace
     }
 
     struct SaveTrace: Event {
-        typealias Output = Void
         let destination: String
         let frontendSamples : [[String: AnyObject]]
 
