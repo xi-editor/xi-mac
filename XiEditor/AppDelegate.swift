@@ -280,9 +280,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         DispatchQueue.main.async { [weak self] in
             UserDefaults.standard.set(name, forKey: USER_DEFAULTS_THEME_KEY)
             self?.theme = theme
-            for doc in NSApplication.shared.orderedDocuments {
-                guard let doc = doc as? Document else { continue }
-                doc.editViewController?.themeChanged(name)
+            self?.orderedDocuments.forEach { document in
+                document.editViewController?.themeChanged(name)
             }
         }
     }
@@ -295,19 +294,17 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
     }
 
     func availableThemes(themes: [String]) {
-        DispatchQueue.main.async {
-            for doc in NSApplication.shared.orderedDocuments {
-                guard let doc = doc as? Document else { continue }
-                doc.editViewController?.availableThemesChanged(themes)
+        DispatchQueue.main.async { [weak self] in
+            self?.orderedDocuments.forEach { document in
+                document.editViewController?.availableThemesChanged(themes)
             }
         }
     }
     
     func availableLanguages(languages: [String]) {
-        DispatchQueue.main.async {
-            for doc in NSApplication.shared.orderedDocuments {
-                guard let doc = doc as? Document else { continue }
-                doc.editViewController?.availableLanguagesChanged(languages)
+        DispatchQueue.main.async { [weak self] in
+            self?.orderedDocuments.forEach { document in
+                document.editViewController?.availableLanguagesChanged(languages)
             }
         }
     }
@@ -442,10 +439,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
 
     /// Redraws all open document views, as on a font or theme change.
     private func updateAllViews() {
-        for doc in NSApplication.shared.orderedDocuments {
-            guard let doc = doc as? Document else { continue }
-            doc.editViewController?.redrawEverything()
+        orderedDocuments.forEach { document in
+            document.editViewController?.redrawEverything()
         }
+    }
+
+    // Provice a convenience helper for ordered documents
+    private var orderedDocuments: [Document] {
+        return NSApplication.shared.orderedDocuments
+            .compactMap { $0 as? Document }
     }
 
     func handleFontChange(fontName: String?, fontSize: CGFloat?) {
@@ -481,12 +483,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
 
     var scrollTesters = [Document: ScrollTester]()
     @IBAction func toggleScrollBenchmark(_ sender: AnyObject) {
-        var maybeTopmostDocument : Document?
-        for doc in NSApplication.shared.orderedDocuments {
-            guard let doc = doc as? Document else { continue }
-            maybeTopmostDocument = doc
-        }
-        guard let topmostDocument = maybeTopmostDocument else { return }
+        guard let topmostDocument = orderedDocuments.last else { return }
 
         if scrollTesters.keys.contains(topmostDocument) {
             scrollTesters.removeValue(forKey: topmostDocument)
