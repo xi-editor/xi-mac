@@ -28,7 +28,36 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "AE499DDA1C82BB2B002D68AF"
+               BuildableName = "XiEditorTests.xctest"
+               BlueprintName = "XiEditorTests"
+               ReferencedContainer = "container:XiEditor.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "AE499DE51C82BB2B002D68AF"
+               BuildableName = "XiEditorUITests.xctest"
+               BlueprintName = "XiEditorUITests"
+               ReferencedContainer = "container:XiEditor.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "AE499DCB1C82BB2B002D68AF"
+            BuildableName = "XiEditor.app"
+            BlueprintName = "XiEditor"
+            ReferencedContainer = "container:XiEditor.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
@@ -42,7 +71,8 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "AE499DCB1C82BB2B002D68AF"
@@ -50,7 +80,7 @@
             BlueprintName = "XiEditor"
             ReferencedContainer = "container:XiEditor.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
