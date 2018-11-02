@@ -21,11 +21,6 @@ class Dispatcher {
         self.coreConnection = coreConnection
     }
 
-    func dispatchSync<E: Event>(_ event: E) {
-        let rpc = event.rpcRepresentation
-        let _ = coreConnection.sendRpc(rpc.method, params: rpc.params)
-    }
-
     func dispatchAsync<E: Event>(_ event: E) {
         let rpc = event.rpcRepresentation
         coreConnection.sendRpcAsync(rpc.method, params: rpc.params)
@@ -66,13 +61,9 @@ extension Event {
         return (method, params ?? [] as AnyObject)
     }
 
-    /// Note: sync dispatch is discouraged, as it blocks the main thread, and also provides no
-    /// useful ordering guarantee.
     func dispatch(_ dispatcher: Dispatcher) {
-        switch dispatchMethod {
-        case .sync: return dispatcher.dispatchSync(self)
-        case .async: return dispatcher.dispatchAsync(self)
-        }
+        assert(dispatchMethod == .async, "Dispatcher supports only .async dispatch methods")
+        return dispatcher.dispatchAsync(self)
     }
 
     /// Note: the callback may be called from an arbitrary thread
