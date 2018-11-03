@@ -28,7 +28,9 @@ class Document: NSDocument {
     // minimum size for a new or resized window
     static var minWinSize = NSSize(width: 240, height: 160)
 
+    // TODO: This should be removed as soon as `XiCore` takes over `Dispatcher`.
     var dispatcher: Dispatcher!
+    let xiCore: XiCore
 
     /// coreViewIdentifier is the name used to identify this document when communicating with the Core.
     var coreViewIdentifier: ViewIdentifier? {
@@ -52,6 +54,7 @@ class Document: NSDocument {
 
     override init() {
         dispatcher = (NSApplication.shared.delegate as? AppDelegate)?.dispatcher
+        xiCore = ((NSApplication.shared.delegate as? AppDelegate)?.xiCore)!
         super.init()
         // I'm not 100% sure this is necessary but it can't _hurt_
         self.hasUndoManager = false
