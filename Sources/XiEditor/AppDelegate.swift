@@ -79,7 +79,10 @@ class ScrollTester {
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
 
+    // TODO: This should be removed as soon as `XiCore` takes over `Dispatcher`.
     var dispatcher: Dispatcher?
+    var xiCore: XiCore?
+
     var documentController: XiDocumentController!
 
     // Inconsolata is included with the Xi Editor app bundle.
@@ -188,6 +191,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
             let bundledPluginPath = Bundle.main.path(forResource: "plugins", ofType: "")
             else { fatalError("Xi bundle missing expected resouces") }
 
+        // TODO: This should be removed as soon as `XiCore` takes over `Dispatcher`.
         let dispatcher: Dispatcher = {
             let coreConnection = CoreConnection(path: corePath)
             coreConnection.client = self
@@ -197,10 +201,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         self.dispatcher = dispatcher
         updateRpcTracingConfig(collectSamplesOnBoot)
 
-        let params = ["client_extras_dir": bundledPluginPath,
-                      "config_dir": getUserConfigDirectory()]
-        dispatcher.coreConnection.sendRpcAsync("client_started",
-                                               params: params)
+        /**
+         Passing in `dispatcher.coreConnection` is just a temporary solution.
+         Dedicated `CoreConnection` instance should be passed in as soon as `Dispatcher` is not used.
+         */
+        let xiCore = CoreRPC(coreConnection: dispatcher.coreConnection)
+        self.xiCore = xiCore
+
+        xiCore.clientStarted(configDir: getUserConfigDirectory(), clientExtrasDir: bundledPluginPath)
 
         // fallback values used by NSUserDefaults
         let defaultDefaults: [String: Any] = [
@@ -211,8 +219,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
 
         // For legacy reasons, we currently treat themes distinctly than other preferences.
         let preferredTheme = UserDefaults.standard.string(forKey: USER_DEFAULTS_THEME_KEY)!
-        let req = Events.SetTheme(themeName: preferredTheme)
-        dispatcher.coreConnection.sendRpcAsync(req.method, params: req.params!)
+        xiCore.setTheme(themeName: preferredTheme)
         Trace.shared.trace("appWillLaunch", .main, .end)
         documentController = XiDocumentController()
     }
@@ -493,8 +500,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
     }
 
     func updateRpcTracingConfig(_ enabled: Bool) {
-        guard let dispatcher = self.dispatcher else { return }
-        Events.TracingConfig(enabled: enabled).dispatch(dispatcher)
+        xiCore?.tracingConfig(enabled: enabled)
     }
 
     @IBAction func writeTrace(_ sender: AnyObject) {
