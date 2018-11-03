@@ -123,7 +123,7 @@ class XiDocumentController: NSDocumentController {
             }
             currentDocument.coreViewIdentifier = nil
 
-            Events.NewView(path: url.path).dispatchWithCallback(currentDocument.dispatcher!) { (response) in
+            currentDocument.xiCore.newView(filePath: url.path) { (response) in
                 DispatchQueue.main.sync {
 
                     switch response {
@@ -175,7 +175,7 @@ class XiDocumentController: NSDocumentController {
         // we nil out this field to opt out of having NSDocument check for changes on disk when saving;
         // we (theoretically) do that check in xi-core.
         document.fileModificationDate = nil
-        Events.NewView(path: url?.path).dispatchWithCallback(document.dispatcher!) { (response) in
+        document.xiCore.newView(filePath: url?.path) { (response) in
             DispatchQueue.main.sync {
                 switch response {
                 case .ok(let result):
