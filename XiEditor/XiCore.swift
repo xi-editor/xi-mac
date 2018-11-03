@@ -22,6 +22,8 @@ protocol XiCore {
     func setTheme(themeName: String)
     /// Changes the state of the tracing config.
     func tracingConfig(enabled: Bool)
+    /// Creates a new view, returning the view identifier as a string. `file_path` is optional;
+    func newView(filePath: String?, callback: RpcCallback?)
 }
 
 final class CoreRPC: XiCore {
@@ -44,6 +46,14 @@ final class CoreRPC: XiCore {
 
     func tracingConfig(enabled: Bool) {
         sendRpcAsync("tracing_config", params: ["enabled": enabled])
+    }
+
+    func newView(filePath: String?, callback: RpcCallback?) {
+        var params: [String: String] = [:]
+        if let filePath = filePath {
+            params = ["file_path": filePath]
+        }
+        sendRpcAsync("new_view", params: params, callback: callback)
     }
 
     private func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback? = nil) {

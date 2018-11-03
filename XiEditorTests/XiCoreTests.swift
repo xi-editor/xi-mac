@@ -41,6 +41,22 @@ class CoreRPCTests: XCTestCase {
         let expected = TestRPCCall(method: "tracing_config", params: ["enabled": true], callback: nil)
         XCTAssertEqual(expected, connection.calls.first)
     }
+
+    func testNewViewWithFilePath() {
+        let connection = TestConnection<String>()
+        let coreRPC = CoreRPC(coreConnection: connection)
+        coreRPC.newView(filePath: "/foo/bar/baz", callback: nil)
+        let expected = TestRPCCall(method: "new_view", params: ["file_path": "/foo/bar/baz"], callback: nil)
+        XCTAssertEqual(expected, connection.calls.first)
+    }
+
+    func testNewViewWithoutFilePath() {
+        let connection = TestConnection<String>()
+        let coreRPC = CoreRPC(coreConnection: connection)
+        coreRPC.newView(filePath: nil, callback: nil)
+        let expected = TestRPCCall(method: "new_view", params: [:] as [String: String], callback: nil)
+        XCTAssertEqual(expected, connection.calls.first)
+    }
 }
 
 private class TestConnection<E: Equatable>: Connection {
