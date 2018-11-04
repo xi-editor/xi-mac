@@ -57,6 +57,14 @@ class CoreRPCTests: XCTestCase {
         let expected = TestRPCCall(method: "new_view", params: [:] as [String: String], callback: nil)
         XCTAssertEqual(expected, connection.calls.first)
     }
+
+    func testCloseView() {
+        let connection = TestConnection<String>()
+        let coreRPC = CoreRPC(coreConnection: connection)
+        coreRPC.closeView(identifier: "foo")
+        let expected = TestRPCCall(method: "close_view", params: ["view_id": "foo"] as [String: String], callback: nil)
+        XCTAssertEqual(expected, connection.calls.first)
+    }
 }
 
 private class TestConnection<E: Equatable>: Connection {
