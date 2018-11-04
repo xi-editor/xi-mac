@@ -95,7 +95,7 @@ class Document: NSDocument {
     // Document.close() can be called multiple times (on window close and application terminate)
     override func close() {
         if let identifier = self.coreViewIdentifier {
-            Events.CloseView(viewIdentifier: identifier).dispatch(dispatcher!)
+            xiCore.closeView(identifier: identifier)
         }
         super.close()
     }

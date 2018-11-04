@@ -119,7 +119,7 @@ class XiDocumentController: NSDocumentController {
             self.document(for: url) == nil {
             // close the existing view before reusing
             if let oldId = currentDocument.coreViewIdentifier {
-                Events.CloseView(viewIdentifier: oldId).dispatch(currentDocument.dispatcher!)
+                currentDocument.xiCore.closeView(identifier: oldId)
             }
             currentDocument.coreViewIdentifier = nil
 
