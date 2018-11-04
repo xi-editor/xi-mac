@@ -72,18 +72,18 @@ struct FileWriter {
 
 class CoreConnection {
 
-    let task = Process()
-    var inHandle: FileHandle  // stdin of core process
-    var recvBuf: Data
+    private let task = Process()
+    private var inHandle: FileHandle  // stdin of core process
+    private var recvBuf: Data
     weak var client: XiClient?
-    let rpcLogWriter: FileWriter?
-    let errLogWriter: FileWriter?
-    let appDelegate = NSApp.delegate as! AppDelegate
+    private let rpcLogWriter: FileWriter?
+    private let errLogWriter: FileWriter?
+    private let appDelegate = NSApp.delegate as! AppDelegate
 
     // RPC state
-    var queue = DispatchQueue(label: "com.levien.xi.CoreConnection", attributes: [])
-    var rpcIndex = 0
-    var pending = Dictionary<Int, RpcCallback>()
+    private var queue = DispatchQueue(label: "com.levien.xi.CoreConnection", attributes: [])
+    private var rpcIndex = 0
+    private var pending = Dictionary<Int, RpcCallback>()
 
     init(path: String) {
         if let rpcLogPath = ProcessInfo.processInfo.environment[XI_RPC_LOG] {
@@ -150,7 +150,7 @@ class CoreConnection {
         task.launch()
     }
 
-    func recvHandler(_ data: Data) {
+    private func recvHandler(_ data: Data) {
         if data.count == 0 {
             print("eof")
             return
@@ -179,7 +179,7 @@ class CoreConnection {
         recvBuf.count = newCount
     }
 
-    func sendJson(_ json: Any) {
+    private func sendJson(_ json: Any) {
         do {
             let data = try JSONSerialization.data(withJSONObject: json, options: [])
             let mutdata = NSMutableData()
@@ -193,12 +193,12 @@ class CoreConnection {
         }
     }
 
-    func sendResult(id: Any, result: Any) {
+    private func sendResult(id: Any, result: Any) {
         let json = ["id": id, "result": result]
         sendJson(json)
     }
 
-    func handleRaw(_ data: Data) {
+    private func handleRaw(_ data: Data) {
         Trace.shared.trace("handleRaw", .rpc, .begin)
         do {
             let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
@@ -211,7 +211,7 @@ class CoreConnection {
 
     /// handle a JSON RPC call. Determines whether it is a request, response or notification
     /// and executes/responds accordingly
-    func handleRpc(_ json: Any) {
+    private func handleRpc(_ json: Any) {
         guard let obj = json as? [String: AnyObject] else { fatalError("malformed json \(json)") }
         if let index = obj["id"] as? Int {
             if obj["result"] != nil || obj["error"] != nil {
@@ -235,7 +235,7 @@ class CoreConnection {
         }
     }
 
-    func handleRequest(json: [String: AnyObject]) {
+    private func handleRequest(json: [String: AnyObject]) {
         guard let method = json["method"] as? String, let params = json["params"], let id = json["id"]
             else {
                 print("unknown json from core: \(json)")
@@ -253,7 +253,7 @@ class CoreConnection {
         }
     }
 
-    func handleNotification(json: [String: AnyObject]) {
+    private func handleNotification(json: [String: AnyObject]) {
         guard let method = json["method"] as? String, let params = json["params"]
             else {
                 print("unknown json from core: \(json)")
