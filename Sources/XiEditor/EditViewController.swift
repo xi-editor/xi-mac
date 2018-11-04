@@ -680,8 +680,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     // MARK: - Debug Methods
     @IBAction func debugSetTheme(_ sender: NSMenuItem) {
         guard sender.state != .on else { print("theme already active"); return }
-        let req = Events.SetTheme(themeName: sender.title)
-        document.dispatcher.coreConnection.sendRpcAsync(req.method, params: req.params!)
+        document.xiCore.setTheme(themeName: sender.title)
     }
     
     @IBAction func debugSetLanguage(_ sender: NSMenuItem) {
