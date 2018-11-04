@@ -99,16 +99,6 @@ enum Events { // namespace
         let dispatchMethod = EventDispatchMethod.sync
     }
 
-    struct CloseView: Event {
-        typealias Output = Void
-
-        let viewIdentifier: ViewIdentifier
-
-        let method = "close_view"
-        var params: AnyObject? { return ["view_id": viewIdentifier] as AnyObject }
-        let dispatchMethod = EventDispatchMethod.async
-    }
-
     struct Save: Event {
         typealias Output = Void
 
