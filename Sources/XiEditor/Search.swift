@@ -388,7 +388,6 @@ extension EditViewController {
 
     func findStatus(status: [[String: AnyObject]]) {
         var findMarker: [Marker] = []
-        let totalLines = self.lines.height
 
         // status has the following expected format:
         // [{
@@ -434,7 +433,7 @@ extension EditViewController {
             if status.first?["lines"] != nil && !(status.first?["lines"] is NSNull) {
                 query?.lines = statusQuery["lines"] as! [Int]
                 for line in (query?.lines)! {
-                    findMarker.append(Marker(Double(line) / Double(totalLines), color: NSColor.yellow))
+                    findMarker.append(Marker(line, color: NSColor.yellow))
                 }
             }
         }
