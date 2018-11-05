@@ -113,12 +113,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         }
     }
 
-    var markerBarWidth: CGFloat = 20 {  // todo: 0 width
-        didSet {
-            markerBar.markerBarWidth = markerBarWidth
-        }
-    }
-
     var styleMap: StyleMap {
         return (NSApplication.shared.delegate as! AppDelegate).xiClient.styleMap
     }
@@ -269,12 +263,13 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     func setupMarkerBar() {
+        markerBar.parent = self
         self.view.addSubview(markerBar)
         NSLayoutConstraint.activate([
             markerBar.widthAnchor.constraint(equalToConstant: markerBar.markerBarWidth),
-            markerBar.trailingAnchor.constraint(equalTo: editView.trailingAnchor),
-            markerBar.bottomAnchor.constraint(equalTo: editView.bottomAnchor),
-            markerBar.topAnchor.constraint(equalTo: editView.topAnchor)
+            markerBar.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            markerBar.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            markerBar.topAnchor.constraint(equalTo: scrollView.topAnchor)
         ])
     }
 

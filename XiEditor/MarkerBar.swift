@@ -16,11 +16,11 @@ import Cocoa
 
 class Marker {
     //let description: String
-    let relativeY: CGFloat       // 0.0 == top, 1.0 == bottom
+    let line: Int
     let color: NSColor
 
-    init(_ relativeY: Double, color: NSColor) {
-        self.relativeY = CGFloat(relativeY)
+    init(_ line: Int, color: NSColor) {
+        self.line = line
         self.color = color
     }
 
@@ -33,14 +33,15 @@ class Marker {
 class MarkerBar: NSView, CALayerDelegate {
     var markers: [Marker] = []
     var backgroundColor: NSColor = NSColor.clear
+    var parent: EditViewController!
 
-    var markerBarWidth: CGFloat = 20 {
+    var markerBarWidth: CGFloat = 16.0 {
         didSet {
             self.needsDisplay = true
         }
     }
 
-    var markerHeight: CGFloat = 2 {
+    var markerHeight: CGFloat = 1.0 {
         didSet {
             self.needsDisplay = true
         }
@@ -75,12 +76,16 @@ class MarkerBar: NSView, CALayerDelegate {
         path.stroke()
 
         for marker in markers {
-            print(marker.relativeY)
+            let totalLines = CGFloat(parent.lines.height)
+            let visiblesLines = CGFloat(parent.visibleLines.count)
+            let lineHeight = parent.textMetrics.linespace
+            let markerBarHeight = CGFloat(min(totalLines, visiblesLines)) * lineHeight
+
             marker.color.setFill()
             marker.color.setStroke()
             path.lineWidth = markerHeight
-            path.move(to: CGPoint(x: dirtyRect.minX, y: dirtyRect.minY + marker.relativeY * dirtyRect.maxY))
-            path.line(to: CGPoint(x: dirtyRect.maxX, y: dirtyRect.minY + marker.relativeY * dirtyRect.maxY))
+            path.move(to: CGPoint(x: dirtyRect.minX, y: dirtyRect.maxY - CGFloat(marker.line) / (totalLines - 1) * markerBarHeight))
+            path.line(to: CGPoint(x: dirtyRect.maxX, y: dirtyRect.maxY - CGFloat(marker.line) / (totalLines - 1) * markerBarHeight))
             path.stroke()
         }
     }
