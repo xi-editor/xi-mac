@@ -15,7 +15,7 @@
 /// Protocol describing the frontend interface with core.
 /// Documentation for the protocol can be found here:
 /// https://xi-editor.github.io/xi-editor/docs/frontend-protocol.html
-protocol XiCore {
+protocol XiCore: class {
     /// Sent by the client immediately after establishing the core connection.
     func clientStarted(configDir: String?, clientExtrasDir: String?)
     /// Asks core to change the theme. If the change succeeds the client will receive a `theme_changed` notification.
