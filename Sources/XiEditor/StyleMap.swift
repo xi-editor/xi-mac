@@ -234,6 +234,9 @@ class StyleMapState: UnfairLock {
     }
 
     func measureWidths(_ args: [[String: AnyObject]]) -> [[Double]] {
+        Trace.shared.trace("measureWidths", .main, .begin)
+        defer { Trace.shared.trace("measureWidths", .main, .end) }
+
         return args.map({(arg: [String: AnyObject]) -> [Double] in
             guard let id = arg["id"] as? Int, let strings = arg["strings"] as? [String] else {
                 print("invalid measure_widths request")
