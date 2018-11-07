@@ -15,25 +15,25 @@
 import Foundation
 
 class Dispatcher {
-    let coreConnection: CoreConnection
+    let rpcSender: StdoutRPCSender
 
-    init(coreConnection: CoreConnection) {
-        self.coreConnection = coreConnection
+    init(rpcSender: StdoutRPCSender) {
+        self.rpcSender = rpcSender
     }
 
     func dispatchSync<E: Event, O>(_ event: E) -> O {
         let rpc = event.rpcRepresentation
-        return coreConnection.sendRpc(rpc.method, params: rpc.params) as! O
+        return rpcSender.sendRpc(rpc.method, params: rpc.params) as! O
     }
 
     func dispatchAsync<E: Event, O>(_ event: E) -> O {
         let rpc = event.rpcRepresentation
-        return coreConnection.sendRpcAsync(rpc.method, params: rpc.params) as! O
+        return rpcSender.sendRpcAsync(rpc.method, params: rpc.params) as! O
     }
 
     func dispatchWithCallback<E: Event>(_ event: E, callback: @escaping (RpcResult) -> ()) {
         let rpc = event.rpcRepresentation
-        return coreConnection.sendRpcAsync(rpc.method, params: rpc.params) { result in
+        return rpcSender.sendRpcAsync(rpc.method, params: rpc.params) { result in
             callback(result)
         }
     }
@@ -49,7 +49,7 @@ enum EventDispatchMethod {
 protocol Event {
     //NOTE: output is now unused; this file in general should be considered deprecated.
     // In the future we would like to move to having a 'XiCore protocol', and then implementing that
-    // via CoreConnection or equivalent.
+    // via RPCSending.
     associatedtype Output
 
     var method: String { get }

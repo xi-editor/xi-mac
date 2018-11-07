@@ -76,7 +76,7 @@ protocol RPCSending {
     func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback?)
 }
 
-class CoreConnection: RPCSending {
+class StdoutRPCSender: RPCSending {
 
     private let task = Process()
     private var inHandle: FileHandle  // stdin of core process
