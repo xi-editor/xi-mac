@@ -84,9 +84,45 @@ class MarkerBar: NSView, CALayerDelegate {
             marker.color.setFill()
             marker.color.setStroke()
             path.lineWidth = markerHeight
-            path.move(to: CGPoint(x: dirtyRect.minX, y: dirtyRect.maxY - CGFloat(marker.line) / (totalLines - 1) * markerBarHeight))
-            path.line(to: CGPoint(x: dirtyRect.maxX, y: dirtyRect.maxY - CGFloat(marker.line) / (totalLines - 1) * markerBarHeight))
+            path.move(to: CGPoint(x: dirtyRect.minX, y: dirtyRect.maxY - CGFloat(marker.line) / totalLines * markerBarHeight))
+            path.line(to: CGPoint(x: dirtyRect.maxX, y: dirtyRect.maxY - CGFloat(marker.line) / totalLines * markerBarHeight))
             path.stroke()
+        }
+    }
+}
+
+
+class ScrollViewWithMarkerBar: NSScrollView {
+    var markerBar: MarkerBar!
+
+    private func showMarkerBar() {
+        markerBar.alphaValue = 1.0
+    }
+
+    @objc private func hideMarkerBar() {
+        NSAnimationContext.runAnimationGroup({_ in
+            NSAnimationContext.current.duration = 0.5
+            markerBar.animator().alphaValue = 0.0
+        }, completionHandler: {})
+    }
+
+    override func scrollWheel(with event: NSEvent) {
+        super.scrollWheel(with: event)
+        if event.type == NSEvent.EventType.scrollWheel {
+            switch event.phase {
+            case NSEvent.Phase.mayBegin, NSEvent.Phase.began, NSEvent.Phase.changed:
+                showMarkerBar()
+            case NSEvent.Phase.cancelled, NSEvent.Phase.ended:
+                if event.momentumPhase != NSEvent.Phase.changed &&
+                   event.momentumPhase != NSEvent.Phase.began {
+                    self.perform(#selector(hideMarkerBar), with: nil, afterDelay: 0.5)
+                }
+            default:
+                if event.momentumPhase == NSEvent.Phase.ended {
+                    self.perform(#selector(hideMarkerBar), with: nil, afterDelay: 0.5)
+                }
+                break
+            }
         }
     }
 }
