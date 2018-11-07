@@ -205,7 +205,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
          Passing in `dispatcher.rpcSender` is just a temporary solution.
          Dedicated `RPCSending` instance should be passed in as soon as `Dispatcher` is not used.
          */
-        let xiCore = CoreRPC(rpcSender: dispatcher.rpcSender)
+        let xiCore = CoreConnection(rpcSender: dispatcher.rpcSender)
         self.xiCore = xiCore
 
         xiCore.clientStarted(configDir: getUserConfigDirectory(), clientExtrasDir: bundledPluginPath)
