@@ -205,7 +205,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
          Passing in `dispatcher.coreConnection` is just a temporary solution.
          Dedicated `CoreConnection` instance should be passed in as soon as `Dispatcher` is not used.
          */
-        let xiCore = CoreRPC(coreConnection: dispatcher.coreConnection)
+        let xiCore = CoreRPC(rpcSender: dispatcher.coreConnection)
         self.xiCore = xiCore
 
         xiCore.clientStarted(configDir: getUserConfigDirectory(), clientExtrasDir: bundledPluginPath)

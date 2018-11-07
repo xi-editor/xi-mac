@@ -19,7 +19,7 @@ class CoreRPCTests: XCTestCase {
 
     func testClientStarted() {
         let connection = TestConnection<String>()
-        let coreRPC = CoreRPC(coreConnection: connection)
+        let coreRPC = CoreRPC(rpcSender: connection)
         let params = ["config_dir": "foo", "client_extras_dir": "bar"]
         coreRPC.clientStarted(configDir: "foo", clientExtrasDir: "bar")
         let expected = TestRPCCall(method: "client_started", params: params, callback: nil)
@@ -28,7 +28,7 @@ class CoreRPCTests: XCTestCase {
 
     func testSetTheme() {
         let connection = TestConnection<String>()
-        let coreRPC = CoreRPC(coreConnection: connection)
+        let coreRPC = CoreRPC(rpcSender: connection)
         coreRPC.setTheme(themeName: "InspiredGitHub")
         let expected = TestRPCCall(method: "set_theme", params: ["theme_name": "InspiredGitHub"], callback: nil)
         XCTAssertEqual(expected, connection.calls.first)
@@ -36,7 +36,7 @@ class CoreRPCTests: XCTestCase {
 
     func testTracingConfigEnabled() {
         let connection = TestConnection<Bool>()
-        let coreRPC = CoreRPC(coreConnection: connection)
+        let coreRPC = CoreRPC(rpcSender: connection)
         coreRPC.tracingConfig(enabled: true)
         let expected = TestRPCCall(method: "tracing_config", params: ["enabled": true], callback: nil)
         XCTAssertEqual(expected, connection.calls.first)
@@ -44,7 +44,7 @@ class CoreRPCTests: XCTestCase {
 
     func testNewViewWithFilePath() {
         let connection = TestConnection<String>()
-        let coreRPC = CoreRPC(coreConnection: connection)
+        let coreRPC = CoreRPC(rpcSender: connection)
         coreRPC.newView(filePath: "/foo/bar/baz", callback: fakeCallback)
         let expected = TestRPCCall(method: "new_view", params: ["file_path": "/foo/bar/baz"], callback: nil)
         XCTAssertEqual(expected, connection.calls.first)
@@ -52,7 +52,7 @@ class CoreRPCTests: XCTestCase {
 
     func testNewViewWithoutFilePath() {
         let connection = TestConnection<String>()
-        let coreRPC = CoreRPC(coreConnection: connection)
+        let coreRPC = CoreRPC(rpcSender: connection)
         coreRPC.newView(filePath: nil, callback: fakeCallback)
         let expected = TestRPCCall(method: "new_view", params: [:] as [String: String], callback: nil)
         XCTAssertEqual(expected, connection.calls.first)
@@ -60,7 +60,7 @@ class CoreRPCTests: XCTestCase {
 
     func testCloseView() {
         let connection = TestConnection<String>()
-        let coreRPC = CoreRPC(coreConnection: connection)
+        let coreRPC = CoreRPC(rpcSender: connection)
         coreRPC.closeView(identifier: "foo")
         let expected = TestRPCCall(method: "close_view", params: ["view_id": "foo"] as [String: String], callback: nil)
         XCTAssertEqual(expected, connection.calls.first)
@@ -70,7 +70,7 @@ class CoreRPCTests: XCTestCase {
 private func fakeCallback(result: RpcResult) {
 }
 
-private class TestConnection<E: Equatable>: Connection {
+private class TestConnection<E: Equatable>: RPCSending {
     var calls: [TestRPCCall<E>] = []
 
     func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback?) {
