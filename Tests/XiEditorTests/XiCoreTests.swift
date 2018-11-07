@@ -65,6 +65,14 @@ class CoreRPCTests: XCTestCase {
         let expected = TestRPCCall(method: "close_view", params: ["view_id": "foo"] as [String: String], callback: nil)
         XCTAssertEqual(expected, connection.calls.first)
     }
+
+    func testSave() {
+        let connection = TestConnection<String>()
+        let xiCore = CoreConnection(rpcSender: connection)
+        xiCore.save(identifier: "foo", filePath: "/foo/bar")
+        let expected = TestRPCCall(method: "save", params: ["view_id": "foo", "file_path": "/foo/bar"], callback: nil)
+        XCTAssertEqual(expected, connection.calls.first)
+    }
 }
 
 private func fakeCallback(result: RpcResult) {

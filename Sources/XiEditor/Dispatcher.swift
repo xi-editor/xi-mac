@@ -99,17 +99,6 @@ enum Events { // namespace
         let dispatchMethod = EventDispatchMethod.sync
     }
 
-    struct Save: Event {
-        typealias Output = Void
-
-        let viewIdentifier: ViewIdentifier
-        let path: String
-
-        let method = "save"
-        var params: AnyObject? { return ["view_id": viewIdentifier, "file_path": path] as AnyObject }
-        let dispatchMethod = EventDispatchMethod.async
-    }
-
     struct StartPlugin: Event {
         typealias Output = Void
         let viewIdentifier: ViewIdentifier

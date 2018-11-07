@@ -28,6 +28,8 @@ protocol XiCore: class {
     typealias ViewIdentifier = String
     /// Closes the view with provided identifier.
     func closeView(identifier: ViewIdentifier)
+    /// Saves the buffer associated with `view_id` to `file_path`.
+    func save(identifier: ViewIdentifier, filePath: String)
 }
 
 final class CoreConnection: XiCore {
@@ -62,6 +64,12 @@ final class CoreConnection: XiCore {
 
     func closeView(identifier: ViewIdentifier) {
         sendRpcAsync("close_view", params: ["view_id": identifier])
+    }
+
+    func save(identifier: ViewIdentifier, filePath: String) {
+        let params = ["view_id": identifier,
+                      "file_path": filePath]
+        sendRpcAsync("save", params: params)
     }
 
     private func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback? = nil) {
