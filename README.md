@@ -35,30 +35,41 @@ Screenshot (will need to be updated as syntax coloring and UI polish is added):
 
 ![xi screenshot](/doc/img/xi-mac-screenshot.png?raw=true)
 
-
 ## Getting started
 
 ### Requirements
+
 - [Xcode 9.x](https://developer.apple.com/xcode/)
 - [Rust](https://www.rust-lang.org/). We test against the latest stable version,
 and recommend installing through [rustup](https://rustup.rs).
 
+### Installing
 
-Note: the front-end and back-end are split into two separate repositories. This
+*Note:* the front-end and back-end are split into two separate repositories. This
 is the front-end, and the back-end (or core) is now in
-[xi-editor](https://github.com/xi-editor/xi-editor). Make sure to have that checked out
-as a subdirectory.
+[xi-editor](https://github.com/xi-editor/xi-editor). It is contained in a submodule that is checked out during the clone command.
 
-```
-> git clone https://github.com/xi-editor/xi-mac
+**Clone the repository:**
+
+```bash
+> git clone --recurse-submodules https://github.com/xi-editor/xi-mac
 > cd xi-mac
-> git clone https://github.com/xi-editor/xi-editor
+```
+
+**Build and Open:**
+
+```bash
 > xcodebuild
 > open build/Release/XiEditor.app
 ```
 
-Or `open XiEditor.xcodeproj` and hit the Run button.
+Or
 
+```bash
+> open XiEditor.xcodeproj
+```
+
+and then hitting the Run button.
 
 ### Troubleshooting
 
