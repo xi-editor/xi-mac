@@ -122,7 +122,7 @@ class Document: NSDocument {
         Trace.shared.trace(method, .rpc, .begin)
         if let coreViewIdentifier = coreViewIdentifier {
             let inner = ["method": method, "params": params, "view_id": coreViewIdentifier] as [String : Any]
-            dispatcher?.coreConnection.sendRpcAsync("edit", params: inner, callback: callback)
+            dispatcher?.rpcSender.sendRpcAsync("edit", params: inner, callback: callback)
         } else {
             pendingNotifications.append(PendingNotification(method: method, params: params, callback: callback))
         }
@@ -134,7 +134,7 @@ class Document: NSDocument {
     func sendRpc(_ method: String, params: Any) -> RpcResult? {
         Trace.shared.trace(method, .rpc, .begin)
         let inner = ["method": method as AnyObject, "params": params, "view_id": coreViewIdentifier as AnyObject] as [String : Any]
-        let result = dispatcher?.coreConnection.sendRpc("edit", params: inner)
+        let result = dispatcher?.rpcSender.sendRpc("edit", params: inner)
         Trace.shared.trace(method, .rpc, .end)
         return result
     }
@@ -154,7 +154,7 @@ class Document: NSDocument {
                         "method": method,
                         "params": innerParams]] as [String: Any]
 
-        dispatcher.coreConnection.sendRpcAsync("plugin", params: params)
+        dispatcher.rpcSender.sendRpcAsync("plugin", params: params)
     }
 
     func sendWillScroll(first: Int, last: Int) {

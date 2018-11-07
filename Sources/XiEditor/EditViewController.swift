@@ -691,7 +691,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             languageName: sender.title
         )
 
-        document.dispatcher.coreConnection.sendRpcAsync(req.method, params: req.params!)
+        document.dispatcher.rpcSender.sendRpcAsync(req.method, params: req.params!)
     }
 
     @IBAction func debugPrintSpans(_ sender: AnyObject) {
@@ -711,7 +711,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         }
         let domain: [String: Any] = ["user_override": self.document.coreViewIdentifier!]
         let params = ["domain": domain, "changes": changes]
-        document.dispatcher.coreConnection.sendRpcAsync("modify_user_config", params: params)
+        document.dispatcher.rpcSender.sendRpcAsync("modify_user_config", params: params)
     }
 
     @objc func togglePlugin(_ sender: NSMenuItem) {

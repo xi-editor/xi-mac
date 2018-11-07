@@ -193,19 +193,19 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
 
         // TODO: This should be removed as soon as `XiCore` takes over `Dispatcher`.
         let dispatcher: Dispatcher = {
-            let coreConnection = CoreConnection(path: corePath)
-            coreConnection.client = self
-            return Dispatcher(coreConnection: coreConnection)
+            let rpcSender = StdoutRPCSender(path: corePath)
+            rpcSender.client = self
+            return Dispatcher(rpcSender: rpcSender)
         }()
 
         self.dispatcher = dispatcher
         updateRpcTracingConfig(collectSamplesOnBoot)
 
         /**
-         Passing in `dispatcher.coreConnection` is just a temporary solution.
-         Dedicated `CoreConnection` instance should be passed in as soon as `Dispatcher` is not used.
+         Passing in `dispatcher.rpcSender` is just a temporary solution.
+         Dedicated `RPCSending` instance should be passed in as soon as `Dispatcher` is not used.
          */
-        let xiCore = CoreRPC(rpcSender: dispatcher.coreConnection)
+        let xiCore = CoreRPC(rpcSender: dispatcher.rpcSender)
         self.xiCore = xiCore
 
         xiCore.clientStarted(configDir: getUserConfigDirectory(), clientExtrasDir: bundledPluginPath)
