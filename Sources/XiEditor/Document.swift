@@ -113,7 +113,7 @@ class Document: NSDocument {
     }
 
     fileprivate func save(_ filename: String) {
-        Events.Save(viewIdentifier: coreViewIdentifier!, path: filename).dispatch(dispatcher!)
+        xiCore.save(identifier: coreViewIdentifier!, filePath: filename)
     }
 
     /// Send a notification specific to the tab. If the tab name hasn't been set, then the
