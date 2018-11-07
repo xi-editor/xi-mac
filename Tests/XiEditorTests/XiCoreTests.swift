@@ -45,7 +45,7 @@ class CoreRPCTests: XCTestCase {
     func testNewViewWithFilePath() {
         let connection = TestConnection<String>()
         let coreRPC = CoreRPC(coreConnection: connection)
-        coreRPC.newView(filePath: "/foo/bar/baz", callback: nil)
+        coreRPC.newView(filePath: "/foo/bar/baz", callback: fakeCallback)
         let expected = TestRPCCall(method: "new_view", params: ["file_path": "/foo/bar/baz"], callback: nil)
         XCTAssertEqual(expected, connection.calls.first)
     }
@@ -53,7 +53,7 @@ class CoreRPCTests: XCTestCase {
     func testNewViewWithoutFilePath() {
         let connection = TestConnection<String>()
         let coreRPC = CoreRPC(coreConnection: connection)
-        coreRPC.newView(filePath: nil, callback: nil)
+        coreRPC.newView(filePath: nil, callback: fakeCallback)
         let expected = TestRPCCall(method: "new_view", params: [:] as [String: String], callback: nil)
         XCTAssertEqual(expected, connection.calls.first)
     }
@@ -65,6 +65,9 @@ class CoreRPCTests: XCTestCase {
         let expected = TestRPCCall(method: "close_view", params: ["view_id": "foo"] as [String: String], callback: nil)
         XCTAssertEqual(expected, connection.calls.first)
     }
+}
+
+private func fakeCallback(result: RpcResult) {
 }
 
 private class TestConnection<E: Equatable>: Connection {
