@@ -23,7 +23,7 @@ protocol XiCore: class {
     /// Changes the state of the tracing config.
     func tracingConfig(enabled: Bool)
     /// Creates a new view, returning the view identifier as a string. `file_path` is optional;
-    func newView(filePath: String?, callback: RpcCallback?)
+    func newView(filePath: String?, callback: @escaping RpcCallback)
     /// The type of the view identifier.
     typealias ViewIdentifier = String
     /// Closes the view with provided identifier.
@@ -52,7 +52,7 @@ final class CoreRPC: XiCore {
         sendRpcAsync("tracing_config", params: ["enabled": enabled])
     }
 
-    func newView(filePath: String?, callback: RpcCallback?) {
+    func newView(filePath: String?, callback: @escaping RpcCallback) {
         var params: [String: String] = [:]
         if let filePath = filePath {
             params = ["file_path": filePath]
