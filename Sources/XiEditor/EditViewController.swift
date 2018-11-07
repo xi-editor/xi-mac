@@ -75,7 +75,7 @@ protocol FindDelegate: class {
 }
 
 class EditViewController: NSViewController, EditViewDataSource, FindDelegate, ScrollInterested {
-    @IBOutlet var scrollView: NSScrollView!
+    @IBOutlet var scrollView: ScrollViewWithMarkerBar!
     @IBOutlet weak var editContainerView: EditContainerView!
     @IBOutlet var editView: EditView!
     @IBOutlet weak var shadowView: ShadowView!
@@ -265,11 +265,12 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     func setupMarkerBar() {
         markerBar.parent = self
         self.view.addSubview(markerBar)
+//        scrollView.markerBar = markerBar
         NSLayoutConstraint.activate([
             markerBar.widthAnchor.constraint(equalToConstant: markerBar.markerBarWidth),
-            markerBar.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-            markerBar.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-            markerBar.topAnchor.constraint(equalTo: scrollView.topAnchor)
+            markerBar.trailingAnchor.constraint(equalTo: scrollView.verticalScroller!.trailingAnchor),
+            markerBar.bottomAnchor.constraint(equalTo: scrollView.verticalScroller!.bottomAnchor),
+            markerBar.topAnchor.constraint(equalTo: scrollView.verticalScroller!.topAnchor)
         ])
     }
 
