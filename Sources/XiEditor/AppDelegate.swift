@@ -199,7 +199,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         }()
 
         self.dispatcher = dispatcher
-        updateRpcTracingConfig(collectSamplesOnBoot)
 
         /**
          Passing in `dispatcher.rpcSender` is just a temporary solution.
@@ -207,6 +206,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
          */
         let xiCore = CoreConnection(rpcSender: dispatcher.rpcSender)
         self.xiCore = xiCore
+        updateRpcTracingConfig(collectSamplesOnBoot)
 
         xiCore.clientStarted(configDir: getUserConfigDirectory(), clientExtrasDir: bundledPluginPath)
 
