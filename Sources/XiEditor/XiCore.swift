@@ -32,10 +32,10 @@ protocol XiCore: class {
 
 final class CoreRPC: XiCore {
 
-    private let coreConnection: Connection
+    private let rpcSender: RPCSending
 
-    init(coreConnection: Connection) {
-        self.coreConnection = coreConnection
+    init(rpcSender: RPCSending) {
+        self.rpcSender = rpcSender
     }
 
     func clientStarted(configDir: String?, clientExtrasDir: String?) {
@@ -65,6 +65,6 @@ final class CoreRPC: XiCore {
     }
 
     private func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback? = nil) {
-        coreConnection.sendRpcAsync(method, params: params, callback: callback)
+        rpcSender.sendRpcAsync(method, params: params, callback: callback)
     }
 }

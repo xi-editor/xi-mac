@@ -72,11 +72,11 @@ struct FileWriter {
 
 /// Protocol describing the general interface with core.
 /// Concrete implementations may be provided for different transport mechanisms, e.g. stdin/stdout, unix sockets, or FFI.
-protocol Connection {
+protocol RPCSending {
     func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback?)
 }
 
-class CoreConnection: Connection {
+class CoreConnection: RPCSending {
 
     private let task = Process()
     private var inHandle: FileHandle  // stdin of core process
