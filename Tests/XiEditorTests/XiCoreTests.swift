@@ -19,49 +19,49 @@ class CoreRPCTests: XCTestCase {
 
     func testClientStarted() {
         let connection = TestConnection<String>()
-        let coreRPC = CoreRPC(rpcSender: connection)
+        let xiCore = CoreConnection(rpcSender: connection)
         let params = ["config_dir": "foo", "client_extras_dir": "bar"]
-        coreRPC.clientStarted(configDir: "foo", clientExtrasDir: "bar")
+        xiCore.clientStarted(configDir: "foo", clientExtrasDir: "bar")
         let expected = TestRPCCall(method: "client_started", params: params, callback: nil)
         XCTAssertEqual(expected, connection.calls.first)
     }
 
     func testSetTheme() {
         let connection = TestConnection<String>()
-        let coreRPC = CoreRPC(rpcSender: connection)
-        coreRPC.setTheme(themeName: "InspiredGitHub")
+        let xiCore = CoreConnection(rpcSender: connection)
+        xiCore.setTheme(themeName: "InspiredGitHub")
         let expected = TestRPCCall(method: "set_theme", params: ["theme_name": "InspiredGitHub"], callback: nil)
         XCTAssertEqual(expected, connection.calls.first)
     }
 
     func testTracingConfigEnabled() {
         let connection = TestConnection<Bool>()
-        let coreRPC = CoreRPC(rpcSender: connection)
-        coreRPC.tracingConfig(enabled: true)
+        let xiCore = CoreConnection(rpcSender: connection)
+        xiCore.tracingConfig(enabled: true)
         let expected = TestRPCCall(method: "tracing_config", params: ["enabled": true], callback: nil)
         XCTAssertEqual(expected, connection.calls.first)
     }
 
     func testNewViewWithFilePath() {
         let connection = TestConnection<String>()
-        let coreRPC = CoreRPC(rpcSender: connection)
-        coreRPC.newView(filePath: "/foo/bar/baz", callback: fakeCallback)
+        let xiCore = CoreConnection(rpcSender: connection)
+        xiCore.newView(filePath: "/foo/bar/baz", callback: fakeCallback)
         let expected = TestRPCCall(method: "new_view", params: ["file_path": "/foo/bar/baz"], callback: nil)
         XCTAssertEqual(expected, connection.calls.first)
     }
 
     func testNewViewWithoutFilePath() {
         let connection = TestConnection<String>()
-        let coreRPC = CoreRPC(rpcSender: connection)
-        coreRPC.newView(filePath: nil, callback: fakeCallback)
+        let xiCore = CoreConnection(rpcSender: connection)
+        xiCore.newView(filePath: nil, callback: fakeCallback)
         let expected = TestRPCCall(method: "new_view", params: [:] as [String: String], callback: nil)
         XCTAssertEqual(expected, connection.calls.first)
     }
 
     func testCloseView() {
         let connection = TestConnection<String>()
-        let coreRPC = CoreRPC(rpcSender: connection)
-        coreRPC.closeView(identifier: "foo")
+        let xiCore = CoreConnection(rpcSender: connection)
+        xiCore.closeView(identifier: "foo")
         let expected = TestRPCCall(method: "close_view", params: ["view_id": "foo"] as [String: String], callback: nil)
         XCTAssertEqual(expected, connection.calls.first)
     }

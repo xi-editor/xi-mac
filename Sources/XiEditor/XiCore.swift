@@ -30,7 +30,7 @@ protocol XiCore: class {
     func closeView(identifier: ViewIdentifier)
 }
 
-final class CoreRPC: XiCore {
+final class CoreConnection: XiCore {
 
     private let rpcSender: RPCSending
 
