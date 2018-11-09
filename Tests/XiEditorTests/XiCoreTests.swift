@@ -75,6 +75,18 @@ class CoreRPCTests: XCTestCase {
     }
 }
 
+class PluginRPCTests: XCTestCase {
+
+    func testStartPlugin() {
+        let connection = TestConnection<String>()
+        let xiCore = CoreConnection(rpcSender: connection)
+        xiCore.start(plugin: "plug", in: "foo_id")
+        let params = ["command": "start", "view_id": "foo_id", "plugin_name": "plug"]
+        let expected = TestRPCCall(method: "plugin", params: params, callback: nil)
+        XCTAssertEqual(expected, connection.calls.first)
+    }
+}
+
 private func fakeCallback(result: RpcResult) {
 }
 

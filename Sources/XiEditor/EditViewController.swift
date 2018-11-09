@@ -715,10 +715,11 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     @objc func togglePlugin(_ sender: NSMenuItem) {
+        let pluginName = sender.title
+        let viewIdentifier = document.coreViewIdentifier!
         switch sender.state {
-        case .off: Events.StartPlugin(
-            viewIdentifier: document.coreViewIdentifier!,
-            plugin: sender.title).dispatch(document.dispatcher)
+        case .off:
+            document.xiCore.start(plugin: pluginName, in: viewIdentifier)
         case .on:
             Events.StopPlugin(
                 viewIdentifier: document.coreViewIdentifier!,
