@@ -87,17 +87,6 @@ extension Event {
 typealias ViewIdentifier = String
 
 enum Events { // namespace
-    struct NewView: Event {
-        typealias Output = String
-
-        let path: String?
-        let method = "new_view"
-        var params: AnyObject? {
-            guard let path = self.path else { return [:] as AnyObject }
-            return ["file_path": path] as AnyObject
-        }
-        let dispatchMethod = EventDispatchMethod.sync
-    }
 
     struct InitialPlugins: Event {
         typealias Output = [String]
