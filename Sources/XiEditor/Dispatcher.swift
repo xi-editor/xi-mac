@@ -110,16 +110,6 @@ enum Events { // namespace
         }
         let dispatchMethod = EventDispatchMethod.async
     }
-    
-    struct TracingConfig: Event {
-        typealias Output = Void
-        let enabled: Bool
-        let method = "tracing_config"
-        var params: AnyObject? {
-            return ["enabled": enabled] as AnyObject
-        }
-        let dispatchMethod = EventDispatchMethod.async
-    }
 
     struct SaveTrace: Event {
         typealias Output = Void
