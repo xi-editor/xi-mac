@@ -721,9 +721,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         case .off:
             document.xiCore.start(plugin: pluginName, in: viewIdentifier)
         case .on:
-            Events.StopPlugin(
-                viewIdentifier: document.coreViewIdentifier!,
-                plugin: sender.title).dispatch(document.dispatcher)
+            document.xiCore.stop(plugin: pluginName, in: viewIdentifier)
         default:
             print("unexpected plugin menu state \(sender.title) \(sender.state)")
         }
