@@ -32,6 +32,8 @@ protocol XiCore: class {
     func save(identifier: ViewIdentifier, filePath: String)
     /// Starts the named plugin for the given view.
     func start(plugin: String, in identifier: ViewIdentifier)
+    /// Stops the named plugin for the given view.
+    func stop(plugin: String, in identifier: ViewIdentifier)
 }
 
 final class CoreConnection: XiCore {
@@ -76,6 +78,11 @@ final class CoreConnection: XiCore {
 
     func start(plugin: String, in identifier: ViewIdentifier) {
         let params = ["command": "start", "view_id": identifier, "plugin_name": plugin]
+        sendRpcAsync("plugin", params: params)
+    }
+
+    func stop(plugin: String, in identifier: ViewIdentifier) {
+        let params = ["command": "stop", "view_id": identifier, "plugin_name": plugin]
         sendRpcAsync("plugin", params: params)
     }
 

@@ -99,18 +99,6 @@ enum Events { // namespace
         let dispatchMethod = EventDispatchMethod.sync
     }
 
-    struct StopPlugin: Event {
-        typealias Output = Void
-        let viewIdentifier: ViewIdentifier
-        let plugin: String
-
-        let method = "plugin"
-        var params: AnyObject? {
-            return ["command": "stop", "view_id": viewIdentifier, "plugin_name": plugin] as AnyObject
-        }
-        let dispatchMethod = EventDispatchMethod.async
-    }
-
     struct InitialPlugins: Event {
         typealias Output = [String]
         let viewIdentifier: ViewIdentifier

@@ -85,6 +85,15 @@ class PluginRPCTests: XCTestCase {
         let expected = TestRPCCall(method: "plugin", params: params, callback: nil)
         XCTAssertEqual(expected, connection.calls.first)
     }
+
+    func testStopPlugin() {
+        let connection = TestConnection<String>()
+        let xiCore = CoreConnection(rpcSender: connection)
+        xiCore.stop(plugin: "plugout", in: "foo_id")
+        let params = ["command": "stop", "view_id": "foo_id", "plugin_name": "plugout"]
+        let expected = TestRPCCall(method: "plugin", params: params, callback: nil)
+        XCTAssertEqual(expected, connection.calls.first)
+    }
 }
 
 private func fakeCallback(result: RpcResult) {
