@@ -73,7 +73,7 @@ User settings are currently stored in files; the general preferences are
 located at `~/Library/Application Support/XiEditor/preferences.xiconfig`.
 This file can be opened from File > Preferences (⌘ + ,).
 
-The default font for XiEditor is 
+The default font for XiEditor is
 [Inconsolata](http://levien.com/type/myfonts/inconsolata.html), which
 is bundled with the app.
 
@@ -105,5 +105,5 @@ We gladly accept contributions via GitHub pull requests. Please see
 [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 
 If you are interested in contributing but not sure where to start, there is
-an active IRC channel at #xi on irc.mozilla.org. There is also a subreddit at
-[/r/xi_editor](https://www.reddit.com/r/xi_editor/).
+an active Zulip channel at #xi-editor on https://xi.zulipchat.com. There is also
+a subreddit at [/r/xi_editor](https://www.reddit.com/r/xi_editor/).
