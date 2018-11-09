@@ -454,7 +454,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
     // Provice a convenience helper for ordered documents
     private var orderedDocuments: [Document] {
         return NSApplication.shared.orderedDocuments
-            .compactMap { $0 as? Document }
+            .map { $0 as! Document }
     }
 
     func handleFontChange(fontName: String?, fontSize: CGFloat?) {
