@@ -104,6 +104,7 @@ license.
 We gladly accept contributions via GitHub pull requests. Please see
 [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 
-If you are interested in contributing but not sure where to start, there is
-an active Zulip channel at #xi-editor on https://xi.zulipchat.com. There is also
-a subreddit at [/r/xi_editor](https://www.reddit.com/r/xi_editor/).
+If you are interested in contributing but not sure where to start, there is an
+active Zulip channel at #xi-editor on https://xi.zulipchat.com. There is also
+a #xi channel on irc.mozilla.org. Finally, there is a subreddit at
+[/r/xi_editor](https://www.reddit.com/r/xi_editor/).
