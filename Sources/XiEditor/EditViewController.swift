@@ -75,7 +75,7 @@ protocol FindDelegate: class {
 }
 
 class EditViewController: NSViewController, EditViewDataSource, FindDelegate, ScrollInterested {
-    @IBOutlet var scrollView: ScrollViewWithMarkerBar!
+    @IBOutlet var scrollView: NSScrollView!
     @IBOutlet weak var editContainerView: EditContainerView!
     @IBOutlet var editView: EditView!
     @IBOutlet weak var shadowView: ShadowView!
@@ -208,7 +208,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     var hoverEvent: NSEvent?
 
     let statusBar = StatusBar(frame: .zero)
-    let markerBar = MarkerBar(frame: .zero)
 
     // Popover that manages hover views.
     lazy var infoPopover: NSPopover = {
@@ -228,6 +227,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         super.viewDidLoad()
         shadowView.wantsLayer = true
         editView.dataSource = self
+        (scrollView.verticalScroller as! MarkerBar).parent = self
         scrollView.contentView.documentCursor = .iBeam
         scrollView.automaticallyAdjustsContentInsets = false
         scrollView.hasHorizontalScroller = true
@@ -238,7 +238,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     override func viewDidAppear() {
         super.viewDidAppear()
         setupStatusBar()
-        setupMarkerBar()
         shadowView.setup()
         NotificationCenter.default.addObserver(self, selector: #selector(frameDidChangeNotification), name: NSView.frameDidChangeNotification, object: scrollView)
         // call to set initial scroll position once we know view size
@@ -260,18 +259,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             statusBar.trailingAnchor.constraint(equalTo: editView.trailingAnchor),
             statusBar.bottomAnchor.constraint(equalTo: editView.bottomAnchor)
             ])
-    }
-
-    func setupMarkerBar() {
-        markerBar.parent = self
-        self.view.addSubview(markerBar)
-//        scrollView.markerBar = markerBar
-        NSLayoutConstraint.activate([
-            markerBar.widthAnchor.constraint(equalToConstant: markerBar.markerBarWidth),
-            markerBar.trailingAnchor.constraint(equalTo: scrollView.verticalScroller!.trailingAnchor),
-            markerBar.bottomAnchor.constraint(equalTo: scrollView.verticalScroller!.bottomAnchor),
-            markerBar.topAnchor.constraint(equalTo: scrollView.verticalScroller!.topAnchor)
-        ])
     }
 
     func updateGutterWidth() {
