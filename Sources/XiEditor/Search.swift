@@ -35,6 +35,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     var showMultipleSearchQueries = false   // activates/deactives
 
     override func viewDidLoad() {
+        addSearchField(searchField: nil)     // by default at least one search field is present
         replacePanel.isHidden = true
     }
 
@@ -438,7 +439,7 @@ extension EditViewController {
             }
         }
 
-        markerBar.setMarker(findMarker)
+        (scrollView.verticalScroller as! MarkerBar).setMarker(findMarker)
 
         // remove finds that have been removed in core
         let activeFinds = status.map({$0["id"] as? Int})
