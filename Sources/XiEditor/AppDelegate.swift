@@ -451,8 +451,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         }
     }
 
-    // Provice a convenience helper for ordered documents
+    // Provide a convenience helper for ordered documents
     private var orderedDocuments: [Document] {
+        // Force unwrapping is intentional: if this cast is wrong we want to crash!
         return NSApplication.shared.orderedDocuments
             .map { $0 as! Document }
     }
