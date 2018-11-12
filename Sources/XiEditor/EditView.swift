@@ -433,6 +433,7 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
 
         // Note: this locks the line cache for the duration of the render
         let lineCache = dataSource.lines.locked()
+        let annotations = lineCache.annotations
         let totalLines = lineCache.height
         let first = min(yOffsetToLine(dirtyRect.origin.y + dataSource.scrollOrigin.y), totalLines)
         let last = min(yOffsetToLine(dirtyRect.maxY + dataSource.scrollOrigin.y) + 1, totalLines)
@@ -447,6 +448,7 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
 
         // first pass: create TextLine objects and also draw background rects
         let selectionColor = self.isFrontmostView ? dataSource.theme.selection : dataSource.theme.inactiveSelection ?? dataSource.theme.selection
+
         let selArgb = colorToArgb(selectionColor)
         let highlightColors = dataSource.theme.findHighlights
         let highlightsArgb = (highlightColors ?? [])!.map({
@@ -475,9 +477,36 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             } else {
                 let builder = TextLineBuilder(line.text, font: font)
                 builder.setFgColor(argb: foregroundArgb)
-                styleMap.applyStyles(builder: builder, styles: line.styles, selColor: selArgb, highlightColors: highlightsArgb)
-                textLine = builder.build(fontCache: renderer.fontCache)
+                styleMap.applyStyles(builder: builder, styles: line.styles)
 
+                // draw annotations
+                // todo: make this better
+                for annotationType in AnnotationType.all {
+                    let annotationsForLine = annotations[annotationType]?.filter({
+                        $0.startLine <= lineIx && $0.endLine >= lineIx
+                    })
+
+                    for annotation in annotationsForLine! {
+                        let start = annotation.startLine == lineIx ? annotation.startColumn : 0
+                        let end = annotation.endLine == lineIx ? annotation.endColumn : line.text.count
+
+                        let color: ARGBColor = {
+                            switch annotationType {
+                            case AnnotationType.Selection:
+                                return selArgb
+                            case AnnotationType.Highlight:
+                                let queryId = annotation.metadata?["query_id"] as! Int
+                                return highlightsArgb[queryId % highlightsArgb.count]
+                            }
+                        }()
+
+                        let startIx = utf8_offset_to_utf16(line.text, start)
+                        let endIx = utf8_offset_to_utf16(line.text, end)
+                        builder.addBgSpan(range: convertRange(NSMakeRange(startIx, endIx - startIx)), argb: color)
+                    }
+                }
+
+                textLine = builder.build(fontCache: renderer.fontCache)
                 let assoc = LineAssoc(textLine: textLine)
                 lineCache.setAssoc(lineIx, assoc: assoc)
                 textLines.append(textLine)

@@ -25,7 +25,7 @@ struct Style {
     var weight: Int?
     var attributes: [NSAttributedStringKey: Any] = [:]
     var fakeItalic = false
-    static let N_RESERVED_STYLES = 8
+    static let N_RESERVED_STYLES = 8        // todo: can be removed in the future for new update protocol
 
     init(font fromFont: NSFont, fgColor: NSColor?, bgColor: NSColor?, underline: Bool, italic: Bool, weight: Int?) {
         if let fgColor = fgColor {
@@ -164,16 +164,14 @@ class StyleMapState: UnfairLock {
         }
     }
 
-    func applyStyle(builder: TextLineBuilder, id: Int, range: NSRange, selColor: ARGBColor?) {
+    func applyStyle(builder: TextLineBuilder, id: Int, range: NSRange) {
         if id < 0 || id >= styles.count {
             print("stylemap can't resolve \(id)")
             return
         }
 
-        if id < Style.N_RESERVED_STYLES {
-            // Ignore foreground color for selection and highlight styles
-            builder.addBgSpan(range: convertRange(range), argb: selColor!)
-        } else {
+        // todo: remove once update protocol does not have reserved styles anymore
+        if id >= Style.N_RESERVED_STYLES {
             guard let style = styles[id] else { return }
             if let fgColor = style.fgColor {
                 builder.addFgSpan(range: convertRange(range), argb: colorToArgb(fgColor))
@@ -193,28 +191,12 @@ class StyleMapState: UnfairLock {
         }
     }
 
-    func applyStyles(builder: TextLineBuilder, styles: [StyleSpan], selColor: ARGBColor, highlightColors: [ARGBColor]) {
-        var selectionStyles: [StyleSpan] = []
-        var highlightStyles: [StyleSpan] = []
-
+    func applyStyles(builder: TextLineBuilder, styles: [StyleSpan]) {
         for styleSpan in styles {
-            if styleSpan.style == 0 {
-                selectionStyles.append(styleSpan)
-            } else if styleSpan.style < Style.N_RESERVED_STYLES {
-                highlightStyles.append(styleSpan)
-            } else {
+            if styleSpan.style >= Style.N_RESERVED_STYLES {
                 // Theme-provided background colors are rendered first
-                applyStyle(builder: builder, id: styleSpan.style, range: styleSpan.range, selColor: nil)
+                applyStyle(builder: builder, id: styleSpan.style, range: styleSpan.range)
             }
-        }
-        // Find highlights are rendered on top of background color
-        for span in highlightStyles {
-            let color = highlightColors[span.style - 1]
-            applyStyle(builder: builder, id: span.style, range: span.range, selColor: color)
-        }
-        // Selection color is rendered on top of find highlights
-        for span in selectionStyles {
-            applyStyle(builder: builder, id: span.style, range: span.range, selColor: selColor)
         }
     }
 
@@ -229,7 +211,7 @@ class StyleMapState: UnfairLock {
     func measureWidth(id: Int, s: String) -> Double {
         let builder = TextLineBuilder(s, font: self.font)
         let range = NSMakeRange(0, s.utf16.count)
-        applyStyle(builder: builder, id: id, range: range, selColor: 0)
+        applyStyle(builder: builder, id: id, range: range)
         return builder.measure()
     }
 
@@ -266,8 +248,8 @@ class StyleMapLocked {
     }
 
     /// Applies the styles to the text line builder.
-    func applyStyles(builder: TextLineBuilder, styles: [StyleSpan], selColor: ARGBColor, highlightColors: [ARGBColor]) {
-        inner.applyStyles(builder: builder, styles: styles, selColor: selColor, highlightColors: highlightColors)
+    func applyStyles(builder: TextLineBuilder, styles: [StyleSpan]) {
+        inner.applyStyles(builder: builder, styles: styles)
     }
 
     func updateFont(to font: NSFont) {

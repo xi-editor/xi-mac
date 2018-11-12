@@ -27,12 +27,6 @@ struct Line<T> {
     /// Associated data, to be managed by client
     var assoc: T?
 
-    /// A Boolean value representing whether this line contains selected/highlighted text.
-    /// This is used to determine whether we should pre-draw its background.
-    var containsReservedStyle: Bool {
-        return styles.contains { $0.style < Style.N_RESERVED_STYLES }
-    }
-
     /// A Boolean indicating whether this line contains a cursor.
     var containsCursor: Bool {
         return cursor.count > 0
@@ -64,6 +58,41 @@ struct Line<T> {
     }
 }
 
+enum AnnotationType: String {
+    case Selection = "selection"
+    case Highlight = "highlight"
+}
+
+extension AnnotationType {
+    static var all: [AnnotationType] {
+        return [AnnotationType.Selection, AnnotationType.Highlight]
+    }
+}
+
+/// Represents an annotation (eg. selection, find highlight)
+struct Annotation {
+    var startLine: Int
+    var startColumn: Int
+    var endLine: Int
+    var endColumn: Int
+    var metadata: [String: AnyObject]?
+
+    init(fromJson json: [String: AnyObject]) {
+        let position = json["pos"] as! [Int]
+
+        if position.count != 4 {
+            // todo
+            print("Wrong format for annotations")
+        }
+
+        startLine = position[0]
+        startColumn = position[1]
+        endLine = position[2]
+        endColumn = position[3]
+        metadata = json["metadata"] as? [String: AnyObject]
+    }
+}
+
 /// The underlying state of the cache, with methods for applying update deltas.
 fileprivate class LineCacheState<T>: UnfairLock {
     /// A semaphore we use to wake up the main thread if it is blocking missing lines
@@ -75,6 +104,7 @@ fileprivate class LineCacheState<T>: UnfairLock {
 
     var nInvalidBefore = 0;
     var lines: [Line<T>?] = []
+    var annotations: [AnnotationType: [Annotation]] = [:]
     var nInvalidAfter = 0
 
     var height: Int {
@@ -114,6 +144,19 @@ fileprivate class LineCacheState<T>: UnfairLock {
     /// Updates the state by applying a delta. The update format is detailed in the
     /// [xi-core docs](http://xi-editor.github.io/xi-editor/docs/frontend-protocol.html#view-update-protocol).
     func applyUpdate(update: [String: AnyObject]) -> InvalSet {
+        // parse annotations
+        let annotationData = (update["annotations"] as! [[String: AnyObject]])
+
+        for annotationType in AnnotationType.all {
+            let annotationsOfType = annotationData.filter({$0["type"] as! String == annotationType.rawValue})
+
+            if annotationsOfType.isEmpty {
+                annotations[annotationType] = []
+            } else {
+                annotations[annotationType] = ((annotationsOfType.first!)["data"] as! [[String: AnyObject]]).map({(d: [String: AnyObject]) -> Annotation in Annotation(fromJson: d)})
+            }
+        }
+
         let inval = InvalSet()
         guard let ops = update["ops"] else { return inval }
         let oldHeight = height
@@ -121,6 +164,7 @@ fileprivate class LineCacheState<T>: UnfairLock {
         var newLines: [Line<T>?] = []
         var newInvalidAfter = 0
         var oldIx = 0
+
         for op in ops as! [[String: AnyObject]] {
             guard let op_type = op["op"] as? String else { return inval }
             guard let n = op["n"] as? Int else { return inval }
@@ -274,6 +318,10 @@ class LineCacheLocked<T> {
 
     var revision: Int {
         return inner.revision
+    }
+
+    var annotations: [AnnotationType: [Annotation]] {
+        return inner.annotations
     }
 
     /// Returns the line for the given index, if it exists in the cache.
