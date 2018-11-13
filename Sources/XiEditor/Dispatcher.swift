@@ -98,16 +98,4 @@ enum Events { // namespace
         }
         let dispatchMethod = EventDispatchMethod.sync
     }
-
-    struct SaveTrace: Event {
-        typealias Output = Void
-        let destination: String
-        let frontendSamples : [[String: AnyObject]]
-
-        let method = "save_trace"
-        var params: AnyObject? {
-            return ["destination": destination, "frontend_samples": frontendSamples] as AnyObject
-        }
-        let dispatchMethod = EventDispatchMethod.async
-    }
 }
