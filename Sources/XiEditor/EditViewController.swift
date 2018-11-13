@@ -713,6 +713,10 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         document.xiCore.sendRpcAsync("modify_user_config", params: params, callback: nil)
     }
 
+    @IBAction func toggleComment(_ sender: Any?) {
+        document.sendRpcAsync("debug_toggle_comment", params: [])
+    }
+
     @objc func togglePlugin(_ sender: NSMenuItem) {
         let pluginName = sender.title
         let viewIdentifier = document.coreViewIdentifier!
