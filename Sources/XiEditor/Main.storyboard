@@ -688,6 +688,11 @@ Gw
                                                 <action selector="decreaseNumber:" target="7er-QZ-amI" id="gdz-W0-fqj"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem title="Toggle Comment" keyEquivalent="/" id="tIC-OG-slr">
+                                            <connections>
+                                                <action selector="toggleComment:" target="7er-QZ-amI" id="1zd-gi-dQv"/>
+                                            </connections>
+                                        </menuItem>
                                         <menuItem isSeparatorItem="YES" id="PN7-qq-hhD"/>
                                         <menuItem title="Find" id="EPp-zI-3PW">
                                             <modifierMask key="keyEquivalentModifierMask"/>
