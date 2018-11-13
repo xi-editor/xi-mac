@@ -98,18 +98,6 @@ enum Events { // namespace
         }
         let dispatchMethod = EventDispatchMethod.sync
     }
-    
-    struct SetLanguage: Event {
-        typealias Output = Void
-        let viewIdentifier: ViewIdentifier
-        let languageName: String
-        
-        let method = "set_language"
-        var params: AnyObject? {
-            return ["view_id": viewIdentifier, "language_id": languageName] as AnyObject
-        }
-        let dispatchMethod = EventDispatchMethod.async
-    }
 
     struct SaveTrace: Event {
         typealias Output = Void
