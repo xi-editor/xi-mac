@@ -685,13 +685,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     
     @IBAction func debugSetLanguage(_ sender: NSMenuItem) {
         guard sender.state != NSControl.StateValue.on else { print("language already active"); return }
-
-        let req = Events.SetLanguage(
-            viewIdentifier: document.coreViewIdentifier!,
-            languageName: sender.title
-        )
-
-        document.dispatcher.rpcSender.sendRpcAsync(req.method, params: req.params!)
+        document.xiCore.setLanguage(identifier: document.coreViewIdentifier!, languageName: sender.title)
     }
 
     @IBAction func debugPrintSpans(_ sender: AnyObject) {

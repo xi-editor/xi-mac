@@ -34,6 +34,9 @@ protocol XiCore: class {
     func start(plugin: String, in identifier: ViewIdentifier)
     /// Stops the named plugin for the given view.
     func stop(plugin: String, in identifier: ViewIdentifier)
+    /// Asks core to change the language of the buffer associated with the `view_id`.
+    /// If the change succeeds the client will receive a `language_changed` notification.
+    func setLanguage(identifier: ViewIdentifier, languageName: String)
 }
 
 final class CoreConnection: XiCore {
@@ -84,6 +87,11 @@ final class CoreConnection: XiCore {
     func stop(plugin: String, in identifier: ViewIdentifier) {
         let params = ["command": "stop", "view_id": identifier, "plugin_name": plugin]
         sendRpcAsync("plugin", params: params)
+    }
+
+    func setLanguage(identifier: ViewIdentifier, languageName: String) {
+        let params = ["view_id": identifier, "language_id": languageName]
+        sendRpcAsync("set_language", params: params)
     }
 
     private func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback? = nil) {

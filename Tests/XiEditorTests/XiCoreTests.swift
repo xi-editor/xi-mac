@@ -73,6 +73,14 @@ class CoreRPCTests: XCTestCase {
         let expected = TestRPCCall(method: "save", params: ["view_id": "foo", "file_path": "/foo/bar"], callback: nil)
         XCTAssertEqual(expected, connection.calls.first)
     }
+
+    func testSetLanguage() {
+        let connection = TestConnection<String>()
+        let xiCore = CoreConnection(rpcSender: connection)
+        xiCore.setLanguage(identifier: "foo", languageName: "C")
+        let expected = TestRPCCall(method: "set_language", params: ["view_id": "foo", "language_id": "C"], callback: nil)
+        XCTAssertEqual(expected, connection.calls.first)
+    }
 }
 
 class PluginRPCTests: XCTestCase {
