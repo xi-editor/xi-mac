@@ -37,6 +37,9 @@ protocol XiCore: class {
     /// Asks core to change the language of the buffer associated with the `view_id`.
     /// If the change succeeds the client will receive a `language_changed` notification.
     func setLanguage(identifier: ViewIdentifier, languageName: String)
+    /// Requests that core collect and write out traces to a file
+    /// at `destination`, including the samples from this frontend.
+    func saveTrace(destination: String, frontendSamples: [[String: AnyObject]])
 }
 
 final class CoreConnection: XiCore {
@@ -92,6 +95,11 @@ final class CoreConnection: XiCore {
     func setLanguage(identifier: ViewIdentifier, languageName: String) {
         let params = ["view_id": identifier, "language_id": languageName]
         sendRpcAsync("set_language", params: params)
+    }
+
+    func saveTrace(destination: String, frontendSamples: [[String: AnyObject]]) {
+        let params = ["destination": destination, "frontend_samples": frontendSamples] as AnyObject
+        sendRpcAsync("save_trace", params: params)
     }
 
     private func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback? = nil) {

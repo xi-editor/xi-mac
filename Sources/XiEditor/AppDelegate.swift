@@ -524,7 +524,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
             // TODO: have UI start showing that the trace is saving & then clear
             // that in a callback (or make it synchronous on a global dispatch
             // queue).
-            Events.SaveTrace(destination: destination, frontendSamples: Trace.shared.snapshot()).dispatch(self.dispatcher!)
+            self.xiCore?.saveTrace(destination: destination, frontendSamples: Trace.shared.snapshot())
         }
     }
 
