@@ -112,20 +112,6 @@ class StyleMapState: UnfairLock {
 
     init(font: NSFont, theme: Theme) {
         self.font = font
-        let selectionStyle = Style(font: font,
-                                   fgColor: theme.selectionForeground,
-                                   bgColor: nil,
-                                   underline: false,
-                                   italic: false,
-                                   weight: nil)
-        let highlightStyle = Style(font: font,
-                                   fgColor: theme.findHighlightForeground,
-                                   bgColor: nil,
-                                   underline: false,
-                                   italic: false,
-                                   weight: nil)
-        self.styles.append(selectionStyle)
-        self.styles.append(highlightStyle)
     }
 
     func defStyle(json: [String: AnyObject]) {
