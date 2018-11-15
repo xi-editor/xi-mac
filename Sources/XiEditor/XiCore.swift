@@ -40,6 +40,11 @@ protocol XiCore: class {
     /// Requests that core collect and write out traces to a file
     /// at `destination`, including the samples from this frontend.
     func saveTrace(destination: String, frontendSamples: [[String: AnyObject]])
+
+    /// The following calls break XiCore interface. We should remove them as soon as
+    /// `Document` calls are migrated to it's own protocol.
+    func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback?)
+    func sendRpc(_ method: String, params: Any) -> RpcResult
 }
 
 final class CoreConnection: XiCore {
@@ -102,7 +107,11 @@ final class CoreConnection: XiCore {
         sendRpcAsync("save_trace", params: params)
     }
 
-    private func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback? = nil) {
+    func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback? = nil) {
         rpcSender.sendRpcAsync(method, params: params, callback: callback)
+    }
+
+    func sendRpc(_ method: String, params: Any) -> RpcResult {
+        return rpcSender.sendRpc(method, params: params)
     }
 }
