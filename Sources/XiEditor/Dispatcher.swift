@@ -83,8 +83,6 @@ extension Event {
     }
 }
 
-/// Identifies a given document view for routing with xi-core
-typealias ViewIdentifier = String
 
 enum Events { // namespace
 
