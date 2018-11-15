@@ -10,7 +10,6 @@
 		28F1ED4A1EC4C735008839BE /* Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F1ED491EC4C735008839BE /* Search.swift */; };
 		4DC153D32165202B000EB215 /* XiWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DC153D22165202B000EB215 /* XiWindowController.swift */; };
 		4DCB4AF020576A6F00476F75 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 4DCB4AEF20576A6E00476F75 /* fonts */; };
-		50370A2B1D4209F300EA1B18 /* Dispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50370A2A1D4209F300EA1B18 /* Dispatcher.swift */; };
 		6038770720057B4500AABF17 /* XiDocumentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6038770620057B4500AABF17 /* XiDocumentController.swift */; };
 		6083722F2058597B00E9CF5D /* ShadowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6083722E2058597B00E9CF5D /* ShadowView.swift */; };
 		6B0C298B2033C39500EA07AF /* XiWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0C298A2033C39500EA07AF /* XiWindow.swift */; };
@@ -82,7 +81,6 @@
 		28F1ED491EC4C735008839BE /* Search.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
 		4DC153D22165202B000EB215 /* XiWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiWindowController.swift; sourceTree = "<group>"; };
 		4DCB4AEF20576A6E00476F75 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
-		50370A2A1D4209F300EA1B18 /* Dispatcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dispatcher.swift; sourceTree = "<group>"; };
 		6038770620057B4500AABF17 /* XiDocumentController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiDocumentController.swift; sourceTree = "<group>"; };
 		6083722E2058597B00E9CF5D /* ShadowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShadowView.swift; sourceTree = "<group>"; };
 		6B0C298A2033C39500EA07AF /* XiWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiWindow.swift; sourceTree = "<group>"; };
@@ -213,7 +211,6 @@
 				AED23F171C83CBEC002246CE /* EditView.swift */,
 				AE499DF81C82C835002D68AF /* RPCSending.swift */,
 				D8D319EF218CB39A00D108D4 /* XiCore.swift */,
-				50370A2A1D4209F300EA1B18 /* Dispatcher.swift */,
 				F5BDBF361DCA9D2C0042430B /* Document.swift */,
 				AE168C5B1E4AD87B008249AE /* LineCache.swift */,
 				AE0243F51E4BDF8A00641BDA /* StyleMap.swift */,
@@ -456,7 +453,6 @@
 				6B53F5F21EF963EB00A4C664 /* Theme.swift in Sources */,
 				AE499DF91C82C835002D68AF /* RPCSending.swift in Sources */,
 				6083722F2058597B00E9CF5D /* ShadowView.swift in Sources */,
-				50370A2B1D4209F300EA1B18 /* Dispatcher.swift in Sources */,
 				E1288E8020B06E9C0068EEB9 /* StatusBar.swift in Sources */,
 				AEC4F6CA1FFB02F10060E10E /* Trace.swift in Sources */,
 				6BF9575B1FD70C420010BAE6 /* Client.swift in Sources */,
