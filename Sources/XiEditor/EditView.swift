@@ -480,7 +480,6 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                 styleMap.applyStyles(builder: builder, styles: line.styles)
 
                 // draw annotations
-                // todo: make this better
                 for annotationType in AnnotationType.all {
                     let annotationsForLine = annotations[annotationType]?.filter({
                         $0.startLine <= lineIx && $0.endLine >= lineIx
@@ -495,7 +494,7 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                             case AnnotationType.Selection:
                                 return selArgb
                             case AnnotationType.Highlight:
-                                let queryId = annotation.metadata?["query_id"] as! Int
+                                let queryId = annotation.metadata?["query"] as! Int
                                 return highlightsArgb[queryId % highlightsArgb.count]
                             }
                         }()

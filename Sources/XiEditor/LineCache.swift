@@ -153,7 +153,10 @@ fileprivate class LineCacheState<T>: UnfairLock {
             if annotationsOfType.isEmpty {
                 annotations[annotationType] = []
             } else {
-                annotations[annotationType] = ((annotationsOfType.first!)["data"] as! [[String: AnyObject]]).map({(d: [String: AnyObject]) -> Annotation in Annotation(fromJson: d)})
+                let annotationTypeData = (annotationsOfType.first!)["data"] as! [[String: AnyObject]]
+                annotations[annotationType] = annotationTypeData.map({(d: [String: AnyObject]) -> Annotation in
+                    Annotation(fromJson: d)
+                })
             }
         }
 
