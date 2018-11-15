@@ -28,8 +28,6 @@ class Document: NSDocument {
     // minimum size for a new or resized window
     static var minWinSize = NSSize(width: 240, height: 160)
 
-    // TODO: This should be removed as soon as `XiCore` takes over `Dispatcher`.
-    var dispatcher: Dispatcher!
     let xiCore: XiCore
 
     /// coreViewIdentifier is the name used to identify this document when communicating with the Core.
@@ -53,7 +51,6 @@ class Document: NSDocument {
     }
 
     override init() {
-        dispatcher = (NSApplication.shared.delegate as? AppDelegate)?.dispatcher
         xiCore = ((NSApplication.shared.delegate as? AppDelegate)?.xiCore)!
         super.init()
         // I'm not 100% sure this is necessary but it can't _hurt_
@@ -122,7 +119,7 @@ class Document: NSDocument {
         Trace.shared.trace(method, .rpc, .begin)
         if let coreViewIdentifier = coreViewIdentifier {
             let inner = ["method": method, "params": params, "view_id": coreViewIdentifier] as [String : Any]
-            dispatcher?.rpcSender.sendRpcAsync("edit", params: inner, callback: callback)
+            xiCore.sendRpcAsync("edit", params: inner, callback: callback)
         } else {
             pendingNotifications.append(PendingNotification(method: method, params: params, callback: callback))
         }
@@ -134,7 +131,7 @@ class Document: NSDocument {
     func sendRpc(_ method: String, params: Any) -> RpcResult? {
         Trace.shared.trace(method, .rpc, .begin)
         let inner = ["method": method as AnyObject, "params": params, "view_id": coreViewIdentifier as AnyObject] as [String : Any]
-        let result = dispatcher?.rpcSender.sendRpc("edit", params: inner)
+        let result = xiCore.sendRpc("edit", params: inner)
         Trace.shared.trace(method, .rpc, .end)
         return result
     }
@@ -154,7 +151,7 @@ class Document: NSDocument {
                         "method": method,
                         "params": innerParams]] as [String: Any]
 
-        dispatcher.rpcSender.sendRpcAsync("plugin", params: params)
+        xiCore.sendRpcAsync("plugin", params: params, callback: nil)
     }
 
     func sendWillScroll(first: Int, last: Int) {
