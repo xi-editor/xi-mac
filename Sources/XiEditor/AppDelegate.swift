@@ -79,8 +79,6 @@ class ScrollTester {
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
 
-    // TODO: This should be removed as soon as `XiCore` takes over `Dispatcher`.
-    var dispatcher: Dispatcher?
     var xiCore: XiCore?
 
     var documentController: XiDocumentController!
@@ -191,20 +189,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
             let bundledPluginPath = Bundle.main.path(forResource: "plugins", ofType: "")
             else { fatalError("Xi bundle missing expected resouces") }
 
-        // TODO: This should be removed as soon as `XiCore` takes over `Dispatcher`.
-        let dispatcher: Dispatcher = {
-            let rpcSender = StdoutRPCSender(path: corePath)
-            rpcSender.client = self
-            return Dispatcher(rpcSender: rpcSender)
-        }()
-
-        self.dispatcher = dispatcher
-
-        /**
-         Passing in `dispatcher.rpcSender` is just a temporary solution.
-         Dedicated `RPCSending` instance should be passed in as soon as `Dispatcher` is not used.
-         */
-        let xiCore = CoreConnection(rpcSender: dispatcher.rpcSender)
+        let rpcSender = StdoutRPCSender(path: corePath)
+        rpcSender.client = self
+        let xiCore = CoreConnection(rpcSender: rpcSender)
         self.xiCore = xiCore
         updateRpcTracingConfig(collectSamplesOnBoot)
 
