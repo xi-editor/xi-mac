@@ -116,11 +116,16 @@ private func fakeCallback(result: RpcResult) {
 }
 
 private class TestConnection<E: Equatable>: RPCSending {
+
     var calls: [TestRPCCall<E>] = []
 
     func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback?) {
         let call = TestRPCCall(method: method, params: params as! [String: E], callback: callback)
         calls.append(call)
+    }
+
+    func sendRpc(_ method: String, params: Any) -> RpcResult {
+        return .ok("not implemented in tests" as AnyObject)
     }
 }
 
@@ -137,6 +142,7 @@ private struct TestRPCCall<E: Equatable>: Equatable {
 
 // Due to the fact that `frontend_samples` does not conform to Equatable, this one compares only keys
 private class SaveTraceTestConnection: RPCSending {
+
     var calls: [SaveTraceTestRPCCall] = []
 
     func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback?) {
@@ -144,6 +150,10 @@ private class SaveTraceTestConnection: RPCSending {
         let keys = dict.keys.sorted()
         let call = SaveTraceTestRPCCall(method: method, keys: keys, callback: nil)
         calls.append(call)
+    }
+
+    func sendRpc(_ method: String, params: Any) -> RpcResult {
+        return .ok("not implemented in tests" as AnyObject)
     }
 }
 
