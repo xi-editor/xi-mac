@@ -705,7 +705,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         }
         let domain: [String: Any] = ["user_override": self.document.coreViewIdentifier!]
         let params = ["domain": domain, "changes": changes]
-        document.dispatcher.rpcSender.sendRpcAsync("modify_user_config", params: params)
+        document.xiCore.sendRpcAsync("modify_user_config", params: params, callback: nil)
     }
 
     @objc func togglePlugin(_ sender: NSMenuItem) {
