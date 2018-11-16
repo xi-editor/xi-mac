@@ -102,6 +102,7 @@ class StatusBar: NSView {
     override init(frame frameRect: NSRect) {
         super.init(frame: .zero)
         self.translatesAutoresizingMaskIntoConstraints = false
+        self.isHidden = true
         updateStatusBarVisibility()
     }
 
