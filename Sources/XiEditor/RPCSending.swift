@@ -84,7 +84,6 @@ class StdoutRPCSender: RPCSending {
     private var recvBuf: Data
     weak var client: XiClient?
     private let rpcLogWriter: FileWriter?
-    private let errLogWriter: FileWriter?
     private let appDelegate = NSApp.delegate as! AppDelegate
 
     // RPC state
@@ -102,24 +101,14 @@ class StdoutRPCSender: RPCSending {
             self.rpcLogWriter = nil
         }
 
-        if let errLogPath = appDelegate.errorLogDirectory?
-            .appendingPathComponent(appDelegate.defaultCoreLogName).path {
-            self.errLogWriter = FileWriter(path: errLogPath)
-            if self.errLogWriter != nil {
-                print("logging stderr to \(errLogPath)")
-            }
-        } else {
-            self.errLogWriter = nil
-        }
-
+        let errLogPath = appDelegate.errorLogDirectory?.path
+        let errLogArgs = errLogPath.map { ["--log-dir", $0] }
         task.launchPath = path
-        task.arguments = []
+        task.arguments = errLogArgs
         let outPipe = Pipe()
         task.standardOutput = outPipe
         let inPipe = Pipe()
         task.standardInput = inPipe
-        let errPipe = Pipe()
-        task.standardError = errPipe
         inHandle = inPipe.fileHandleForWriting
         recvBuf = Data()
 
@@ -127,33 +116,19 @@ class StdoutRPCSender: RPCSending {
             let data = handle.availableData
             self.recvHandler(data)
         }
-
+        
+        // redirect core stderr to stdout in debug builds
+        #if DEBUG
+        let errPipe = Pipe()
+        task.standardError = errPipe
         errPipe.fileHandleForReading.readabilityHandler = { handle in
             let data = handle.availableData
-            self.errLogWriter?.write(bytes: data)
             if let errString = String(data: data, encoding: .utf8) {
                 print(errString, terminator: "")
             }
         }
+        #endif
 
-        // write to log on xi-core crash
-        task.terminationHandler = { _ in
-            // get current date to use as timestamp
-            let dateFormatter = DateFormatter()
-            let currentTime = Date()
-            dateFormatter.dateFormat = "yyyy-MM-dd-HHMMSS"
-            let timeStamp = dateFormatter.string(from: currentTime)
-
-            guard let tmpErrLog = self.appDelegate.errorLogDirectory?.appendingPathComponent(self.appDelegate.defaultCoreLogName),
-                let timestampedLog = self.appDelegate.errorLogDirectory?.appendingPathComponent("XiEditor_\(timeStamp).log")
-                else { return }
-            do {
-                try FileManager.default.moveItem(at: tmpErrLog, to: timestampedLog)
-            } catch let error as NSError {
-                print("failed to rename file with error: \(error)")
-            }
-            print("xi-core has closed, log saved to XiEditor_\(timeStamp).log")
-        }
         task.launch()
     }
 
