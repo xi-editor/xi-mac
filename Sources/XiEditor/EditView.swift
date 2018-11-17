@@ -360,6 +360,8 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
 
     /// timer callback to toggle the blink state
     @objc func _blinkInsertionPoint() {
+        guard dataSource != nil else { return }
+        
         _cursorStateOn = !_cursorStateOn
         partialInvalidate(invalid: dataSource.lines.cursorInval)
     }
