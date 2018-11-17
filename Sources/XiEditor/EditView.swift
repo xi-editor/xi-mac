@@ -122,7 +122,7 @@ func colorToArgb(_ color: NSColor) -> UInt32 {
     return (a << 24) | (r << 16) | (g << 8) | b
 }
 
-class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
+final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     var scrollOrigin: NSPoint {
         didSet {
             if scrollOrigin != oldValue {
