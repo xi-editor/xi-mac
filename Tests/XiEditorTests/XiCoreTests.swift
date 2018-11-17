@@ -112,6 +112,16 @@ class PluginRPCTests: XCTestCase {
     }
 }
 
+class LoggingTests: XCTestCase {
+    func testCircleBuffer() {
+        var buffer = CircleBuffer<Int>(capacity: 5);
+        for i in 0...8 {
+            buffer.push(i)
+        }
+        XCTAssertEqual(buffer.allItems(), [4, 5, 6, 7, 8])
+    }
+}
+
 private func fakeCallback(result: RpcResult) {
 }
 

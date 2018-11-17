@@ -43,33 +43,6 @@ enum RpcResult {
 /// A completion handler for a synchronous RPC
 typealias RpcCallback = (RpcResult) -> ()
 
-/// Error tolerant wrapper for append-writing to a file.
-struct FileWriter {
-    let path: URL
-    let handle: FileHandle
-
-    init?(path: String) {
-        let path = NSString(string: path).expandingTildeInPath
-        if FileManager.default.fileExists(atPath: path) {
-            print("file exists at \(path), will not overwrite")
-            return nil
-        }
-        self.path = URL(fileURLWithPath: path)
-        FileManager.default.createFile(atPath: self.path.path, contents: nil, attributes: nil)
-
-        do {
-            try self.handle = FileHandle(forWritingTo: self.path)
-        } catch let err as NSError {
-            print("error opening log file \(err)")
-            return nil
-        }
-    }
-
-    func write(bytes: Data) {
-        handle.write(bytes)
-    }
-}
-
 /// Protocol describing the general interface with core.
 /// Concrete implementations may be provided for different transport mechanisms, e.g. stdin/stdout, unix sockets, or FFI.
 protocol RPCSending {
