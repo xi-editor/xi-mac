@@ -57,6 +57,7 @@ class StdoutRPCSender: RPCSending {
     private var recvBuf: Data
     weak var client: XiClient?
     private let rpcLogWriter: FileWriter?
+    private var lastLogs = CircleBuffer<String>(capacity: 100)
     private let appDelegate = NSApp.delegate as! AppDelegate
 
     // RPC state
@@ -90,24 +91,49 @@ class StdoutRPCSender: RPCSending {
             self.recvHandler(data)
         }
         
-        // redirect core stderr to stdout in debug builds
-        #if DEBUG
         let errPipe = Pipe()
         task.standardError = errPipe
-        errPipe.fileHandleForReading.readabilityHandler = { handle in
+        errPipe.fileHandleForReading.readabilityHandler = { [weak self] handle in
             let data = handle.availableData
             if let errString = String(data: data, encoding: .utf8) {
+                // redirect core stderr to stdout in debug builds
+                #if DEBUG
                 print(errString, terminator: "")
+                #endif
+                self?.lastLogs.push(errString)
             }
         }
-        #endif
+        
+        // save backtrace on core crash
+        task.terminationHandler = { [weak self] process in
+            guard process.terminationStatus != 0, let strongSelf = self else {
+                print("xi-core exited with code 0")
+                return
+            }
+            
+            print("xi-core exited with code \(process.terminationStatus), attempting to save log")
 
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd-HHMMSS"
+            let timeStamp = dateFormatter.string(from: Date())
+            let crashLogFilename = "XiEditor-Crash-\(timeStamp).log"
+            let crashLogPath = strongSelf.appDelegate.errorLogDirectory?.appendingPathComponent(crashLogFilename)
+
+            let logText = strongSelf.lastLogs.allItems().joined()
+            if let path = crashLogPath {
+                do {
+                    try logText.write(to: path, atomically: true, encoding: .utf8)
+                    print("wrote log to \(path)")
+                } catch let error as NSError {
+                    print("failed to write backtrace to \(path): \(error)")
+                }
+            }
+        }
         task.launch()
     }
 
     private func recvHandler(_ data: Data) {
         if data.count == 0 {
-            print("eof")
             return
         }
         let scanStart = recvBuf.count
