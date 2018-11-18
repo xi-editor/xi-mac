@@ -16,10 +16,10 @@ import Foundation
 
 
 /// Error tolerant wrapper for append-writing to a file.
-struct FileWriter {
+final class FileWriter {
     let path: URL
     let handle: FileHandle
-    
+
     init?(path: String) {
         let path = NSString(string: path).expandingTildeInPath
         if FileManager.default.fileExists(atPath: path) {
@@ -49,9 +49,10 @@ struct CircleBuffer<T> {
     public let capacity: Int
     /// The index of the most recently added item
     private var head: Int = 0
-    var storage = [T]()
-    
+    private var storage = [T]()
+
     init(capacity: Int) {
+        assert(capacity > 0, "CircleBuffer capacity should be >= 1")
         self.capacity = capacity
     }
 
