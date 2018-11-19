@@ -509,6 +509,14 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         document.sendRpcAsync("clear_recording", params: ["recording_name": "DEFAULT"])
     }
 
+    @objc func moveLineUp(_ sender: AnyObject?) {
+        document.sendRpcAsync("move_line_up", params: [])
+    }
+
+    @objc func moveLineDown(_ sender: AnyObject?) {
+        document.sendRpcAsync("move_line_down", params: [])
+    }
+
     fileprivate func cutCopy(_ method: String) {
         if let result = document?.sendRpc(method, params: []) {
             switch result {
