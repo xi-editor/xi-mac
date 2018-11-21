@@ -134,78 +134,56 @@ class Marker {
 
 class MarkerBar: NSScroller {
     var markers: [Marker] = []
-    var backgroundColor: NSColor = NSColor.clear
+    var backgroundColor: NSColor = NSColor.red
     var parent: EditViewController!
+    var markerLayer = CAShapeLayer()
 
-    var markerBarWidth: CGFloat = 16.0 {
-        didSet {
-            self.needsDisplay = true
+    override func viewWillDraw() {
+        super.viewWillDraw()
+        self.layer?.sublayers?.last?.addObserver(self, forKeyPath: "opacity", options: .new, context: nil)
+        self.layer?.addSublayer(markerLayer)
+    }
+
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        if keyPath == "opacity" {
+            markerLayer.opacity = change![NSKeyValueChangeKey.newKey] as! Float
         }
     }
 
-
-    var markerHeight: CGFloat = 1.0 {
-        didSet {
-            self.needsDisplay = true
-        }
-    }
+    var markerHeight: CGFloat = 1.0
 
     override class var isCompatibleWithOverlayScrollers: Bool {
         return true
     }
 
     override func drawKnob() {
-
-//        let tmp = knobProportion
-//
-        self.prepareContent(in: self.visibleRect)
-        self.draw(self.rect(for: NSScroller.Part.knobSlot))
-        //knobProportion = tmp
+        drawMarkers()
         super.drawKnob()
-//        knobProportion = 1.0
-//
-        //self.needsToDraw(self.rect(for: NSScroller.Part.knobSlot))
-//        super.drawKnob()
-
-//        self.needsToDraw(self.visibleRect)
-
     }
 
     func setMarker(_ items: [Marker]) {
         markers = items
-        setNeedsDisplay(self.frame)
-        //self.needsDisplay = true
     }
 
-
-    override func draw(_ dirtyRect: NSRect) {
-        print("draw")
-        backgroundColor.setFill()
-        dirtyRect.fill()
-
-        let path = NSBezierPath()
-
-        print(dirtyRect.minX)
-        print(dirtyRect.minY)
-        print(dirtyRect.maxX)
-        print(dirtyRect.maxY)
+    func drawMarkers() {
+        print("markers")
+        let path = CGMutablePath()
+        let totalLines = CGFloat(parent.lines.height)
+        let visiblesLines = CGFloat(parent.visibleLines.count)
+        let lineHeight = parent.textMetrics.linespace
+        let markerBarHeight = CGFloat(min(totalLines, visiblesLines)) * lineHeight
 
         for marker in markers {
-            let totalLines = CGFloat(parent.lines.height)
-            let visiblesLines = CGFloat(parent.visibleLines.count)
-            let lineHeight = parent.textMetrics.linespace
-            let markerBarHeight = CGFloat(min(totalLines, visiblesLines)) * lineHeight
-
             marker.color.setFill()
             marker.color.setStroke()
-            path.lineWidth = markerHeight
 
-            path.move(to: CGPoint(x: dirtyRect.minX, y: dirtyRect.minY - 100))
-            path.line(to: CGPoint(x: dirtyRect.maxX, y: dirtyRect.maxY))
+            markerLayer.fillColor = CGColor.init(red: 255, green: 255, blue: 255, alpha: 1.0)
 
-//            path.move(to: CGPoint(x: dirtyRect.minX, y: dirtyRect.maxY - CGFloat(marker.line) / totalLines * markerBarHeight))
-//            path.line(to: CGPoint(x: dirtyRect.maxX, y: dirtyRect.maxY - CGFloat(marker.line) / totalLines * markerBarHeight))
-            path.stroke()
+            path.addRect(CGRect(x: markerLayer.bounds.minX, y:CGFloat(marker.line) / totalLines * markerBarHeight, width: 15, height: markerHeight))
+            path.closeSubpath()
         }
+
+        markerLayer.strokeColor = CGColor.init(red: 255, green: 255, blue: 255, alpha: 1.0)
+        markerLayer.path = path
     }
 }
