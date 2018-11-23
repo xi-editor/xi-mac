@@ -184,6 +184,7 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
     @IBOutlet weak var searchField: NSSearchField!
     @IBOutlet weak var addButton: NSButton!
     @IBOutlet weak var deleteButton: NSButton!
+    @IBOutlet weak var buttonContainer: NSStackView!
 
     let resultCountLabel = Label(title: "")
 
@@ -247,8 +248,7 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
     }
 
     func showButtons(show: Bool) {
-        addButton.isHidden = !show
-        deleteButton.isHidden = !show
+        buttonContainer.isHidden = !show
     }
 
     func disableAddButton(disable: Bool) {
