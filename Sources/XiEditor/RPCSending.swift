@@ -19,6 +19,10 @@ import AppKit
 /// These logs can be used for profiling & debugging.
 let XI_RPC_LOG = "XI_CLIENT_RPC_LOG"
 
+let NEW_LINE = [0x0a as UInt8]
+let SEND_BYTES = "SEND:".data(using: .utf8)!
+let RECV_BYTES = "RECV:".data(using: .utf8)!
+
 /// An error returned from core
 struct RemoteError {
     let code: Int
@@ -202,13 +206,9 @@ class StdoutRPCSender: RPCSending {
 
     private func sendJson(_ json: Any) {
         do {
-            let data = try JSONSerialization.data(withJSONObject: json, options: [])
-            let mutdata = NSMutableData()
-            mutdata.append(data)
-            let nl = [0x0a as UInt8]
-            mutdata.append(nl, length: 1)
-            rpcLogWriter?.write(bytes: mutdata as Data)
-            inHandle.write(mutdata as Data)
+            let data = try JSONSerialization.data(withJSONObject: json, options: []) + NEW_LINE
+			self.rpcLogWriter?.write(bytes: SEND_BYTES + data)
+            inHandle.write(data)
         } catch _ {
             print("error serializing to json")
         }
@@ -220,7 +220,9 @@ class StdoutRPCSender: RPCSending {
     }
 
     private func handleRaw(_ data: Data) {
-        Trace.shared.trace("handleRaw", .rpc, .begin)
+		self.rpcLogWriter?.write(bytes: RECV_BYTES + data + NEW_LINE)
+
+		Trace.shared.trace("handleRaw", .rpc, .begin)
         do {
             let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
             handleRpc(json)
