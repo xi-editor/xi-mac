@@ -433,8 +433,11 @@ extension EditViewController {
 
             if status.first?["lines"] != nil && !(status.first?["lines"] is NSNull) {
                 query?.lines = statusQuery["lines"] as! [Int]
-                for line in (query?.lines)! {
-                    findMarker.append(Marker(line, color: NSColor.yellow))
+
+                if (query?.lines != nil) {
+                    for line in (query?.lines)! {
+                        findMarker.append(Marker(line, color: NSColor.yellow))
+                    }
                 }
             }
         }
