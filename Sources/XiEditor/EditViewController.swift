@@ -66,6 +66,7 @@ protocol FindDelegate: class {
     func findNext(wrapAround: Bool, allowSame: Bool)
     func findPrevious(wrapAround: Bool)
     func closeFind()
+    func unsetFind()
     func findStatus(status: [[String: AnyObject]])
     func replaceStatus(status: [String: AnyObject])
     func replace(_ term: String?)
@@ -442,6 +443,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         if !findViewController.view.isHidden {
             closeFind()
         } else {
+            unsetFind()
             document.sendRpcAsync("cancel_operation", params: [])
         }
     }

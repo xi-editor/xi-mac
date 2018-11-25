@@ -351,6 +351,18 @@ extension EditViewController {
         document.sendRpcAsync("highlight_find", params: ["visible": false])
     }
 
+
+    func unsetFind() {
+        // removes all search queries to reset find
+        for searchQuery in findViewController.searchQueries {
+            findViewController.removeSearchField(searchField: searchQuery)
+        }
+
+        // one find field needs to be manually added since we still want to
+        // have a search field when opening the search bar
+        findViewController.addSearchField(searchField: nil)
+    }
+
     func updateScrollPosition(previousOffset: CGFloat) {
         if !findViewController.view.isHidden {
             let origin = scrollView.contentView.visibleRect.origin
