@@ -51,7 +51,7 @@ class MarkerBar: NSScroller {
         }
     }
 
-    var markerHeight: CGFloat = 0.5
+    var markerHeight: CGFloat = 1.0
 
     override class var isCompatibleWithOverlayScrollers: Bool {
         return true
