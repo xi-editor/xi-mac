@@ -436,7 +436,7 @@ extension EditViewController {
 
                 if (query?.lines != nil) {
                     for line in (query?.lines)! {
-                        findMarker.append(Marker(line, color: NSColor.yellow))
+                        findMarker.append(Marker(line, color: NSColor.orange))
                     }
                 }
             }
