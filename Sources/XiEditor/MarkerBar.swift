@@ -15,7 +15,6 @@
 import Cocoa
 
 class Marker {
-    // let description: String
     let line: Int
     let color: NSColor
 
@@ -39,6 +38,8 @@ class MarkerBar: NSScroller {
 
     override func viewWillDraw() {
         super.viewWillDraw()
+
+        // last child layer will be used for drawing the overlay scroller
         overlayScrollerLayer = self.layer?.sublayers?.last
         overlayScrollerLayer?.addObserver(self, forKeyPath: "opacity", options: .new, context: nil)
         self.layer?.addSublayer(markerLayer)
