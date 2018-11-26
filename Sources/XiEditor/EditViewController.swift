@@ -306,6 +306,12 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         }
     }
 
+    /// If we reuse an empty view when opening a file, we need to make sure we resend our size.
+    func prepareForReuse() {
+        _previousViewportSize = CGSize.zero
+        redrawEverything()
+    }
+
     /// If font size or theme changes, we invalidate all views.
     func redrawEverything() {
         visibleLines = 0..<0

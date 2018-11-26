@@ -132,7 +132,7 @@ class XiDocumentController: NSDocumentController {
                         currentDocument.coreViewIdentifier = result
                         currentDocument.fileURL = url
                         self.setIdentifier(result, forDocument: currentDocument)
-                        currentDocument.editViewController!.redrawEverything()
+                        currentDocument.editViewController!.prepareForReuse()
                         completionHandler(currentDocument, false, nil)
 
                     case .error(let error):
