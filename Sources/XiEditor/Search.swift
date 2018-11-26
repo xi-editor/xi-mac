@@ -321,6 +321,10 @@ extension EditViewController {
             updateScrollPosition(previousOffset: findViewController.view.fittingSize.height)
         }
 
+        if findViewController.searchQueries.isEmpty {
+            findViewController.addSearchField(searchField: nil)
+        }
+
         findViewController.replacePanel.isHidden = replaceHidden
         let offset = findViewController.view.fittingSize.height
 
@@ -349,18 +353,6 @@ extension EditViewController {
 
         editView.window?.makeFirstResponder(editView)
         document.sendRpcAsync("highlight_find", params: ["visible": false])
-    }
-
-
-    func unsetFind() {
-        // removes all search queries to reset find
-        for searchQuery in findViewController.searchQueries {
-            findViewController.removeSearchField(searchField: searchQuery)
-        }
-
-        // one find field needs to be manually added since we still want to
-        // have a search field when opening the search bar
-        findViewController.addSearchField(searchField: nil)
     }
 
     func updateScrollPosition(previousOffset: CGFloat) {
@@ -433,6 +425,13 @@ extension EditViewController {
             if let resultCount = statusQuery["matches"] as? Int {
                 (query?.searchField as? FindSearchField)?.resultCount = resultCount
             }
+        }
+
+        // remove finds that have been removed in core
+        let activeFinds = status.map({$0["id"] as? Int})
+        let obsoleteFinds = findViewController.searchQueries.filter({!activeFinds.contains($0.id) && $0.id != nil})
+        for query in obsoleteFinds {
+            findViewController.removeSearchField(searchField: query)
         }
     }
 
