@@ -419,7 +419,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         "scrollToEndOfDocument:": "move_to_end_of_document",
         "transpose:": "transpose",
         "yank:": "yank",
-        "cancelOperation:": "cancel_operation",
         ]
 
     override func doCommand(by aSelector: Selector) {
@@ -442,7 +441,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         if !findViewController.view.isHidden {
             closeFind()
         } else {
-            document.sendRpcAsync("cancel_operation", params: [])
+            document.sendRpcAsync("collapse_selections", params: [])
         }
     }
 
