@@ -493,8 +493,8 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                             switch annotationType {
                             case AnnotationType.Selection:
                                 return selArgb
-                            case AnnotationType.Highlight:
-                                let queryId = annotation.metadata?["query"] as! Int
+                            case AnnotationType.Find:
+                                let queryId = annotation.payload?["id"] as! Int
                                 return highlightsArgb[queryId % highlightsArgb.count]
                             }
                         }()

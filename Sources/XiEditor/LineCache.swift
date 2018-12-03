@@ -60,12 +60,12 @@ struct Line<T> {
 
 enum AnnotationType: String {
     case Selection = "selection"
-    case Highlight = "highlight"
+    case Find = "find"
 }
 
 extension AnnotationType {
     static var all: [AnnotationType] {
-        return [AnnotationType.Selection, AnnotationType.Highlight]
+        return [AnnotationType.Selection, AnnotationType.Find]
     }
 }
 
@@ -75,21 +75,18 @@ struct Annotation {
     var startColumn: Int
     var endLine: Int
     var endColumn: Int
-    var metadata: [String: AnyObject]?
+    var payload: AnyObject?
 
-    init(fromJson json: [String: AnyObject]) {
-        let position = json["pos"] as! [Int]
+    init?(range: [Int], data: AnyObject?) {
+        let position = range
 
-        if position.count != 4 {
-            // todo
-            print("Wrong format for annotations")
-        }
+        if position.count != 4 { return nil }
 
         startLine = position[0]
         startColumn = position[1]
         endLine = position[2]
         endColumn = position[3]
-        metadata = json["metadata"] as? [String: AnyObject]
+        payload = data
     }
 }
 
@@ -149,14 +146,22 @@ fileprivate class LineCacheState<T>: UnfairLock {
 
         for annotationType in AnnotationType.all {
             let annotationsOfType = annotationData.filter({$0["type"] as! String == annotationType.rawValue})
+            annotations[annotationType] = []
 
-            if annotationsOfType.isEmpty {
-                annotations[annotationType] = []
-            } else {
-                let annotationTypeData = (annotationsOfType.first!)["data"] as! [[String: AnyObject]]
-                annotations[annotationType] = annotationTypeData.map({(d: [String: AnyObject]) -> Annotation in
-                    Annotation(fromJson: d)
-                })
+            if !annotationsOfType.isEmpty {
+                for annotation in annotationsOfType {
+                    let ranges = annotation["ranges"] as! [[Int]]
+                    var payloads: [AnyObject] = []
+
+                    if !(annotation["payloads"] is NSNull) && annotation["payloads"] != nil {
+                        payloads = annotation["payloads"] as! [AnyObject]
+                    }
+
+                    for (i, range) in ranges.enumerated() {
+                        let payload = payloads.count > 0 ? payloads[i] : nil
+                        annotations[annotationType]?.append(Annotation(range: range, data: payload)!)
+                    }
+                }
             }
         }
 
