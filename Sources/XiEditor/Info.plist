@@ -4,6 +4,12 @@
 <dict>
 	<key>ATSApplicationFontsPath</key>
 	<string>fonts</string>
+	<key>CFBundleHelpBookName</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER).help</string>
+	<key>CFBundleHelpBookFolder</key>
+	<string>XiEditor.help</string>
+	<key>NSSupportsAutomaticGraphicsSwitching</key>
+	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDocumentTypes</key>
