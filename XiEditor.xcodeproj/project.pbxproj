@@ -15,6 +15,7 @@
 		0C62059821B63C0900A9758F /* libXiCliCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C62058D21B63B8E00A9758F /* libXiCliCore.a */; };
 		0C66CB2E218F5CDB00F6F899 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C66CB2D218F5CDB00F6F899 /* main.swift */; };
 		28F1ED4A1EC4C735008839BE /* Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F1ED491EC4C735008839BE /* Search.swift */; };
+		31D2A51721B6BF3C005919F0 /* XiEditor.help in Resources */ = {isa = PBXBuildFile; fileRef = 31D2A51621B6BF3C005919F0 /* XiEditor.help */; };
 		4DC153D32165202B000EB215 /* XiWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DC153D22165202B000EB215 /* XiWindowController.swift */; };
 		4DCB4AF020576A6F00476F75 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 4DCB4AEF20576A6E00476F75 /* fonts */; };
 		6038770720057B4500AABF17 /* XiDocumentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6038770620057B4500AABF17 /* XiDocumentController.swift */; };
@@ -130,6 +131,7 @@
 		0C66CB34218F5DF100F6F899 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0C66CB36218F5E8A00F6F899 /* CommandLineTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandLineTool.swift; sourceTree = "<group>"; };
 		28F1ED491EC4C735008839BE /* Search.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
+		31D2A51621B6BF3C005919F0 /* XiEditor.help */ = {isa = PBXFileReference; lastKnownFileType = folder; path = XiEditor.help; sourceTree = SOURCE_ROOT; };
 		4DC153D22165202B000EB215 /* XiWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiWindowController.swift; sourceTree = "<group>"; };
 		4DCB4AEF20576A6E00476F75 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
 		6038770620057B4500AABF17 /* XiDocumentController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiDocumentController.swift; sourceTree = "<group>"; };
@@ -276,11 +278,18 @@
 				0C66CB34218F5DF100F6F899 /* Info.plist */,
 			);
 			path = XiCli;
+		31D2A51321B6BEEC005919F0 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				31D2A51621B6BF3C005919F0 /* XiEditor.help */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		AE499DC31C82BB2B002D68AF = {
 			isa = PBXGroup;
 			children = (
+				31D2A51321B6BEEC005919F0 /* Resources */,
 				0C4460AE21895F980035E3C1 /* Package.swift */,
 				0C4460AC218955400035E3C1 /* Sources */,
 				0C4460AD218955700035E3C1 /* Tests */,
@@ -592,6 +601,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0C53411A21B786F3004A9550 /* XiCli in Resources */,
+				31D2A51721B6BF3C005919F0 /* XiEditor.help in Resources */,
 				4DCB4AF020576A6F00476F75 /* fonts in Resources */,
 				F53EA2AD1DCAA8110071ACFD /* Main.storyboard in Resources */,
 				AE228F5D1C897CE7000E9B0F /* xi-core in Resources */,
