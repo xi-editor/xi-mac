@@ -274,7 +274,7 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         var replacementRange = aRange
         var len = 0
         if let attrStr = aString as? NSAttributedString {
-            len = attrStr.string.count
+            len = attrStr.string.utf16.count
         } else if let str = aString as? NSString {
             len = str.length
         }
