@@ -434,15 +434,11 @@ extension EditViewController {
             if status.first?["lines"] != nil && !(status.first?["lines"] is NSNull) {
                 query?.lines = statusQuery["lines"] as! [Int]
 
-                if (query?.lines != nil) {
-                    for line in (query?.lines)! {
-                        findMarker.append(Marker(line, color: NSColor.orange))
-                    }
+                for line in (query?.lines)! {
+                    findMarker.append(Marker(line, color: NSColor.orange))
                 }
             }
         }
-
-        (scrollView.verticalScroller as! MarkerBar).setMarker(findMarker)
 
         // remove finds that have been removed in core
         let activeFinds = status.map({$0["id"] as? Int})
@@ -452,6 +448,12 @@ extension EditViewController {
         for query in obsoleteFinds {
             findViewController.removeSearchField(searchField: query)
         }
+
+        setMarker(findMarker)
+    }
+
+    func setMarker(_ items: [Marker]) {
+        (scrollView.verticalScroller as! MarkerBar).setMarker(items)
     }
 
     func replaceNext() {

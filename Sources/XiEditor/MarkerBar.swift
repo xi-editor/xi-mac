@@ -32,17 +32,17 @@ class Marker {
 class MarkerBar: NSScroller {
     var markers: [Marker] = []
     var backgroundColor: NSColor = NSColor.red
-    var parent: EditViewController!
-    var markerLayer = CAShapeLayer()
-    var overlayScrollerLayer: CALayer?
+    let markerLayer = CAShapeLayer()
+    var overlayScrollerLayer: CALayer!
+    weak var markerDelegate: EditViewController?
 
     override func viewWillDraw() {
         super.viewWillDraw()
 
         // last child layer will be used for drawing the overlay scroller
-        overlayScrollerLayer = self.layer?.sublayers?.last
-        overlayScrollerLayer?.addObserver(self, forKeyPath: "opacity", options: .new, context: nil)
-        self.layer?.addSublayer(markerLayer)
+        overlayScrollerLayer = self.layer!.sublayers!.last
+        overlayScrollerLayer.addObserver(self, forKeyPath: "opacity", options: .new, context: nil)
+        self.layer!.addSublayer(markerLayer)
     }
 
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
@@ -51,7 +51,7 @@ class MarkerBar: NSScroller {
         }
     }
 
-    var markerHeight: CGFloat = 1.0
+    static let markerHeight: CGFloat = 1.0
 
     override class var isCompatibleWithOverlayScrollers: Bool {
         return true
@@ -69,18 +69,21 @@ class MarkerBar: NSScroller {
 
     func drawMarkers() {
         let path = CGMutablePath()
-        let totalLines = CGFloat(parent.lines.height)
-        let markerBarHeight = self.layer?.bounds.height
-        let maxScrollerWidth = self.layer?.bounds.width
+        let totalLines = CGFloat(markerDelegate!.lines.height)
+
+        print(totalLines)
+
+        guard let markerBarHeight = layer?.bounds.height,
+            let maxScrollerWidth = layer?.bounds.width,
+            let width = overlayScrollerLayer?.bounds.width else { return; }
 
         for marker in markers {
             markerLayer.fillColor = marker.color.cgColor
 
-            let width = (overlayScrollerLayer?.bounds.width)!
-            let x = maxScrollerWidth! - width
-            let y = ((CGFloat(marker.line) - 1) / totalLines) * markerBarHeight!
+            let x = maxScrollerWidth - width
+            let y = ((CGFloat(marker.line) - 0.5) / totalLines) * markerBarHeight
 
-            path.addRect(CGRect(x: x, y: y, width: width, height: markerHeight))
+            path.addRect(CGRect(x: x, y: y, width: width, height: MarkerBar.markerHeight))
             path.closeSubpath()
         }
 
