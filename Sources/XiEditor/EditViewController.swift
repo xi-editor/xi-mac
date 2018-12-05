@@ -74,7 +74,11 @@ protocol FindDelegate: class {
     func updateScrollPosition(previousOffset: CGFloat)
 }
 
-class EditViewController: NSViewController, EditViewDataSource, FindDelegate, ScrollInterested {
+protocol MarkerDelegate: class {
+    func setMarker(_ items: [Marker])
+}
+
+class EditViewController: NSViewController, EditViewDataSource, FindDelegate, ScrollInterested, MarkerDelegate {
     @IBOutlet var scrollView: NSScrollView!
     @IBOutlet weak var editContainerView: EditContainerView!
     @IBOutlet var editView: EditView!
@@ -227,7 +231,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         super.viewDidLoad()
         shadowView.wantsLayer = true
         editView.dataSource = self
-        (scrollView.verticalScroller as! MarkerBar).parent = self
+        (scrollView.verticalScroller as! MarkerBar).markerDelegate = self
         scrollView.contentView.documentCursor = .iBeam
         scrollView.automaticallyAdjustsContentInsets = false
         scrollView.hasHorizontalScroller = true
