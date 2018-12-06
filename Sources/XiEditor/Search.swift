@@ -430,7 +430,9 @@ extension EditViewController {
 
         // remove finds that have been removed in core
         let activeFinds = status.map({$0["id"] as? Int})
-        let obsoleteFinds = findViewController.searchQueries.filter({!activeFinds.contains($0.id) && $0.id != nil})
+        // Note: the following can be simplified to .contains() when minimum SDK is Xcode 9.3
+        let obsoleteFinds = findViewController.searchQueries.filter({(find) -> Bool in
+            !activeFinds.contains(where: {$0 == find.id}) && find.id != nil})
         for query in obsoleteFinds {
             findViewController.removeSearchField(searchField: query)
         }
