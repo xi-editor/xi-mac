@@ -112,14 +112,15 @@ class StyleMapState: UnfairLock {
 
     init(font: NSFont) {
         self.font = font
+        let theme = (NSApplication.shared.delegate as! AppDelegate).xiClient.theme
         let selectionStyle = Style(font: font,
-                                   fgColor: (NSApplication.shared.delegate as! AppDelegate).theme.selectionForeground,
+                                   fgColor: theme.selectionForeground,
                                    bgColor: nil,
                                    underline: false,
                                    italic: false,
                                    weight: nil)
         let highlightStyle = Style(font: font,
-                                   fgColor: (NSApplication.shared.delegate as! AppDelegate).theme.findHighlightForeground,
+                                   fgColor: theme.findHighlightForeground,
                                    bgColor: nil,
                                    underline: false,
                                    italic: false,
@@ -137,7 +138,7 @@ class StyleMapState: UnfairLock {
         if let fg = json["fg_color"] as? UInt32 {
             fgColor = colorFromArgb(fg)
         } else {
-            fgColor = (NSApplication.shared.delegate as! AppDelegate).theme.foreground
+            fgColor = (NSApplication.shared.delegate as! AppDelegate).xiClient.theme.foreground
         }
         if let bg = json["bg_color"] as? UInt32 {
             bgColor = colorFromArgb(bg)
