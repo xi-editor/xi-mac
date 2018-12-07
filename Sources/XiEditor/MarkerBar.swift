@@ -33,16 +33,21 @@ class MarkerBar: NSScroller {
     var markers: [Marker] = []
     var backgroundColor: NSColor = NSColor.red
     let markerLayer = CAShapeLayer()
-    var overlayScrollerLayer: CALayer!
+    var overlayScrollerLayer: CALayer?
     weak var markerDelegate: EditViewController?
 
     override func viewWillDraw() {
         super.viewWillDraw()
 
-        // last child layer will be used for drawing the overlay scroller
-        overlayScrollerLayer = self.layer!.sublayers!.last
-        overlayScrollerLayer.addObserver(self, forKeyPath: "opacity", options: .new, context: nil)
-        self.layer!.addSublayer(markerLayer)
+        if (overlayScrollerLayer == nil) {
+            overlayScrollerLayer = self.layer!.sublayers!.last
+            overlayScrollerLayer?.addObserver(self, forKeyPath: "opacity", options: .new, context: nil)
+            self.layer!.addSublayer(markerLayer)
+        }
+    }
+
+    deinit {
+        overlayScrollerLayer?.removeObserver(self, forKeyPath: "opacity")
     }
 
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
@@ -68,20 +73,18 @@ class MarkerBar: NSScroller {
     }
 
     func drawMarkers() {
-        let path = CGMutablePath()
-        let totalLines = CGFloat(markerDelegate!.lines.height)
-
-        print(totalLines)
-
         guard let markerBarHeight = layer?.bounds.height,
             let maxScrollerWidth = layer?.bounds.width,
+            let totalLines = markerDelegate?.lines.height,
             let width = overlayScrollerLayer?.bounds.width else { return; }
+
+        let path = CGMutablePath()
 
         for marker in markers {
             markerLayer.fillColor = marker.color.cgColor
 
             let x = maxScrollerWidth - width
-            let y = ((CGFloat(marker.line) - 0.5) / totalLines) * markerBarHeight
+            let y = ((CGFloat(marker.line) - 0.5) / CGFloat(totalLines)) * markerBarHeight
 
             path.addRect(CGRect(x: x, y: y, width: width, height: MarkerBar.markerHeight))
             path.closeSubpath()
