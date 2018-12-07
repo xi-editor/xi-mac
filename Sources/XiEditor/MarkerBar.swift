@@ -22,11 +22,6 @@ class Marker {
         self.line = line
         self.color = color
     }
-
-    @available(*, unavailable)
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
 }
 
 class MarkerBar: NSScroller {
