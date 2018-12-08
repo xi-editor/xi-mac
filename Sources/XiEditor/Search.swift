@@ -35,7 +35,6 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     var showMultipleSearchQueries = false   // activates/deactives
 
     override func viewDidLoad() {
-        addSearchField(searchField: nil)     // by default at least one search field is present
         replacePanel.isHidden = true
     }
 
