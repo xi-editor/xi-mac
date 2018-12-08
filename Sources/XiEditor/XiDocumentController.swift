@@ -184,7 +184,7 @@ class XiDocumentController: NSDocumentController {
                     document.coreViewIdentifier = viewIdentifier
                 case .error(let error):
                     document.close()
-                    (NSApplication.shared.delegate as! AppDelegate).alert(text: error.message)
+                    (NSApplication.shared.delegate as! AppDelegate).xiClient.alert(text: error.message)
                 }
             }
         }

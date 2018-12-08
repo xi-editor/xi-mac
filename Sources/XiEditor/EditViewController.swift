@@ -101,7 +101,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     var lines = LineCache<LineAssoc>()
 
     var textMetrics: TextDrawingMetrics {
-        return (NSApplication.shared.delegate as! AppDelegate).textMetrics
+        return (NSApplication.shared.delegate as! AppDelegate).xiClient.textMetrics
     }
 
     var gutterWidth: CGFloat = 0 {
@@ -114,11 +114,11 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     var styleMap: StyleMap {
-        return (NSApplication.shared.delegate as! AppDelegate).styleMap
+        return (NSApplication.shared.delegate as! AppDelegate).xiClient.styleMap
     }
 
     var theme: Theme {
-        return (NSApplication.shared.delegate as! AppDelegate).theme
+        return (NSApplication.shared.delegate as! AppDelegate).xiClient.theme
     }
 
     /// A mapping of available plugins to activation status.
@@ -324,8 +324,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         editView.gutterCache = nil
         shadowView.updateShadowColor(newColor: theme.shadow)
         editView.needsDisplay = true
-        self.scrollPastEnd = ((NSApplication.shared.delegate as! AppDelegate).configCache["scroll_past_end"] as? Bool) ?? false
-        self.unifiedTitlebar = ((NSApplication.shared.delegate as! AppDelegate).configCache["unified_titlebar"] as? Bool) ?? false
+        let configCache = (NSApplication.shared.delegate as! AppDelegate).xiClient.configCache
+        self.scrollPastEnd = (configCache["scroll_past_end"] as? Bool) ?? false
+        self.unifiedTitlebar = (configCache["unified_titlebar"] as? Bool) ?? false
     }
 
     fileprivate func updateEditViewHeight() {
@@ -767,7 +768,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     func handleFontChange(fontName: String?, fontSize: CGFloat?) {
-        (NSApplication.shared.delegate as! AppDelegate).handleFontChange(fontName: fontName,
+        (NSApplication.shared.delegate as! AppDelegate).xiClient.handleFontChange(fontName: fontName,
                                                                          fontSize: fontSize)
     }
 
