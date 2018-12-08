@@ -29,7 +29,7 @@ class MarkerBar: NSScroller {
     var backgroundColor: NSColor = NSColor.red
     let markerLayer = CAShapeLayer()
     var overlayScrollerLayer: CALayer?
-    weak var markerDelegate: EditViewController?
+    weak var markerDelegate: MarkerDelegate?
 
     override func viewWillDraw() {
         super.viewWillDraw()
@@ -70,7 +70,7 @@ class MarkerBar: NSScroller {
     func drawMarkers() {
         guard let markerBarHeight = layer?.bounds.height,
             let maxScrollerWidth = layer?.bounds.width,
-            let totalLines = markerDelegate?.lines.height,
+            let totalLines = (markerDelegate as? EditViewController)?.lines.height,
             let width = overlayScrollerLayer?.bounds.width else { return; }
 
         let path = CGMutablePath()
