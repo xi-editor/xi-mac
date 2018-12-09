@@ -166,7 +166,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             let bundledPluginPath = Bundle.main.path(forResource: "plugins", ofType: "")
             else { fatalError("Xi bundle missing expected resouces") }
 
-        let rpcSender = StdoutRPCSender(path: corePath)
+        let rpcSender = StdoutRPCSender(path: corePath, errorLogDirectory: errorLogDirectory)
         rpcSender.client = xiClient
         let xiCore = CoreConnection(rpcSender: rpcSender)
         self.xiCore = xiCore
