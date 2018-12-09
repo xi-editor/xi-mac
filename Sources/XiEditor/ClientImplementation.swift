@@ -230,3 +230,17 @@ class ClientImplementation: XiClient, DocumentsProviding, ConfigCacheProviding, 
         }
     }
 }
+
+protocol AlertPresenting {
+    func showAlert(with message: String)
+}
+
+extension AlertPresenting {
+    func showAlert(with message: String) {
+        assert(Thread.isMainThread)
+        let alert = NSAlert()
+        alert.alertStyle = .informational
+        alert.messageText = message
+        alert.runModal()
+    }
+}
