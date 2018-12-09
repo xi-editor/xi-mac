@@ -260,17 +260,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     //MARK: - top-level interactions
     @IBAction func openPreferences(_ sender: NSMenuItem) {
-        let delegate = (NSApplication.shared.delegate as? AppDelegate)
-        if let preferencesPath = delegate?.defaultConfigDirectory.appendingPathComponent(PREFERENCES_FILE_NAME) {
-            NSDocumentController.shared.openDocument(
-                withContentsOf: preferencesPath,
-                display: true,
-                completionHandler: { (document, alreadyOpen, error) in
-                    if let error = error {
-                        print("error opening preferences \(error)")
-                    }
-            })
-        }
+        let preferencesPath = defaultConfigDirectory.appendingPathComponent(PREFERENCES_FILE_NAME)
+        NSDocumentController.shared.openDocument(
+            withContentsOf: preferencesPath,
+            display: true,
+            completionHandler: { (document, alreadyOpen, error) in
+                if let error = error {
+                    print("error opening preferences \(error)")
+                }
+        })
     }
 
     //- MARK: - helpers
