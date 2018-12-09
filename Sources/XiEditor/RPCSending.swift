@@ -58,14 +58,13 @@ class StdoutRPCSender: RPCSending {
     weak var client: XiClient?
     private let rpcLogWriter: FileWriter?
     private var lastLogs = CircleBuffer<String>(capacity: 100)
-    private let appDelegate = NSApp.delegate as! AppDelegate
 
     // RPC state
     private var queue = DispatchQueue(label: "com.levien.xi.CoreConnection", attributes: [])
     private var rpcIndex = 0
     private var pending = Dictionary<Int, RpcCallback>()
 
-    init(path: String) {
+    init(path: String, errorLogDirectory: URL?) {
         if let rpcLogPath = ProcessInfo.processInfo.environment[XI_RPC_LOG] {
             self.rpcLogWriter = FileWriter(path: rpcLogPath)
             if self.rpcLogWriter != nil {
@@ -74,8 +73,7 @@ class StdoutRPCSender: RPCSending {
         } else {
             self.rpcLogWriter = nil
         }
-
-        let errLogPath = appDelegate.errorLogDirectory?.path
+        let errLogPath = errorLogDirectory?.path
         let errLogArgs = errLogPath.map { ["--log-dir", $0] }
         task.launchPath = path
         task.arguments = errLogArgs
@@ -117,7 +115,7 @@ class StdoutRPCSender: RPCSending {
             dateFormatter.dateFormat = "yyyy-MM-dd-HHMMSS"
             let timeStamp = dateFormatter.string(from: Date())
             let crashLogFilename = "XiEditor-Crash-\(timeStamp).log"
-            let crashLogPath = strongSelf.appDelegate.errorLogDirectory?.appendingPathComponent(crashLogFilename)
+            let crashLogPath = errorLogDirectory?.appendingPathComponent(crashLogFilename)
 
             let logText = strongSelf.lastLogs.allItems().joined()
             if let path = crashLogPath {
