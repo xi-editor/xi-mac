@@ -15,7 +15,7 @@
 import Cocoa
 
 
-class ClientImplementation: XiClient, DocumentsProviding, ConfigCacheProviding, AppStyling {
+class ClientImplementation: XiClient, DocumentsProviding, ConfigCacheProviding, AppStyling, AlertPresenting {
 
     func handleFontChange(fontName: String?, fontSize: CGFloat?) {
         guard (textMetrics.font.fontName != fontName && textMetrics.font.familyName != fontName)
@@ -145,10 +145,7 @@ class ClientImplementation: XiClient, DocumentsProviding, ConfigCacheProviding, 
 
     func alert(text: String) {
         DispatchQueue.main.async {
-            let alert =  NSAlert()
-            alert.alertStyle = .informational
-            alert.messageText = text
-            alert.runModal()
+            self.showAlert(with: text)
         }
     }
 
