@@ -48,7 +48,7 @@ class ClientImplementation: XiClient, DocumentsProviding, ConfigCacheProviding, 
         }
     }
 
-    lazy var styleMap: StyleMap = StyleMap(font: self.fallbackFont)
+    lazy var styleMap: StyleMap = StyleMap(font: self.fallbackFont, theme: theme)
 
     var theme = Theme.defaultTheme() {
         didSet {

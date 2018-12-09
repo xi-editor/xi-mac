@@ -110,9 +110,8 @@ class StyleMapState: UnfairLock {
     private var font: NSFont
     private var styles: [Style?] = []
 
-    init(font: NSFont) {
+    init(font: NSFont, theme: Theme) {
         self.font = font
-        let theme = (NSApplication.shared.delegate as! AppDelegate).xiClient.theme
         let selectionStyle = Style(font: font,
                                    fgColor: theme.selectionForeground,
                                    bgColor: nil,
@@ -283,8 +282,8 @@ class StyleMapLocked {
 class StyleMap {
     private let state: StyleMapState
 
-    init(font: NSFont) {
-        state = StyleMapState(font: font)
+    init(font: NSFont, theme: Theme) {
+        state = StyleMapState(font: font, theme: theme)
     }
 
     func locked() -> StyleMapLocked {
