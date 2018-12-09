@@ -105,7 +105,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     var lines = LineCache<LineAssoc>()
 
     var textMetrics: TextDrawingMetrics {
-        return (NSApplication.shared.delegate as! AppDelegate).xiClient.textMetrics
+        return styling.textMetrics
     }
 
     var gutterWidth: CGFloat = 0 {
@@ -118,11 +118,11 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     var styleMap: StyleMap {
-        return (NSApplication.shared.delegate as! AppDelegate).xiClient.styleMap
+        return styling.styleMap
     }
 
     var theme: Theme {
-        return (NSApplication.shared.delegate as! AppDelegate).xiClient.theme
+        return styling.theme
     }
 
     /// A mapping of available plugins to activation status.
@@ -773,8 +773,11 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     func handleFontChange(fontName: String?, fontSize: CGFloat?) {
-        (NSApplication.shared.delegate as! AppDelegate).xiClient.handleFontChange(fontName: fontName,
-                                                                         fontSize: fontSize)
+        styling.handleFontChange(fontName: fontName, fontSize: fontSize)
+    }
+
+    private var styling: AppStyling {
+        return (NSApplication.shared.delegate as! AppDelegate).xiClient
     }
 
     func updatePluginMenu() {
