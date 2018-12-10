@@ -1187,6 +1187,18 @@ Gw
                                                 <action selector="openErrorLogFolder:" target="azf-ih-6fI" id="dlx-rd-R59"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem title="Toggle Tail" state="on" id="xjX-YR-YM9">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <binding destination="azf-ih-6fI" name="value" keyPath="self.toggleTail" id="IHf-WN-0mt">
+                                                    <dictionary key="options">
+                                                        <bool key="NSAllowsEditingMultipleValuesSelection" value="NO"/>
+                                                        <bool key="NSConditionallySetsEnabled" value="NO"/>
+                                                        <bool key="NSValidatesImmediately" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
+                                            </connections>
+                                        </menuItem>
                                     </items>
                                 </menu>
                             </menuItem>
@@ -1212,6 +1224,7 @@ Gw
                 <customObject id="o5o-AY-Tmr" customClass="NSFontManager"/>
                 <customObject id="azf-ih-6fI" customClass="AppDelegate" customModule="XiEditor" customModuleProvider="target"/>
                 <userDefaultsController id="yco-8S-n0A"/>
+                <userDefaultsController id="auS-BU-5TV"/>
             </objects>
             <point key="canvasLocation" x="-295" y="-593"/>
         </scene>

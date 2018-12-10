@@ -48,6 +48,8 @@ protocol XiCore: class {
     /// `Document` calls are migrated to it's own protocol.
     func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback?)
     func sendRpc(_ method: String, params: Any) -> RpcResult
+    /// Will tail opened file if enabled.
+    func toggleTailConfig(enabled: Bool)
 }
 
 final class CoreConnection: XiCore {
@@ -108,6 +110,10 @@ final class CoreConnection: XiCore {
     func saveTrace(destination: String, frontendSamples: [[String: AnyObject]]) {
         let params = ["destination": destination, "frontend_samples": frontendSamples] as AnyObject
         sendRpcAsync("save_trace", params: params)
+    }
+    
+    func toggleTailConfig(enabled: Bool) {
+        sendRpcAsync("toggle_tail", params: ["enabled": enabled])
     }
 
     func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback? = nil) {

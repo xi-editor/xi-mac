@@ -102,6 +102,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
             updateRpcTracingConfig(newValue)
         }
     }
+    
+    @objc dynamic var toggleTail : Bool {
+        get {
+            return false
+        }
+        set {
+            updateToggleTailConfig(newValue)
+        }
+    }
 
     var textMetrics: TextDrawingMetrics {
         get {
@@ -489,6 +498,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
 
     func updateRpcTracingConfig(_ enabled: Bool) {
         xiCore?.tracingConfig(enabled: enabled)
+    }
+    
+    func updateToggleTailConfig(_ enabled: Bool) {
+        xiCore?.toggleTailConfig(enabled: enabled)
     }
 
     @IBAction func writeTrace(_ sender: AnyObject) {
