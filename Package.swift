@@ -5,9 +5,19 @@ import PackageDescription
 
 let package = Package(
     name: "XiEditor",
+    dependencies: [
+    ],
     targets: [
         .target(
             name: "XiEditor",
+            dependencies: []
+        ),
+        .target(
+            name: "XiCli",
+            dependencies: ["XiCliCore"]
+        ),
+        .target(
+            name: "XiCliCore",
             dependencies: []
         ),
         .testTarget(
@@ -17,6 +27,10 @@ let package = Package(
         .testTarget(
             name: "XiEditorUITests",
             dependencies: ["XiEditor"]
+        ),
+        .testTarget(
+            name: "XiCliCoreTests",
+            dependencies: ["XiCliCore"]
         )
     ]
 )

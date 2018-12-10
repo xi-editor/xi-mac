@@ -62,7 +62,7 @@ is the front-end, and the back-end (or core) is now in
 **Build and Open:**
 
 ```bash
-> xcodebuild
+> xcodebuild -scheme "XiEditor"
 > open build/Release/XiEditor.app
 ```
 
@@ -73,6 +73,12 @@ Or
 ```
 
 and then hitting the Run button.
+
+**Move to Applications Folder:**
+
+```bash
+> cp -r Build/Release/XiEditor.app /Applications
+```
 
 ### Troubleshooting
 
@@ -98,6 +104,49 @@ A few theme files are bundled with the application. A theme can be selected
 from the Debug > Theme menu. There is not yet a mechanism for including
 custom themes.
 
+
+## CLI
+
+XiEditor includes a CLI for opening files directly from the command line.
+
+### Installing
+
+**Through XiEditor:**
+
+1. Install XiEditor
+2. Open XiEditor
+3. XiEditor > Install Command Line Tool
+
+### Usage
+
+```text
+xi <file> [--wait | -w] [--help | -h]
+  open XiEditor at specified file path
+
+  file
+    the path to the file (relative or absolute)
+
+  --wait, -w
+    wait for the editor to close
+
+  --help, -h
+    prints this
+
+xi [--help | -h]
+  open XiEditor
+
+  --help, -h
+    prints this
+```
+
+### Git Editor
+
+Add the following to your `.gitconfig` to use XiEditor as your git editor:
+
+```text
+[core]
+  editor = xi --wait
+```
 
 ## Authors
 

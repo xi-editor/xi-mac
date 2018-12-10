@@ -187,22 +187,41 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         Trace.shared.trace("appWillLaunch", .main, .end)
         documentController = XiDocumentController()
     }
-
-    @IBAction func installShortcut(_ sender: Any?) {
-        let destPath = "/usr/local/bin/xi"
-        var message = "Shortcut installed"
-        var info = "Type \"xi\" at the command line."
-        if FileManager.default.fileExists(atPath: destPath) {
-            message = "Shortcut already installed"
+    
+    // Clean up temporary Xi stderr log
+    func applicationWillTerminate(_ notification: Notification) {
+        if let tmpErrLogFile = errorLogDirectory?.appendingPathComponent(defaultCoreLogName) {
+            do {
+                try FileManager.default.removeItem(at: tmpErrLogFile)
+            } catch let err as NSError {
+                print("Failed to remove temporary log file. \(err)")
+            }
+        }
+    }
+    
+    // MARK: - CLI Menu Items
+    
+    @IBAction func installCli(_ sender: Any?) {
+        let destPath = URL(string: "file:///usr/local/bin/xi")!
+        var message = "CLI Installed!"
+        var info = "Type \"xi --help\" at the command line to get started."
+        if FileManager.default.fileExists(atPath: destPath.path) {
+            message = "CLI Already Installed"
             info = "The file /usr/local/bin/xi already exists."
         } else {
             do {
-                let srcPath = Bundle.main.bundlePath + "/Contents/Resources/shortcut/xi"
-                try FileManager.default.copyItem(atPath: srcPath, toPath: destPath)
-
-                // 0o755 allows read and execute for everyone, write for the owner (-rwxr-xr-x)
-                let attrs = [FileAttributeKey.posixPermissions: 0o755]
-                try FileManager.default.setAttributes(attrs, ofItemAtPath: destPath)
+                let srcPath = Bundle.main.url(forResource: "XiCli", withExtension: "")
+                
+                if let srcPath = srcPath {
+                    try FileManager.default.createSymbolicLink(at: destPath, withDestinationURL: srcPath)
+                    
+                    // 0o755 allows read and execute for everyone, write for the owner (-rwxr-xr-x)
+                    let attrs = [FileAttributeKey.posixPermissions: 0o755]
+                    try FileManager.default.setAttributes(attrs, ofItemAtPath: destPath.path)
+                } else {
+                    message = "Error"
+                    info = "CLI File is Missing in Application Bundle"
+                }
             } catch let err {
                 NSApplication.shared.presentError(err)
                 return
@@ -215,16 +234,28 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         alert.informativeText = info
         alert.runModal()
     }
-
-    // Clean up temporary Xi stderr log
-    func applicationWillTerminate(_ notification: Notification) {
-        if let tmpErrLogFile = errorLogDirectory?.appendingPathComponent(defaultCoreLogName) {
+    
+    @IBAction func removeCli(_ sender: Any) {
+        let cliPath = URL(string: "file:///usr/local/bin/xi")!
+        var message = "CLI Removed!"
+        var info = "The file /usr/local/bin/xi has been deleted."
+        if !FileManager.default.fileExists(atPath: cliPath.path) {
+            message = "CLI Not Installed"
+            info = "The file /usr/local/bin/xi does not exist."
+        } else {
             do {
-                try FileManager.default.removeItem(at: tmpErrLogFile)
-            } catch let err as NSError {
-                print("Failed to remove temporary log file. \(err)")
+                try FileManager.default.removeItem(at: cliPath)
+            } catch let err {
+                NSApplication.shared.presentError(err)
+                return
             }
         }
+        let alert = NSAlert()
+        alert.addButton(withTitle: "OK")
+        alert.alertStyle = .informational
+        alert.messageText = message
+        alert.informativeText = info
+        alert.runModal()
     }
 
     //MARK: - top-level interactions
