@@ -48,6 +48,9 @@ protocol XiCore: class {
     /// `Document` calls are migrated to it's own protocol.
     func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback?)
     func sendRpc(_ method: String, params: Any) -> RpcResult
+    /// Will tail opened file if enabled.
+    /// If toggle succeeds the client will receive a `toggle_tail_config_changed` notification.
+    func toggleTailConfig(identifier: ViewIdentifier, enabled: Bool)
 }
 
 final class CoreConnection: XiCore {
@@ -108,6 +111,10 @@ final class CoreConnection: XiCore {
     func saveTrace(destination: String, frontendSamples: [[String: AnyObject]]) {
         let params = ["destination": destination, "frontend_samples": frontendSamples] as AnyObject
         sendRpcAsync("save_trace", params: params)
+    }
+    
+    func toggleTailConfig(identifier: ViewIdentifier, enabled: Bool) {
+        sendRpcAsync("toggle_tail", params: ["view_id": identifier, "enabled": enabled])
     }
 
     func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback? = nil) {

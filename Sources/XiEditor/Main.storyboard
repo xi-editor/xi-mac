@@ -1209,6 +1209,12 @@ Gw
                                                 <action selector="openErrorLogFolder:" target="azf-ih-6fI" id="dlx-rd-R59"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem title="Tail File" toolTip="Start tailing current file" id="ERX-yh-iVz">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="debugToggleTail:" target="7er-QZ-amI" id="Nk3-gD-C6i"/>
+                                            </connections>
+                                        </menuItem>
                                     </items>
                                 </menu>
                             </menuItem>
@@ -1238,6 +1244,7 @@ Gw
                     </connections>
                 </customObject>
                 <userDefaultsController id="yco-8S-n0A"/>
+                <userDefaultsController id="auS-BU-5TV"/>
             </objects>
             <point key="canvasLocation" x="-295" y="-593"/>
         </scene>

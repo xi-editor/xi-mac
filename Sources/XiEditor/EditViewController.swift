@@ -152,6 +152,12 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             updateLanguageMenu()
         }
     }
+    
+    var isTailEnabled: Bool = false {
+        didSet {
+            updateTailMenu()
+        }
+    }
 
     // used to calculate the gutter width. Initial -1 so that a new document
     // still triggers update of gutter width.
@@ -711,6 +717,10 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         document.xiCore.setTheme(themeName: sender.title)
     }
     
+    @IBAction func debugToggleTail(_ sender: NSMenuItem) {
+        document.xiCore.toggleTailConfig(identifier: document.coreViewIdentifier!, enabled: !self.isTailEnabled)
+    }
+    
     @IBAction func debugSetLanguage(_ sender: NSMenuItem) {
         guard sender.state != NSControl.StateValue.on else { print("language already active"); return }
         document.xiCore.setLanguage(identifier: document.coreViewIdentifier!, languageName: sender.title)
@@ -840,11 +850,22 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         item.state = findViewController.showMultipleSearchQueries ? .on : .off
     }
     
+    func updateTailMenu() {
+        let toggleTailSubMenu = NSApplication.shared.mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Tail File")
+        
+        if self.isTailEnabled {
+            toggleTailSubMenu!.state = NSControl.StateValue.on
+        } else {
+            toggleTailSubMenu!.state = NSControl.StateValue.off
+        }
+    }
+    
     // Gets called when active window changes
     func updateMenuState() {
         updatePluginMenu()
         updateLanguageMenu()
         updateFindMenu()
+        updateTailMenu()
     }
 
     @objc func handleCommand(_ sender: NSMenuItem) {
@@ -918,6 +939,10 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             item.state = NSControl.StateValue(rawValue: (language == currentlyActive) ? 1 : 0)
             languagesMenu.addItem(item)
         }
+    }
+    
+    public func toggleTailConfigChanged(_ isTailEnabled: Bool) {
+        self.isTailEnabled = isTailEnabled
     }
 
     @IBAction func gotoLine(_ sender: AnyObject) {
