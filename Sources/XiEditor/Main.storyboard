@@ -499,11 +499,24 @@ Gw
                                                 <action selector="openPreferences:" target="7er-QZ-amI" id="dzf-4q-1J8"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Install Command Line Shortcut" id="Rhk-UC-PWm">
+                                        <menuItem title="Command Line Tool" id="ap8-TE-eEJ" userLabel="Command Line Tool">
                                             <modifierMask key="keyEquivalentModifierMask"/>
-                                            <connections>
-                                                <action selector="installShortcut:" target="azf-ih-6fI" id="s8S-bc-cEL"/>
-                                            </connections>
+                                            <menu key="submenu" title="Command Line Tool" id="dYg-b7-J5k">
+                                                <items>
+                                                    <menuItem title="Install" id="Rhk-UC-PWm" userLabel="Install">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                        <connections>
+                                                            <action selector="installCli:" target="azf-ih-6fI" id="s8S-bc-cEL"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                    <menuItem title="Remove" id="WaE-CF-QcW" userLabel="Remove">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                        <connections>
+                                                            <action selector="removeCli:" target="azf-ih-6fI" id="wo1-cs-5Xa"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                </items>
+                                            </menu>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="gsd-kb-HGJ"/>
                                         <menuItem title="Services" id="LDz-hM-BVt">

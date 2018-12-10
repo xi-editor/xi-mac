@@ -71,6 +71,7 @@ xcuserdata/
 *.moved-aside
 *.xccheckout
 *.xcscmblueprint
+!**/xcshareddata/IDETemplateMacros.plist
 
 ### Project Specific ###
 .env

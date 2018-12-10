@@ -952,6 +952,12 @@ extension EditViewController: NSWindowDelegate {
     func windowDidResignKey(_ notification: Notification) {
         editView.isFrontmostView = false
     }
+    
+    @objc func windowShouldClose(_ sender: NSWindow) {
+        let path = self.document.fileURL?.path // To check if window contains file opened by cli
+        let notification = Notification.Name("io.xi-editor.xiMacFileClosed")
+        DistributedNotificationCenter.default().post(name: notification, object: nil, userInfo: ["path": path ?? "FILE_NOT_SAVED"])
+    }
 }
 
 extension NSColor {
