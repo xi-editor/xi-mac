@@ -79,6 +79,11 @@ class StdoutRPCSender: RPCSending {
         let errLogArgs = errLogPath.map { ["--log-dir", $0] }
         task.launchPath = path
         task.arguments = errLogArgs
+        if task.environment == nil {
+            task.environment = ProcessInfo.processInfo.environment
+        }
+        task.environment?["RUST_BACKTRACE"] = "1"
+
         let outPipe = Pipe()
         task.standardOutput = outPipe
         let inPipe = Pipe()
