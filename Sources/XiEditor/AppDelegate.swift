@@ -500,7 +500,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         xiCore?.tracingConfig(enabled: enabled)
     }
     
-    func updateToggleTailConfig(_ enabled: Bool) {
+    private func updateToggleTailConfig(_ enabled: Bool) {
         xiCore?.toggleTailConfig(enabled: enabled)
     }
 
