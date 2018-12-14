@@ -278,6 +278,8 @@
 				0C66CB34218F5DF100F6F899 /* Info.plist */,
 			);
 			path = XiCli;
+			sourceTree = "<group>";
+		};
 		31D2A51321B6BEEC005919F0 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
