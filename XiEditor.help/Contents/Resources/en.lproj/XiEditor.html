@@ -4,20 +4,27 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
     <head>
-        <title>XiEditor Help</title>
+        <title>Xi-Editor User Guide</title>
         <meta name="AppleTitle" content="XiEditor Help" />
         <meta name="robots" content="anchors" />
         <link rel="stylesheet" typew="text/css" href="./styles/XiEditor.css" />
     </head>
     <body dir="ltr" id="index" class="AppleTopic">
         <a name="index"></a>
-        <figure class="topicIcon">
-            <img src="../SharedArtwork/XiEditorIcon.png" alt="" height="30" width="30">
-        </figure>
-        <h1>Help Topics</h1>
-        <ul>
-            <li><a href="./pages/AboutXiEditor.html">About Xi-Editor</a></li>
-            <li><a href="./pages/KeyboardShortcuts.html">Keyboard Shortcuts</a></li>
-        </ul>        
+        <header class="Hero">
+            <h1 class="Name">Xi-Editor User Guide</h1>
+        </header>
+        <ul class="LinkUniversal">
+            <li><a href="./pages/AboutXiEditor.html" class="xRef AppleTopic">About Xi-Editor</a></li>
+            <li><a href="./pages/KeyboardShortcuts.html" class="xRef AppleTopic">Keyboard Shortcuts</a></li>
+        </ul>
+        <script type="text/javascript">
+            setTimeout(function() {
+               function handler() {
+                    document.querySelector('.Hero').innerHTML = "it works!";
+               }
+               window.HelpViewer.showTOCButton( true, handler, handler);
+            }, 300);
+        </script>
     </body>
 </html>
