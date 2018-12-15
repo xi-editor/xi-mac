@@ -398,18 +398,8 @@ extension EditViewController {
         //      matches: Int
         // }]
         for statusQuery in status {
-            var query = findViewController.searchQueries.first(where: { $0.id == statusQuery["id"] as? Int })
-
-            if query == nil {
-                if let newQuery = findViewController.searchQueries.first(where: { $0.id == nil }) {
-                    newQuery.id = statusQuery["id"] as? Int
-                    query = newQuery
-                } else {
-                    let searchField = findViewController.addSearchField(searchField: nil, becomeFirstResponder: false)
-                    searchField!.id = statusQuery["id"] as? String
-                    query = findViewController.searchQueries.first(where: { $0.id == statusQuery["id"] as? Int })
-                }
-            }
+            guard let statusQueryId = statusQuery["id"] as? Int else { continue }
+            let query = queryController(in: findViewController, queryId: statusQueryId)
 
             if status.first?["chars"] != nil && !(status.first?["chars"] is NSNull) {
                 query?.searchField.stringValue = statusQuery["chars"] as! String
@@ -449,6 +439,23 @@ extension EditViewController {
         }
 
         setMarker(findMarker)
+    }
+
+    private func queryController(in findViewController: FindViewController,
+                                 queryId: Int) -> SuplementaryFindViewController? {
+        var query = findViewController.searchQueries.first(where: { $0.id == queryId })
+
+        if query == nil {
+            if let newQuery = findViewController.searchQueries.first(where: { $0.id == nil }) {
+                newQuery.id = queryId
+                query = newQuery
+            } else {
+                let searchField = findViewController.addSearchField(searchField: nil, becomeFirstResponder: false)
+                searchField!.id = String(queryId)
+                query = findViewController.searchQueries.first(where: { $0.id == queryId })
+            }
+        }
+        return query
     }
 
     func setMarker(_ items: [Marker]) {
