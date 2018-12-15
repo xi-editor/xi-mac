@@ -397,35 +397,32 @@ extension EditViewController {
         //      whole_words: Boolean,
         //      matches: Int
         // }]
-        for statusQuery in status {
-            guard let statusQueryId = statusQuery["id"] as? Int else { continue }
-            let query = queryController(in: findViewController, queryId: statusQueryId)
+        let statusStructs = status.flatMap(FindStatus.init)
+        for statusQuery in statusStructs {
+            guard let firstStatus = statusStructs.first else { continue }
 
-            if status.first?["chars"] != nil && !(status.first?["chars"] is NSNull) {
-                query?.searchField.stringValue = statusQuery["chars"] as! String
+            let query = queryController(in: findViewController, queryId: statusQuery.id)
+
+            if firstStatus.chars != nil {
+                query?.searchField.stringValue = statusQuery.chars!
             } else {
                 // clear count
                 (query?.searchField as? FindSearchField)?.resultCount = nil
             }
 
-            if status.first?["case_sensitive"] != nil && !(status.first?["case_sensitive"] is NSNull) {
-                query?.ignoreCase = !(statusQuery["case_sensitive"] != nil)
+            if firstStatus.caseSensitive != nil {
+                query?.ignoreCase = !(statusQuery.caseSensitive != nil)
             }
 
-            if status.first?["whole_words"] != nil && !(status.first?["whole_words"] is NSNull) {
-                query?.wholeWords = statusQuery["whole_words"] as! Bool
+            if firstStatus.wholeWords != nil {
+                query?.wholeWords = statusQuery.wholeWords!
             }
 
-            if let resultCount = statusQuery["matches"] as? Int {
-                (query?.searchField as? FindSearchField)?.resultCount = resultCount
-            }
+            (query?.searchField as? FindSearchField)?.resultCount = statusQuery.matches
 
-            if status.first?["lines"] != nil && !(status.first?["lines"] is NSNull) {
-                query?.lines = statusQuery["lines"] as! [Int]
-
-                for line in (query?.lines ?? []) {
-                    findMarker.append(Marker(line, color: NSColor.orange))
-                }
+            query?.lines = statusQuery.lines
+            statusQuery.lines.forEach {
+                findMarker.append(Marker($0, color: .orange))
             }
         }
 
