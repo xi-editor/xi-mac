@@ -1,3 +1,35 @@
+body {
+    font-size: 17px;
+    font-family: 'Roboto', 'Helvetica', sans-serif;
+}
+
+h1 {
+    font-size: 28px;
+}
+
+h1.Name {
+    font-size: 48px;
+}
+
+h1, h2 {
+    font-family: "Roboto","Helvetica","Arial",sans-serif;
+    font-weight: 300;
+}
+
+.topicIcon {
+    display: inline-block;
+    float: left;
+    padding: 0;
+    margin: 0;
+    width: 40px;
+    height: 30px;
+}
+
+.topicIcon > img {
+    width: 30px;
+    height: 30px;
+}
+
 kbd {
   margin: 0px 0.1em;
   padding: 0.1em 0.6em;
@@ -28,4 +60,16 @@ tr:nth-child(odd) {
 
 td {
   padding: 1em;
+}
+
+@media(max-width: 400px) {
+    .HotkeyTable {
+        width: 100%;
+    }
+}
+
+@media(min-width: 401px) {
+    .HotkeyTable {
+        width: 400px;
+    }
 }
