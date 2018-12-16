@@ -67,7 +67,7 @@ class MarkerBar: NSScroller {
         drawMarkers()
     }
 
-    func drawMarkers() {
+    private func drawMarkers() {
         guard let markerBarHeight = layer?.bounds.height,
             let maxScrollerWidth = layer?.bounds.width,
             let totalLines = (markerDelegate as? EditViewController)?.lines.height,
