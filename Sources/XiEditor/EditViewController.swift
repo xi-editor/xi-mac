@@ -36,6 +36,7 @@ struct LineAssoc {
 
 /// Represents one search query
 struct FindQuery {
+    /// If we create a new query on the frontend it doesn't have an ID yet. The new query gets assigned an ID in core.
     let id: Int?
     let term: String?
     let caseSensitive: Bool
