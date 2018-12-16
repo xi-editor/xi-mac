@@ -505,8 +505,6 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                             }
                         }()
 
-                        print(line.text)
-
                         let startIx = utf8_offset_to_utf16(line.text, start)
                         let endIx = utf8_offset_to_utf16(line.text, end)
                         builder.addBgSpan(range: convertRange(NSMakeRange(startIx, endIx - startIx)), argb: color)
