@@ -79,7 +79,7 @@ struct StyleSpan {
     let style: StyleIdentifier
 
     /// given a line of text and an array of style values, generate an array of StyleSpans.
-    /// see https://github.com/google/xi-editor/blob/protocol_doc/doc/update.md
+    /// see http://xi-editor.github.io/xi-editor/docs/frontend-protocol.html#def_style
     static func styles(fromRaw raw: [Int], text: String) -> [StyleSpan] {
         var out: [StyleSpan] = []
         var ix = 0
@@ -148,7 +148,7 @@ class StyleMapState: UnfairLock {
         var weight = json["weight"] as? Int
         if let w = weight {
             // convert to NSFont weight: (100-500 -> 2-6 (5 normal weight), 600-800 -> 8-10, 900 -> 12
-            // see https://github.com/google/xi-mac/pull/32#discussion_r115114037
+            // see https://github.com/xi-editor/xi-mac/pull/32#discussion_r115114037
             weight = Int(floor(1 + Float(w) * (0.01 + 3e-6 * Float(w))))
         }
 
