@@ -36,11 +36,11 @@ struct LineAssoc {
 
 /// Represents one search query
 struct FindQuery {
-    var id: Int?
-    var term: String?
-    var caseSensitive: Bool
-    var regex: Bool
-    var wholeWords: Bool
+    let id: Int?
+    let term: String?
+    let caseSensitive: Bool
+    let regex: Bool
+    let wholeWords: Bool
 
     func toJson() -> [String: Any] {
         var jsonQuery: [String: Any] = [
