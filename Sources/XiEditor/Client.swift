@@ -15,11 +15,11 @@
 import Foundation
 
 /// Describes the client side of the xi protocol. For a full(er) description of
-/// the protocol, see the [xi-core documentation](https://github.com/google/xi-editor/blob/master/doc/frontend.md).
+/// the protocol, see the [xi-core documentation](http://xi-editor.github.io/xi-editor/docs/frontend-notes.html).
 protocol XiClient: AnyObject {
     /// An update to the contents of a given view. The structure of the `update`
     /// param is described in detail in the
-    // [documentation])https://github.com/google/xi-editor/blob/master/doc/update.md).
+    // [documentation](http://xi-editor.github.io/xi-editor/docs/frontend-protocol.html#view-update-protocol).
     func update(viewIdentifier: String, update: [String: AnyObject], rev: UInt64?)
 
     /// A notification that a given view should scroll, if necessary, such
