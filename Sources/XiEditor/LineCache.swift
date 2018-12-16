@@ -58,24 +58,18 @@ struct Line<T> {
     }
 }
 
-enum AnnotationType: String {
+enum AnnotationType: String, CaseIterable {
     case Selection = "selection"
     case Find = "find"
 }
 
-extension AnnotationType {
-    static var all: [AnnotationType] {
-        return [AnnotationType.Selection, AnnotationType.Find]
-    }
-}
-
 /// Represents an annotation (eg. selection, find highlight)
 struct Annotation {
-    var startLine: Int
-    var startColumn: Int
-    var endLine: Int
-    var endColumn: Int
-    var payload: AnyObject?
+    let startLine: Int
+    let startColumn: Int
+    let endLine: Int
+    let endColumn: Int
+    let payload: AnyObject?
 
     init?(range: [Int], data: AnyObject?) {
         let position = range
@@ -144,7 +138,7 @@ fileprivate class LineCacheState<T>: UnfairLock {
         // parse annotations
         let annotationData = (update["annotations"] as! [[String: AnyObject]])
 
-        for annotationType in AnnotationType.all {
+        for annotationType in AnnotationType.allCases {
             let annotationsOfType = annotationData.filter({$0["type"] as! String == annotationType.rawValue})
             annotations[annotationType] = []
 
