@@ -464,6 +464,16 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                                       font: font, fontCache: renderer.fontCache)
         }
 
+        // keeps track of the next annotations to be drawn
+        let annotationsToBeDrawn = [AnnotationType.Find, AnnotationType.Selection]
+        var annotationIter: [AnnotationType : IndexingIterator<([Annotation])>] = [:]
+        var nextAnnotation: [AnnotationType : Annotation?] = [:]
+
+        for annotationType in annotationsToBeDrawn {
+            annotationIter[annotationType] = (annotations[annotationType]?.sorted(by: {$0.startLine < $1.startLine}) ?? []).makeIterator()
+            nextAnnotation[annotationType] = annotationIter[annotationType]!.next()
+        }
+
         for lineIx in first..<last {
             let relLineIx = lineIx - first
             guard let line = lines[relLineIx] else {
@@ -479,13 +489,9 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                 builder.setFgColor(argb: foregroundArgb)
                 styleMap.applyStyles(builder: builder, styles: line.styles)
 
-                // draw annotations
-                for annotationType in AnnotationType.all {
-                    let annotationsForLine = annotations[annotationType]?.filter({
-                        $0.startLine <= lineIx && $0.endLine >= lineIx
-                    })
-
-                    for annotation in annotationsForLine! {
+                for annotationType in annotationsToBeDrawn {
+                    while nextAnnotation[annotationType]! != nil && nextAnnotation[annotationType]!!.startLine <= lineIx && nextAnnotation[annotationType]!!.endLine >= lineIx {
+                        let annotation = nextAnnotation[annotationType]!!
                         let start = annotation.startLine == lineIx ? annotation.startColumn : 0
                         let end = annotation.endLine == lineIx ? annotation.endColumn : line.text.count
 
@@ -499,9 +505,13 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                             }
                         }()
 
+                        print(line.text)
+
                         let startIx = utf8_offset_to_utf16(line.text, start)
                         let endIx = utf8_offset_to_utf16(line.text, end)
                         builder.addBgSpan(range: convertRange(NSMakeRange(startIx, endIx - startIx)), argb: color)
+
+                        nextAnnotation[annotationType] = annotationIter[annotationType]!.next()
                     }
                 }
 
