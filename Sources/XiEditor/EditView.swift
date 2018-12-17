@@ -563,12 +563,13 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                 continue
             }
 
-            let gutterNumber = UInt(lineIx) + 1
-            let gutterTL = gutterCache!.lookupLineNumber(lineIdx: gutterNumber, hasCursor: line.containsCursor)
+            if let gutterNumber = line.number {
+                let gutterTL = gutterCache!.lookupLineNumber(lineIdx: gutterNumber, hasCursor: line.containsCursor)
 
-            let x = dataSource.gutterWidth - (gutterXPad + CGFloat(gutterTL.width))
-            let y0 = yOff + dataSource.textMetrics.ascent + linespace * CGFloat(lineIx)
-            renderer.drawLine(line: gutterTL, x0: GLfloat(x), y0: GLfloat(y0))
+                let x = dataSource.gutterWidth - (gutterXPad + CGFloat(gutterTL.width))
+                let y0 = yOff + dataSource.textMetrics.ascent + linespace * CGFloat(lineIx)
+                renderer.drawLine(line: gutterTL, x0: GLfloat(x), y0: GLfloat(y0))
+            }
         }
 
         lastRevisionRendered = lineCache.revision
