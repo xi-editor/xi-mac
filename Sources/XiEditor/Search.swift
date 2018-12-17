@@ -388,15 +388,6 @@ extension EditViewController {
 
     func findStatus(status: [[String: AnyObject]]) {
         var findMarker: [Marker] = []
-
-        // status has the following expected format:
-        // [{
-        //      id: Int,
-        //      chars: String,
-        //      case_sensitive: Boolean,
-        //      whole_words: Boolean,
-        //      matches: Int
-        // }]
         let statusStructs = status.flatMap(FindStatus.init)
         for statusQuery in statusStructs {
             guard let firstStatus = statusStructs.first else { continue }
