@@ -433,7 +433,7 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
 
         // Note: this locks the line cache for the duration of the render
         let lineCache = dataSource.lines.locked()
-        let annotations = lineCache.annotations
+        let annotations = lineCache.annotations.mapValues {a in a.sorted(by: { $0.endLine < $1.endLine })}
         let totalLines = lineCache.height
         let first = min(yOffsetToLine(dirtyRect.origin.y + dataSource.scrollOrigin.y), totalLines)
         let last = min(yOffsetToLine(dirtyRect.maxY + dataSource.scrollOrigin.y) + 1, totalLines)
@@ -466,12 +466,9 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
 
         // keeps track of the next annotations to be drawn
         let annotationsToBeDrawn = [AnnotationType.Find, AnnotationType.Selection]
-        var annotationIter: [AnnotationType : IndexingIterator<([Annotation])>] = [:]
-        var nextAnnotation: [AnnotationType : Annotation?] = [:]
-
+        var annotationIx: [AnnotationType : Int] = [:]
         for annotationType in annotationsToBeDrawn {
-            annotationIter[annotationType] = (annotations[annotationType]?.sorted(by: {$0.startLine < $1.startLine}) ?? []).makeIterator()
-            nextAnnotation[annotationType] = annotationIter[annotationType]!.next()
+            annotationIx[annotationType] = 0
         }
 
         for lineIx in first..<last {
@@ -490,26 +487,35 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                 styleMap.applyStyles(builder: builder, styles: line.styles)
 
                 for annotationType in annotationsToBeDrawn {
-                    while nextAnnotation[annotationType]! != nil && nextAnnotation[annotationType]!!.startLine <= lineIx && nextAnnotation[annotationType]!!.endLine >= lineIx {
-                        let annotation = nextAnnotation[annotationType]!!
-                        let start = annotation.startLine == lineIx ? annotation.startColumn : 0
-                        let end = annotation.endLine == lineIx ? annotation.endColumn : line.text.count
+                    // draw all annotations that are active for the current line
+                    var ix = annotationIx[annotationType]!
+                    while ix < (annotations[annotationType]?.count)! && annotations[annotationType]![ix].startLine <= lineIx {
+                        if (annotations[annotationType]![ix].endLine >= lineIx) {
+                            let annotation = annotations[annotationType]![ix]
+                            let start = annotation.startLine == lineIx ? annotation.startColumn : 0
+                            let end = annotation.endLine == lineIx ? annotation.endColumn : line.text.count
 
-                        let color: ARGBColor = {
-                            switch annotationType {
-                            case AnnotationType.Selection:
-                                return selArgb
-                            case AnnotationType.Find:
-                                let queryId = annotation.payload?["id"] as! Int
-                                return highlightsArgb[queryId % highlightsArgb.count]
+                            let color: ARGBColor = {
+                                switch annotationType {
+                                case AnnotationType.Selection:
+                                    return selArgb
+                                case AnnotationType.Find:
+                                    let queryId = annotation.payload?["id"] as! Int
+                                    return highlightsArgb[queryId % highlightsArgb.count]
+                                }
+                            }()
+
+                            let startIx = utf8_offset_to_utf16(line.text, start)
+                            let endIx = utf8_offset_to_utf16(line.text, end)
+                            builder.addBgSpan(range: convertRange(NSMakeRange(startIx, endIx - startIx)), argb: color)
+
+                            if annotation.endLine == lineIx {
+                                // drawing the annotation is completed; move on to the next one
+                                annotationIx[annotationType] = annotationIx[annotationType]! + 1
                             }
-                        }()
+                        }
 
-                        let startIx = utf8_offset_to_utf16(line.text, start)
-                        let endIx = utf8_offset_to_utf16(line.text, end)
-                        builder.addBgSpan(range: convertRange(NSMakeRange(startIx, endIx - startIx)), argb: color)
-
-                        nextAnnotation[annotationType] = annotationIter[annotationType]!.next()
+                        ix += 1
                     }
                 }
 
