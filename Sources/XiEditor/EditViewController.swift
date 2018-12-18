@@ -26,6 +26,7 @@ protocol EditViewDataSource: class {
     var textMetrics: TextDrawingMetrics { get }
     var document: Document! { get }
     var gutterWidth: CGFloat { get }
+    var scrollOrigin: NSPoint { get }
     func maxWidthChanged(toWidth: Double)
 }
 
@@ -124,6 +125,10 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     var theme: Theme {
         return styling.theme
+    }
+    
+    var scrollOrigin: CGPoint {
+        return self.scrollView?.contentView.bounds.origin ?? CGPoint.zero
     }
 
     /// A mapping of available plugins to activation status.
@@ -298,18 +303,18 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         if infoPopover.isShown {
             infoPopover.performClose(self)
         }
-        editView.scrollOrigin = newOrigin
+
         shadowView.showLeftShadow = newOrigin.x > 0
         shadowView.showRightShadow = (editViewWidth.constant - (newOrigin.x + self.view.bounds.width)) > rightTextPadding
-        // TODO: this calculation doesn't take into account toppad; do in EditView in DRY fashion
-        let first = Int(floor(newOrigin.y / textMetrics.linespace))
-        let height = Int(ceil((scrollView.contentView.bounds.size.height) / textMetrics.linespace)) + 1
-        let last = first + height
 
+        let first = editView.yOffsetToLine(newOrigin.y)
+        let maxY = newOrigin.y + scrollView.contentView.bounds.size.height
+        let last = editView.yOffsetToLine(maxY) + 1
         if first..<last != visibleLines {
             document.sendWillScroll(first: first, last: last)
             visibleLines = first..<last
         }
+        editView.needsDisplay = true
     }
 
     /// If we reuse an empty view when opening a file, we need to make sure we resend our size.
