@@ -501,6 +501,10 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         document.sendRpcAsync("outdent", params: [])
     }
 
+    @objc func reindent(_ sender: Any?) {
+        document.sendRpcAsync("reindent", params: [])
+    }
+
     @objc func increaseNumber(_ sender: Any?) {
         document.sendRpcAsync("increase_number", params: [])
     }

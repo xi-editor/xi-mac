@@ -1048,6 +1048,12 @@ Gw
                                                             <action selector="unindent:" target="7er-QZ-amI" id="83I-gO-x7f"/>
                                                         </connections>
                                                     </menuItem>
+                                                    <menuItem title="Reindent Lines" keyEquivalent="i" id="GXQ-jg-JVA" userLabel="Unindent">
+                                                        <modifierMask key="keyEquivalentModifierMask" control="YES" option="YES"/>
+                                                        <connections>
+                                                            <action selector="reindent:" target="7er-QZ-amI" id="83I-gO-x7k"/>
+                                                        </connections>
+                                                    </menuItem>
                                                 </items>
                                             </menu>
                                         </menuItem>
