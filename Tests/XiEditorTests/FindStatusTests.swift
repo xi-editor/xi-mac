@@ -37,7 +37,7 @@ class FindStatusTests: XCTestCase {
         XCTAssertNil(status?.isRegex)
         XCTAssertNil(status?.wholeWords)
         XCTAssertEqual(64, status?.matches)
-        XCTAssertEqual([10, 79, 85, 123, 134, 165], status?.lines)
+        XCTAssertEqual([10, 79, 85, 123, 134, 165], status!.lines)
     }
 
     func testParsingFullDict() {
@@ -60,7 +60,7 @@ class FindStatusTests: XCTestCase {
         XCTAssertEqual(true, status?.isRegex)
         XCTAssertEqual(true, status?.wholeWords)
         XCTAssertEqual(64, status?.matches)
-        XCTAssertEqual([10, 79, 85, 123, 134, 165], status?.lines)
+        XCTAssertEqual([10, 79, 85, 123, 134, 165], status!.lines)
     }
 
     func testParsingDictWithoutId() {
