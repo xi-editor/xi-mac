@@ -9,7 +9,7 @@ os:
   - osx
 
 rust:
-  - 1.29.2
+  - 1.31.0
 
 cache: cargo
 
