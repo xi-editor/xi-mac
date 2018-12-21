@@ -356,17 +356,28 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         let lineCache = lines.locked()
         let inval = lineCache.applyUpdate(update: update)
         let hasNoUnsavedChanges = update["pristine"] as? Bool ?? false
+        let lineShift = update["shift"] as? Int
         let revision = lineCache.revision
 
         DispatchQueue.main.async { [weak self] in
             self?.document.updateChangeCount(hasNoUnsavedChanges ? .changeCleared : .changeDone)
             self?.lineCount = self?.lines.height ?? 0
+            if let shift = lineShift {
+                self?.adjustScroll(deltaLines: shift)
+            }
             self?.updateEditViewHeight()
             self?.editView.resetCursorTimer()
             if let lastRev = self?.editView.lastRevisionRendered, lastRev < revision {
                 self?.editView.partialInvalidate(invalid: inval)
             }
         }
+    }
+    
+    func adjustScroll(deltaLines: Int) {
+        let shiftDistance = CGFloat(deltaLines) * textMetrics.linespace
+        let newOrigin = NSPoint(x: scrollOrigin.x, y: scrollOrigin.y + shiftDistance)
+        self.visibleLines = max(self.visibleLines.lowerBound + deltaLines, 0)..<max(0, self.visibleLines.upperBound + deltaLines)
+        scrollView.contentView.scroll(to: newOrigin)
     }
 
     // handles the scroll RPC from xi-core
