@@ -19,4 +19,10 @@ class EditContainerView: NSView {
     override var isFlipped: Bool {
         return true
     }
+    
+    override func menu(for event: NSEvent) -> NSMenu? {
+        return contextMenu
+    }
+    
+    public var contextMenu: NSMenu?
 }
