@@ -500,6 +500,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = AE499DEF1C82BB2B002D68AF /* Build configuration list for PBXNativeTarget "XiEditor" */;
 			buildPhases = (
+				31DACB1021CC811300A23806 /* ShellScript */,
 				AE499DC81C82BB2B002D68AF /* Sources */,
 				AE499DC91C82BB2B002D68AF /* Frameworks */,
 				AE499DCA1C82BB2B002D68AF /* Resources */,
@@ -659,6 +660,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		31DACB1021CC811300A23806 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cd $SRCROOT/XiEditor.help/Contents/Resources/en.lproj/gen\nswift -F . ./generate.swift\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		0C53410621B746AA004A9550 /* Sources */ = {

@@ -1,0 +1,22 @@
+{
+  "General": [
+    {
+      "description": "Open a new window",
+      "shortcut": "Cmd+N"
+    },
+    {
+      "description": "Open a new tab",
+      "shortcut": "Cmd+T"
+    },
+    {
+      "description": "Open preferences",
+      "shortcut": "Cmd+,"
+    }
+  ],
+  "Find and replace": [
+    {
+      "description": "Open find dialog",
+      "shortcut": "Cmd+F"
+    }
+  ]
+}
