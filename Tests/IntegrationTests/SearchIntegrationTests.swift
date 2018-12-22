@@ -75,6 +75,18 @@ class SearchIntegrationTests: XCTestCase {
         wait(for: [findExpectation], timeout: 5)
     }
 
+    func testSearchingTheCaseSensitive() {
+        let findExpectation = expectation(description: "find expectation")
+        let findAction: TestClientImplementation.FindStatusAction = { status in
+            XCTAssertEqual(1, status.count)
+            XCTAssertEqual(407, status[0].matches)
+            findExpectation.fulfill()
+        }
+        searchTester = SearchTester(findAction: findAction)
+        searchGoldenBoys(for: ["The"], caseSensitive: true)
+        wait(for: [findExpectation], timeout: 5)
+    }
+
     private func searchGoldenBoys(for terms: [String], caseSensitive: Bool = false) {
         let queries = terms.map {
             FindQuery(id: nil, term: $0, caseSensitive: caseSensitive, regex: false, wholeWords: false)
