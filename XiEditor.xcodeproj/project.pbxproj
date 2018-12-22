@@ -55,8 +55,12 @@
 		D803A9A421C7C4630042DE8F /* FindStatusTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D803A9A321C7C4630042DE8F /* FindStatusTests.swift */; };
 		D803A9A621C7CCB90042DE8F /* FindStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = D803A9A521C7CCB90042DE8F /* FindStatus.swift */; };
 		D810EA5221BB291D00EABB21 /* ClientImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D810EA5121BB291D00EABB21 /* ClientImplementation.swift */; };
+		D851299621CAFB450066B3BA /* SearchIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D851299521CAFB440066B3BA /* SearchIntegrationTests.swift */; };
 		D8D319F0218CB39A00D108D4 /* XiCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8D319EF218CB39A00D108D4 /* XiCore.swift */; };
 		D8D319F2218CBCD100D108D4 /* XiCoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8D319F1218CBCD100D108D4 /* XiCoreTests.swift */; };
+		D8D5FD6521CDA683003F1B87 /* the-golden-boys.txt in Resources */ = {isa = PBXBuildFile; fileRef = D8D5FD6421CDA683003F1B87 /* the-golden-boys.txt */; };
+		D8F1F44D21C988FA007FC254 /* TestClientImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F1F44C21C988FA007FC254 /* TestClientImplementation.swift */; };
+		D8F1F45321C9BFA1007FC254 /* SearchTester.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F1F45221C9BFA1007FC254 /* SearchTester.swift */; };
 		E1288E8020B06E9C0068EEB9 /* StatusBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1288E7F20B06E9C0068EEB9 /* StatusBar.swift */; };
 		E16BB89820FE42A700A0D7A1 /* HoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E16BB89720FE42A600A0D7A1 /* HoverViewController.swift */; };
 		F53EA2AD1DCAA8110071ACFD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F53EA2AC1DCAA8110071ACFD /* Main.storyboard */; };
@@ -180,8 +184,12 @@
 		D803A9A321C7C4630042DE8F /* FindStatusTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindStatusTests.swift; sourceTree = "<group>"; };
 		D803A9A521C7CCB90042DE8F /* FindStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindStatus.swift; sourceTree = "<group>"; };
 		D810EA5121BB291D00EABB21 /* ClientImplementation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientImplementation.swift; sourceTree = "<group>"; };
+		D851299521CAFB440066B3BA /* SearchIntegrationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchIntegrationTests.swift; sourceTree = "<group>"; };
 		D8D319EF218CB39A00D108D4 /* XiCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiCore.swift; sourceTree = "<group>"; };
 		D8D319F1218CBCD100D108D4 /* XiCoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiCoreTests.swift; sourceTree = "<group>"; };
+		D8D5FD6421CDA683003F1B87 /* the-golden-boys.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "the-golden-boys.txt"; path = "test-data/the-golden-boys.txt"; sourceTree = SOURCE_ROOT; };
+		D8F1F44C21C988FA007FC254 /* TestClientImplementation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestClientImplementation.swift; sourceTree = "<group>"; };
+		D8F1F45221C9BFA1007FC254 /* SearchTester.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTester.swift; sourceTree = "<group>"; };
 		E1288E7F20B06E9C0068EEB9 /* StatusBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBar.swift; sourceTree = "<group>"; };
 		E16BB89720FE42A600A0D7A1 /* HoverViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HoverViewController.swift; sourceTree = "<group>"; };
 		F53EA2AC1DCAA8110071ACFD /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
@@ -250,6 +258,7 @@
 		0C4460AD218955700035E3C1 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				D8F1F44B21C96BF6007FC254 /* IntegrationTests */,
 				AE499DDE1C82BB2B002D68AF /* XiEditorTests */,
 				AE499DE91C82BB2B002D68AF /* XiEditorUITests */,
 				0C53410B21B746AA004A9550 /* XiCliCoreTests */,
@@ -402,6 +411,17 @@
 				AE041BA51D4327EB0069AB8B /* plugins */,
 			);
 			name = xicore;
+			sourceTree = "<group>";
+		};
+		D8F1F44B21C96BF6007FC254 /* IntegrationTests */ = {
+			isa = PBXGroup;
+			children = (
+				D8D5FD6421CDA683003F1B87 /* the-golden-boys.txt */,
+				D851299521CAFB440066B3BA /* SearchIntegrationTests.swift */,
+				D8F1F45221C9BFA1007FC254 /* SearchTester.swift */,
+				D8F1F44C21C988FA007FC254 /* TestClientImplementation.swift */,
+			);
+			path = IntegrationTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -627,6 +647,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D8D5FD6521CDA683003F1B87 /* the-golden-boys.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -711,6 +732,9 @@
 			files = (
 				AE499DE01C82BB2B002D68AF /* XiEditorTests.swift in Sources */,
 				D803A9A421C7C4630042DE8F /* FindStatusTests.swift in Sources */,
+				D851299621CAFB450066B3BA /* SearchIntegrationTests.swift in Sources */,
+				D8F1F44D21C988FA007FC254 /* TestClientImplementation.swift in Sources */,
+				D8F1F45321C9BFA1007FC254 /* SearchTester.swift in Sources */,
 				D8D319F2218CBCD100D108D4 /* XiCoreTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

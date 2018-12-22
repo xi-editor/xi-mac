@@ -183,6 +183,17 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         }
     }
 
+    // TODO: There should be a mechanism to validate the availability of a menu item's action.
+    var contextMenu: NSMenu = {
+        let menu = NSMenu()
+        
+        menu.addItem(withTitle: "Cut", action: #selector(cut(_:)), keyEquivalent: "")
+        menu.addItem(withTitle: "Copy", action: #selector(copy(_:)), keyEquivalent: "")
+        menu.addItem(withTitle: "Paste", action: #selector(paste(_:)), keyEquivalent: "")
+        
+        return menu
+    }()
+    
     var unifiedTitlebar = false {
         didSet {
             // Dont check if value is same as previous
@@ -232,6 +243,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         super.viewDidLoad()
         shadowView.wantsLayer = true
         editView.dataSource = self
+        editContainerView.contextMenu = contextMenu
         (scrollView.verticalScroller as! MarkerBar).markerDelegate = self
         scrollView.contentView.documentCursor = .iBeam
         scrollView.automaticallyAdjustsContentInsets = false
