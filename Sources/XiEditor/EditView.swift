@@ -32,13 +32,17 @@ extension NSFont {
 /// A store of properties used to determine the layout of text.
 struct TextDrawingMetrics {
     let font: NSFont
-    var attributes: [NSAttributedStringKey: AnyObject] = [:]
-    var ascent: CGFloat
-    var descent: CGFloat
-    var leading: CGFloat
-    var baseline: CGFloat
-    var linespace: CGFloat
-    var fontWidth: CGFloat
+    let attributes: [NSAttributedStringKey: AnyObject]
+    let ascent: CGFloat
+    let descent: CGFloat
+    let leading: CGFloat
+    let baseline: CGFloat
+    let linespace: CGFloat
+    let fontWidth: CGFloat
+
+    var topPadding: CGFloat {
+        return descent + leading
+    }
 
     init(font: NSFont, textColor: NSColor) {
         self.font = font
@@ -48,11 +52,10 @@ struct TextDrawingMetrics {
         linespace = ceil(ascent + descent + leading)
         baseline = ceil(ascent)
         fontWidth = font.characterWidth()
-        attributes[.font] = font
         //FIXME: sometimes some regions of a file have no spans, so they don't have a style,
-        // which means they get drawn as black. With this we default to drawing them like plaintext.
-        // BUT: why are spans missing?
-        attributes[.foregroundColor] = textColor
+        // which means they get drawn as black. With this (setting of .foregroundColor)
+        // we default to drawing them like plaintext. BUT: why are spans missing?
+        attributes = [.font: font, .foregroundColor: textColor]
     }
 }
 
@@ -359,7 +362,8 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     }
 
     func yOffsetToLine(_ y: CGFloat) -> Int {
-        return Int(floor(max(y - dataSource.textMetrics.descent, 0) / dataSource.textMetrics.linespace))
+        let y = max(y - dataSource.textMetrics.topPadding, 0)
+        return Int(floor(y / dataSource.textMetrics.linespace))
     }
 
     func lineIxToBaseline(_ lineIx: Int) -> CGFloat {
@@ -424,9 +428,8 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             return
         }
         let linespace = dataSource.textMetrics.linespace
-        let topPad = linespace - dataSource.textMetrics.ascent
         let xOff = dataSource.gutterWidth + x0 - dataSource.scrollOrigin.x
-        let yOff = topPad - dataSource.scrollOrigin.y
+        let yOff = dataSource.textMetrics.topPadding - dataSource.scrollOrigin.y
 
         // Note: this locks the line cache for the duration of the render
         let lineCache = dataSource.lines.locked()
