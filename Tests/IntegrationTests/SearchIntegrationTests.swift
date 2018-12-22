@@ -38,6 +38,19 @@ class SearchIntegrationTests: XCTestCase {
         wait(for: [findExpectation], timeout: 5)
     }
 
+    func testSearchingGoldenBoysCaseSensitive() {
+        let findExpectation = expectation(description: "find expectation")
+        let findAction: TestClientImplementation.FindStatusAction = { status in
+            XCTAssertEqual(2, status.count)
+            XCTAssertEqual(52, status[0].matches)
+            XCTAssertEqual(33, status[1].matches)
+            findExpectation.fulfill()
+        }
+        searchTester = SearchTester(findAction: findAction)
+        searchGoldenBoys(for: ["Golden", "Boys"], caseSensitive: true)
+        wait(for: [findExpectation], timeout: 5)
+    }
+
     func testSearchingKernertok() {
         let findExpectation = expectation(description: "find expectation")
         let findAction: TestClientImplementation.FindStatusAction = { status in
