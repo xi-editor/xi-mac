@@ -62,11 +62,18 @@ class SearchIntegrationTests: XCTestCase {
         wait(for: [findExpectation], timeout: 5)
     }
 
-    private func searchGoldenBoys(for terms: [String]) {
+    private func searchGoldenBoys(for terms: [String], caseSensitive: Bool = false) {
+        let queries = terms.map {
+            FindQuery(id: nil, term: $0, caseSensitive: caseSensitive, regex: false, wholeWords: false)
+        }
+        searchGoldenBoys(for: queries)
+    }
+
+    private func searchGoldenBoys(for queries: [FindQuery]) {
         let testBundle = Bundle(for: type(of: self))
         guard let filePath = testBundle.url(forResource: "the-golden-boys", withExtension: "txt")?.path
             else { fatalError("Xi test bundle is missing the-golden-boys.txt") }
 
-        searchTester?.search(filePath: filePath, for: terms)
+        searchTester?.search(filePath: filePath, for: queries)
     }
 }
