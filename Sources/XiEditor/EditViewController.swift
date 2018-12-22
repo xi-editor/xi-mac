@@ -309,6 +309,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
         let first = editView.yOffsetToLine(newOrigin.y)
         let maxY = newOrigin.y + scrollView.contentView.bounds.size.height
+        // + 1 because this is an exclusive range
         let last = editView.yOffsetToLine(maxY) + 1
         if first..<last != visibleLines {
             document.sendWillScroll(first: first, last: last)
