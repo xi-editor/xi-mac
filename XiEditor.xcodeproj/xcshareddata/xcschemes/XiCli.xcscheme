@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "AE499DCB1C82BB2B002D68AF"
-               BuildableName = "XiEditor.app"
-               BlueprintName = "XiEditor"
+               BlueprintIdentifier = "0C66CB2A218F5CDB00F6F899"
+               BuildableName = "XiCli"
+               BlueprintName = "XiCli"
                ReferencedContainer = "container:XiEditor.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -26,29 +26,8 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      codeCoverageEnabled = "YES"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "AE499DDA1C82BB2B002D68AF"
-               BuildableName = "XiEditorTests.xctest"
-               BlueprintName = "XiEditorTests"
-               ReferencedContainer = "container:XiEditor.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "AE499DE51C82BB2B002D68AF"
-               BuildableName = "XiEditorUITests.xctest"
-               BlueprintName = "XiEditorUITests"
-               ReferencedContainer = "container:XiEditor.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
          <TestableReference
             skipped = "NO">
             <BuildableReference
@@ -63,9 +42,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "AE499DCB1C82BB2B002D68AF"
-            BuildableName = "XiEditor.app"
-            BlueprintName = "XiEditor"
+            BlueprintIdentifier = "0C66CB2A218F5CDB00F6F899"
+            BuildableName = "XiCli"
+            BlueprintName = "XiCli"
             ReferencedContainer = "container:XiEditor.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -86,24 +65,12 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "AE499DCB1C82BB2B002D68AF"
-            BuildableName = "XiEditor.app"
-            BlueprintName = "XiEditor"
+            BlueprintIdentifier = "0C66CB2A218F5CDB00F6F899"
+            BuildableName = "XiCli"
+            BlueprintName = "XiCli"
             ReferencedContainer = "container:XiEditor.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <EnvironmentVariables>
-         <EnvironmentVariable
-            key = "XI_LOG"
-            value = "DEBUG"
-            isEnabled = "YES">
-         </EnvironmentVariable>
-         <EnvironmentVariable
-            key = "RUST_BACKTRACE"
-            value = "FULL"
-            isEnabled = "YES">
-         </EnvironmentVariable>
-      </EnvironmentVariables>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -113,15 +80,16 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "AE499DCB1C82BB2B002D68AF"
-            BuildableName = "XiEditor.app"
-            BlueprintName = "XiEditor"
+            BlueprintIdentifier = "0C66CB2A218F5CDB00F6F899"
+            BuildableName = "XiCli"
+            BlueprintName = "XiCli"
             ReferencedContainer = "container:XiEditor.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

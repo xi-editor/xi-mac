@@ -77,17 +77,11 @@ class ScrollTester {
 }
 
 @NSApplicationMain
-class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
+class AppDelegate: NSObject, NSApplicationDelegate {
 
     var xiCore: XiCore?
 
     var documentController: XiDocumentController!
-
-    // Inconsolata is included with the Xi Editor app bundle.
-    let fallbackFont = CTFontCreateWithName(("Inconsolata" as CFString?)!, 14, nil)
-
-    lazy fileprivate var _textMetrics = TextDrawingMetrics(font: self.fallbackFont,
-                                                           textColor: self.theme.foreground)
 
     // This is connected via Cocoa bindings to the selection state
     // of the collecting menu item (i.e. whether or not there's a checkbox)
@@ -102,19 +96,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
             updateRpcTracingConfig(newValue)
         }
     }
-
-    var textMetrics: TextDrawingMetrics {
-        get {
-            return _textMetrics
-        }
-        set {
-            _textMetrics = newValue
-            styleMap.locked().updateFont(to: newValue.font)
-            self.updateAllViews()
-        }
-    }
-
-    lazy var styleMap: StyleMap = StyleMap(font: self.fallbackFont)
 
     lazy var defaultConfigDirectory: URL = {
         let applicationDirectory = FileManager.default.urls(
@@ -166,14 +147,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         return logDirectory
     }()
 
-    var theme = Theme.defaultTheme() {
-        didSet {
-            self.textMetrics = TextDrawingMetrics(font: textMetrics.font,
-                                                  textColor: theme.foreground)
-        }
-    }
+    let xiClient: XiClient & DocumentsProviding & ConfigCacheProviding & AppStyling
 
     override init() {
+        xiClient = ClientImplementation()
         ValueTransformer.setValueTransformer(
             BoolToControlStateValueTransformer(),
             forName: .boolToControlStateValueTransformerName)
@@ -189,8 +166,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
             let bundledPluginPath = Bundle.main.path(forResource: "plugins", ofType: "")
             else { fatalError("Xi bundle missing expected resouces") }
 
-        let rpcSender = StdoutRPCSender(path: corePath)
-        rpcSender.client = self
+        let rpcSender = StdoutRPCSender(path: corePath, errorLogDirectory: errorLogDirectory)
+        rpcSender.client = xiClient
         let xiCore = CoreConnection(rpcSender: rpcSender)
         self.xiCore = xiCore
         updateRpcTracingConfig(collectSamplesOnBoot)
@@ -210,22 +187,64 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         Trace.shared.trace("appWillLaunch", .main, .end)
         documentController = XiDocumentController()
     }
-
-    @IBAction func installShortcut(_ sender: Any?) {
-        let destPath = "/usr/local/bin/xi"
-        var message = "Shortcut installed"
-        var info = "Type \"xi\" at the command line."
-        if FileManager.default.fileExists(atPath: destPath) {
-            message = "Shortcut already installed"
+    
+    // Clean up temporary Xi stderr log
+    func applicationWillTerminate(_ notification: Notification) {
+        if let tmpErrLogFile = errorLogDirectory?.appendingPathComponent(defaultCoreLogName) {
+            do {
+                try FileManager.default.removeItem(at: tmpErrLogFile)
+            } catch let err as NSError {
+                print("Failed to remove temporary log file. \(err)")
+            }
+        }
+    }
+    
+    // MARK: - CLI Menu Items
+    
+    @IBAction func installCli(_ sender: Any?) {
+        let destPath = URL(string: "file:///usr/local/bin/xi")!
+        var message = "CLI Installed!"
+        var info = "Type \"xi --help\" at the command line to get started."
+        if FileManager.default.fileExists(atPath: destPath.path) {
+            message = "CLI Already Installed"
             info = "The file /usr/local/bin/xi already exists."
         } else {
             do {
-                let srcPath = Bundle.main.bundlePath + "/Contents/Resources/shortcut/xi"
-                try FileManager.default.copyItem(atPath: srcPath, toPath: destPath)
-
-                // 0o755 allows read and execute for everyone, write for the owner (-rwxr-xr-x)
-                let attrs = [FileAttributeKey.posixPermissions: 0o755]
-                try FileManager.default.setAttributes(attrs, ofItemAtPath: destPath)
+                let srcPath = Bundle.main.url(forResource: "XiCli", withExtension: "")
+                
+                if let srcPath = srcPath {
+                    try FileManager.default.createSymbolicLink(at: destPath, withDestinationURL: srcPath)
+                    
+                    // 0o755 allows read and execute for everyone, write for the owner (-rwxr-xr-x)
+                    let attrs = [FileAttributeKey.posixPermissions: 0o755]
+                    try FileManager.default.setAttributes(attrs, ofItemAtPath: destPath.path)
+                } else {
+                    message = "Error"
+                    info = "CLI File is Missing in Application Bundle"
+                }
+            } catch let err {
+                NSApplication.shared.presentError(err)
+                return
+            }
+        }
+        let alert = NSAlert()
+        alert.addButton(withTitle: "OK")
+        alert.alertStyle = .informational
+        alert.messageText = message
+        alert.informativeText = info
+        alert.runModal()
+    }
+    
+    @IBAction func removeCli(_ sender: Any) {
+        let cliPath = URL(string: "file:///usr/local/bin/xi")!
+        var message = "CLI Removed!"
+        var info = "The file /usr/local/bin/xi has been deleted."
+        if !FileManager.default.fileExists(atPath: cliPath.path) {
+            message = "CLI Not Installed"
+            info = "The file /usr/local/bin/xi does not exist."
+        } else {
+            do {
+                try FileManager.default.removeItem(at: cliPath)
             } catch let err {
                 NSApplication.shared.presentError(err)
                 return
@@ -239,225 +258,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
         alert.runModal()
     }
 
-    // Clean up temporary Xi stderr log
-    func applicationWillTerminate(_ notification: Notification) {
-        if let tmpErrLogFile = errorLogDirectory?.appendingPathComponent(defaultCoreLogName) {
-            do {
-                try FileManager.default.removeItem(at: tmpErrLogFile)
-            } catch let err as NSError {
-                print("Failed to remove temporary log file. \(err)")
-            }
-        }
-    }
-
-    // MARK: - XiClient protocol
-
-    func update(viewIdentifier: String, update: [String: AnyObject], rev: UInt64?) {
-        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
-        if document == nil { print("document missing for view id \(viewIdentifier)") }
-        document?.updateAsync(update: update)
-    }
-
-    func scroll(viewIdentifier: String, line: Int, column: Int) {
-        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
-        DispatchQueue.main.async {
-            document?.editViewController?.scrollTo(line, column)
-        }
-    }
-
-    func defineStyle(style: [String: AnyObject]) {
-        // defineStyle, like update, is handled on the read thread.
-        styleMap.locked().defStyle(json: style)
-    }
-
-    func themeChanged(name: String, theme: Theme) {
-        DispatchQueue.main.async { [weak self] in
-            UserDefaults.standard.set(name, forKey: USER_DEFAULTS_THEME_KEY)
-            self?.theme = theme
-            self?.orderedDocuments.forEach { document in
-                document.editViewController?.themeChanged(name)
-            }
-        }
-    }
-    
-    func languageChanged(viewIdentifier: String, languageIdentifier: String) {
-        DispatchQueue.main.async { [weak self] in
-            let document = self?.documentForViewIdentifier(viewIdentifier: viewIdentifier)
-            document?.editViewController?.languageChanged(languageIdentifier)
-        }
-    }
-
-    func availableThemes(themes: [String]) {
-        DispatchQueue.main.async { [weak self] in
-            self?.orderedDocuments.forEach { document in
-                document.editViewController?.availableThemesChanged(themes)
-            }
-        }
-    }
-    
-    func availableLanguages(languages: [String]) {
-        DispatchQueue.main.async { [weak self] in
-            self?.orderedDocuments.forEach { document in
-                document.editViewController?.availableLanguagesChanged(languages)
-            }
-        }
-    }
-
-    func pluginStarted(viewIdentifier: String, pluginName: String) {
-        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
-        DispatchQueue.main.async {
-            document?.editViewController?.pluginStarted(pluginName)
-        }
-    }
-
-    func pluginStopped(viewIdentifier: String, pluginName: String) {
-        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
-        DispatchQueue.main.async {
-            document?.editViewController?.pluginStopped(pluginName)
-        }
-    }
-
-    func availablePlugins(viewIdentifier: String, plugins: [[String: AnyObject]]) {
-        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
-        var available: [String: Bool] = [:]
-        for item in plugins {
-            available[item["name"] as! String] = item["running"] as? Bool
-        }
-        DispatchQueue.main.async {
-            document?.editViewController?.availablePlugins = available
-        }
-    }
-
-    func updateCommands(viewIdentifier: String, plugin: String, commands: [Command]) {
-        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
-        DispatchQueue.main.async {
-            document?.editViewController?.updateCommands(plugin: plugin,
-                                                         commands: commands)
-        }
-    }
-
-    func alert(text: String) {
-        DispatchQueue.main.async {
-            let alert =  NSAlert()
-            alert.alertStyle = .informational
-            alert.messageText = text
-            alert.runModal()
-        }
-    }
-
-    func addStatusItem(viewIdentifier: String, source: String, key: String, value: String, alignment: String) {
-        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
-        DispatchQueue.main.async {
-            let newStatusItem = StatusItem(source, key, value, alignment)
-            document?.editViewController?.statusBar.addStatusItem(newStatusItem)
-        }
-    }
-
-    func updateStatusItem(viewIdentifier: String, key: String, value: String) {
-        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
-        DispatchQueue.main.async {
-            document?.editViewController?.statusBar.updateStatusItem(key, value)
-        }
-    }
-
-    func removeStatusItem(viewIdentifier: String, key: String) {
-        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
-        DispatchQueue.main.async {
-            document?.editViewController?.statusBar.removeStatusItem(key)
-        }
-    }
-
-    func showHover(viewIdentifier: String, requestIdentifier: Int, result: String) {
-        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
-        if requestIdentifier == document?.editViewController?.hoverRequestID {
-            DispatchQueue.main.async {
-                document?.editViewController?.showHover(withResult: result)
-            }
-        }
-    }
-
-    // Stores the config dict so new windows don't have to wait for core to send it.
-    // The main purpose of this is ensuring that `unified_titlebar` applies immediately.
-    var configCache: [String: AnyObject] = [:]
-
-    func configChanged(viewIdentifier: ViewIdentifier, changes: [String : AnyObject]) {
-        for (key, value) in changes {
-            self.configCache[key] = value
-        }
-        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
-        DispatchQueue.main.async {
-            document?.editViewController?.configChanged(changes: changes)
-        }
-    }
-
-    func measureWidth(args: [[String : AnyObject]]) -> [[Double]] {
-        return styleMap.locked().measureWidths(args)
-    }
-
-    func findStatus(viewIdentifier: ViewIdentifier, status: [[String : AnyObject]]) {
-        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
-        DispatchQueue.main.async {
-            document?.editViewController?.findStatus(status: status)
-        }
-    }
-
-    func replaceStatus(viewIdentifier: ViewIdentifier, status: [String : AnyObject]) {
-        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
-        DispatchQueue.main.async {
-            document?.editViewController?.replaceStatus(status: status)
-        }
-    }
-
     //MARK: - top-level interactions
     @IBAction func openPreferences(_ sender: NSMenuItem) {
-        let delegate = (NSApplication.shared.delegate as? AppDelegate)
-        if let preferencesPath = delegate?.defaultConfigDirectory.appendingPathComponent(PREFERENCES_FILE_NAME) {
-            NSDocumentController.shared.openDocument(
-                withContentsOf: preferencesPath,
-                display: true,
-                completionHandler: { (document, alreadyOpen, error) in
-                    if let error = error {
-                        print("error opening preferences \(error)")
-                    }
-            })
-        }
+        let preferencesPath = defaultConfigDirectory.appendingPathComponent(PREFERENCES_FILE_NAME)
+        NSDocumentController.shared.openDocument(
+            withContentsOf: preferencesPath,
+            display: true,
+            completionHandler: { (document, alreadyOpen, error) in
+                if let error = error {
+                    print("error opening preferences \(error)")
+                }
+        })
     }
 
     //- MARK: - helpers
-
-    /// returns the NSDocument corresponding to the given viewIdentifier
-    private func documentForViewIdentifier(viewIdentifier: ViewIdentifier) -> Document? {
-        return (NSDocumentController.shared as! XiDocumentController)
-            .documentForViewIdentifier(viewIdentifier)
-    }
-
-    /// Redraws all open document views, as on a font or theme change.
-    private func updateAllViews() {
-        orderedDocuments.forEach { document in
-            document.editViewController?.redrawEverything()
-        }
-    }
-
-    // Provide a convenience helper for ordered documents
-    private var orderedDocuments: [Document] {
-        // Force unwrapping is intentional: if this cast is wrong we want to crash!
-        return NSApplication.shared.orderedDocuments
-            .map { $0 as! Document }
-    }
-
-    func handleFontChange(fontName: String?, fontSize: CGFloat?) {
-        guard (textMetrics.font.fontName != fontName && textMetrics.font.familyName != fontName)
-            || textMetrics.font.pointSize != fontSize else { return }
-
-        // if fontName argument is present but the font cannot be found, this will be nil
-        let desiredFont = NSFont(name: fontName ?? textMetrics.font.fontName,
-                                 size: fontSize ?? textMetrics.font.pointSize)
-        let fallbackFont = NSFont(name: textMetrics.font.fontName,
-                                  size:fontSize ?? textMetrics.font.pointSize)
-        if let newFont = desiredFont ?? fallbackFont {
-            textMetrics = TextDrawingMetrics(font: newFont, textColor: theme.foreground)
-        }
-    }
 
     func getUserConfigDirectory() -> String {
         if let configDir = ProcessInfo.processInfo.environment[XI_CONFIG_DIR] {
@@ -478,7 +292,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
 
     var scrollTesters = [Document: ScrollTester]()
     @IBAction func toggleScrollBenchmark(_ sender: AnyObject) {
-        guard let topmostDocument = orderedDocuments.last else { return }
+        guard let topmostDocument = xiClient.orderedDocuments.last else { return }
 
         if scrollTesters.keys.contains(topmostDocument) {
             scrollTesters.removeValue(forKey: topmostDocument)
@@ -520,4 +334,30 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
             NSWorkspace.shared.selectFile(nil, inFileViewerRootedAtPath: errorLogPath)
         }
     }
+}
+
+protocol DocumentsProviding {
+    var orderedDocuments: [Document] { get }
+}
+
+extension DocumentsProviding {
+
+    /// Provide a convenience helper for ordered documents
+    var orderedDocuments: [Document] {
+        // Force unwrapping is intentional: if this cast is wrong we want to crash!
+        return NSApplication.shared.orderedDocuments
+            .map { $0 as! Document }
+    }
+
+}
+
+protocol ConfigCacheProviding {
+    var configCache: [String: AnyObject] { get }
+}
+
+protocol AppStyling {
+    var theme: Theme { get }
+    var styleMap: StyleMap { get }
+    var textMetrics: TextDrawingMetrics { get }
+    func handleFontChange(fontName: String?, fontSize: CGFloat?)
 }

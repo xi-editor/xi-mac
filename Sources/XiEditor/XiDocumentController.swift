@@ -15,7 +15,7 @@
 
 import Cocoa
 
-class XiDocumentController: NSDocumentController {
+class XiDocumentController: NSDocumentController, AlertPresenting {
 
     fileprivate var lock = UnfairLock()
     /// Lookup used when routing RPCs to views.
@@ -132,7 +132,7 @@ class XiDocumentController: NSDocumentController {
                         currentDocument.coreViewIdentifier = result
                         currentDocument.fileURL = url
                         self.setIdentifier(result, forDocument: currentDocument)
-                        currentDocument.editViewController!.redrawEverything()
+                        currentDocument.editViewController!.prepareForReuse()
                         completionHandler(currentDocument, false, nil)
 
                     case .error(let error):
@@ -184,7 +184,7 @@ class XiDocumentController: NSDocumentController {
                     document.coreViewIdentifier = viewIdentifier
                 case .error(let error):
                     document.close()
-                    (NSApplication.shared.delegate as! AppDelegate).alert(text: error.message)
+                    self.showAlert(with: error.message)
                 }
             }
         }

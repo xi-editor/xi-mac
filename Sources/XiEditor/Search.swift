@@ -35,7 +35,6 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     var showMultipleSearchQueries = false   // activates/deactives
 
     override func viewDidLoad() {
-        addSearchField(searchField: nil)     // by default at least one search field is present
         replacePanel.isHidden = true
     }
 
@@ -78,7 +77,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
         }
     }
 
-    @objc @discardableResult public func addSearchField(searchField: SuplementaryFindViewController?) -> FindSearchField? {
+    @objc @discardableResult public func addSearchField(searchField: SuplementaryFindViewController?, becomeFirstResponder: Bool) -> FindSearchField? {
         if searchQueries.count < FindViewController.MAX_SEARCH_QUERIES {
             let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
             let newSearchFieldController = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Suplementary Find View Controller")) as! SuplementaryFindViewController
@@ -93,7 +92,9 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
                 searchFieldsStackView.insertView(newSearchFieldController.view, at: searchQueries.count - 1, in: .center)
             }
 
-            newSearchFieldController.searchField.becomeFirstResponder()
+            if becomeFirstResponder {
+                newSearchFieldController.searchField.becomeFirstResponder()
+            }
             // show/hide +/- button depending on user settings
             newSearchFieldController.showButtons(show: (newSearchFieldController.parentFindView?.showMultipleSearchQueries)!)
 
@@ -184,6 +185,7 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
     @IBOutlet weak var searchField: NSSearchField!
     @IBOutlet weak var addButton: NSButton!
     @IBOutlet weak var deleteButton: NSButton!
+    @IBOutlet weak var buttonContainer: NSStackView!
 
     let resultCountLabel = Label(title: "")
 
@@ -200,6 +202,7 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
     var wholeWords = false
     var id: Int? = nil
     var disableRemove = false
+    var lines: [Int] = []
 
     weak var parentFindView: FindViewController? = nil
 
@@ -247,8 +250,7 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
     }
 
     func showButtons(show: Bool) {
-        addButton.isHidden = !show
-        deleteButton.isHidden = !show
+        buttonContainer.isHidden = !show
     }
 
     func disableAddButton(disable: Bool) {
@@ -261,7 +263,7 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
 
     @IBAction func addSearchField(_ sender: NSButton) {
         let offset = parentFindView?.view.fittingSize.height
-        parentFindView?.addSearchField(searchField: self)
+        parentFindView?.addSearchField(searchField: self, becomeFirstResponder: true)
         parentFindView?.findDelegate.updateScrollPosition(previousOffset: offset!)
     }
 
@@ -319,6 +321,10 @@ extension EditViewController {
 
         if !findViewController.view.isHidden && replaceHiddenChanged {
             updateScrollPosition(previousOffset: findViewController.view.fittingSize.height)
+        }
+
+        if findViewController.searchQueries.isEmpty {
+            findViewController.addSearchField(searchField: nil, becomeFirstResponder: true)
         }
 
         findViewController.replacePanel.isHidden = replaceHidden
@@ -381,47 +387,67 @@ extension EditViewController {
     }
 
     func findStatus(status: [[String: AnyObject]]) {
-        // status has the following expected format:
-        // [{
-        //      id: Int,
-        //      chars: String,
-        //      case_sensitive: Boolean,
-        //      whole_words: Boolean,
-        //      matches: Int
-        // }]
-        for statusQuery in status {
-            var query = findViewController.searchQueries.first(where: { $0.id == statusQuery["id"] as? Int })
+        var findMarker: [Marker] = []
+        let statusStructs = status.flatMap(FindStatus.init)
+        for statusQuery in statusStructs {
+            guard let firstStatus = statusStructs.first else { continue }
 
-            if query == nil {
-                if let newQuery = findViewController.searchQueries.first(where: { $0.id == nil }) {
-                    newQuery.id = statusQuery["id"] as? Int
-                    query = newQuery
-                } else {
-                    let searchField = findViewController.addSearchField(searchField: nil)
-                    searchField!.id = statusQuery["id"] as? String
-                    query = findViewController.searchQueries.first(where: { $0.id == statusQuery["id"] as? Int })
-                }
-            }
+            let query = queryController(in: findViewController, queryId: statusQuery.id)
 
-            if status.first?["chars"] != nil && !(status.first?["chars"] is NSNull) {
-                query?.searchField.stringValue = statusQuery["chars"] as! String
+            if firstStatus.chars != nil {
+                query?.searchField.stringValue = statusQuery.chars!
             } else {
                 // clear count
                 (query?.searchField as? FindSearchField)?.resultCount = nil
             }
 
-            if status.first?["case_sensitive"] != nil && !(status.first?["case_sensitive"] is NSNull) {
-                query?.ignoreCase = !(statusQuery["case_sensitive"] != nil)
+            if firstStatus.caseSensitive != nil {
+                query?.ignoreCase = !(statusQuery.caseSensitive != nil)
             }
 
-            if status.first?["whole_words"] != nil && !(status.first?["whole_words"] is NSNull) {
-                query?.wholeWords = statusQuery["whole_words"] as! Bool
+            if firstStatus.wholeWords != nil {
+                query?.wholeWords = statusQuery.wholeWords!
             }
 
-            if let resultCount = statusQuery["matches"] as? Int {
-                (query?.searchField as? FindSearchField)?.resultCount = resultCount
+            (query?.searchField as? FindSearchField)?.resultCount = statusQuery.matches
+
+            query?.lines = statusQuery.lines
+            statusQuery.lines.forEach {
+                findMarker.append(Marker($0, color: .orange))
             }
         }
+
+        // remove finds that have been removed in core
+        let activeFinds = statusStructs.map { $0.id }
+        // Note: the following can be simplified to .contains() when minimum SDK is Xcode 9.3
+        let obsoleteFinds = findViewController.searchQueries.filter({(find) -> Bool in
+            !activeFinds.contains(where: {$0 == find.id}) && find.id != nil})
+        for query in obsoleteFinds {
+            findViewController.removeSearchField(searchField: query)
+        }
+
+        setMarker(findMarker)
+    }
+
+    private func queryController(in findViewController: FindViewController,
+                                 queryId: Int) -> SuplementaryFindViewController? {
+        var query = findViewController.searchQueries.first(where: { $0.id == queryId })
+
+        if query == nil {
+            if let newQuery = findViewController.searchQueries.first(where: { $0.id == nil }) {
+                newQuery.id = queryId
+                query = newQuery
+            } else {
+                let searchField = findViewController.addSearchField(searchField: nil, becomeFirstResponder: false)
+                searchField!.id = String(queryId)
+                query = findViewController.searchQueries.first(where: { $0.id == queryId })
+            }
+        }
+        return query
+    }
+
+    func setMarker(_ items: [Marker]) {
+        (scrollView.verticalScroller as! MarkerBar).setMarker(items)
     }
 
     func replaceNext() {

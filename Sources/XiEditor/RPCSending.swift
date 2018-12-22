@@ -43,33 +43,6 @@ enum RpcResult {
 /// A completion handler for a synchronous RPC
 typealias RpcCallback = (RpcResult) -> ()
 
-/// Error tolerant wrapper for append-writing to a file.
-struct FileWriter {
-    let path: URL
-    let handle: FileHandle
-
-    init?(path: String) {
-        let path = NSString(string: path).expandingTildeInPath
-        if FileManager.default.fileExists(atPath: path) {
-            print("file exists at \(path), will not overwrite")
-            return nil
-        }
-        self.path = URL(fileURLWithPath: path)
-        FileManager.default.createFile(atPath: self.path.path, contents: nil, attributes: nil)
-
-        do {
-            try self.handle = FileHandle(forWritingTo: self.path)
-        } catch let err as NSError {
-            print("error opening log file \(err)")
-            return nil
-        }
-    }
-
-    func write(bytes: Data) {
-        handle.write(bytes)
-    }
-}
-
 /// Protocol describing the general interface with core.
 /// Concrete implementations may be provided for different transport mechanisms, e.g. stdin/stdout, unix sockets, or FFI.
 protocol RPCSending {
@@ -84,15 +57,14 @@ class StdoutRPCSender: RPCSending {
     private var recvBuf: Data
     weak var client: XiClient?
     private let rpcLogWriter: FileWriter?
-    private let errLogWriter: FileWriter?
-    private let appDelegate = NSApp.delegate as! AppDelegate
+    private var lastLogs = CircleBuffer<String>(capacity: 100)
 
     // RPC state
     private var queue = DispatchQueue(label: "com.levien.xi.CoreConnection", attributes: [])
     private var rpcIndex = 0
     private var pending = Dictionary<Int, RpcCallback>()
 
-    init(path: String) {
+    init(path: String, errorLogDirectory: URL?) {
         if let rpcLogPath = ProcessInfo.processInfo.environment[XI_RPC_LOG] {
             self.rpcLogWriter = FileWriter(path: rpcLogPath)
             if self.rpcLogWriter != nil {
@@ -101,25 +73,19 @@ class StdoutRPCSender: RPCSending {
         } else {
             self.rpcLogWriter = nil
         }
-
-        if let errLogPath = appDelegate.errorLogDirectory?
-            .appendingPathComponent(appDelegate.defaultCoreLogName).path {
-            self.errLogWriter = FileWriter(path: errLogPath)
-            if self.errLogWriter != nil {
-                print("logging stderr to \(errLogPath)")
-            }
-        } else {
-            self.errLogWriter = nil
-        }
-
+        let errLogPath = errorLogDirectory?.path
+        let errLogArgs = errLogPath.map { ["--log-dir", $0] }
         task.launchPath = path
-        task.arguments = []
+        task.arguments = errLogArgs
+        if task.environment == nil {
+            task.environment = ProcessInfo.processInfo.environment
+        }
+        task.environment?["RUST_BACKTRACE"] = "1"
+
         let outPipe = Pipe()
         task.standardOutput = outPipe
         let inPipe = Pipe()
         task.standardInput = inPipe
-        let errPipe = Pipe()
-        task.standardError = errPipe
         inHandle = inPipe.fileHandleForWriting
         recvBuf = Data()
 
@@ -127,39 +93,50 @@ class StdoutRPCSender: RPCSending {
             let data = handle.availableData
             self.recvHandler(data)
         }
-
-        errPipe.fileHandleForReading.readabilityHandler = { handle in
+        
+        let errPipe = Pipe()
+        task.standardError = errPipe
+        errPipe.fileHandleForReading.readabilityHandler = { [weak self] handle in
             let data = handle.availableData
-            self.errLogWriter?.write(bytes: data)
             if let errString = String(data: data, encoding: .utf8) {
+                // redirect core stderr to stdout in debug builds
+                #if DEBUG
                 print(errString, terminator: "")
+                #endif
+                self?.lastLogs.push(errString)
             }
         }
-
-        // write to log on xi-core crash
-        task.terminationHandler = { _ in
-            // get current date to use as timestamp
-            let dateFormatter = DateFormatter()
-            let currentTime = Date()
-            dateFormatter.dateFormat = "yyyy-MM-dd-HHMMSS"
-            let timeStamp = dateFormatter.string(from: currentTime)
-
-            guard let tmpErrLog = self.appDelegate.errorLogDirectory?.appendingPathComponent(self.appDelegate.defaultCoreLogName),
-                let timestampedLog = self.appDelegate.errorLogDirectory?.appendingPathComponent("XiEditor_\(timeStamp).log")
-                else { return }
-            do {
-                try FileManager.default.moveItem(at: tmpErrLog, to: timestampedLog)
-            } catch let error as NSError {
-                print("failed to rename file with error: \(error)")
+        
+        // save backtrace on core crash
+        task.terminationHandler = { [weak self] process in
+            guard process.terminationStatus != 0, let strongSelf = self else {
+                print("xi-core exited with code 0")
+                return
             }
-            print("xi-core has closed, log saved to XiEditor_\(timeStamp).log")
+            
+            print("xi-core exited with code \(process.terminationStatus), attempting to save log")
+
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd-HHMMSS"
+            let timeStamp = dateFormatter.string(from: Date())
+            let crashLogFilename = "XiEditor-Crash-\(timeStamp).log"
+            let crashLogPath = errorLogDirectory?.appendingPathComponent(crashLogFilename)
+
+            let logText = strongSelf.lastLogs.allItems().joined()
+            if let path = crashLogPath {
+                do {
+                    try logText.write(to: path, atomically: true, encoding: .utf8)
+                    print("wrote log to \(path)")
+                } catch let error as NSError {
+                    print("failed to write backtrace to \(path): \(error)")
+                }
+            }
         }
         task.launch()
     }
 
     private func recvHandler(_ data: Data) {
         if data.count == 0 {
-            print("eof")
             return
         }
         let scanStart = recvBuf.count

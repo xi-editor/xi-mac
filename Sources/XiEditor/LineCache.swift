@@ -22,6 +22,8 @@ struct Line<T> {
     var text: String
     var cursor: [Int]
     var styles: [StyleSpan]
+    /// This line's logical number, if it is the start of a logical line
+    var number: UInt?
     /// Associated data, to be managed by client
     var assoc: T?
 
@@ -40,6 +42,7 @@ struct Line<T> {
         // this could be a more clear exception
         text = json["text"] as! String
         cursor = json["cursor"] as? [Int] ?? []
+        number = json["ln"] as? UInt
         if let styles = json["styles"] as? [Int] {
             self.styles = StyleSpan.styles(fromRaw: styles, text: self.text)
         } else {
@@ -51,6 +54,7 @@ struct Line<T> {
     init?(updateFromJson line: Line?, json: [String: AnyObject]) {
         guard let line = line else { return nil }
         self.text = line.text
+        self.number = line.number
         cursor = json["cursor"] as? [Int] ?? line.cursor
         if let styles = json["styles"] as? [Int] {
             self.styles = StyleSpan.styles(fromRaw: styles, text: self.text)
@@ -108,7 +112,7 @@ fileprivate class LineCacheState<T>: UnfairLock {
     }
 
     /// Updates the state by applying a delta. The update format is detailed in the
-    /// [xi-core docs](https://github.com/google/xi-editor/blob/master/doc/update.md).
+    /// [xi-core docs](http://xi-editor.github.io/xi-editor/docs/frontend-protocol.html#view-update-protocol).
     func applyUpdate(update: [String: AnyObject]) -> InvalSet {
         let inval = InvalSet()
         guard let ops = update["ops"] else { return inval }
@@ -170,7 +174,22 @@ fileprivate class LineCacheState<T>: UnfairLock {
                     }
                     let startIx = oldIx - nInvalidBefore
                     if op_type == "copy" {
-                        newLines.append(contentsOf: lines[startIx ..< startIx + nCopy])
+                        var lineNumber = op["ln"] as! UInt
+                        let toCopy = lines[startIx ..< startIx + nCopy]
+                        // ??: `.first` returns an optional, and the items in the list are also optionals
+                        if toCopy.first??.number == nil {
+                            // the line number in the update is the logical line number of the
+                            // first *visual* line to copy. If this line is not itself logical,
+                            // increment lineNumber for the next line.
+                            lineNumber += 1
+                        }
+                        for var line in lines[startIx ..< startIx + nCopy] {
+                            if line?.number != nil {
+                                line?.number = lineNumber
+                                lineNumber += 1
+                            }
+                            newLines.append(line)
+                        }
                     } else {
                         guard let json_lines = op["lines"] as? [[String: AnyObject]] else { return inval }
                         var jsonIx = n - nRemaining

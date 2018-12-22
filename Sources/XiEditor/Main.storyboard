@@ -41,7 +41,7 @@
                             <customView translatesAutoresizingMaskIntoConstraints="NO" id="x8W-KD-KOP" customClass="ShadowView" customModule="XiEditor" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
                             </customView>
-                            <scrollView wantsLayer="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qwv-ci-fVA">
+                            <scrollView wantsLayer="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qwv-ci-fVA" customClass="ScrollViewWithMarkerBar" customModule="XiEditor" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
                                 <clipView key="contentView" wantsLayer="YES" drawsBackground="NO" id="1wJ-s5-kVO" customClass="XiClipView" customModule="XiEditor" customModuleProvider="target">
                                     <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
@@ -60,11 +60,11 @@
                                         <constraint firstItem="rTT-RO-I3T" firstAttribute="top" secondItem="1wJ-s5-kVO" secondAttribute="top" id="BTR-DU-CLt"/>
                                     </constraints>
                                 </clipView>
-                                <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="hEG-a6-BYd">
+                                <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="hEG-a6-BYd" customClass="OpaqGridScroller" customModule="XiEditor" customModuleProvider="target">
                                     <rect key="frame" x="0.0" y="255" width="465" height="15"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
-                                <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="O02-Lc-5gg">
+                                <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="O02-Lc-5gg" customClass="MarkerBar" customModule="XiEditor" customModuleProvider="target">
                                     <rect key="frame" x="465" y="0.0" width="15" height="255"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
@@ -280,7 +280,7 @@ Gw
                                                 <subviews>
                                                     <segmentedControl verticalHuggingPriority="750" ambiguous="YES" tag="2" translatesAutoresizingMaskIntoConstraints="NO" id="neW-QX-zJG">
                                                         <rect key="frame" x="-1" y="1" width="208" height="20"/>
-                                                        <segmentedCell key="cell" borderStyle="border" alignment="left" style="roundRect" trackingMode="momentary" id="bsz-je-mdh">
+                                                        <segmentedCell key="cell" borderStyle="border" alignment="left" segmentDistribution="fillEqually" style="roundRect" trackingMode="momentary" id="bsz-je-mdh">
                                                             <font key="font" metaFont="cellTitle"/>
                                                             <segments>
                                                                 <segment label="Replace" imageScaling="none"/>
@@ -436,6 +436,7 @@ Gw
                     </customView>
                     <connections>
                         <outlet property="addButton" destination="WtA-NA-zjT" id="sBs-ZU-83X"/>
+                        <outlet property="buttonContainer" destination="YGp-T4-eoX" id="59z-5h-5WQ"/>
                         <outlet property="deleteButton" destination="V7s-ei-piI" id="cWW-x6-p20"/>
                         <outlet property="searchField" destination="4N3-Md-ylI" id="EXI-Ta-lqU"/>
                     </connections>
@@ -498,11 +499,24 @@ Gw
                                                 <action selector="openPreferences:" target="7er-QZ-amI" id="dzf-4q-1J8"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Install Command Line Shortcut" id="Rhk-UC-PWm">
+                                        <menuItem title="Command Line Tool" id="ap8-TE-eEJ" userLabel="Command Line Tool">
                                             <modifierMask key="keyEquivalentModifierMask"/>
-                                            <connections>
-                                                <action selector="installShortcut:" target="azf-ih-6fI" id="s8S-bc-cEL"/>
-                                            </connections>
+                                            <menu key="submenu" title="Command Line Tool" id="dYg-b7-J5k">
+                                                <items>
+                                                    <menuItem title="Install" id="Rhk-UC-PWm" userLabel="Install">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                        <connections>
+                                                            <action selector="installCli:" target="azf-ih-6fI" id="s8S-bc-cEL"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                    <menuItem title="Remove" id="WaE-CF-QcW" userLabel="Remove">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                        <connections>
+                                                            <action selector="removeCli:" target="azf-ih-6fI" id="wo1-cs-5Xa"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                </items>
+                                            </menu>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="gsd-kb-HGJ"/>
                                         <menuItem title="Services" id="LDz-hM-BVt">
@@ -685,6 +699,11 @@ Gw
                                             <modifierMask key="keyEquivalentModifierMask" control="YES"/>
                                             <connections>
                                                 <action selector="decreaseNumber:" target="7er-QZ-amI" id="gdz-W0-fqj"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Toggle Comment" keyEquivalent="/" id="tIC-OG-slr">
+                                            <connections>
+                                                <action selector="toggleComment:" target="7er-QZ-amI" id="1zd-gi-dQv"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="PN7-qq-hhD"/>
@@ -1027,6 +1046,12 @@ Gw
                                                     <menuItem title="Unindent" keyEquivalent="[" id="bhP-6q-co4" userLabel="Unindent">
                                                         <connections>
                                                             <action selector="unindent:" target="7er-QZ-amI" id="83I-gO-x7f"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                    <menuItem title="Reindent Lines" keyEquivalent="i" id="GXQ-jg-JVA" userLabel="Unindent">
+                                                        <modifierMask key="keyEquivalentModifierMask" control="YES" option="YES"/>
+                                                        <connections>
+                                                            <action selector="reindent:" target="7er-QZ-amI" id="83I-gO-x7k"/>
                                                         </connections>
                                                     </menuItem>
                                                 </items>

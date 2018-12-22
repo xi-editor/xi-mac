@@ -3,12 +3,13 @@ osx_image: xcode9.2
 
 git:
   submodules: true
+  depth: 5
 
 os:
   - osx
 
 rust:
-  - 1.29.2
+  - 1.31.0
 
 cache: cargo
 
@@ -16,7 +17,7 @@ before_script:
   - sudo gem install xcpretty
 
 script:
-  - xcodebuild clean test -scheme XiEditor | xcpretty -s
+  - xcodebuild test -scheme XiEditor | xcpretty -s && exit ${PIPESTATUS[0]}
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

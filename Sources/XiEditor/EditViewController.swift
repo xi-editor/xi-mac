@@ -36,11 +36,12 @@ struct LineAssoc {
 
 /// Represents one search query
 struct FindQuery {
-    var id: Int?
-    var term: String?
-    var caseSensitive: Bool
-    var regex: Bool
-    var wholeWords: Bool
+    /// If we create a new query on the frontend it doesn't have an ID yet. The new query gets assigned an ID in core.
+    let id: Int?
+    let term: String?
+    let caseSensitive: Bool
+    let regex: Bool
+    let wholeWords: Bool
 
     func toJson() -> [String: Any] {
         var jsonQuery: [String: Any] = [
@@ -74,7 +75,11 @@ protocol FindDelegate: class {
     func updateScrollPosition(previousOffset: CGFloat)
 }
 
-class EditViewController: NSViewController, EditViewDataSource, FindDelegate, ScrollInterested {
+protocol MarkerDelegate: class {
+    func setMarker(_ items: [Marker])
+}
+
+class EditViewController: NSViewController, EditViewDataSource, FindDelegate, ScrollInterested, MarkerDelegate {
     @IBOutlet var scrollView: NSScrollView!
     @IBOutlet weak var editContainerView: EditContainerView!
     @IBOutlet var editView: EditView!
@@ -101,7 +106,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     var lines = LineCache<LineAssoc>()
 
     var textMetrics: TextDrawingMetrics {
-        return (NSApplication.shared.delegate as! AppDelegate).textMetrics
+        return styling.textMetrics
     }
 
     var gutterWidth: CGFloat = 0 {
@@ -114,11 +119,11 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     var styleMap: StyleMap {
-        return (NSApplication.shared.delegate as! AppDelegate).styleMap
+        return styling.styleMap
     }
 
     var theme: Theme {
-        return (NSApplication.shared.delegate as! AppDelegate).theme
+        return styling.theme
     }
 
     /// A mapping of available plugins to activation status.
@@ -227,6 +232,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         super.viewDidLoad()
         shadowView.wantsLayer = true
         editView.dataSource = self
+        (scrollView.verticalScroller as! MarkerBar).markerDelegate = self
         scrollView.contentView.documentCursor = .iBeam
         scrollView.automaticallyAdjustsContentInsets = false
         scrollView.hasHorizontalScroller = true
@@ -306,6 +312,12 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         }
     }
 
+    /// If we reuse an empty view when opening a file, we need to make sure we resend our size.
+    func prepareForReuse() {
+        _previousViewportSize = CGSize.zero
+        redrawEverything()
+    }
+
     /// If font size or theme changes, we invalidate all views.
     func redrawEverything() {
         visibleLines = 0..<0
@@ -318,8 +330,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         editView.gutterCache = nil
         shadowView.updateShadowColor(newColor: theme.shadow)
         editView.needsDisplay = true
-        self.scrollPastEnd = ((NSApplication.shared.delegate as! AppDelegate).configCache["scroll_past_end"] as? Bool) ?? false
-        self.unifiedTitlebar = ((NSApplication.shared.delegate as! AppDelegate).configCache["unified_titlebar"] as? Bool) ?? false
+        let configCache = (NSApplication.shared.delegate as! AppDelegate).xiClient.configCache
+        self.scrollPastEnd = (configCache["scroll_past_end"] as? Bool) ?? false
+        self.unifiedTitlebar = (configCache["unified_titlebar"] as? Bool) ?? false
     }
 
     fileprivate func updateEditViewHeight() {
@@ -419,7 +432,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         "scrollToEndOfDocument:": "move_to_end_of_document",
         "transpose:": "transpose",
         "yank:": "yank",
-        "cancelOperation:": "cancel_operation",
         ]
 
     override func doCommand(by aSelector: Selector) {
@@ -442,7 +454,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         if !findViewController.view.isHidden {
             closeFind()
         } else {
-            document.sendRpcAsync("cancel_operation", params: [])
+            document.sendRpcAsync("collapse_selections", params: [])
         }
     }
 
@@ -487,6 +499,10 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     @objc func unindent(_ sender: Any?) {
         document.sendRpcAsync("outdent", params: [])
+    }
+
+    @objc func reindent(_ sender: Any?) {
+        document.sendRpcAsync("reindent", params: [])
     }
 
     @objc func increaseNumber(_ sender: Any?) {
@@ -708,6 +724,10 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         document.xiCore.sendRpcAsync("modify_user_config", params: params, callback: nil)
     }
 
+    @IBAction func toggleComment(_ sender: Any?) {
+        document.sendRpcAsync("debug_toggle_comment", params: [])
+    }
+
     @objc func togglePlugin(_ sender: NSMenuItem) {
         let pluginName = sender.title
         let viewIdentifier = document.coreViewIdentifier!
@@ -758,8 +778,11 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     func handleFontChange(fontName: String?, fontSize: CGFloat?) {
-        (NSApplication.shared.delegate as! AppDelegate).handleFontChange(fontName: fontName,
-                                                                         fontSize: fontSize)
+        styling.handleFontChange(fontName: fontName, fontSize: fontSize)
+    }
+
+    private var styling: AppStyling {
+        return (NSApplication.shared.delegate as! AppDelegate).xiClient
     }
 
     func updatePluginMenu() {
@@ -936,6 +959,12 @@ extension EditViewController: NSWindowDelegate {
 
     func windowDidResignKey(_ notification: Notification) {
         editView.isFrontmostView = false
+    }
+    
+    @objc func windowShouldClose(_ sender: NSWindow) {
+        let path = self.document.fileURL?.path // To check if window contains file opened by cli
+        let notification = Notification.Name("io.xi-editor.xiMacFileClosed")
+        DistributedNotificationCenter.default().post(name: notification, object: nil, userInfo: ["path": path ?? "FILE_NOT_SAVED"])
     }
 }
 

@@ -79,7 +79,7 @@ struct StyleSpan {
     let style: StyleIdentifier
 
     /// given a line of text and an array of style values, generate an array of StyleSpans.
-    /// see https://github.com/google/xi-editor/blob/protocol_doc/doc/update.md
+    /// see http://xi-editor.github.io/xi-editor/docs/frontend-protocol.html#def_style
     static func styles(fromRaw raw: [Int], text: String) -> [StyleSpan] {
         var out: [StyleSpan] = []
         var ix = 0
@@ -110,16 +110,16 @@ class StyleMapState: UnfairLock {
     private var font: NSFont
     private var styles: [Style?] = []
 
-    init(font: NSFont) {
+    init(font: NSFont, theme: Theme) {
         self.font = font
         let selectionStyle = Style(font: font,
-                                   fgColor: (NSApplication.shared.delegate as! AppDelegate).theme.selectionForeground,
+                                   fgColor: theme.selectionForeground,
                                    bgColor: nil,
                                    underline: false,
                                    italic: false,
                                    weight: nil)
         let highlightStyle = Style(font: font,
-                                   fgColor: (NSApplication.shared.delegate as! AppDelegate).theme.findHighlightForeground,
+                                   fgColor: theme.findHighlightForeground,
                                    bgColor: nil,
                                    underline: false,
                                    italic: false,
@@ -137,7 +137,7 @@ class StyleMapState: UnfairLock {
         if let fg = json["fg_color"] as? UInt32 {
             fgColor = colorFromArgb(fg)
         } else {
-            fgColor = (NSApplication.shared.delegate as! AppDelegate).theme.foreground
+            fgColor = (NSApplication.shared.delegate as! AppDelegate).xiClient.theme.foreground
         }
         if let bg = json["bg_color"] as? UInt32 {
             bgColor = colorFromArgb(bg)
@@ -148,7 +148,7 @@ class StyleMapState: UnfairLock {
         var weight = json["weight"] as? Int
         if let w = weight {
             // convert to NSFont weight: (100-500 -> 2-6 (5 normal weight), 600-800 -> 8-10, 900 -> 12
-            // see https://github.com/google/xi-mac/pull/32#discussion_r115114037
+            // see https://github.com/xi-editor/xi-mac/pull/32#discussion_r115114037
             weight = Int(floor(1 + Float(w) * (0.01 + 3e-6 * Float(w))))
         }
 
@@ -282,8 +282,8 @@ class StyleMapLocked {
 class StyleMap {
     private let state: StyleMapState
 
-    init(font: NSFont) {
-        state = StyleMapState(font: font)
+    init(font: NSFont, theme: Theme) {
+        state = StyleMapState(font: font, theme: theme)
     }
 
     func locked() -> StyleMapLocked {
