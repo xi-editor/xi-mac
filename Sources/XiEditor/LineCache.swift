@@ -132,10 +132,7 @@ fileprivate class LineCacheState<T>: UnfairLock {
         return range.map( { _get($0) } )
     }
 
-    /// Updates the state by applying a delta. The update format is detailed in the
-    /// [xi-core docs](http://xi-editor.github.io/xi-editor/docs/frontend-protocol.html#view-update-protocol).
-    func applyUpdate(update: [String: AnyObject]) -> InvalSet {
-        // parse annotations
+    func updateAnnotations(update: [String: AnyObject]) {
         let annotationData = (update["annotations"] as! [[String: AnyObject]])
 
         for annotationType in AnnotationType.allCases {
@@ -158,7 +155,12 @@ fileprivate class LineCacheState<T>: UnfairLock {
                 }
             }
         }
+    }
 
+    /// Updates the state by applying a delta. The update format is detailed in the
+    /// [xi-core docs](http://xi-editor.github.io/xi-editor/docs/frontend-protocol.html#view-update-protocol).
+    func applyUpdate(update: [String: AnyObject]) -> InvalSet {
+        updateAnnotations(update: update)
         let inval = InvalSet()
         guard let ops = update["ops"] else { return inval }
         let oldHeight = height

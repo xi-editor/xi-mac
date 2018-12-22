@@ -414,6 +414,24 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         }
     }
 
+    func annotationColor(for annotation: Annotation, annotationType: AnnotationType) -> UInt32 {
+        let selectionColor = self.isFrontmostView ? dataSource.theme.selection : dataSource.theme.inactiveSelection ?? dataSource.theme.selection
+        let selArgb = colorToArgb(selectionColor)
+        let highlightColors = dataSource.theme.findHighlights
+        let highlightsArgb = (highlightColors ?? [])!.map({
+            (highlightColor: NSColor) -> UInt32 in
+            colorToArgb(highlightColor)
+        })
+
+        switch annotationType {
+        case AnnotationType.Selection:
+            return selArgb
+        case AnnotationType.Find:
+            let queryId = annotation.payload?["id"] as! Int
+            return highlightsArgb[queryId % highlightsArgb.count]
+        }
+    }
+
     /// Our equivalent of drawRect:, with rendering using TextPlane.
     ///
     /// Note: This function has side effects in two cases: It stashes
@@ -447,14 +465,6 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         // also to improve batching of the OpenGL draw calls.
 
         // first pass: create TextLine objects and also draw background rects
-        let selectionColor = self.isFrontmostView ? dataSource.theme.selection : dataSource.theme.inactiveSelection ?? dataSource.theme.selection
-
-        let selArgb = colorToArgb(selectionColor)
-        let highlightColors = dataSource.theme.findHighlights
-        let highlightsArgb = (highlightColors ?? [])!.map({
-            (highlightColor: NSColor) -> UInt32 in
-            colorToArgb(highlightColor)
-        })
         let foregroundArgb = colorToArgb(dataSource.theme.foreground)
         let gutterArgb = colorToArgb(dataSource.theme.gutterForeground)
 
@@ -494,16 +504,7 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                             let annotation = annotations[annotationType]![ix]
                             let start = annotation.startLine == lineIx ? annotation.startColumn : 0
                             let end = annotation.endLine == lineIx ? annotation.endColumn : line.text.count
-
-                            let color: ARGBColor = {
-                                switch annotationType {
-                                case AnnotationType.Selection:
-                                    return selArgb
-                                case AnnotationType.Find:
-                                    let queryId = annotation.payload?["id"] as! Int
-                                    return highlightsArgb[queryId % highlightsArgb.count]
-                                }
-                            }()
+                            let color = annotationColor(for: annotation, annotationType: annotationType)
 
                             let startIx = utf8_offset_to_utf16(line.text, start)
                             let endIx = utf8_offset_to_utf16(line.text, end)
