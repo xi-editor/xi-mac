@@ -20,17 +20,22 @@ protocol XiDocument: class {
 
 class XiDocumentConnection: XiDocument {
 
-    private let xiCore: XiCore
+    typealias AsyncRpc = (_ method: String, _ params: Any, _ callback: RpcCallback?) -> Void
+    typealias SyncRpc = (_ method: String, _ params: Any) -> RpcResult
 
-    init(xiCore: XiCore) {
-        self.xiCore = xiCore
+    private let asyncRpc: AsyncRpc
+    private let syncRpc: SyncRpc
+
+    init(asyncRpc: @escaping AsyncRpc, syncRpc: @escaping SyncRpc) {
+        self.asyncRpc = asyncRpc
+        self.syncRpc = syncRpc
     }
 
     private func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback?) {
-        xiCore.sendRpcAsync(method, params: params, callback: callback)
+        asyncRpc(method, params, callback)
     }
 
     private func sendRpc(_ method: String, params: Any) -> RpcResult {
-        return xiCore.sendRpc(method, params: params)
+        return syncRpc(method, params)
     }
 }
