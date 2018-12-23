@@ -16,6 +16,7 @@ import Foundation
 
 
 protocol XiDocument: class {
+    func resize(size: CGSize)
 }
 
 class XiDocumentConnection: XiDocument {
@@ -29,6 +30,10 @@ class XiDocumentConnection: XiDocument {
     init(asyncRpc: @escaping AsyncRpc, syncRpc: @escaping SyncRpc) {
         self.asyncRpc = asyncRpc
         self.syncRpc = syncRpc
+    }
+
+    func resize(size: CGSize) {
+        sendRpcAsync("resize", params: ["width": size.width, "height": size.height])
     }
 
     private func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback? = nil) {
