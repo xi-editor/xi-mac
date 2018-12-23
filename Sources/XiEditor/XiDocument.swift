@@ -31,7 +31,7 @@ class XiDocumentConnection: XiDocument {
         self.syncRpc = syncRpc
     }
 
-    private func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback?) {
+    private func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback? = nil) {
         asyncRpc(method, params, callback)
     }
 
