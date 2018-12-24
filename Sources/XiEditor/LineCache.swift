@@ -58,32 +58,6 @@ struct Line<T> {
     }
 }
 
-enum AnnotationType: String, CaseIterable {
-    case Selection = "selection"
-    case Find = "find"
-}
-
-/// Represents an annotation (eg. selection, find highlight)
-struct Annotation {
-    let startLine: Int
-    let startColumn: Int
-    let endLine: Int
-    let endColumn: Int
-    let payload: AnyObject?
-
-    init?(range: [Int], data: AnyObject?) {
-        let position = range
-
-        if position.count != 4 { return nil }
-
-        startLine = position[0]
-        startColumn = position[1]
-        endLine = position[2]
-        endColumn = position[3]
-        payload = data
-    }
-}
-
 /// The underlying state of the cache, with methods for applying update deltas.
 fileprivate class LineCacheState<T>: UnfairLock {
     /// A semaphore we use to wake up the main thread if it is blocking missing lines
@@ -95,7 +69,7 @@ fileprivate class LineCacheState<T>: UnfairLock {
 
     var nInvalidBefore = 0;
     var lines: [Line<T>?] = []
-    var annotations: [AnnotationType: [Annotation]] = [:]
+    var annotations: AnnotationStore = AnnotationStore(from: [])
     var nInvalidAfter = 0
 
     var height: Int {
@@ -132,35 +106,11 @@ fileprivate class LineCacheState<T>: UnfairLock {
         return range.map( { _get($0) } )
     }
 
-    func updateAnnotations(update: [String: AnyObject]) {
-        let annotationData = (update["annotations"] as! [[String: AnyObject]])
-
-        for annotationType in AnnotationType.allCases {
-            let annotationsOfType = annotationData.filter({$0["type"] as! String == annotationType.rawValue})
-            annotations[annotationType] = []
-
-            if !annotationsOfType.isEmpty {
-                for annotation in annotationsOfType {
-                    let ranges = annotation["ranges"] as! [[Int]]
-                    var payloads: [AnyObject] = []
-
-                    if !(annotation["payloads"] is NSNull) && annotation["payloads"] != nil {
-                        payloads = annotation["payloads"] as! [AnyObject]
-                    }
-
-                    for (i, range) in ranges.enumerated() {
-                        let payload = payloads.count > 0 ? payloads[i] : nil
-                        annotations[annotationType]?.append(Annotation(range: range, data: payload)!)
-                    }
-                }
-            }
-        }
-    }
-
     /// Updates the state by applying a delta. The update format is detailed in the
     /// [xi-core docs](http://xi-editor.github.io/xi-editor/docs/frontend-protocol.html#view-update-protocol).
     func applyUpdate(update: [String: AnyObject]) -> InvalSet {
-        updateAnnotations(update: update)
+        annotations = AnnotationStore(from: (update["annotations"] as! [[String: AnyObject]]))
+
         let inval = InvalSet()
         guard let ops = update["ops"] else { return inval }
         let oldHeight = height
@@ -324,7 +274,7 @@ class LineCacheLocked<T> {
         return inner.revision
     }
 
-    var annotations: [AnnotationType: [Annotation]] {
+    var annotations: AnnotationStore {
         return inner.annotations
     }
 
