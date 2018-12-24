@@ -14,10 +14,6 @@
 
 import Cocoa
 
-extension NSPasteboard.PasteboardType {
-    static let PlainText = NSPasteboard.PasteboardType(rawValue: "public.utf8-plain-text")
-}
-
 /// The EditViewDataSource protocol describes the properties that an editView uses to determine how to render its contents.
 protocol EditViewDataSource: class {
     var lines: LineCache<LineAssoc> { get }
@@ -559,15 +555,11 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     @objc func paste(_ sender: AnyObject?) {
-        let pasteboard = NSPasteboard.general
-        if let items = pasteboard.pasteboardItems {
-            for element in items {
-                if let str = element.string(forType: .PlainText) {
-                    document.sendPaste(str)
-                    break
-                }
-            }
-        }
+        NSPasteboard
+            .general
+            .pasteboardItems?
+            .flatMap { $0.string(forType: .string) }
+            .forEach (document.sendPaste(_:))
     }
 
     //MARK: Other system events
