@@ -32,13 +32,17 @@ extension NSFont {
 /// A store of properties used to determine the layout of text.
 struct TextDrawingMetrics {
     let font: NSFont
-    var attributes: [NSAttributedStringKey: AnyObject] = [:]
-    var ascent: CGFloat
-    var descent: CGFloat
-    var leading: CGFloat
-    var baseline: CGFloat
-    var linespace: CGFloat
-    var fontWidth: CGFloat
+    let attributes: [NSAttributedStringKey: AnyObject]
+    let ascent: CGFloat
+    let descent: CGFloat
+    let leading: CGFloat
+    let baseline: CGFloat
+    let linespace: CGFloat
+    let fontWidth: CGFloat
+
+    var topPadding: CGFloat {
+        return descent + leading
+    }
 
     init(font: NSFont, textColor: NSColor) {
         self.font = font
@@ -48,11 +52,10 @@ struct TextDrawingMetrics {
         linespace = ceil(ascent + descent + leading)
         baseline = ceil(ascent)
         fontWidth = font.characterWidth()
-        attributes[.font] = font
         //FIXME: sometimes some regions of a file have no spans, so they don't have a style,
-        // which means they get drawn as black. With this we default to drawing them like plaintext.
-        // BUT: why are spans missing?
-        attributes[.foregroundColor] = textColor
+        // which means they get drawn as black. With this (setting of .foregroundColor)
+        // we default to drawing them like plaintext. BUT: why are spans missing?
+        attributes = [.font: font, .foregroundColor: textColor]
     }
 }
 
@@ -123,13 +126,6 @@ func colorToArgb(_ color: NSColor) -> UInt32 {
 }
 
 final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
-    var scrollOrigin: NSPoint {
-        didSet {
-            if scrollOrigin != oldValue {
-                needsDisplay = true
-            }
-        }
-    }
     var lastRevisionRendered = 0
     var gutterXPad: CGFloat = 8
     var gutterCache: GutterCache?
@@ -188,7 +184,6 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     required init?(coder: NSCoder) {
         _selectedRange = NSMakeRange(NSNotFound, 0)
         _markedRange = NSMakeRange(NSNotFound, 0)
-        scrollOrigin = NSPoint()
         super.init(coder: coder)
 
         wantsLayer = true
@@ -366,9 +361,9 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         partialInvalidate(invalid: dataSource.lines.cursorInval)
     }
 
-    // TODO: more functions should call this, just dividing by linespace doesn't account for descent
-    func yToLine(_ y: CGFloat) -> Int {
-        return Int(floor(max(y - dataSource.textMetrics.descent, 0) / dataSource.textMetrics.linespace))
+    func yOffsetToLine(_ y: CGFloat) -> Int {
+        let y = max(y - dataSource.textMetrics.topPadding, 0)
+        return Int(floor(y / dataSource.textMetrics.linespace))
     }
 
     func lineIxToBaseline(_ lineIx: Int) -> CGFloat {
@@ -379,9 +374,9 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     /// Note: - The returned position is not guaruanteed to be an existing line. For instance, if a buffer does not fill the current window, a point below the last line will return a buffer position with a line number exceeding the number of lines in the file. In this case position.column will always be zero.
     func bufferPositionFromPoint(_ point: NSPoint) -> BufferPosition {
         let point = self.convert(point, from: nil)
-        let x = point.x + scrollOrigin.x - dataSource.gutterWidth
-        let y = point.y + scrollOrigin.y
-        let lineIx = yToLine(y)
+        let x = point.x + dataSource.scrollOrigin.x - dataSource.gutterWidth
+        let y = point.y + dataSource.scrollOrigin.y
+        let lineIx = yOffsetToLine(y)
         if let line = getLine(lineIx) {
             let s = line.text
             let attrString = NSAttributedString(string: s, attributes: dataSource.textMetrics.attributes)
@@ -433,17 +428,14 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             return
         }
         let linespace = dataSource.textMetrics.linespace
-        let topPad = linespace - dataSource.textMetrics.ascent
-        let xOff = dataSource.gutterWidth + x0 - scrollOrigin.x
-        let yOff = topPad - scrollOrigin.y
-        let firstVisible = max(0, Int((floor(dirtyRect.origin.y - topPad + scrollOrigin.y) / linespace)))
-        let lastVisible = max(0, Int(ceil((dirtyRect.origin.y + dirtyRect.size.height - topPad + scrollOrigin.y) / linespace)))
+        let xOff = dataSource.gutterWidth + x0 - dataSource.scrollOrigin.x
+        let yOff = dataSource.textMetrics.topPadding - dataSource.scrollOrigin.y
 
         // Note: this locks the line cache for the duration of the render
         let lineCache = dataSource.lines.locked()
         let totalLines = lineCache.height
-        let first = min(totalLines, firstVisible)
-        let last = min(totalLines, lastVisible)
+        let first = min(yOffsetToLine(dirtyRect.origin.y + dataSource.scrollOrigin.y), totalLines)
+        let last = min(yOffsetToLine(dirtyRect.maxY + dataSource.scrollOrigin.y) + 1, totalLines)
         let lines = lineCache.blockingGet(lines: first..<last)
         let font = dataSource.textMetrics.font as CTFont
         let styleMap = dataSource.styleMap.locked()
