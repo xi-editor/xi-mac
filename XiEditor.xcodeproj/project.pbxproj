@@ -30,6 +30,7 @@
 		6BA1873B1FDDD7B6008220DA /* XiClipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA1873A1FDDD7B6008220DA /* XiClipView.swift */; };
 		6BF9575B1FD70C420010BAE6 /* Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF9575A1FD70C420010BAE6 /* Client.swift */; };
 		832910D920229C2D0042C32B /* Fps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 832910D820229C2D0042C32B /* Fps.swift */; };
+		95368BAB21D0B466000FAC40 /* Annotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95368BAA21D0B466000FAC40 /* Annotation.swift */; };
 		95FD9935218689A500C32AF1 /* MarkerBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95FD9934218689A500C32AF1 /* MarkerBar.swift */; };
 		AE0243F61E4BDF8A00641BDA /* StyleMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE0243F51E4BDF8A00641BDA /* StyleMap.swift */; };
 		AE041BA61D4327EB0069AB8B /* plugins in Resources */ = {isa = PBXBuildFile; fileRef = AE041BA51D4327EB0069AB8B /* plugins */; };
@@ -154,6 +155,7 @@
 		6BA1873A1FDDD7B6008220DA /* XiClipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiClipView.swift; sourceTree = "<group>"; };
 		6BF9575A1FD70C420010BAE6 /* Client.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Client.swift; sourceTree = "<group>"; };
 		832910D820229C2D0042C32B /* Fps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fps.swift; sourceTree = "<group>"; };
+		95368BAA21D0B466000FAC40 /* Annotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Annotation.swift; sourceTree = "<group>"; };
 		95FD9934218689A500C32AF1 /* MarkerBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkerBar.swift; sourceTree = "<group>"; };
 		AE0243F51E4BDF8A00641BDA /* StyleMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StyleMap.swift; sourceTree = "<group>"; };
 		AE041B971D4323460069AB8B /* build-rust-xcode.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-rust-xcode.sh"; sourceTree = "<group>"; };
@@ -367,6 +369,7 @@
 				AE499DD11C82BB2B002D68AF /* Assets.xcassets */,
 				D810EA5121BB291D00EABB21 /* ClientImplementation.swift */,
 				95FD9934218689A500C32AF1 /* MarkerBar.swift */,
+				95368BAA21D0B466000FAC40 /* Annotation.swift */,
 			);
 			path = XiEditor;
 			sourceTree = "<group>";
@@ -714,6 +717,7 @@
 				6BF9575B1FD70C420010BAE6 /* Client.swift in Sources */,
 				AED23F181C83CBED002246CE /* EditView.swift in Sources */,
 				D8D319F0218CB39A00D108D4 /* XiCore.swift in Sources */,
+				95368BAB21D0B466000FAC40 /* Annotation.swift in Sources */,
 				AE499DD01C82BB2B002D68AF /* AppDelegate.swift in Sources */,
 				AEC4F6B31FF5AF130060E10E /* UnfairLock.swift in Sources */,
 				95FD9935218689A500C32AF1 /* MarkerBar.swift in Sources */,

@@ -414,7 +414,7 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         }
     }
 
-    func annotationColor(for annotation: Annotation, annotationType: AnnotationType) -> UInt32 {
+    func annotationColor(for annotation: Annotation) -> UInt32 {
         let selectionColor = self.isFrontmostView ? dataSource.theme.selection : dataSource.theme.inactiveSelection ?? dataSource.theme.selection
         let selArgb = colorToArgb(selectionColor)
         let highlightColors = dataSource.theme.findHighlights
@@ -423,7 +423,7 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             colorToArgb(highlightColor)
         })
 
-        switch annotationType {
+        switch annotation.type {
         case AnnotationType.Selection:
             return selArgb
         case AnnotationType.Find:
@@ -451,7 +451,6 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
 
         // Note: this locks the line cache for the duration of the render
         let lineCache = dataSource.lines.locked()
-        let annotations = lineCache.annotations.mapValues {a in a.sorted(by: { $0.endLine < $1.endLine })}
         let totalLines = lineCache.height
         let first = min(yOffsetToLine(dirtyRect.origin.y + dataSource.scrollOrigin.y), totalLines)
         let last = min(yOffsetToLine(dirtyRect.maxY + dataSource.scrollOrigin.y) + 1, totalLines)
@@ -476,10 +475,8 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
 
         // keeps track of the next annotations to be drawn
         let annotationsToBeDrawn = [AnnotationType.Find, AnnotationType.Selection]
-        var annotationIx: [AnnotationType : Int] = [:]
-        for annotationType in annotationsToBeDrawn {
-            annotationIx[annotationType] = 0
-        }
+        let annotations = lineCache.annotations
+        let annotationsForLines = annotations.annotationsForLines(lines: lines, lineRange: first..<last)
 
         for lineIx in first..<last {
             let relLineIx = lineIx - first
@@ -496,27 +493,11 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                 builder.setFgColor(argb: foregroundArgb)
                 styleMap.applyStyles(builder: builder, styles: line.styles)
 
+                // draw all annotations that are active for the current line
                 for annotationType in annotationsToBeDrawn {
-                    // draw all annotations that are active for the current line
-                    var ix = annotationIx[annotationType]!
-                    while ix < (annotations[annotationType]?.count)! && annotations[annotationType]![ix].startLine <= lineIx {
-                        if (annotations[annotationType]![ix].endLine >= lineIx) {
-                            let annotation = annotations[annotationType]![ix]
-                            let start = annotation.startLine == lineIx ? annotation.startColumn : 0
-                            let end = annotation.endLine == lineIx ? annotation.endColumn : line.text.count
-                            let color = annotationColor(for: annotation, annotationType: annotationType)
-
-                            let startIx = utf8_offset_to_utf16(line.text, start)
-                            let endIx = utf8_offset_to_utf16(line.text, end)
-                            builder.addBgSpan(range: convertRange(NSMakeRange(startIx, endIx - startIx)), argb: color)
-
-                            if annotation.endLine == lineIx {
-                                // drawing the annotation is completed; move on to the next one
-                                annotationIx[annotationType] = annotationIx[annotationType]! + 1
-                            }
-                        }
-
-                        ix += 1
+                    for annotation in annotationsForLines[lineIx]![annotationType]! {
+                        let color = annotationColor(for: annotation.annotation)
+                        builder.addBgSpan(range: convertRange(NSMakeRange(annotation.startIx, annotation.endIx - annotation.startIx)), argb: color)
                     }
                 }
 
