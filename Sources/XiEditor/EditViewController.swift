@@ -557,9 +557,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     @objc func paste(_ sender: AnyObject?) {
         NSPasteboard
             .general
-            .pasteboardItems?
-            .flatMap { $0.string(forType: .string) }
-            .forEach (document.sendPaste(_:))
+            .string(forType: .string)
+            .flatMap(document.sendPaste(_:))
     }
 
     //MARK: Other system events
