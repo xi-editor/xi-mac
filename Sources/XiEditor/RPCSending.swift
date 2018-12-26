@@ -260,9 +260,7 @@ class StdoutRPCSender: RPCSending {
         guard let jsonMethod = json["method"] as? String,
               let params = json["params"],
               let id = json["id"],
-              let method = RPCRequestMethod(rawValue: jsonMethod),
-              let args = params as? [[String: AnyObject]],
-              let result = client?.measureWidth(args: args)
+              let method = RPCRequestMethod(rawValue: jsonMethod)
             else {
                 assertionFailure("unknown json from core: \(json)")
                 return
@@ -270,6 +268,12 @@ class StdoutRPCSender: RPCSending {
 
         switch method {
         case .measureWidth:
+            guard let args = params as? [[String: AnyObject]],
+                  let result = client?.measureWidth(args: args) else {
+                    assertionFailure("unexpected data from core: \(params)")
+                    return
+            }
+            
             sendResult(id: id, result: result)
         }
     }
