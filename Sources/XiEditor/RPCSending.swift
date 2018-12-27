@@ -287,7 +287,9 @@ class StdoutRPCSender: RPCSending {
                 return
         }
 
-        let viewIdentifier = params["view_id"] as? ViewIdentifier ?? ""
+        guard let viewIdentifier = params["view_id"] as? ViewIdentifier else {
+            fatalError("view_id missing")
+        }
         
         switch method {
         case .update:
