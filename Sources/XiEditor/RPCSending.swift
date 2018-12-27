@@ -287,30 +287,28 @@ class StdoutRPCSender: RPCSending {
                 return
         }
 
-        guard let viewIdentifier = params["view_id"] as? ViewIdentifier else {
-            fatalError("view_id missing")
-        }
+        let viewIdentifier = params["view_id"] as? ViewIdentifier
         
         switch method {
         case .update:
             let update = params["update"] as! [String: AnyObject]
-            self.client?.update(viewIdentifier: viewIdentifier, update: update, rev: nil)
+            self.client?.update(viewIdentifier: viewIdentifier!, update: update, rev: nil)
 
         case .scrollTo:
             let line = params["line"] as! Int
             let col = params["col"] as! Int
-            self.client?.scroll(viewIdentifier: viewIdentifier, line: line, column: col)
+            self.client?.scroll(viewIdentifier: viewIdentifier!, line: line, column: col)
 
         case .defStyle:
             client?.defineStyle(style: params as! [String: AnyObject])
 
         case .pluginStarted:
             let plugin = params["plugin"] as! String
-            client?.pluginStarted(viewIdentifier: viewIdentifier, pluginName: plugin)
+            client?.pluginStarted(viewIdentifier: viewIdentifier!, pluginName: plugin)
 
         case .pluginStopped:
             let plugin = params["plugin"] as! String
-            client?.pluginStopped(viewIdentifier: viewIdentifier, pluginName: plugin)
+            client?.pluginStopped(viewIdentifier: viewIdentifier!, pluginName: plugin)
 
         case .availableThemes:
             let themes = params["themes"] as! [String]
@@ -325,13 +323,13 @@ class StdoutRPCSender: RPCSending {
         case .languageChanged:
             let languageIdentifier = params["language_id"] as! String
             client?.languageChanged(
-                viewIdentifier: viewIdentifier,
+                viewIdentifier: viewIdentifier!,
                 languageIdentifier: languageIdentifier
             )
             
         case .availablePlugins:
             let plugins = params["plugins"] as! [[String: AnyObject]]
-            client?.availablePlugins(viewIdentifier: viewIdentifier, plugins: plugins)
+            client?.availablePlugins(viewIdentifier: viewIdentifier!, plugins: plugins)
             
         case .availableLanguages:
             let languages = params["languages"] as! [String]
@@ -344,12 +342,12 @@ class StdoutRPCSender: RPCSending {
                 .filter { $0 != nil }
                 .map { $0! }
 
-            client?.updateCommands(viewIdentifier: viewIdentifier,
+            client?.updateCommands(viewIdentifier: viewIdentifier!,
                                    plugin: plugin, commands: cmds)
 
         case .configurationChanged:
             let changes = params["changes"] as! [String: AnyObject]
-            client?.configChanged(viewIdentifier: viewIdentifier, changes: changes)
+            client?.configChanged(viewIdentifier: viewIdentifier!, changes: changes)
 
         case .alert:
             let message = params["msg"] as! String
@@ -360,29 +358,29 @@ class StdoutRPCSender: RPCSending {
             let key = params["key"] as! String
             let value = params["value"] as! String
             let alignment = params["alignment"] as! String
-            client?.addStatusItem(viewIdentifier: viewIdentifier, source: source, key: key, value: value, alignment: alignment)
+            client?.addStatusItem(viewIdentifier: viewIdentifier!, source: source, key: key, value: value, alignment: alignment)
 
         case .updateStatusItem:
             let key = params["key"] as! String
             let value = params["value"] as! String
-            client?.updateStatusItem(viewIdentifier: viewIdentifier, key: key, value: value)
+            client?.updateStatusItem(viewIdentifier: viewIdentifier!, key: key, value: value)
 
         case .removeStatusItem:
             let key = params["key"] as! String
-            client?.removeStatusItem(viewIdentifier: viewIdentifier, key: key)
+            client?.removeStatusItem(viewIdentifier: viewIdentifier!, key: key)
 
         case .showHover:
             let requestIdentifier = params["request_id"] as! Int
             let result = params["result"] as! String
-            client?.showHover(viewIdentifier: viewIdentifier, requestIdentifier: requestIdentifier, result: result)
+            client?.showHover(viewIdentifier: viewIdentifier!, requestIdentifier: requestIdentifier, result: result)
 
         case .findStatus:
             let status = params["queries"] as! [[String: AnyObject]]
-            client?.findStatus(viewIdentifier: viewIdentifier, status: status)
+            client?.findStatus(viewIdentifier: viewIdentifier!, status: status)
 
         case .replaceStatus:
             let status = params["status"] as! [String: AnyObject]
-            client?.replaceStatus(viewIdentifier: viewIdentifier, status: status)
+            client?.replaceStatus(viewIdentifier: viewIdentifier!, status: status)
         }
     }
 
