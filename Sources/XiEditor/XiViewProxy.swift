@@ -15,11 +15,11 @@
 import Foundation
 
 
-protocol XiDocument: class {
+protocol XiViewProxy: class {
     func resize(size: CGSize)
 }
 
-class XiDocumentConnection: XiDocument {
+class XiViewConnection: XiViewProxy {
 
     typealias AsyncRpc = (_ method: String, _ params: Any, _ callback: RpcCallback?) -> Void
     typealias SyncRpc = (_ method: String, _ params: Any) -> RpcResult
