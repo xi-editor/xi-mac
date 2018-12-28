@@ -562,8 +562,8 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                 continue
             }
 
-            if let gutterNumber = line.number {
-                let gutterTL = gutterCache!.lookupLineNumber(lineIdx: gutterNumber, hasCursor: line.containsCursor)
+            if let gutterNumber = line.number, let gutterCache = gutterCache {
+                let gutterTL = gutterCache.lookupLineNumber(lineIdx: gutterNumber, hasCursor: line.containsCursor)
 
                 let x = dataSource.gutterWidth - (gutterXPad + CGFloat(gutterTL.width))
                 let y0 = yOff + dataSource.textMetrics.ascent + linespace * CGFloat(lineIx)
@@ -574,8 +574,9 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                 previousY0 = y0
             } else {
                 // The case when the cursor is not at a logical line, but instead at a soft-wrapped line.
-                if line.containsCursor, let gutterNumber = previousGutterNumber, let x = previousX, let y0 = previousY0 {
-                    let gutterTL = gutterCache!.lookupLineNumber(lineIdx: gutterNumber, hasCursor: line.containsCursor)
+                if line.containsCursor, let gutterCache = gutterCache, let gutterNumber = previousGutterNumber,
+                    let x = previousX, let y0 = previousY0 {
+                    let gutterTL = gutterCache.lookupLineNumber(lineIdx: gutterNumber, hasCursor: line.containsCursor)
                     
                     // Redraw the gutter where the logical line starts.
                     // This ensures that the logcal line number is "highlighted" even when on a soft-wrapped line.
