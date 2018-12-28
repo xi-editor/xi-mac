@@ -18,6 +18,6 @@ import Foundation
 @testable import XiEditor
 import XCTest
 
-class XiDocumentTests: XCTestCase {
+class XiViewProxyTests: XCTestCase {
 
 }
