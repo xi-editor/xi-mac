@@ -17,7 +17,6 @@ import AppKit.NSWindowController
 final class XiWindowController: NSWindowController {
     var editedStatus = false {
         didSet {
-            print("called")
             self.synchronizeWindowTitleWithDocumentName()
         }
     }
