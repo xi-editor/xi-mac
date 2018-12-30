@@ -29,7 +29,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.levien.XiEditor.help</string>
+	<string>io.xi-editor.XiEditor.help</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 </dict>
