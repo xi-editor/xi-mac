@@ -499,24 +499,11 @@ Gw
                                                 <action selector="openPreferences:" target="7er-QZ-amI" id="dzf-4q-1J8"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Command Line Tool" id="ap8-TE-eEJ" userLabel="Command Line Tool">
+                                        <menuItem title="Toggle Command Line" id="Rhk-UC-PWm" userLabel="Toggle Command Line">
                                             <modifierMask key="keyEquivalentModifierMask"/>
-                                            <menu key="submenu" title="Command Line Tool" id="dYg-b7-J5k">
-                                                <items>
-                                                    <menuItem title="Install" id="Rhk-UC-PWm" userLabel="Install">
-                                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                                        <connections>
-                                                            <action selector="installCli:" target="azf-ih-6fI" id="s8S-bc-cEL"/>
-                                                        </connections>
-                                                    </menuItem>
-                                                    <menuItem title="Remove" id="WaE-CF-QcW" userLabel="Remove">
-                                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                                        <connections>
-                                                            <action selector="removeCli:" target="azf-ih-6fI" id="wo1-cs-5Xa"/>
-                                                        </connections>
-                                                    </menuItem>
-                                                </items>
-                                            </menu>
+                                            <connections>
+                                                <action selector="toggleCli:" target="azf-ih-6fI" id="beN-id-CIc"/>
+                                            </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="gsd-kb-HGJ"/>
                                         <menuItem title="Services" id="LDz-hM-BVt">
@@ -1234,7 +1221,11 @@ Gw
                 </application>
                 <customObject id="7er-QZ-amI" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
                 <customObject id="o5o-AY-Tmr" customClass="NSFontManager"/>
-                <customObject id="azf-ih-6fI" customClass="AppDelegate" customModule="XiEditor" customModuleProvider="target"/>
+                <customObject id="azf-ih-6fI" customClass="AppDelegate" customModule="XiEditor" customModuleProvider="target">
+                    <connections>
+                        <outlet property="cliToggle" destination="Rhk-UC-PWm" id="vHX-ok-D0f"/>
+                    </connections>
+                </customObject>
                 <userDefaultsController id="yco-8S-n0A"/>
             </objects>
             <point key="canvasLocation" x="-295" y="-593"/>
