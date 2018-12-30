@@ -78,6 +78,7 @@ class Document: NSDocument {
 
         self.editViewController = windowController.contentViewController as? EditViewController
         editViewController?.document = self
+        editViewController?.xiView = XiViewConnection(asyncRpc: sendRpcAsync, syncRpc: sendRpc)
         windowController.window?.delegate = editViewController
         self.addWindowController(windowController)
     }
