@@ -139,7 +139,7 @@
 		0C66CB34218F5DF100F6F899 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0C66CB36218F5E8A00F6F899 /* CommandLineTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandLineTool.swift; sourceTree = "<group>"; };
 		28F1ED491EC4C735008839BE /* Search.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
-		31D2A51621B6BF3C005919F0 /* XiEditor.help */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = XiEditor.help; sourceTree = SOURCE_ROOT; };
+		31D2A51621B6BF3C005919F0 /* XiEditor.help */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = XiEditor.help; sourceTree = "<group>"; };
 		4DC153D22165202B000EB215 /* XiWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiWindowController.swift; sourceTree = "<group>"; };
 		4DCB4AEF20576A6E00476F75 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
 		6038770620057B4500AABF17 /* XiDocumentController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiDocumentController.swift; sourceTree = "<group>"; };
@@ -300,19 +300,19 @@
 		31D2A51321B6BEEC005919F0 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				4DCB4AEF20576A6E00476F75 /* fonts */,
 				31D2A51621B6BF3C005919F0 /* XiEditor.help */,
 			);
 			path = Resources;
-			sourceTree = "<group>";
+			sourceTree = SOURCE_ROOT;
 		};
 		AE499DC31C82BB2B002D68AF = {
 			isa = PBXGroup;
 			children = (
-				31D2A51321B6BEEC005919F0 /* Resources */,
 				0C4460AE21895F980035E3C1 /* Package.swift */,
 				0C4460AC218955400035E3C1 /* Sources */,
 				0C4460AD218955700035E3C1 /* Tests */,
-				4DCB4AEF20576A6E00476F75 /* fonts */,
+				31D2A51321B6BEEC005919F0 /* Resources */,
 				D023DA021CD071B40087EC0A /* xicore */,
 				AE499DCD1C82BB2B002D68AF /* Products */,
 			);
