@@ -505,11 +505,19 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
 
         // fourth pass: draw carets
         let cursorArgb = colorToArgb(cursorColor)
+        var linesWithCursors = Set<UInt>()
+        var lastLogicalLine: UInt?
         for lineIx in first..<last {
             let relLineIx = lineIx - first
             if let textLine = textLines[relLineIx], let line = lines[relLineIx] {
+                if let logicalLine = line.number {
+                    lastLogicalLine = logicalLine
+                }
                 let y0 = yOff + linespace * CGFloat(lineIx)
                 for cursor in line.cursor {
+                    if let lastLogicalLine = lastLogicalLine {
+                        linesWithCursors.insert(lastLogicalLine)
+                    }
                     let utf16Ix = utf8_offset_to_utf16(line.text, cursor)
                     // Note: It's ugly that cursorPos is set as a side-effect
                     // TODO: disabled until firstRect logic is fixed
@@ -550,12 +558,6 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         // (especially if the gutter background is the same as the theme background).
         renderer.drawSolidRect(x: 0, y: GLfloat(dirtyRect.origin.x), width: GLfloat(dataSource.gutterWidth), height: GLfloat(dirtyRect.height), argb: colorToArgb(dataSource.theme.gutter))
         
-        // Store the most recent gutter drawing information.
-        // This is kept in the case that the line's gutter must be redraw because of soft-wrapping.
-        var previousGutterNumber: UInt?
-        var previousX: CGFloat?
-        var previousY0: CGFloat?
-        
         for lineIx in first..<last {
             let relLineIx = lineIx - first
             guard let line = lines[relLineIx] else {
@@ -563,25 +565,12 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             }
 
             if let gutterNumber = line.number, let gutterCache = gutterCache {
-                let gutterTL = gutterCache.lookupLineNumber(lineIdx: gutterNumber, hasCursor: line.containsCursor)
+                let gutterTL = gutterCache.lookupLineNumber(lineIdx: gutterNumber,
+                                                            hasCursor: linesWithCursors.contains(gutterNumber))
 
                 let x = dataSource.gutterWidth - (gutterXPad + CGFloat(gutterTL.width))
                 let y0 = yOff + dataSource.textMetrics.ascent + linespace * CGFloat(lineIx)
                 renderer.drawLine(line: gutterTL, x0: GLfloat(x), y0: GLfloat(y0))
-                
-                previousGutterNumber = gutterNumber
-                previousX = x
-                previousY0 = y0
-            } else {
-                // The case when the cursor is not at a logical line, but instead at a soft-wrapped line.
-                if line.containsCursor, let gutterCache = gutterCache, let gutterNumber = previousGutterNumber,
-                    let x = previousX, let y0 = previousY0 {
-                    let gutterTL = gutterCache.lookupLineNumber(lineIdx: gutterNumber, hasCursor: line.containsCursor)
-                    
-                    // Redraw the gutter where the logical line starts.
-                    // This ensures that the logcal line number is "highlighted" even when on a soft-wrapped line.
-                    renderer.drawLine(line: gutterTL, x0: GLfloat(x), y0: GLfloat(y0))
-                }
             }
         }
 
