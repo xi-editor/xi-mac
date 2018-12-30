@@ -18,12 +18,12 @@ final class XiWindowController: NSWindowController {
     private var edited = false
     
     override func windowTitle(forDocumentDisplayName displayName: String) -> String {
-        let editedTitleStatus = edited ? " -- edited" : ""
+        let editedIndicator = edited ? "• " : ""
         
         #if DEBUG
-            return "[Debug] \(displayName)\(editedTitleStatus)"
+        return "\(editedIndicator) [Debug] \(displayName)"
         #else
-            return "\(displayName)\(editedTitleStatus)"
+            return "\(editedTitleStatus)\(displayName)"
         #endif
     }
     
