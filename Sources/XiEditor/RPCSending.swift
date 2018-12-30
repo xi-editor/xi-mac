@@ -273,7 +273,7 @@ class StdoutRPCSender: RPCSending {
                     assertionFailure("unexpected data from core: \(params)")
                     return
             }
-            
+
             sendResult(id: id, result: result)
         }
     }
