@@ -15,9 +15,13 @@
 import Foundation
 
 /// Supported annotation types.
-enum AnnotationType: String, CaseIterable {
-    case Selection = "selection"
-    case Find = "find"
+enum AnnotationType: String {
+    case selection
+    case find
+}
+
+extension AnnotationType {
+    static let all = [AnnotationType.selection, AnnotationType.find]
 }
 
 /// Represents an annotation (eg. selection, find highlight).
@@ -53,7 +57,7 @@ struct AnnotationStore {
     init(from json: [[String: AnyObject]]) {
         annotations = [:]
 
-        for annotationType in AnnotationType.allCases {
+        for annotationType in AnnotationType.all {
             let annotationsOfType = json.filter({$0["type"] as! String == annotationType.rawValue})
             annotations[annotationType] = []
 

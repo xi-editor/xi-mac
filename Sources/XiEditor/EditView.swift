@@ -424,9 +424,9 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         })
 
         switch annotation.type {
-        case AnnotationType.Selection:
+        case AnnotationType.selection:
             return selArgb
-        case AnnotationType.Find:
+        case AnnotationType.find:
             let queryId = annotation.payload?["id"] as! Int
             return highlightsArgb[queryId % highlightsArgb.count]
         }
@@ -474,7 +474,7 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         }
 
         // keeps track of the next annotations to be drawn
-        let annotationsToBeDrawn = [AnnotationType.Find, AnnotationType.Selection]
+        let annotationsToBeDrawn = [AnnotationType.find, AnnotationType.selection]
         let annotations = lineCache.annotations
         let annotationsForLines = annotations.annotationsForLines(lines: lines, lineRange: first..<last)
 
