@@ -19,7 +19,7 @@ protocol XiViewProxy: class {
     func resize(size: CGSize)
 }
 
-class XiViewConnection: XiViewProxy {
+final class XiViewConnection: XiViewProxy {
 
     typealias AsyncRpc = (_ method: String, _ params: Any, _ callback: RpcCallback?) -> Void
     typealias SyncRpc = (_ method: String, _ params: Any) -> RpcResult
