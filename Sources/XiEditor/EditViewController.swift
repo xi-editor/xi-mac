@@ -100,6 +100,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     var document: Document!
 
+    var xiView: XiViewProxy!
+
     var lines = LineCache<LineAssoc>()
 
     var textMetrics: TextDrawingMetrics {
@@ -293,7 +295,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         let newSize = CGSize(width: width, height: height)
         if newSize != _previousViewportSize {
             _previousViewportSize = newSize
-            document.sendRpcAsync("resize", params: ["width": width, "height": height])
+            xiView.resize(size: newSize)
         }
     }
 
