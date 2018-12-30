@@ -372,7 +372,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         DispatchQueue.main.async { [weak self] in
             self?.document.updateChangeCount(hasNoUnsavedChanges ? .changeCleared : .changeDone)
             
-            // If the document has been edited then display as such in the window and tab titles.
+            // If the document's edited status has changed then display as such in the window and tab titles.
             if let window = self?.document.windowControllers[0] as? XiWindowController,
                 window.editedStatus != !hasNoUnsavedChanges {
                 window.editedStatus = !hasNoUnsavedChanges
