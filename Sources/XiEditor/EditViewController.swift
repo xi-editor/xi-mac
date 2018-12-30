@@ -369,6 +369,12 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
         DispatchQueue.main.async { [weak self] in
             self?.document.updateChangeCount(hasNoUnsavedChanges ? .changeCleared : .changeDone)
+            
+            // If the document has been edited then display as such in the window and tab titles.
+            if let window = self?.document.windowControllers[0] as? XiWindowController {
+                window.updateEditedTitleStatus(!hasNoUnsavedChanges)
+            }
+            
             self?.lineCount = self?.lines.height ?? 0
             self?.updateEditViewHeight()
             self?.editView.resetCursorTimer()
