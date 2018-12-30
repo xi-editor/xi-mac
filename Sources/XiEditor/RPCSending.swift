@@ -95,7 +95,7 @@ class StdoutRPCSender: RPCSending {
     private var lastLogs = CircleBuffer<String>(capacity: 100)
 
     // RPC state
-    private var queue = DispatchQueue(label: "com.levien.xi.CoreConnection", attributes: [])
+    private var queue = DispatchQueue(label: "io.xi-editor.XiEditor.CoreConnection", attributes: [])
     private var rpcIndex = 0
     private var pending = Dictionary<Int, RpcCallback>()
 

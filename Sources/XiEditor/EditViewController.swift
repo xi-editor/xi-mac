@@ -972,7 +972,7 @@ extension EditViewController: NSWindowDelegate {
     
     @objc func windowShouldClose(_ sender: NSWindow) {
         let path = self.document.fileURL?.path // To check if window contains file opened by cli
-        let notification = Notification.Name("io.xi-editor.xiMacFileClosed")
+        let notification = Notification.Name("io.xi-editor.XiEditor.FileClosed")
         DistributedNotificationCenter.default().post(name: notification, object: nil, userInfo: ["path": path ?? "FILE_NOT_SAVED"])
     }
 }
