@@ -15,7 +15,12 @@
 import AppKit.NSWindowController
 
 final class XiWindowController: NSWindowController {
-    private var editedStatus = false
+    var editedStatus = false {
+        didSet {
+            print("called")
+            self.synchronizeWindowTitleWithDocumentName()
+        }
+    }
     
     override func windowTitle(forDocumentDisplayName displayName: String) -> String {
         let editedIndicator = editedStatus ? "• " : ""
@@ -25,10 +30,5 @@ final class XiWindowController: NSWindowController {
         #else
             return "\(editedTitleStatus)\(displayName)"
         #endif
-    }
-    
-    func updateTitleWithEditedStatusIndicator(_ edited: Bool) {
-        self.editedStatus = edited
-        self.synchronizeWindowTitleWithDocumentName()
     }
 }
