@@ -417,8 +417,8 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     func annotationColor(for annotation: Annotation) -> UInt32 {
         let selectionColor = self.isFrontmostView ? dataSource.theme.selection : dataSource.theme.inactiveSelection ?? dataSource.theme.selection
         let selArgb = colorToArgb(selectionColor)
-        let highlightColors = dataSource.theme.findHighlights
-        let highlightsArgb = (highlightColors ?? [])!.map({
+        let highlightColors = dataSource.theme.findHighlights ?? [dataSource.theme.selection]
+        let highlightsArgb = highlightColors.map({
             (highlightColor: NSColor) -> UInt32 in
             colorToArgb(highlightColor)
         })

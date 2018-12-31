@@ -91,7 +91,7 @@ struct AnnotationStore {
 
         var annotationsForLines: [Int: [AnnotationType: Array<AnnotationSpan>.Iterator]] = [:]
 
-        for lineIx in lineRange {
+        for lineIx in lineRange.makeIterator() {
             annotationsForLines[lineIx] = [:]
             let relLineIx = lineIx - lineRange.first!
             guard let line = lines[relLineIx] else {
