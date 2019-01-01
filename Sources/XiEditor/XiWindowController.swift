@@ -15,14 +15,20 @@
 import AppKit.NSWindowController
 
 final class XiWindowController: NSWindowController {
-    var editedStatus = false {
+    var showEditedIndicator = false {
         didSet {
+            // If there is only one tab do not show the edited indicator.
+            // The edited indicator in this circumstance is already built into the macOS close (red circle) button.
+            if NSDocumentController.shared.documents.count <= 1 {
+                showEditedIndicator = false
+            }
+            
             self.synchronizeWindowTitleWithDocumentName()
         }
     }
     
     override func windowTitle(forDocumentDisplayName displayName: String) -> String {
-        let editedIndicator = editedStatus ? "• " : ""
+        let editedIndicator = showEditedIndicator ? "• " : ""
         
         #if DEBUG
             return "\(editedIndicator)[Debug] \(displayName)"
