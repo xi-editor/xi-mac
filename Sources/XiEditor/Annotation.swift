@@ -83,7 +83,7 @@ struct AnnotationStore {
     }
 
     /// Returns for each line in the provided range the annotations in that line.
-    func annotationsForLines(lines: [Line<LineAssoc>?], lineRange: Range<Int>) -> [Int: [AnnotationType: Array<AnnotationSpan>.Iterator]] {
+    func annotationsForLines(lines: [Line<LineAssoc>?], lineRange: CountableRange<Int>) -> [Int: [AnnotationType: Array<AnnotationSpan>.Iterator]] {
         var annotationIx: [AnnotationType : Int] = [:]
         for (annotationType, _) in annotations {
             annotationIx[annotationType] = 0
@@ -91,7 +91,7 @@ struct AnnotationStore {
 
         var annotationsForLines: [Int: [AnnotationType: Array<AnnotationSpan>.Iterator]] = [:]
 
-        for lineIx in lineRange.makeIterator() {
+        for lineIx in lineRange {
             annotationsForLines[lineIx] = [:]
             let relLineIx = lineIx - lineRange.first!
             guard let line = lines[relLineIx] else {
