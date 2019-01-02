@@ -374,7 +374,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             
             // Display the document's edited status in the window and tab titles.
             if let window = self?.document.windowControllers[0] as? XiWindowController {
-                window.showEditedIndicator = !hasNoUnsavedChanges
+                window.synchronizeWindowTitleWithDocumentName()
             }
             
             self?.lineCount = self?.lines.height ?? 0
