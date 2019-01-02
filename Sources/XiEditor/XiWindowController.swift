@@ -27,7 +27,7 @@ final class XiWindowController: NSWindowController {
         #if DEBUG
             return "\(editedIndicator)[Debug] \(displayName)"
         #else
-            return "\(editedTitleStatus)\(displayName)"
+            return "\(editedIndicator)\(displayName)"
         #endif
     }
 }
