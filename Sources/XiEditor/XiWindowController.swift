@@ -18,7 +18,8 @@ final class XiWindowController: NSWindowController {
     override func windowTitle(forDocumentDisplayName displayName: String) -> String {
         var editedIndicator = ""
         
-        // If there is more than one tab AND the document in question has unsaved changes then show an edited indicator
+        // If there is more than one tab AND the document in question has unsaved changes then show an edited indicator.
+        // When there is only one tab the edited indicator is already built into the macOS close (red circle) button.
         if NSDocumentController.shared.documents.count > 1, document?.hasUnautosavedChanges ?? false {
             editedIndicator = "• "
         }
