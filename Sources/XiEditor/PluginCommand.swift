@@ -16,21 +16,9 @@ import Foundation
 
 /// A custom plugin command.
 struct Command {
-    enum RpcType {
-        case Request
-        case Notification
-
-        static func fromString(string: String) -> RpcType? {
-            switch string {
-            case "notification":
-                return .Notification
-            case "request":
-                return .Request
-            default:
-                print("malformed rpc type field \(string)")
-                return nil
-            }
-        }
+    enum RpcType: String {
+        case request = "request"
+        case notification = "notification"
     }
 
     let title: String
@@ -46,29 +34,13 @@ struct Command {
 }
 
 struct Argument {
-    enum ArgumentType {
-        case Number, Int, PosInt, Bool, String, Choice
-
-        static func fromString(string: String) -> ArgumentType? {
-            switch string {
-            case "Number":
-                return .Number
-            case "Int":
-                return .Int
-            case "PosInt":
-                return .PosInt
-            case "Bool":
-                return .Bool
-            case "String":
-                return .String
-            case "Choice":
-                return .Choice
-            default:
-                print("illegal argument type \(string)")
-                return nil
-
-            }
-        }
+    enum ArgumentType: String {
+        case number = "Number"
+        case int = "Int"
+        case posInt = "PosInt"
+        case bool = "Bool"
+        case string = "String"
+        case choice = "Choice"
 
     }
 
@@ -102,7 +74,7 @@ extension Command {
             let rpc_cmd = dict["rpc_cmd"] as? [String: AnyObject],
             let method = rpc_cmd["method"] as? String,
             let rpcTypeName = rpc_cmd["rpc_type"] as? String,
-            let rpcType = RpcType.fromString(string: rpcTypeName),
+            let rpcType = RpcType(rawValue: rpcTypeName),
             let params = rpc_cmd["params"] as? [String: AnyObject],
             let args = dict["args"] as? [[String: AnyObject]]? else {
                 print("malformed command \(dict)")
@@ -130,9 +102,9 @@ extension Argument {
             let title = dict["title"] as? String,
             let description = dict["description"] as? String,
             let typeName = dict["arg_type"] as? String,
-            let type = ArgumentType.fromString(string: typeName),
+            let type = ArgumentType(rawValue: typeName),
             let options = dict["options"] as? [[String: AnyObject]]?,
-            !(type == .Choice && options == nil)
+            !(type == .choice && options == nil)
         else {
                 return nil
         }
