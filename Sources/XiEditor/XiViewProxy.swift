@@ -17,10 +17,12 @@ import Foundation
 
 protocol XiViewProxy: class {
     func resize(size: CGSize)
+
     func paste(characters: String)
     func copy() -> String?
     func cut() -> String?
-    
+
+    func toggleRecording(name: String)
 }
 
 final class XiViewConnection: XiViewProxy {
@@ -64,6 +66,10 @@ final class XiViewConnection: XiViewProxy {
             print("\(method) failed: \(err)")
             return nil
         }
+    }
+
+    func toggleRecording(name: String) {
+        sendRpcAsync("toggle_recording", params: ["recording_name": name])
     }
 
     private func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback? = nil) {
