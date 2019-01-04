@@ -79,4 +79,18 @@ class XiViewProxyTests: XCTestCase {
         XCTAssertEqual(result!, testCopyCharacters)
     }
 
+    func testToggleRecording() {
+        let asyncCalledExpectation = expectation(description: "Async should be called")
+        let async: XiViewConnection.AsyncRpc = { method, params,_ in
+            XCTAssertEqual("toggle_recording", method)
+            let recordingParams = params as! [String: String]
+            XCTAssertEqual(["recording_name": "DEFAULT"], recordingParams)
+            asyncCalledExpectation.fulfill()
+        }
+        let sync: XiViewConnection.SyncRpc = { _,_ in return .ok("not implemented in tests" as AnyObject) }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: sync)
+        connection.toggleRecording(name: "DEFAULT")
+        wait(for: [asyncCalledExpectation], timeout: 1)
+    }
+
 }
