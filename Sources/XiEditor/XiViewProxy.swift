@@ -24,6 +24,7 @@ protocol XiViewProxy: class {
 
     func toggleRecording(name: String)
     func playRecording(name: String)
+    func clearRecording(name: String)
 }
 
 final class XiViewConnection: XiViewProxy {
@@ -75,6 +76,10 @@ final class XiViewConnection: XiViewProxy {
 
     func playRecording(name: String) {
         sendRpcAsync("play_recording", params: ["recording_name": name])
+    }
+
+    func clearRecording(name: String) {
+        sendRpcAsync("clear_recording", params: ["recording_name": name])
     }
 
     private func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback? = nil) {
