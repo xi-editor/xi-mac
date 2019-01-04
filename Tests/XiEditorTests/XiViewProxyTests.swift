@@ -28,8 +28,7 @@ class XiViewProxyTests: XCTestCase {
             XCTAssertEqual(["width": 23 as CGFloat, "height": 42 as CGFloat], resizeParams)
             asyncCalledExpectation.fulfill()
         }
-        let sync: XiViewConnection.SyncRpc = { _,_ in return .ok("not implemented in tests" as AnyObject) }
-        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: sync)
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
         connection.resize(size: CGSize(width: 23, height: 42))
         wait(for: [asyncCalledExpectation], timeout: 1)
     }
@@ -44,8 +43,7 @@ class XiViewProxyTests: XCTestCase {
             
             asyncCalledExpectation.fulfill()
         }
-        let sync: XiViewConnection.SyncRpc = { _,_ in return .ok("not implemented in tests" as AnyObject) }
-        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: sync)
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
         
         connection.paste(characters: testPasteCharacters)
         wait(for: [asyncCalledExpectation], timeout: 1)
@@ -87,8 +85,7 @@ class XiViewProxyTests: XCTestCase {
             XCTAssertEqual(["recording_name": "DEFAULT"], recordingParams)
             asyncCalledExpectation.fulfill()
         }
-        let sync: XiViewConnection.SyncRpc = { _,_ in return .ok("not implemented in tests" as AnyObject) }
-        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: sync)
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
         connection.toggleRecording(name: "DEFAULT")
         wait(for: [asyncCalledExpectation], timeout: 1)
     }
@@ -101,8 +98,7 @@ class XiViewProxyTests: XCTestCase {
             XCTAssertEqual(["recording_name": "DEFAULT"], recordingParams)
             asyncCalledExpectation.fulfill()
         }
-        let sync: XiViewConnection.SyncRpc = { _,_ in return .ok("not implemented in tests" as AnyObject) }
-        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: sync)
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
         connection.playRecording(name: "DEFAULT")
         wait(for: [asyncCalledExpectation], timeout: 1)
     }
@@ -115,10 +111,10 @@ class XiViewProxyTests: XCTestCase {
             XCTAssertEqual(["recording_name": "DEFAULT"], recordingParams)
             asyncCalledExpectation.fulfill()
         }
-        let sync: XiViewConnection.SyncRpc = { _,_ in return .ok("not implemented in tests" as AnyObject) }
-        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: sync)
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
         connection.clearRecording(name: "DEFAULT")
         wait(for: [asyncCalledExpectation], timeout: 1)
     }
 
+    private let unusedSync: XiViewConnection.SyncRpc = { _,_ in return .ok("not implemented in tests" as AnyObject) }
 }
