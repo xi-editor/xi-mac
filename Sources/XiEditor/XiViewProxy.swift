@@ -17,6 +17,10 @@ import Foundation
 
 protocol XiViewProxy: class {
     func resize(size: CGSize)
+    func paste(characters: String)
+    func copy() -> String?
+    func cut() -> String?
+    
 }
 
 final class XiViewConnection: XiViewProxy {
@@ -34,6 +38,32 @@ final class XiViewConnection: XiViewProxy {
 
     func resize(size: CGSize) {
         sendRpcAsync("resize", params: ["width": size.width, "height": size.height])
+    }
+    
+    func paste(characters: String) {
+        sendRpcAsync("paste", params: ["chars": characters])
+    }
+    
+    func copy() -> String? {
+        let copiedString = sendCutCopy("copy")
+        return copiedString
+    }
+    
+    func cut() -> String? {
+        let cutString = sendCutCopy("cut")
+        return cutString
+    }
+    
+    private func sendCutCopy(_ method: String) -> String? {
+        let result = sendRpc(method, params: [])
+        
+        switch result {
+        case .ok(let text):
+            return text as? String
+        case .error(let err):
+            print("\(method) failed: \(err)")
+            return nil
+        }
     }
 
     private func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback? = nil) {
