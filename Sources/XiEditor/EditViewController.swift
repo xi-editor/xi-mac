@@ -508,11 +508,13 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     @objc func cut(_ sender: AnyObject?) {
-        cutCopy("cut")
+        let text = xiView.cut()
+        updatePasteboard(with: text)
     }
 
     @objc func copy(_ sender: AnyObject?) {
-        cutCopy("copy")
+        let text = xiView.copy()
+        updatePasteboard(with: text)
     }
 
     override func indent(_ sender: Any?) {
@@ -547,26 +549,19 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         document.sendRpcAsync("clear_recording", params: ["recording_name": "DEFAULT"])
     }
 
-    fileprivate func cutCopy(_ method: String) {
-        if let result = document?.sendRpc(method, params: []) {
-            switch result {
-            case .ok(let text):
-                if let text = text as? String {
-                    let pasteboard = NSPasteboard.general
-                    pasteboard.clearContents()
-                    pasteboard.writeObjects([text as NSPasteboardWriting])
-                }
-            case .error(let err):
-                print("cut/copy failed: \(err)")
-            }
-        }
-    }
-
     @objc func paste(_ sender: AnyObject?) {
         NSPasteboard
             .general
             .string(forType: .string)
-            .flatMap(document.sendPaste(_:))
+            .flatMap({ xiView.paste(characters: $0) })
+    }
+    
+    fileprivate func updatePasteboard(with text: String?) {
+        guard let text = text else { return }
+        
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        pasteboard.writeObjects([text as NSPasteboardWriting])
     }
 
     //MARK: Other system events
