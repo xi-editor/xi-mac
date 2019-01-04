@@ -33,5 +33,50 @@ class XiViewProxyTests: XCTestCase {
         connection.resize(size: CGSize(width: 23, height: 42))
         wait(for: [asyncCalledExpectation], timeout: 1)
     }
+    
+    func testPaste() {
+        let asyncCalledExpectation = expectation(description: "Async should be called")
+        let testPasteCharacters = "abcdefg"
+        let async: XiViewConnection.AsyncRpc = { method, params, _ in
+            XCTAssertEqual("paste", method)
+            let pasteParmas = params as! [String: String]
+            XCTAssertEqual(["chars": testPasteCharacters], pasteParmas)
+            
+            asyncCalledExpectation.fulfill()
+        }
+        let sync: XiViewConnection.SyncRpc = { _,_ in return .ok("not implemented in tests" as AnyObject) }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: sync)
+        
+        connection.paste(characters: testPasteCharacters)
+        wait(for: [asyncCalledExpectation], timeout: 1)
+    }
+    
+    func testCut() {
+        let testCutCharacters = "abcdefg"
+        let async: XiViewConnection.AsyncRpc = { _,_,_ in return }
+        let sync: XiViewConnection.SyncRpc = { method,_ in
+            XCTAssertEqual("cut", method)
+            return .ok(testCutCharacters as AnyObject)
+        }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: sync)
+        
+        let result = connection.cut()
+        
+        XCTAssertEqual(result!, testCutCharacters)
+    }
+    
+    func testCopy() {
+        let testCopyCharacters = "abcdefg"
+        let async: XiViewConnection.AsyncRpc = { _,_,_ in return }
+        let sync: XiViewConnection.SyncRpc = { method,_ in
+            XCTAssertEqual("copy", method)
+            return .ok(testCopyCharacters as AnyObject)
+        }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: sync)
+        
+        let result = connection.copy()
+        
+        XCTAssertEqual(result!, testCopyCharacters)
+    }
 
 }
