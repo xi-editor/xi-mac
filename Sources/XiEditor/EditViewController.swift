@@ -538,15 +538,15 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     @objc func toggleRecording(_ sender: Any?) {
-        document.sendRpcAsync("toggle_recording", params: ["recording_name": "DEFAULT"])
+        xiView.toggleRecording(name: "DEFAULT")
     }
 
     @objc func playRecording(_ sender: Any?) {
-        document.sendRpcAsync("play_recording", params: ["recording_name": "DEFAULT"])
+        xiView.playRecording(name: "DEFAULT")
     }
 
     @objc func clearRecording(_ sender: Any?) {
-        document.sendRpcAsync("clear_recording", params: ["recording_name": "DEFAULT"])
+        xiView.clearRecording(name: "DEFAULT")
     }
 
     @objc func paste(_ sender: AnyObject?) {
