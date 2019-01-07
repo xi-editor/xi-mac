@@ -27,12 +27,6 @@ struct Line<T> {
     /// Associated data, to be managed by client
     var assoc: T?
 
-    /// A Boolean value representing whether this line contains selected/highlighted text.
-    /// This is used to determine whether we should pre-draw its background.
-    var containsReservedStyle: Bool {
-        return styles.contains { $0.style < Style.N_RESERVED_STYLES }
-    }
-
     /// A Boolean indicating whether this line contains a cursor.
     var containsCursor: Bool {
         return cursor.count > 0
@@ -75,6 +69,7 @@ fileprivate class LineCacheState<T>: UnfairLock {
 
     var nInvalidBefore = 0;
     var lines: [Line<T>?] = []
+    var annotations: AnnotationStore = AnnotationStore(from: [])
     var nInvalidAfter = 0
 
     var height: Int {
@@ -114,6 +109,8 @@ fileprivate class LineCacheState<T>: UnfairLock {
     /// Updates the state by applying a delta. The update format is detailed in the
     /// [xi-core docs](http://xi-editor.github.io/xi-editor/docs/frontend-protocol.html#view-update-protocol).
     func applyUpdate(update: [String: AnyObject]) -> InvalSet {
+        annotations = AnnotationStore(from: (update["annotations"] as! [[String: AnyObject]]))
+
         let inval = InvalSet()
         guard let ops = update["ops"] else { return inval }
         let oldHeight = height
@@ -121,6 +118,7 @@ fileprivate class LineCacheState<T>: UnfairLock {
         var newLines: [Line<T>?] = []
         var newInvalidAfter = 0
         var oldIx = 0
+
         for op in ops as! [[String: AnyObject]] {
             guard let op_type = op["op"] as? String else { return inval }
             guard let n = op["n"] as? Int else { return inval }
@@ -274,6 +272,10 @@ class LineCacheLocked<T> {
 
     var revision: Int {
         return inner.revision
+    }
+
+    var annotations: AnnotationStore {
+        return inner.annotations
     }
 
     /// Returns the line for the given index, if it exists in the cache.

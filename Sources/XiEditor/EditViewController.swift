@@ -100,6 +100,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     var document: Document!
 
+    var xiView: XiViewProxy!
+
     var lines = LineCache<LineAssoc>()
 
     var textMetrics: TextDrawingMetrics {
@@ -293,7 +295,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         let newSize = CGSize(width: width, height: height)
         if newSize != _previousViewportSize {
             _previousViewportSize = newSize
-            document.sendRpcAsync("resize", params: ["width": width, "height": height])
+            xiView.resize(size: newSize)
         }
     }
 
@@ -978,7 +980,7 @@ extension EditViewController: NSWindowDelegate {
     
     @objc func windowShouldClose(_ sender: NSWindow) {
         let path = self.document.fileURL?.path // To check if window contains file opened by cli
-        let notification = Notification.Name("io.xi-editor.xiMacFileClosed")
+        let notification = Notification.Name("io.xi-editor.XiEditor.FileClosed")
         DistributedNotificationCenter.default().post(name: notification, object: nil, userInfo: ["path": path ?? "FILE_NOT_SAVED"])
     }
 }

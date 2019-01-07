@@ -14,8 +14,8 @@
 
 import Cocoa
 
-let USER_DEFAULTS_THEME_KEY = "io.xi-editor.settings.theme"
-let USER_DEFAULTS_NEW_WINDOW_FRAME = "io.xi-editor.settings.preferredWindowFrame"
+let USER_DEFAULTS_THEME_KEY = "io.xi-editor.XiEditor.settings.theme"
+let USER_DEFAULTS_NEW_WINDOW_FRAME = "io.xi-editor.XiEditor.settings.preferredWindowFrame"
 let XI_CONFIG_DIR = "XI_CONFIG_DIR"
 let PREFERENCES_FILE_NAME = "preferences.xiconfig"
 
@@ -186,6 +186,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         xiCore.setTheme(themeName: preferredTheme)
         Trace.shared.trace("appWillLaunch", .main, .end)
         documentController = XiDocumentController()
+        
+        // Set Cli Menu Title
+        renameCliToggle()
     }
     
     // Clean up temporary Xi stderr log
@@ -200,24 +203,33 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     // MARK: - CLI Menu Items
+    @IBOutlet weak var cliToggle: NSMenuItem!
     
-    @IBAction func installCli(_ sender: Any?) {
-        let destPath = URL(string: "file:///usr/local/bin/xi")!
+    @IBAction func toggleCli(_ sender: Any) {
+        if cliToggle.title == CliButtonState.install.rawValue {
+            installCli()
+        } else if cliToggle.title == CliButtonState.remove.rawValue {
+            removeCli()
+        }
+    }
+    
+    func installCli() {
+        let cliPath = URL(fileURLWithPath: "/usr/local/bin/xi")
         var message = "CLI Installed!"
         var info = "Type \"xi --help\" at the command line to get started."
-        if FileManager.default.fileExists(atPath: destPath.path) {
+        if FileManager.default.fileExists(atPath: cliPath.path) {
             message = "CLI Already Installed"
-            info = "The file /usr/local/bin/xi already exists."
+            info = "The file \(cliPath.path) already exists."
         } else {
             do {
                 let srcPath = Bundle.main.url(forResource: "XiCli", withExtension: "")
                 
                 if let srcPath = srcPath {
-                    try FileManager.default.createSymbolicLink(at: destPath, withDestinationURL: srcPath)
+                    try FileManager.default.createSymbolicLink(at: cliPath, withDestinationURL: srcPath)
                     
                     // 0o755 allows read and execute for everyone, write for the owner (-rwxr-xr-x)
                     let attrs = [FileAttributeKey.posixPermissions: 0o755]
-                    try FileManager.default.setAttributes(attrs, ofItemAtPath: destPath.path)
+                    try FileManager.default.setAttributes(attrs, ofItemAtPath: cliPath.path)
                 } else {
                     message = "Error"
                     info = "CLI File is Missing in Application Bundle"
@@ -227,21 +239,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 return
             }
         }
-        let alert = NSAlert()
-        alert.addButton(withTitle: "OK")
-        alert.alertStyle = .informational
-        alert.messageText = message
-        alert.informativeText = info
-        alert.runModal()
+        informationalAlert(title: message, message: info)
+        renameCliToggle()
     }
     
-    @IBAction func removeCli(_ sender: Any) {
-        let cliPath = URL(string: "file:///usr/local/bin/xi")!
+    func removeCli() {
+        let cliPath = URL(fileURLWithPath: "/usr/local/bin/xi")
         var message = "CLI Removed!"
-        var info = "The file /usr/local/bin/xi has been deleted."
+        var info = "The file \(cliPath.path) has been deleted."
         if !FileManager.default.fileExists(atPath: cliPath.path) {
             message = "CLI Not Installed"
-            info = "The file /usr/local/bin/xi does not exist."
+            info = "The file \(cliPath.path) does not exist."
         } else {
             do {
                 try FileManager.default.removeItem(at: cliPath)
@@ -250,12 +258,31 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 return
             }
         }
+        informationalAlert(title: message, message: info)
+        renameCliToggle()
+    }
+    
+    func renameCliToggle() {
+        let destPath = URL(fileURLWithPath: "/usr/local/bin/xi")
+        if FileManager.default.fileExists(atPath: destPath.path) {
+            cliToggle.title = CliButtonState.remove.rawValue
+        } else {
+            cliToggle.title = CliButtonState.install.rawValue
+        }
+    }
+    
+    func informationalAlert(title: String, message: String) {
         let alert = NSAlert()
         alert.addButton(withTitle: "OK")
         alert.alertStyle = .informational
-        alert.messageText = message
-        alert.informativeText = info
+        alert.messageText = title
+        alert.informativeText = message
         alert.runModal()
+    }
+    
+    enum CliButtonState: String {
+        case install = "Install 'xi' Shell Command"
+        case remove  = "Remove 'xi' Shell Command"
     }
 
     //MARK: - top-level interactions

@@ -40,6 +40,41 @@ enum RpcResult {
     case ok(AnyObject)
 }
 
+enum RPCRequestMethod: String {
+    case measureWidth = "measure_width"
+}
+
+enum RPCNotificationMethod: String {
+    case alert
+    
+    case update
+    case updateCommands = "update_cmds"
+    
+    case addStatusItem = "add_status_item"
+    case updateStatusItem = "update_status_item"
+    case removeStatusItem = "remove_status_item"
+    
+    case configurationChanged = "config_changed"
+    
+    case scrollTo = "scroll_to"
+    case defStyle = "def_style"
+    
+    case availablePlugins = "available_plugins"
+    case pluginStarted = "plugin_started"
+    case pluginStopped = "plugin_stopped"
+    
+    case availableThemes = "available_themes"
+    case themeChanged = "theme_changed"
+    
+    case availableLanguages = "available_languages"
+    case languageChanged = "language_changed"
+    
+    case showHover = "show_hover"
+    
+    case findStatus = "find_status"
+    case replaceStatus = "replace_status"
+}
+
 /// A completion handler for a synchronous RPC
 typealias RpcCallback = (RpcResult) -> ()
 
@@ -60,7 +95,7 @@ class StdoutRPCSender: RPCSending {
     private var lastLogs = CircleBuffer<String>(capacity: 100)
 
     // RPC state
-    private var queue = DispatchQueue(label: "com.levien.xi.CoreConnection", attributes: [])
+    private var queue = DispatchQueue(label: "io.xi-editor.XiEditor.CoreConnection", attributes: [])
     private var rpcIndex = 0
     private var pending = Dictionary<Int, RpcCallback>()
 
@@ -222,78 +257,85 @@ class StdoutRPCSender: RPCSending {
     }
 
     private func handleRequest(json: [String: AnyObject]) {
-        guard let method = json["method"] as? String, let params = json["params"], let id = json["id"]
+        guard let jsonMethod = json["method"] as? String,
+              let params = json["params"],
+              let id = json["id"],
+              let method = RPCRequestMethod(rawValue: jsonMethod)
             else {
-                print("unknown json from core: \(json)")
+                assertionFailure("unknown json from core: \(json)")
                 return
         }
 
         switch method {
-        case "measure_width":
-            let args = params as! [[String: AnyObject]]
-            if let result = self.client?.measureWidth(args: args) {
-                self.sendResult(id: id, result: result)
+        case .measureWidth:
+            guard let args = params as? [[String: AnyObject]],
+                  let result = client?.measureWidth(args: args) else {
+                    assertionFailure("unexpected data from core: \(params)")
+                    return
             }
-        default:
-            print("unknown request \(method)")
+
+            sendResult(id: id, result: result)
         }
     }
 
     private func handleNotification(json: [String: AnyObject]) {
-        guard let method = json["method"] as? String, let params = json["params"]
+        guard let jsonMethod = json["method"] as? String,
+              let params = json["params"],
+              let method = RPCNotificationMethod(rawValue: jsonMethod)
             else {
-                print("unknown json from core: \(json)")
+                assertionFailure("unknown json from core: \(json)")
                 return
         }
-        let viewIdentifier = params["view_id"] as? ViewIdentifier
 
+        let viewIdentifier = params["view_id"] as? ViewIdentifier
+        
         switch method {
-        case "update":
+        case .update:
             let update = params["update"] as! [String: AnyObject]
             self.client?.update(viewIdentifier: viewIdentifier!, update: update, rev: nil)
 
-        case "scroll_to":
+        case .scrollTo:
             let line = params["line"] as! Int
             let col = params["col"] as! Int
             self.client?.scroll(viewIdentifier: viewIdentifier!, line: line, column: col)
 
-        case "def_style":
+        case .defStyle:
             client?.defineStyle(style: params as! [String: AnyObject])
 
-        case "plugin_started":
+        case .pluginStarted:
             let plugin = params["plugin"] as! String
             client?.pluginStarted(viewIdentifier: viewIdentifier!, pluginName: plugin)
 
-        case "plugin_stopped":
+        case .pluginStopped:
             let plugin = params["plugin"] as! String
             client?.pluginStopped(viewIdentifier: viewIdentifier!, pluginName: plugin)
 
-        case "available_themes":
+        case .availableThemes:
             let themes = params["themes"] as! [String]
             client?.availableThemes(themes: themes)
 
-        case "theme_changed":
+        case .themeChanged:
             let name = params["name"] as! String
             let themeJson = params["theme"] as! [String: AnyObject]
             let theme = Theme(jsonObject: themeJson)
             client?.themeChanged(name: name, theme: theme)
         
-        case "language_changed":
+        case .languageChanged:
             let languageIdentifier = params["language_id"] as! String
             client?.languageChanged(
                 viewIdentifier: viewIdentifier!,
                 languageIdentifier: languageIdentifier
             )
             
-        case "available_plugins":
+        case .availablePlugins:
             let plugins = params["plugins"] as! [[String: AnyObject]]
             client?.availablePlugins(viewIdentifier: viewIdentifier!, plugins: plugins)
             
-        case "available_languages":
+        case .availableLanguages:
             let languages = params["languages"] as! [String]
             client?.availableLanguages(languages: languages)
 
-        case "update_cmds":
+        case .updateCommands:
             let plugin = params["plugin"] as! String
             let cmdsJson = params["cmds"] as! [[String: AnyObject]]
             let cmds = cmdsJson.map { Command(jsonObject: $0) }
@@ -303,45 +345,42 @@ class StdoutRPCSender: RPCSending {
             client?.updateCommands(viewIdentifier: viewIdentifier!,
                                    plugin: plugin, commands: cmds)
 
-        case "config_changed":
+        case .configurationChanged:
             let changes = params["changes"] as! [String: AnyObject]
             client?.configChanged(viewIdentifier: viewIdentifier!, changes: changes)
 
-        case "alert":
+        case .alert:
             let message = params["msg"] as! String
             client?.alert(text: message)
 
-        case "add_status_item":
+        case .addStatusItem:
             let source = params["source"] as! String
             let key = params["key"] as! String
             let value = params["value"] as! String
             let alignment = params["alignment"] as! String
             client?.addStatusItem(viewIdentifier: viewIdentifier!, source: source, key: key, value: value, alignment: alignment)
 
-        case "update_status_item":
+        case .updateStatusItem:
             let key = params["key"] as! String
             let value = params["value"] as! String
             client?.updateStatusItem(viewIdentifier: viewIdentifier!, key: key, value: value)
 
-        case "remove_status_item":
+        case .removeStatusItem:
             let key = params["key"] as! String
             client?.removeStatusItem(viewIdentifier: viewIdentifier!, key: key)
 
-        case "show_hover":
+        case .showHover:
             let requestIdentifier = params["request_id"] as! Int
             let result = params["result"] as! String
             client?.showHover(viewIdentifier: viewIdentifier!, requestIdentifier: requestIdentifier, result: result)
 
-        case "find_status":
+        case .findStatus:
             let status = params["queries"] as! [[String: AnyObject]]
             client?.findStatus(viewIdentifier: viewIdentifier!, status: status)
 
-        case "replace_status":
+        case .replaceStatus:
             let status = params["status"] as! [String: AnyObject]
             client?.replaceStatus(viewIdentifier: viewIdentifier!, status: status)
-
-        default:
-            print("unknown notification \(method)")
         }
     }
 

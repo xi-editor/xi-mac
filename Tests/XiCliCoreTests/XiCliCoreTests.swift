@@ -78,7 +78,7 @@ class XiCliCoreTests: XCTestCase {
         
         let filePath = "filePath"
         commandLineTool.setObserver(group: group, filePath: filePath)
-        DistributedNotificationCenter.default().post(name: Notification.Name("io.xi-editor.xiMacFileClosed"), object: nil, userInfo: ["path": filePath])
+        DistributedNotificationCenter.default().post(name: Notification.Name("io.xi-editor.XiEditor.FileClosed"), object: nil, userInfo: ["path": filePath])
         let expectation = XCTestExpectation(description: "Notification Recieved")
         
         let queue = OperationQueue()

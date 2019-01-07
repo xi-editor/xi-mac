@@ -30,6 +30,7 @@
 		6BA1873B1FDDD7B6008220DA /* XiClipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA1873A1FDDD7B6008220DA /* XiClipView.swift */; };
 		6BF9575B1FD70C420010BAE6 /* Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF9575A1FD70C420010BAE6 /* Client.swift */; };
 		832910D920229C2D0042C32B /* Fps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 832910D820229C2D0042C32B /* Fps.swift */; };
+		95368BAB21D0B466000FAC40 /* Annotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95368BAA21D0B466000FAC40 /* Annotation.swift */; };
 		95FD9935218689A500C32AF1 /* MarkerBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95FD9934218689A500C32AF1 /* MarkerBar.swift */; };
 		AE0243F61E4BDF8A00641BDA /* StyleMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE0243F51E4BDF8A00641BDA /* StyleMap.swift */; };
 		AE041BA61D4327EB0069AB8B /* plugins in Resources */ = {isa = PBXBuildFile; fileRef = AE041BA51D4327EB0069AB8B /* plugins */; };
@@ -139,7 +140,7 @@
 		0C66CB34218F5DF100F6F899 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0C66CB36218F5E8A00F6F899 /* CommandLineTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandLineTool.swift; sourceTree = "<group>"; };
 		28F1ED491EC4C735008839BE /* Search.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
-		31D2A51621B6BF3C005919F0 /* XiEditor.help */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = XiEditor.help; sourceTree = SOURCE_ROOT; };
+		31D2A51621B6BF3C005919F0 /* XiEditor.help */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = XiEditor.help; sourceTree = "<group>"; };
 		4DC153D22165202B000EB215 /* XiWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiWindowController.swift; sourceTree = "<group>"; };
 		4DCB4AEF20576A6E00476F75 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
 		6038770620057B4500AABF17 /* XiDocumentController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiDocumentController.swift; sourceTree = "<group>"; };
@@ -154,6 +155,7 @@
 		6BA1873A1FDDD7B6008220DA /* XiClipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiClipView.swift; sourceTree = "<group>"; };
 		6BF9575A1FD70C420010BAE6 /* Client.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Client.swift; sourceTree = "<group>"; };
 		832910D820229C2D0042C32B /* Fps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fps.swift; sourceTree = "<group>"; };
+		95368BAA21D0B466000FAC40 /* Annotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Annotation.swift; sourceTree = "<group>"; };
 		95FD9934218689A500C32AF1 /* MarkerBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkerBar.swift; sourceTree = "<group>"; };
 		AE0243F51E4BDF8A00641BDA /* StyleMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StyleMap.swift; sourceTree = "<group>"; };
 		AE041B971D4323460069AB8B /* build-rust-xcode.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-rust-xcode.sh"; sourceTree = "<group>"; };
@@ -300,19 +302,19 @@
 		31D2A51321B6BEEC005919F0 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				4DCB4AEF20576A6E00476F75 /* fonts */,
 				31D2A51621B6BF3C005919F0 /* XiEditor.help */,
 			);
 			path = Resources;
-			sourceTree = "<group>";
+			sourceTree = SOURCE_ROOT;
 		};
 		AE499DC31C82BB2B002D68AF = {
 			isa = PBXGroup;
 			children = (
-				31D2A51321B6BEEC005919F0 /* Resources */,
 				0C4460AE21895F980035E3C1 /* Package.swift */,
 				0C4460AC218955400035E3C1 /* Sources */,
 				0C4460AD218955700035E3C1 /* Tests */,
-				4DCB4AEF20576A6E00476F75 /* fonts */,
+				31D2A51321B6BEEC005919F0 /* Resources */,
 				D023DA021CD071B40087EC0A /* xicore */,
 				AE499DCD1C82BB2B002D68AF /* Products */,
 			);
@@ -367,6 +369,7 @@
 				AE499DD11C82BB2B002D68AF /* Assets.xcassets */,
 				D810EA5121BB291D00EABB21 /* ClientImplementation.swift */,
 				95FD9934218689A500C32AF1 /* MarkerBar.swift */,
+				95368BAA21D0B466000FAC40 /* Annotation.swift */,
 			);
 			path = XiEditor;
 			sourceTree = "<group>";
@@ -714,6 +717,7 @@
 				6BF9575B1FD70C420010BAE6 /* Client.swift in Sources */,
 				AED23F181C83CBED002246CE /* EditView.swift in Sources */,
 				D8D319F0218CB39A00D108D4 /* XiCore.swift in Sources */,
+				95368BAB21D0B466000FAC40 /* Annotation.swift in Sources */,
 				AE499DD01C82BB2B002D68AF /* AppDelegate.swift in Sources */,
 				AEC4F6B31FF5AF130060E10E /* UnfairLock.swift in Sources */,
 				95FD9935218689A500C32AF1 /* MarkerBar.swift in Sources */,
@@ -808,7 +812,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.Xi.XiMac.XiCliCoreTests;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.XiCliCoreTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_VERSION = 4.0;
@@ -831,7 +835,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.Xi.XiMac.XiCliCoreTests;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.XiCliCoreTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 			};
@@ -894,7 +898,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(TOOLCHAIN_DIR)/usr/lib/swift/macosx @executable_path";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.Xi.XiMac.Cli;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.Cli";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -917,7 +921,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/Sources/XiCli/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(TOOLCHAIN_DIR)/usr/lib/swift/macosx @executable_path";
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.Xi.XiMac.Cli;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.Cli";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.0;
@@ -1033,7 +1037,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/Sources/XiEditor/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				OTHER_SWIFT_FLAGS = "-D DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = com.Xi.XiMac.Editor;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.Editor";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 			};
@@ -1046,7 +1050,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/Sources/XiEditor/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.Xi.XiMac.Editor;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.Editor";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 			};
@@ -1059,7 +1063,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Tests/XiEditorTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.Xi.XiMac.XiEditorTests;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.XiEditorTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/XiEditor.app/Contents/MacOS/XiEditor";
@@ -1073,7 +1077,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Tests/XiEditorTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.Xi.XiMac.XiEditorTests;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.XiEditorTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/XiEditor.app/Contents/MacOS/XiEditor";
@@ -1086,7 +1090,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Tests/XiEditorUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.Xi.XiMac.XiEditorUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.XiEditorUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TEST_TARGET_NAME = XiEditor;
@@ -1100,7 +1104,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Tests/XiEditorUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.Xi.XiMac.XiEditorUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.XiEditorUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TEST_TARGET_NAME = XiEditor;

@@ -93,7 +93,7 @@ public final class CommandLineTool {
         }()
         
         let notificationCenter = DistributedNotificationCenter.default()
-        let notification = Notification.Name("io.xi-editor.xiMacFileClosed")
+        let notification = Notification.Name("io.xi-editor.XiEditor.FileClosed")
         
         notificationCenter.addObserver(forName: notification, object: nil, queue: notificationQueue) { notification in
             let passedPath = notification.userInfo!["path"] as! String

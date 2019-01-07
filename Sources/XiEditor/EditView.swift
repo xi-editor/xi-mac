@@ -414,6 +414,24 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         }
     }
 
+    func annotationColor(for annotation: Annotation) -> UInt32 {
+        let selectionColor = self.isFrontmostView ? dataSource.theme.selection : dataSource.theme.inactiveSelection ?? dataSource.theme.selection
+        let selArgb = colorToArgb(selectionColor)
+        let highlightColors = dataSource.theme.findHighlights ?? [dataSource.theme.selection]
+        let highlightsArgb = highlightColors.map({
+            (highlightColor: NSColor) -> UInt32 in
+            colorToArgb(highlightColor)
+        })
+
+        switch annotation.type {
+        case AnnotationType.selection:
+            return selArgb
+        case AnnotationType.find:
+            let queryId = annotation.payload?["id"] as! Int
+            return highlightsArgb[queryId % highlightsArgb.count]
+        }
+    }
+
     /// Our equivalent of drawRect:, with rendering using TextPlane.
     ///
     /// Note: This function has side effects in two cases: It stashes
@@ -446,13 +464,6 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         // also to improve batching of the OpenGL draw calls.
 
         // first pass: create TextLine objects and also draw background rects
-        let selectionColor = self.isFrontmostView ? dataSource.theme.selection : dataSource.theme.inactiveSelection ?? dataSource.theme.selection
-        let selArgb = colorToArgb(selectionColor)
-        let highlightColors = dataSource.theme.findHighlights
-        let highlightsArgb = (highlightColors ?? [])!.map({
-            (highlightColor: NSColor) -> UInt32 in
-            colorToArgb(highlightColor)
-        })
         let foregroundArgb = colorToArgb(dataSource.theme.foreground)
         let gutterArgb = colorToArgb(dataSource.theme.gutterForeground)
 
@@ -461,6 +472,11 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                                       noCursorArgb: gutterArgb,
                                       font: font, fontCache: renderer.fontCache)
         }
+
+        // keeps track of the next annotations to be drawn
+        let annotationsToBeDrawn = [AnnotationType.find, AnnotationType.selection]
+        let annotations = lineCache.annotations
+        let annotationsForLines = annotations.annotationsForLines(lines: lines, lineRange: first..<last)
 
         for lineIx in first..<last {
             let relLineIx = lineIx - first
@@ -475,9 +491,17 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             } else {
                 let builder = TextLineBuilder(line.text, font: font)
                 builder.setFgColor(argb: foregroundArgb)
-                styleMap.applyStyles(builder: builder, styles: line.styles, selColor: selArgb, highlightColors: highlightsArgb)
-                textLine = builder.build(fontCache: renderer.fontCache)
+                styleMap.applyStyles(builder: builder, styles: line.styles)
 
+                // draw all annotations that are active for the current line
+                for annotationType in annotationsToBeDrawn {
+                    for annotation in annotationsForLines[lineIx]![annotationType]! {
+                        let color = annotationColor(for: annotation.annotation)
+                        builder.addBgSpan(range: convertRange(NSMakeRange(annotation.startIx, annotation.endIx - annotation.startIx)), argb: color)
+                    }
+                }
+
+                textLine = builder.build(fontCache: renderer.fontCache)
                 let assoc = LineAssoc(textLine: textLine)
                 lineCache.setAssoc(lineIx, assoc: assoc)
                 textLines.append(textLine)
