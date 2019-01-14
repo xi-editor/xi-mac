@@ -30,16 +30,16 @@ class XiCliCoreTests: XCTestCase {
         super.tearDown()
         try? FileManager.default.removeItem(atPath: "test.txt")
     }
-    
+
     func testArgParse() {
-        let arguments = ["xi", "--wait", "test.txt"]
+        let arguments = ["xi", "--wait", "test1.txt", "test2.txt"]
         let retrievedArgs = Arguments(arguments: arguments)
         XCTAssertNotNil(retrievedArgs)
-        XCTAssert(retrievedArgs.fileInput == "test.txt")
+        XCTAssert(retrievedArgs.fileInputs == ["test1.txt", "test2.txt"])
         XCTAssert(retrievedArgs.wait == true)
         XCTAssert(retrievedArgs.help == false)
     }
-    
+
     func testResolveAbsolutePath() {
         let fileManager = FileManager.default
         var tempDir = fileManager.temporaryDirectory
@@ -52,35 +52,36 @@ class XiCliCoreTests: XCTestCase {
             XCTFail("temp file in temp dir not found")
         }
     }
-    
+
     func testResolveRelativePath() {
         do {
             let path = try commandLineTool.resolvePath(from: "test.txt")
-            
+
             var expextedDir = URL(string: FileManager.default.currentDirectoryPath)!
             expextedDir.appendPathComponent("test.txt")
             let expectedPath = expextedDir.path
-            
+
             XCTAssert(path == expectedPath, "path does not match expected")
         } catch {
             XCTFail("temp file not found")
         }
-        
+
     }
-    
+
     func testFileOpen() {
         XCTAssertNoThrow(try commandLineTool.openFile(at: "test.txt"))
     }
-    
+
     func testObserver() {
         let group = DispatchGroup()
         group.enter()
-        
-        let filePath = "filePath"
-        commandLineTool.setObserver(group: group, filePath: filePath)
-        DistributedNotificationCenter.default().post(name: Notification.Name("io.xi-editor.XiEditor.FileClosed"), object: nil, userInfo: ["path": filePath])
+
+        let filePaths = ["filePath1", "filePath2"]
+        commandLineTool.setObserver(group: group, filePaths: filePaths)
+        DistributedNotificationCenter.default().post(name: Notification.Name("io.xi-editor.XiEditor.FileClosed"), object: nil, userInfo: ["path": filePaths.first!])
+        DistributedNotificationCenter.default().post(name: Notification.Name("io.xi-editor.XiEditor.FileClosed"), object: nil, userInfo: ["path": filePaths.last!])
         let expectation = XCTestExpectation(description: "Notification Recieved")
-        
+
         let queue = OperationQueue()
         queue.addOperation {
             self.wait(for: [expectation], timeout: 3)
@@ -88,5 +89,5 @@ class XiCliCoreTests: XCTestCase {
         group.wait()
         expectation.fulfill()
     }
-    
+
 }

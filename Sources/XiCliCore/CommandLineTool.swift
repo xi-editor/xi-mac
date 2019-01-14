@@ -27,19 +27,24 @@ public final class CommandLineTool {
             return
         }
         
-        guard let fileInput = args.fileInput else {
+        if args.fileInputs.isEmpty {
             NSWorkspace.shared.launchApplication("XiEditor")
             return
         }
 
-        let filePath = try resolvePath(from: fileInput)
-        try openFile(at: filePath)
-            
-        if args.wait {
+        let filePaths = try args.fileInputs.map {
+            try resolvePath(from: $0)
+        }
+
+        for filePath in filePaths {
+            try openFile(at: filePath)
+        }
+
+        if args.wait, !filePaths.isEmpty {
             print("waiting for editor to close...")
             let group = DispatchGroup()
             group.enter()
-            setObserver(group: group, filePath: filePath)
+            setObserver(group: group, filePaths: filePaths)
             group.wait()
         }
     }
@@ -84,7 +89,7 @@ public final class CommandLineTool {
         }
     }
     
-    func setObserver(group: DispatchGroup, filePath: String?) {
+    func setObserver(group: DispatchGroup, filePaths: [String]) {
         let notificationQueue: OperationQueue = {
             let queue = OperationQueue()
             queue.name = "Notification queue"
@@ -94,14 +99,15 @@ public final class CommandLineTool {
         
         let notificationCenter = DistributedNotificationCenter.default()
         let notification = Notification.Name("io.xi-editor.XiEditor.FileClosed")
-        
+
+        var filePaths = filePaths
         notificationCenter.addObserver(forName: notification, object: nil, queue: notificationQueue) { notification in
             let passedPath = notification.userInfo!["path"] as! String
-            if let filePath = filePath {
-                if passedPath == filePath {
-                    group.leave()
-                }
-            } else {
+            if let index = filePaths.index(of: passedPath) {
+                filePaths.remove(at: index)
+            }
+
+            if filePaths.isEmpty {
                 group.leave()
             }
         }
@@ -110,12 +116,12 @@ public final class CommandLineTool {
     func help() {
         let message = """
                 The Xi CLI Help:
-                xi <file> [--wait | -W] [--help | -h]
+                xi <file> [--wait | -w] [--help | -h]
 
                 file
                     the path to the file (relative or absolute)
 
-                --wait, -W
+                --wait, -w
                     wait for the editor to close
 
                 --help, -h

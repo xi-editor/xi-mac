@@ -13,7 +13,7 @@
 // limitations under the License.
 
 public struct Arguments {
-    var fileInput: String?
+    var fileInputs: [String] = []
     var wait: Bool = false
     var help: Bool = false
     
@@ -25,7 +25,7 @@ public struct Arguments {
             } else if arg == "--help" || arg == "-h" {
                 self.help = true
             } else {
-                self.fileInput = arg
+                self.fileInputs.append(arg)
             }
         }
     }
