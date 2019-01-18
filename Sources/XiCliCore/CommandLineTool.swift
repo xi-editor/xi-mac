@@ -116,7 +116,7 @@ public final class CommandLineTool {
     func help() {
         let message = """
                 The Xi CLI Help:
-                xi <file> [--wait | -w] [--help | -h]
+                xi <file>... [--wait | -w] [--help | -h]
 
                 file
                     the path to the file (relative or absolute)
