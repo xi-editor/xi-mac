@@ -27,7 +27,7 @@ public final class CommandLineTool {
             return
         }
         
-        if args.fileInputs.isEmpty {
+        guard !args.fileInputs.isEmpty else {
             NSWorkspace.shared.launchApplication("XiEditor")
             return
         }
