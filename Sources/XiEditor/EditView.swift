@@ -191,6 +191,7 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         let glLayer = TextPlaneLayer()
         glLayer.textDelegate = self
         layer = glLayer
+        registerForDraggedTypes([kUTTypeFileURL as NSPasteboard.PasteboardType])
     }
 
     let x0: CGFloat = 2
@@ -226,6 +227,21 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
 
     override var preservesContentDuringLiveResize: Bool {
         return true
+    }
+
+    override func draggingEnded(_ sender: NSDraggingInfo) {
+        guard let pasteboard = sender.draggingPasteboard().propertyList(forType: NSPasteboard.PasteboardType(rawValue: "NSFilenamesPboardType")) as? NSArray,
+            let path = pasteboard[0] as? String
+        else { return }
+
+        NSDocumentController.shared.openDocument(
+            withContentsOf: NSURL(fileURLWithPath: path) as URL,
+            display: true,
+            completionHandler: { (document, alreadyOpen, error) in
+                if let error = error {
+                    print("error opening file \(error)")
+                }
+        })
     }
 
     /// Resets the blink timer, if the cursor should be blinking
