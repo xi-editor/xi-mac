@@ -230,12 +230,13 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     }
 
     override func draggingEnded(_ sender: NSDraggingInfo) {
+        // open file dragged into window
         guard let pasteboard = sender.draggingPasteboard().propertyList(forType: NSPasteboard.PasteboardType(rawValue: "NSFilenamesPboardType")) as? NSArray,
-            let path = pasteboard[0] as? String
+            let path = pasteboard.firstObject as? String
         else { return }
 
         NSDocumentController.shared.openDocument(
-            withContentsOf: NSURL(fileURLWithPath: path) as URL,
+            withContentsOf: URL.init(fileURLWithPath: path),
             display: true,
             completionHandler: { (document, alreadyOpen, error) in
                 if let error = error {
