@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.com/xi-editor/xi-mac.svg?branch=master)](https://travis-ci.com/xi-editor/xi-mac)
-[![codecov](https://codecov.io/gh/xi-editor/xi-editor/xi-mac/branch/master/graph/badge.svg)](https://codecov.io/gh/xi-editor/xi-mac)
+[![codecov](https://codecov.io/gh/xi-editor/xi-mac/branch/master/graph/badge.svg)](https://codecov.io/gh/xi-editor/xi-mac)
 
 <h1 align="center">
   <a href="http://xi-editor.io/xi-editor"><img src="icons/xi-editor.png" alt="Xi Editor" width="256" height="256"/></a><br>
