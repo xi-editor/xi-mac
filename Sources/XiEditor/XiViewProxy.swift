@@ -26,6 +26,8 @@ protocol XiViewProxy: class {
     func playRecording(name: String)
     func clearRecording(name: String)
 
+    /// Selects all occurrences matching the search query.
+    func findAll()
     /// Shows/hides active search highlights.
     func highlightFind(visible: Bool)
 }
@@ -83,6 +85,10 @@ final class XiViewConnection: XiViewProxy {
 
     func clearRecording(name: String) {
         sendRpcAsync("clear_recording", params: ["recording_name": name])
+    }
+
+    func findAll() {
+        sendRpcAsync("find_all", params: [])
     }
 
     func highlightFind(visible: Bool) {
