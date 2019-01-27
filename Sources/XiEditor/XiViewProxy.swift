@@ -25,6 +25,9 @@ protocol XiViewProxy: class {
     func toggleRecording(name: String)
     func playRecording(name: String)
     func clearRecording(name: String)
+
+    /// Shows/hides active search highlights.
+    func highlightFind(visible: Bool)
 }
 
 final class XiViewConnection: XiViewProxy {
@@ -80,6 +83,10 @@ final class XiViewConnection: XiViewProxy {
 
     func clearRecording(name: String) {
         sendRpcAsync("clear_recording", params: ["recording_name": name])
+    }
+
+    func highlightFind(visible: Bool) {
+        sendRpcAsync("highlight_find", params: ["visible": visible])
     }
 
     private func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback? = nil) {
