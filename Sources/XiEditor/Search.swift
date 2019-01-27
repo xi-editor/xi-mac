@@ -333,7 +333,7 @@ extension EditViewController {
         if findViewController.view.isHidden || replaceHiddenChanged {
             findViewController.view.isHidden = false
             updateScrollPosition(previousOffset: 0)
-            document.sendRpcAsync("highlight_find", params: ["visible": true])
+            xiView.highlightFind(visible: true)
         }
 
         scrollView.contentInsets = NSEdgeInsetsMake(offset, 0, 0, 0)
@@ -354,7 +354,7 @@ extension EditViewController {
         }
 
         editView.window?.makeFirstResponder(editView)
-        document.sendRpcAsync("highlight_find", params: ["visible": false])
+        xiView.highlightFind(visible: false)
     }
 
     func updateScrollPosition(previousOffset: CGFloat) {
