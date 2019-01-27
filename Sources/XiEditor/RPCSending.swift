@@ -338,9 +338,7 @@ class StdoutRPCSender: RPCSending {
         case .updateCommands:
             let plugin = params["plugin"] as! String
             let cmdsJson = params["cmds"] as! [[String: AnyObject]]
-            let cmds = cmdsJson.map { Command(jsonObject: $0) }
-                .filter { $0 != nil }
-                .map { $0! }
+            let cmds = cmdsJson.flatMap { Command(jsonObject: $0) }
 
             client?.updateCommands(viewIdentifier: viewIdentifier!,
                                    plugin: plugin, commands: cmds)
