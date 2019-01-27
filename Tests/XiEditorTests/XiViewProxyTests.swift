@@ -116,5 +116,18 @@ class XiViewProxyTests: XCTestCase {
         wait(for: [asyncCalledExpectation], timeout: 1)
     }
 
+    func testHighlightFind() {
+        let asyncCalledExpectation = expectation(description: "Async should be called")
+        let async: XiViewConnection.AsyncRpc = { method, params,_ in
+            XCTAssertEqual("highlight_find", method)
+            let recordingParams = params as! [String: Bool]
+            XCTAssertEqual(["visible": true], recordingParams)
+            asyncCalledExpectation.fulfill()
+        }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
+        connection.highlightFind(visible: true)
+        wait(for: [asyncCalledExpectation], timeout: 1)
+    }
+
     private let unusedSync: XiViewConnection.SyncRpc = { _,_ in return .ok("not implemented in tests" as AnyObject) }
 }
