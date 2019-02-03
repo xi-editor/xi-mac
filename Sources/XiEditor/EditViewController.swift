@@ -141,6 +141,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             updateLanguageMenu()
         }
     }
+    
+    var isTailEnabled: Bool = false
 
     // used to calculate the gutter width. Initial -1 so that a new document
     // still triggers update of gutter width.
@@ -683,6 +685,20 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         document.xiCore.setTheme(themeName: sender.title)
     }
     
+    fileprivate func toggleTailMenuItem(_ sender: NSMenuItem) {
+        if self.isTailEnabled {
+            sender.state = NSControl.StateValue.on
+        } else {
+            sender.state = NSControl.StateValue.off
+        }
+    }
+    
+    @IBAction func debugToggleTail(_ sender: NSMenuItem) {
+        self.isTailEnabled.toggle()
+        toggleTailMenuItem(sender)
+        document.xiCore.toggleTailConfig(identifier: document.coreViewIdentifier!, enabled: self.isTailEnabled)
+    }
+    
     @IBAction func debugSetLanguage(_ sender: NSMenuItem) {
         guard sender.state != NSControl.StateValue.on else { print("language already active"); return }
         document.xiCore.setLanguage(identifier: document.coreViewIdentifier!, languageName: sender.title)
@@ -806,11 +822,18 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         item.state = findViewController.showMultipleSearchQueries ? .on : .off
     }
     
+    func updateTailMenu() {
+        let toggleTailSubMenu = NSApplication.shared.mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Tail File")
+        
+        toggleTailMenuItem(toggleTailSubMenu!)
+    }
+    
     // Gets called when active window changes
     func updateMenuState() {
         updatePluginMenu()
         updateLanguageMenu()
         updateFindMenu()
+        updateTailMenu()
     }
 
     @objc func handleCommand(_ sender: NSMenuItem) {

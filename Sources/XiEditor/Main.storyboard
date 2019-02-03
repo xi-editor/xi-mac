@@ -1187,16 +1187,10 @@ Gw
                                                 <action selector="openErrorLogFolder:" target="azf-ih-6fI" id="dlx-rd-R59"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Toggle Tail" state="on" id="xjX-YR-YM9">
+                                        <menuItem title="Tail File" toolTip="Start tailing current file" id="ERX-yh-iVz">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
-                                                <binding destination="azf-ih-6fI" name="value" keyPath="self.toggleTail" id="IHf-WN-0mt">
-                                                    <dictionary key="options">
-                                                        <bool key="NSAllowsEditingMultipleValuesSelection" value="NO"/>
-                                                        <bool key="NSConditionallySetsEnabled" value="NO"/>
-                                                        <bool key="NSValidatesImmediately" value="YES"/>
-                                                    </dictionary>
-                                                </binding>
+                                                <action selector="debugToggleTail:" target="7er-QZ-amI" id="Nk3-gD-C6i"/>
                                             </connections>
                                         </menuItem>
                                     </items>
