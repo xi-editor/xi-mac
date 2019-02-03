@@ -694,7 +694,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
     
     @IBAction func debugToggleTail(_ sender: NSMenuItem) {
-        self.isTailEnabled.toggle()
+        self.isTailEnabled = !self.isTailEnabled
         toggleTailMenuItem(sender)
         document.xiCore.toggleTailConfig(identifier: document.coreViewIdentifier!, enabled: self.isTailEnabled)
     }
