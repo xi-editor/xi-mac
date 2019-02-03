@@ -89,14 +89,6 @@ class CoreRPCTests: XCTestCase {
         let expected = SaveTraceTestRPCCall(method: "save_trace", keys: ["destination", "frontend_samples"], callback: nil)
         XCTAssertEqual(expected, connection.calls.first)
     }
-    
-    func testTailToggleConfigEnabled() {
-        let connection = TestConnection<Bool>()
-        let xiCore = CoreConnection(rpcSender: connection)
-        xiCore.toggleTailConfig(enabled: true)
-        let expected = TestRPCCall(method: "toggle_tail", params: ["enabled": true], callback: nil)
-        XCTAssertEqual(expected, connection.calls.first)
-    }
 }
 
 class PluginRPCTests: XCTestCase {
