@@ -7,7 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0C53410D21B746AA004A9550 /* XiCliCoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C53410C21B746AA004A9550 /* XiCliCoreTests.swift */; };
+		0C53410F21B746AA004A9550 /* libXiCliCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C62058D21B63B8E00A9758F /* libXiCliCore.a */; };
+		0C53411A21B786F3004A9550 /* XiCli in Resources */ = {isa = PBXBuildFile; fileRef = 0C66CB2B218F5CDB00F6F899 /* XiCli */; };
+		0C62059621B63BAB00A9758F /* CommandLineTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C66CB36218F5E8A00F6F899 /* CommandLineTool.swift */; };
+		0C62059721B63BAE00A9758F /* Arguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1F5B2921B5EFA300B7CE15 /* Arguments.swift */; };
+		0C62059821B63C0900A9758F /* libXiCliCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C62058D21B63B8E00A9758F /* libXiCliCore.a */; };
+		0C66CB2E218F5CDB00F6F899 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C66CB2D218F5CDB00F6F899 /* main.swift */; };
 		28F1ED4A1EC4C735008839BE /* Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F1ED491EC4C735008839BE /* Search.swift */; };
+		31D2A51721B6BF3C005919F0 /* XiEditor.help in Resources */ = {isa = PBXBuildFile; fileRef = 31D2A51621B6BF3C005919F0 /* XiEditor.help */; };
 		4DC153D32165202B000EB215 /* XiWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DC153D22165202B000EB215 /* XiWindowController.swift */; };
 		4DCB4AF020576A6F00476F75 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 4DCB4AEF20576A6E00476F75 /* fonts */; };
 		6038770720057B4500AABF17 /* XiDocumentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6038770620057B4500AABF17 /* XiDocumentController.swift */; };
@@ -22,7 +30,8 @@
 		6BA1873B1FDDD7B6008220DA /* XiClipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA1873A1FDDD7B6008220DA /* XiClipView.swift */; };
 		6BF9575B1FD70C420010BAE6 /* Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF9575A1FD70C420010BAE6 /* Client.swift */; };
 		832910D920229C2D0042C32B /* Fps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 832910D820229C2D0042C32B /* Fps.swift */; };
-		AB9A25602118C42D0023DE75 /* shortcut in Resources */ = {isa = PBXBuildFile; fileRef = AB9A255F2118C42D0023DE75 /* shortcut */; };
+		95368BAB21D0B466000FAC40 /* Annotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95368BAA21D0B466000FAC40 /* Annotation.swift */; };
+		95FD9935218689A500C32AF1 /* MarkerBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95FD9934218689A500C32AF1 /* MarkerBar.swift */; };
 		AE0243F61E4BDF8A00641BDA /* StyleMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE0243F51E4BDF8A00641BDA /* StyleMap.swift */; };
 		AE041BA61D4327EB0069AB8B /* plugins in Resources */ = {isa = PBXBuildFile; fileRef = AE041BA51D4327EB0069AB8B /* plugins */; };
 		AE168C5C1E4AD87B008249AE /* LineCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE168C5B1E4AD87B008249AE /* LineCache.swift */; };
@@ -44,8 +53,17 @@
 		AED22D841FE84B4B0096E7C3 /* text.f.glsl in Resources */ = {isa = PBXBuildFile; fileRef = AED22D801FE84B4B0096E7C3 /* text.f.glsl */; };
 		AED22D861FE877000096E7C3 /* TextLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AED22D851FE877000096E7C3 /* TextLine.swift */; };
 		AED23F181C83CBED002246CE /* EditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AED23F171C83CBEC002246CE /* EditView.swift */; };
+		D803A9A421C7C4630042DE8F /* FindStatusTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D803A9A321C7C4630042DE8F /* FindStatusTests.swift */; };
+		D803A9A621C7CCB90042DE8F /* FindStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = D803A9A521C7CCB90042DE8F /* FindStatus.swift */; };
+		D80F2D8421CEB4F90090BDA0 /* XiViewProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80F2D8321CEB4F90090BDA0 /* XiViewProxy.swift */; };
+		D810EA5221BB291D00EABB21 /* ClientImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D810EA5121BB291D00EABB21 /* ClientImplementation.swift */; };
+		D851299621CAFB450066B3BA /* SearchIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D851299521CAFB440066B3BA /* SearchIntegrationTests.swift */; };
 		D8D319F0218CB39A00D108D4 /* XiCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8D319EF218CB39A00D108D4 /* XiCore.swift */; };
 		D8D319F2218CBCD100D108D4 /* XiCoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8D319F1218CBCD100D108D4 /* XiCoreTests.swift */; };
+		D8D37FFB21D003C9000C4A65 /* XiViewProxyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8D37FFA21D003C9000C4A65 /* XiViewProxyTests.swift */; };
+		D8D5FD6521CDA683003F1B87 /* the-golden-boys.txt in Resources */ = {isa = PBXBuildFile; fileRef = D8D5FD6421CDA683003F1B87 /* the-golden-boys.txt */; };
+		D8F1F44D21C988FA007FC254 /* TestClientImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F1F44C21C988FA007FC254 /* TestClientImplementation.swift */; };
+		D8F1F45321C9BFA1007FC254 /* SearchTester.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F1F45221C9BFA1007FC254 /* SearchTester.swift */; };
 		E1288E8020B06E9C0068EEB9 /* StatusBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1288E7F20B06E9C0068EEB9 /* StatusBar.swift */; };
 		E16BB89820FE42A700A0D7A1 /* HoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E16BB89720FE42A600A0D7A1 /* HoverViewController.swift */; };
 		F53EA2AD1DCAA8110071ACFD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F53EA2AC1DCAA8110071ACFD /* Main.storyboard */; };
@@ -54,6 +72,27 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		0C53411021B746AA004A9550 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AE499DC41C82BB2B002D68AF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0C62058C21B63B8E00A9758F;
+			remoteInfo = XiCliCore;
+		};
+		0C53411521B7475F004A9550 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AE499DC41C82BB2B002D68AF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0C62058C21B63B8E00A9758F;
+			remoteInfo = XiCliCore;
+		};
+		0C53411821B7816B004A9550 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AE499DC41C82BB2B002D68AF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0C66CB2A218F5CDB00F6F899;
+			remoteInfo = XiCli;
+		};
 		AE499DDC1C82BB2B002D68AF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AE499DC41C82BB2B002D68AF /* Project object */;
@@ -77,9 +116,31 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		0C41645A21B24B6100FBA8B1 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 12;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		0C1F5B2921B5EFA300B7CE15 /* Arguments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Arguments.swift; sourceTree = "<group>"; };
 		0C4460AE21895F980035E3C1 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
+		0C53410A21B746AA004A9550 /* XiCliCoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XiCliCoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0C53410C21B746AA004A9550 /* XiCliCoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiCliCoreTests.swift; sourceTree = "<group>"; };
+		0C53410E21B746AA004A9550 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0C62058D21B63B8E00A9758F /* libXiCliCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libXiCliCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		0C66CB2B218F5CDB00F6F899 /* XiCli */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = XiCli; sourceTree = BUILT_PRODUCTS_DIR; };
+		0C66CB2D218F5CDB00F6F899 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		0C66CB34218F5DF100F6F899 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0C66CB36218F5E8A00F6F899 /* CommandLineTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandLineTool.swift; sourceTree = "<group>"; };
 		28F1ED491EC4C735008839BE /* Search.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
+		31D2A51621B6BF3C005919F0 /* XiEditor.help */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = XiEditor.help; sourceTree = "<group>"; };
 		4DC153D22165202B000EB215 /* XiWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiWindowController.swift; sourceTree = "<group>"; };
 		4DCB4AEF20576A6E00476F75 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
 		6038770620057B4500AABF17 /* XiDocumentController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiDocumentController.swift; sourceTree = "<group>"; };
@@ -94,7 +155,8 @@
 		6BA1873A1FDDD7B6008220DA /* XiClipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiClipView.swift; sourceTree = "<group>"; };
 		6BF9575A1FD70C420010BAE6 /* Client.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Client.swift; sourceTree = "<group>"; };
 		832910D820229C2D0042C32B /* Fps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fps.swift; sourceTree = "<group>"; };
-		AB9A255F2118C42D0023DE75 /* shortcut */ = {isa = PBXFileReference; lastKnownFileType = folder; path = shortcut; sourceTree = "<group>"; };
+		95368BAA21D0B466000FAC40 /* Annotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Annotation.swift; sourceTree = "<group>"; };
+		95FD9934218689A500C32AF1 /* MarkerBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkerBar.swift; sourceTree = "<group>"; };
 		AE0243F51E4BDF8A00641BDA /* StyleMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StyleMap.swift; sourceTree = "<group>"; };
 		AE041B971D4323460069AB8B /* build-rust-xcode.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-rust-xcode.sh"; sourceTree = "<group>"; };
 		AE041BA51D4327EB0069AB8B /* plugins */ = {isa = PBXFileReference; lastKnownFileType = text; path = plugins; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -123,8 +185,17 @@
 		AED22D801FE84B4B0096E7C3 /* text.f.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = text.f.glsl; sourceTree = "<group>"; };
 		AED22D851FE877000096E7C3 /* TextLine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextLine.swift; sourceTree = "<group>"; };
 		AED23F171C83CBEC002246CE /* EditView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditView.swift; sourceTree = "<group>"; };
+		D803A9A321C7C4630042DE8F /* FindStatusTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindStatusTests.swift; sourceTree = "<group>"; };
+		D803A9A521C7CCB90042DE8F /* FindStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindStatus.swift; sourceTree = "<group>"; };
+		D80F2D8321CEB4F90090BDA0 /* XiViewProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiViewProxy.swift; sourceTree = "<group>"; };
+		D810EA5121BB291D00EABB21 /* ClientImplementation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientImplementation.swift; sourceTree = "<group>"; };
+		D851299521CAFB440066B3BA /* SearchIntegrationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchIntegrationTests.swift; sourceTree = "<group>"; };
 		D8D319EF218CB39A00D108D4 /* XiCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiCore.swift; sourceTree = "<group>"; };
 		D8D319F1218CBCD100D108D4 /* XiCoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiCoreTests.swift; sourceTree = "<group>"; };
+		D8D37FFA21D003C9000C4A65 /* XiViewProxyTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XiViewProxyTests.swift; sourceTree = "<group>"; };
+		D8D5FD6421CDA683003F1B87 /* the-golden-boys.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "the-golden-boys.txt"; path = "test-data/the-golden-boys.txt"; sourceTree = SOURCE_ROOT; };
+		D8F1F44C21C988FA007FC254 /* TestClientImplementation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestClientImplementation.swift; sourceTree = "<group>"; };
+		D8F1F45221C9BFA1007FC254 /* SearchTester.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTester.swift; sourceTree = "<group>"; };
 		E1288E7F20B06E9C0068EEB9 /* StatusBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBar.swift; sourceTree = "<group>"; };
 		E16BB89720FE42A600A0D7A1 /* HoverViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HoverViewController.swift; sourceTree = "<group>"; };
 		F53EA2AC1DCAA8110071ACFD /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
@@ -133,6 +204,29 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		0C53410721B746AA004A9550 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0C53410F21B746AA004A9550 /* libXiCliCore.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0C62058B21B63B8E00A9758F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0C66CB28218F5CDB00F6F899 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0C62059821B63C0900A9758F /* libXiCliCore.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AE499DC91C82BB2B002D68AF /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -161,6 +255,8 @@
 			isa = PBXGroup;
 			children = (
 				AE499DCE1C82BB2B002D68AF /* XiEditor */,
+				0C66CB2C218F5CDB00F6F899 /* XiCli */,
+				0C62058E21B63B8E00A9758F /* XiCliCore */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -168,11 +264,49 @@
 		0C4460AD218955700035E3C1 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				D8F1F44B21C96BF6007FC254 /* IntegrationTests */,
 				AE499DDE1C82BB2B002D68AF /* XiEditorTests */,
 				AE499DE91C82BB2B002D68AF /* XiEditorUITests */,
+				0C53410B21B746AA004A9550 /* XiCliCoreTests */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
+		};
+		0C53410B21B746AA004A9550 /* XiCliCoreTests */ = {
+			isa = PBXGroup;
+			children = (
+				0C53410C21B746AA004A9550 /* XiCliCoreTests.swift */,
+				0C53410E21B746AA004A9550 /* Info.plist */,
+			);
+			path = XiCliCoreTests;
+			sourceTree = "<group>";
+		};
+		0C62058E21B63B8E00A9758F /* XiCliCore */ = {
+			isa = PBXGroup;
+			children = (
+				0C66CB36218F5E8A00F6F899 /* CommandLineTool.swift */,
+				0C1F5B2921B5EFA300B7CE15 /* Arguments.swift */,
+			);
+			path = XiCliCore;
+			sourceTree = "<group>";
+		};
+		0C66CB2C218F5CDB00F6F899 /* XiCli */ = {
+			isa = PBXGroup;
+			children = (
+				0C66CB2D218F5CDB00F6F899 /* main.swift */,
+				0C66CB34218F5DF100F6F899 /* Info.plist */,
+			);
+			path = XiCli;
+			sourceTree = "<group>";
+		};
+		31D2A51321B6BEEC005919F0 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				4DCB4AEF20576A6E00476F75 /* fonts */,
+				31D2A51621B6BF3C005919F0 /* XiEditor.help */,
+			);
+			path = Resources;
+			sourceTree = SOURCE_ROOT;
 		};
 		AE499DC31C82BB2B002D68AF = {
 			isa = PBXGroup;
@@ -180,10 +314,9 @@
 				0C4460AE21895F980035E3C1 /* Package.swift */,
 				0C4460AC218955400035E3C1 /* Sources */,
 				0C4460AD218955700035E3C1 /* Tests */,
-				4DCB4AEF20576A6E00476F75 /* fonts */,
+				31D2A51321B6BEEC005919F0 /* Resources */,
 				D023DA021CD071B40087EC0A /* xicore */,
 				AE499DCD1C82BB2B002D68AF /* Products */,
-				AB9A255F2118C42D0023DE75 /* shortcut */,
 			);
 			sourceTree = "<group>";
 		};
@@ -193,6 +326,9 @@
 				AE499DCC1C82BB2B002D68AF /* XiEditor.app */,
 				AE499DDB1C82BB2B002D68AF /* XiEditorTests.xctest */,
 				AE499DE61C82BB2B002D68AF /* XiEditorUITests.xctest */,
+				0C66CB2B218F5CDB00F6F899 /* XiCli */,
+				0C62058D21B63B8E00A9758F /* libXiCliCore.a */,
+				0C53410A21B746AA004A9550 /* XiCliCoreTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -213,6 +349,7 @@
 				AED23F171C83CBEC002246CE /* EditView.swift */,
 				AE499DF81C82C835002D68AF /* RPCSending.swift */,
 				D8D319EF218CB39A00D108D4 /* XiCore.swift */,
+				D80F2D8321CEB4F90090BDA0 /* XiViewProxy.swift */,
 				F5BDBF361DCA9D2C0042430B /* Document.swift */,
 				AE168C5B1E4AD87B008249AE /* LineCache.swift */,
 				AE0243F51E4BDF8A00641BDA /* StyleMap.swift */,
@@ -223,12 +360,16 @@
 				6B53F5F11EF963EB00A4C664 /* Theme.swift */,
 				6B90DD211F14110B00DF3CE2 /* UserInputPromptController.swift */,
 				28F1ED491EC4C735008839BE /* Search.swift */,
+				D803A9A521C7CCB90042DE8F /* FindStatus.swift */,
 				E1288E7F20B06E9C0068EEB9 /* StatusBar.swift */,
 				832910D820229C2D0042C32B /* Fps.swift */,
 				E16BB89720FE42A600A0D7A1 /* HoverViewController.swift */,
 				AE499DD61C82BB2B002D68AF /* Info.plist */,
 				F53EA2AC1DCAA8110071ACFD /* Main.storyboard */,
 				AE499DD11C82BB2B002D68AF /* Assets.xcassets */,
+				D810EA5121BB291D00EABB21 /* ClientImplementation.swift */,
+				95FD9934218689A500C32AF1 /* MarkerBar.swift */,
+				95368BAA21D0B466000FAC40 /* Annotation.swift */,
 			);
 			path = XiEditor;
 			sourceTree = "<group>";
@@ -237,7 +378,9 @@
 			isa = PBXGroup;
 			children = (
 				D8D319F1218CBCD100D108D4 /* XiCoreTests.swift */,
+				D8D37FFA21D003C9000C4A65 /* XiViewProxyTests.swift */,
 				AE499DDF1C82BB2B002D68AF /* XiEditorTests.swift */,
+				D803A9A321C7C4630042DE8F /* FindStatusTests.swift */,
 				AE499DE11C82BB2B002D68AF /* Info.plist */,
 			);
 			path = XiEditorTests;
@@ -279,6 +422,17 @@
 			name = xicore;
 			sourceTree = "<group>";
 		};
+		D8F1F44B21C96BF6007FC254 /* IntegrationTests */ = {
+			isa = PBXGroup;
+			children = (
+				D8D5FD6421CDA683003F1B87 /* the-golden-boys.txt */,
+				D851299521CAFB440066B3BA /* SearchIntegrationTests.swift */,
+				D8F1F45221C9BFA1007FC254 /* SearchTester.swift */,
+				D8F1F44C21C988FA007FC254 /* TestClientImplementation.swift */,
+			);
+			path = IntegrationTests;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXLegacyTarget section */
@@ -299,6 +453,58 @@
 /* End PBXLegacyTarget section */
 
 /* Begin PBXNativeTarget section */
+		0C53410921B746AA004A9550 /* XiCliCoreTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0C53411221B746AA004A9550 /* Build configuration list for PBXNativeTarget "XiCliCoreTests" */;
+			buildPhases = (
+				0C53410621B746AA004A9550 /* Sources */,
+				0C53410721B746AA004A9550 /* Frameworks */,
+				0C53410821B746AA004A9550 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0C53411121B746AA004A9550 /* PBXTargetDependency */,
+			);
+			name = XiCliCoreTests;
+			productName = XiCliCoreTests;
+			productReference = 0C53410A21B746AA004A9550 /* XiCliCoreTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		0C62058C21B63B8E00A9758F /* XiCliCore */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0C62059321B63B8E00A9758F /* Build configuration list for PBXNativeTarget "XiCliCore" */;
+			buildPhases = (
+				0C62058A21B63B8E00A9758F /* Sources */,
+				0C62058B21B63B8E00A9758F /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = XiCliCore;
+			productName = XiCliCore;
+			productReference = 0C62058D21B63B8E00A9758F /* libXiCliCore.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		0C66CB2A218F5CDB00F6F899 /* XiCli */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0C66CB31218F5CDB00F6F899 /* Build configuration list for PBXNativeTarget "XiCli" */;
+			buildPhases = (
+				0C66CB27218F5CDB00F6F899 /* Sources */,
+				0C66CB28218F5CDB00F6F899 /* Frameworks */,
+				0C41645A21B24B6100FBA8B1 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0C53411621B7475F004A9550 /* PBXTargetDependency */,
+			);
+			name = XiCli;
+			productName = XiCLI;
+			productReference = 0C66CB2B218F5CDB00F6F899 /* XiCli */;
+			productType = "com.apple.product-type.tool";
+		};
 		AE499DCB1C82BB2B002D68AF /* XiEditor */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = AE499DEF1C82BB2B002D68AF /* Build configuration list for PBXNativeTarget "XiEditor" */;
@@ -310,6 +516,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				0C53411921B7816B004A9550 /* PBXTargetDependency */,
 				D023DA051CD072400087EC0A /* PBXTargetDependency */,
 			);
 			name = XiEditor;
@@ -359,22 +566,34 @@
 		AE499DC41C82BB2B002D68AF /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0720;
+				LastSwiftUpdateCheck = 1010;
 				LastUpgradeCheck = 0940;
-				ORGANIZATIONNAME = "Raph Levien";
+				ORGANIZATIONNAME = "xi-editor";
 				TargetAttributes = {
+					0C53410921B746AA004A9550 = {
+						CreatedOnToolsVersion = 10.1;
+						ProvisioningStyle = Automatic;
+					};
+					0C62058C21B63B8E00A9758F = {
+						CreatedOnToolsVersion = 10.1;
+						ProvisioningStyle = Automatic;
+					};
+					0C66CB2A218F5CDB00F6F899 = {
+						CreatedOnToolsVersion = 10.1;
+						ProvisioningStyle = Manual;
+					};
 					AE499DCB1C82BB2B002D68AF = {
 						CreatedOnToolsVersion = 7.2;
 						LastSwiftMigration = 0900;
 					};
 					AE499DDA1C82BB2B002D68AF = {
 						CreatedOnToolsVersion = 7.2;
-						LastSwiftMigration = 0900;
+						LastSwiftMigration = 1010;
 						TestTargetID = AE499DCB1C82BB2B002D68AF;
 					};
 					AE499DE51C82BB2B002D68AF = {
 						CreatedOnToolsVersion = 7.2;
-						LastSwiftMigration = 0900;
+						LastSwiftMigration = 1010;
 						TestTargetID = AE499DCB1C82BB2B002D68AF;
 					};
 					D023D9FE1CD0715E0087EC0A = {
@@ -397,17 +616,29 @@
 			targets = (
 				AE499DCB1C82BB2B002D68AF /* XiEditor */,
 				D023D9FE1CD0715E0087EC0A /* XiCore */,
+				0C66CB2A218F5CDB00F6F899 /* XiCli */,
+				0C62058C21B63B8E00A9758F /* XiCliCore */,
 				AE499DDA1C82BB2B002D68AF /* XiEditorTests */,
 				AE499DE51C82BB2B002D68AF /* XiEditorUITests */,
+				0C53410921B746AA004A9550 /* XiCliCoreTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		0C53410821B746AA004A9550 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AE499DCA1C82BB2B002D68AF /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0C53411A21B786F3004A9550 /* XiCli in Resources */,
+				31D2A51721B6BF3C005919F0 /* XiEditor.help in Resources */,
 				4DCB4AF020576A6F00476F75 /* fonts in Resources */,
 				F53EA2AD1DCAA8110071ACFD /* Main.storyboard in Resources */,
 				AE228F5D1C897CE7000E9B0F /* xi-core in Resources */,
@@ -415,7 +646,6 @@
 				6B1D39101FC53F5C008CCA35 /* client_example.toml in Resources */,
 				AED22D811FE84B4B0096E7C3 /* solid.f.glsl in Resources */,
 				AED22D831FE84B4B0096E7C3 /* text.v.glsl in Resources */,
-				AB9A25602118C42D0023DE75 /* shortcut in Resources */,
 				AED22D821FE84B4B0096E7C3 /* solid.v.glsl in Resources */,
 				AE041BA61D4327EB0069AB8B /* plugins in Resources */,
 				AE499DD21C82BB2B002D68AF /* Assets.xcassets in Resources */,
@@ -426,6 +656,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D8D5FD6521CDA683003F1B87 /* the-golden-boys.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -439,6 +670,31 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		0C53410621B746AA004A9550 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0C53410D21B746AA004A9550 /* XiCliCoreTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0C62058A21B63B8E00A9758F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0C62059721B63BAE00A9758F /* Arguments.swift in Sources */,
+				0C62059621B63BAB00A9758F /* CommandLineTool.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0C66CB27218F5CDB00F6F899 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0C66CB2E218F5CDB00F6F899 /* main.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AE499DC81C82BB2B002D68AF /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -461,16 +717,21 @@
 				6BF9575B1FD70C420010BAE6 /* Client.swift in Sources */,
 				AED23F181C83CBED002246CE /* EditView.swift in Sources */,
 				D8D319F0218CB39A00D108D4 /* XiCore.swift in Sources */,
+				95368BAB21D0B466000FAC40 /* Annotation.swift in Sources */,
 				AE499DD01C82BB2B002D68AF /* AppDelegate.swift in Sources */,
 				AEC4F6B31FF5AF130060E10E /* UnfairLock.swift in Sources */,
+				95FD9935218689A500C32AF1 /* MarkerBar.swift in Sources */,
 				28F1ED4A1EC4C735008839BE /* Search.swift in Sources */,
 				F5BDBF371DCA9D2C0042430B /* Document.swift in Sources */,
 				6B0C298B2033C39500EA07AF /* XiWindow.swift in Sources */,
+				D803A9A621C7CCB90042DE8F /* FindStatus.swift in Sources */,
 				6038770720057B4500AABF17 /* XiDocumentController.swift in Sources */,
 				6B90DD221F14110B00DF3CE2 /* UserInputPromptController.swift in Sources */,
+				D80F2D8421CEB4F90090BDA0 /* XiViewProxy.swift in Sources */,
 				6057C52521A07F1900F6BD47 /* LoggingUtilities.swift in Sources */,
 				832910D920229C2D0042C32B /* Fps.swift in Sources */,
 				AED22D781FE8404D0096E7C3 /* Renderer.swift in Sources */,
+				D810EA5221BB291D00EABB21 /* ClientImplementation.swift in Sources */,
 				6BA1873B1FDDD7B6008220DA /* XiClipView.swift in Sources */,
 				AED22D7A1FE8418A0096E7C3 /* Atlas.swift in Sources */,
 			);
@@ -481,6 +742,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				AE499DE01C82BB2B002D68AF /* XiEditorTests.swift in Sources */,
+				D803A9A421C7C4630042DE8F /* FindStatusTests.swift in Sources */,
+				D851299621CAFB450066B3BA /* SearchIntegrationTests.swift in Sources */,
+				D8D37FFB21D003C9000C4A65 /* XiViewProxyTests.swift in Sources */,
+				D8F1F44D21C988FA007FC254 /* TestClientImplementation.swift in Sources */,
+				D8F1F45321C9BFA1007FC254 /* SearchTester.swift in Sources */,
 				D8D319F2218CBCD100D108D4 /* XiCoreTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -496,6 +762,21 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		0C53411121B746AA004A9550 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0C62058C21B63B8E00A9758F /* XiCliCore */;
+			targetProxy = 0C53411021B746AA004A9550 /* PBXContainerItemProxy */;
+		};
+		0C53411621B7475F004A9550 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0C62058C21B63B8E00A9758F /* XiCliCore */;
+			targetProxy = 0C53411521B7475F004A9550 /* PBXContainerItemProxy */;
+		};
+		0C53411921B7816B004A9550 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0C66CB2A218F5CDB00F6F899 /* XiCli */;
+			targetProxy = 0C53411821B7816B004A9550 /* PBXContainerItemProxy */;
+		};
 		AE499DDD1C82BB2B002D68AF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = AE499DCB1C82BB2B002D68AF /* XiEditor */;
@@ -514,6 +795,139 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		0C53411321B746AA004A9550 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = Tests/XiCliCoreTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.XiCliCoreTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_VERSION = 4.0;
+			};
+			name = Debug;
+		};
+		0C53411421B746AA004A9550 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = Tests/XiCliCoreTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.XiCliCoreTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+			};
+			name = Release;
+		};
+		0C62059421B63B8E00A9758F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				EXECUTABLE_PREFIX = lib;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 4.0;
+			};
+			name = Debug;
+		};
+		0C62059521B63B8E00A9758F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				EXECUTABLE_PREFIX = lib;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 4.0;
+			};
+			name = Release;
+		};
+		0C66CB2F218F5CDB00F6F899 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = "$(SRCROOT)/Sources/XiCli/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(TOOLCHAIN_DIR)/usr/lib/swift/macosx @executable_path";
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.Cli";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_VERSION = 4.0;
+			};
+			name = Debug;
+		};
+		0C66CB30218F5CDB00F6F899 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = "$(SRCROOT)/Sources/XiCli/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(TOOLCHAIN_DIR)/usr/lib/swift/macosx @executable_path";
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.Cli";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_VERSION = 4.0;
+			};
+			name = Release;
+		};
 		AE499DED1C82BB2B002D68AF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -623,9 +1037,8 @@
 				INFOPLIST_FILE = "$(SRCROOT)/Sources/XiEditor/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				OTHER_SWIFT_FLAGS = "-D DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = com.levien.XiEditor;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.Editor";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
@@ -637,9 +1050,8 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/Sources/XiEditor/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.levien.XiEditor;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.Editor";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
@@ -651,9 +1063,8 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Tests/XiEditorTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.levien.XiEditorTests;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.XiEditorTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
 				SWIFT_VERSION = 4.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/XiEditor.app/Contents/MacOS/XiEditor";
 			};
@@ -666,9 +1077,8 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Tests/XiEditorTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.levien.XiEditorTests;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.XiEditorTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
 				SWIFT_VERSION = 4.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/XiEditor.app/Contents/MacOS/XiEditor";
 			};
@@ -680,9 +1090,8 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Tests/XiEditorUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.levien.XiEditorUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.XiEditorUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
 				SWIFT_VERSION = 4.0;
 				TEST_TARGET_NAME = XiEditor;
 				USES_XCTRUNNER = YES;
@@ -695,9 +1104,8 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Tests/XiEditorUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.levien.XiEditorUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.XiEditorUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
 				SWIFT_VERSION = 4.0;
 				TEST_TARGET_NAME = XiEditor;
 				USES_XCTRUNNER = YES;
@@ -721,6 +1129,33 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		0C53411221B746AA004A9550 /* Build configuration list for PBXNativeTarget "XiCliCoreTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0C53411321B746AA004A9550 /* Debug */,
+				0C53411421B746AA004A9550 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0C62059321B63B8E00A9758F /* Build configuration list for PBXNativeTarget "XiCliCore" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0C62059421B63B8E00A9758F /* Debug */,
+				0C62059521B63B8E00A9758F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0C66CB31218F5CDB00F6F899 /* Build configuration list for PBXNativeTarget "XiCli" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0C66CB2F218F5CDB00F6F899 /* Debug */,
+				0C66CB30218F5CDB00F6F899 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		AE499DC71C82BB2B002D68AF /* Build configuration list for PBXProject "XiEditor" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

@@ -57,7 +57,7 @@ class UserInputPromptController: NSViewController, NSTextFieldDelegate, NSComboB
             return
         }
 
-        if currentArg!.type == .Choice {
+        if currentArg!.type == .choice {
             comboBox.isHidden = false
             inputField.isHidden = true
             comboBox.removeAllItems()
@@ -84,15 +84,15 @@ class UserInputPromptController: NSViewController, NSTextFieldDelegate, NSComboB
     @IBAction func submitAction(_ sender: Any) {
         let result: AnyObject
         switch currentArg!.type {
-        case .Number:
+        case .number:
             result = inputField.doubleValue as AnyObject
-        case .Int, .PosInt:
+        case .int, .posInt:
             result = inputField.integerValue as AnyObject
-        case .Bool:
+        case .bool:
             result = ["y", "yes", "true", "1"].contains(inputField.stringValue.lowercased()) as AnyObject
-        case .String:
+        case .string:
             result = inputField.stringValue as AnyObject
-        case .Choice:
+        case .choice:
             result = comboBox.stringValue as AnyObject
         }
         resolved[currentArg!.key] = result
@@ -102,17 +102,17 @@ class UserInputPromptController: NSViewController, NSTextFieldDelegate, NSComboB
     override func controlTextDidChange(_ obj: Notification) {
         var valid = false
         switch currentArg!.type {
-        case .Number:
+        case .number:
             valid = Double(inputField.stringValue) != nil
-        case .Int:
+        case .int:
             valid = Int(inputField.stringValue, radix: 10) != nil
-        case .PosInt:
+        case .posInt:
             valid = (Int(inputField.stringValue, radix: 10) ?? -1) >= 0
-        case .Bool:
+        case .bool:
             valid = ["yes", "no", "y", "n", "true", "false", "0", "1"].contains(inputField.stringValue.lowercased())
-        case .String:
+        case .string:
             valid = !inputField.stringValue.isEmpty
-        case .Choice:
+        case .choice:
             valid = optionStrings!.contains(comboBox.stringValue)
         }
         submitButton.isEnabled = valid

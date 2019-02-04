@@ -49,6 +49,16 @@
                ReferencedContainer = "container:XiEditor.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "0C53410921B746AA004A9550"
+               BuildableName = "XiCliCoreTests.xctest"
+               BlueprintName = "XiCliCoreTests"
+               ReferencedContainer = "container:XiEditor.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference

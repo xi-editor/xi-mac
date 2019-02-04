@@ -32,13 +32,17 @@ extension NSFont {
 /// A store of properties used to determine the layout of text.
 struct TextDrawingMetrics {
     let font: NSFont
-    var attributes: [NSAttributedStringKey: AnyObject] = [:]
-    var ascent: CGFloat
-    var descent: CGFloat
-    var leading: CGFloat
-    var baseline: CGFloat
-    var linespace: CGFloat
-    var fontWidth: CGFloat
+    let attributes: [NSAttributedStringKey: AnyObject]
+    let ascent: CGFloat
+    let descent: CGFloat
+    let leading: CGFloat
+    let baseline: CGFloat
+    let linespace: CGFloat
+    let fontWidth: CGFloat
+
+    var topPadding: CGFloat {
+        return descent + leading
+    }
 
     init(font: NSFont, textColor: NSColor) {
         self.font = font
@@ -48,11 +52,10 @@ struct TextDrawingMetrics {
         linespace = ceil(ascent + descent + leading)
         baseline = ceil(ascent)
         fontWidth = font.characterWidth()
-        attributes[.font] = font
         //FIXME: sometimes some regions of a file have no spans, so they don't have a style,
-        // which means they get drawn as black. With this we default to drawing them like plaintext.
-        // BUT: why are spans missing?
-        attributes[.foregroundColor] = textColor
+        // which means they get drawn as black. With this (setting of .foregroundColor)
+        // we default to drawing them like plaintext. BUT: why are spans missing?
+        attributes = [.font: font, .foregroundColor: textColor]
     }
 }
 
@@ -123,13 +126,6 @@ func colorToArgb(_ color: NSColor) -> UInt32 {
 }
 
 final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
-    var scrollOrigin: NSPoint {
-        didSet {
-            if scrollOrigin != oldValue {
-                needsDisplay = true
-            }
-        }
-    }
     var lastRevisionRendered = 0
     var gutterXPad: CGFloat = 8
     var gutterCache: GutterCache?
@@ -188,7 +184,6 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     required init?(coder: NSCoder) {
         _selectedRange = NSMakeRange(NSNotFound, 0)
         _markedRange = NSMakeRange(NSNotFound, 0)
-        scrollOrigin = NSPoint()
         super.init(coder: coder)
 
         wantsLayer = true
@@ -196,6 +191,7 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         let glLayer = TextPlaneLayer()
         glLayer.textDelegate = self
         layer = glLayer
+        registerForDraggedTypes([kUTTypeFileURL as NSPasteboard.PasteboardType])
     }
 
     let x0: CGFloat = 2
@@ -231,6 +227,22 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
 
     override var preservesContentDuringLiveResize: Bool {
         return true
+    }
+
+    override func draggingEnded(_ sender: NSDraggingInfo) {
+        // open file dragged into window
+        guard let pasteboard = sender.draggingPasteboard().propertyList(forType: NSPasteboard.PasteboardType(rawValue: "NSFilenamesPboardType")) as? NSArray,
+            let path = pasteboard.firstObject as? String
+        else { return }
+
+        NSDocumentController.shared.openDocument(
+            withContentsOf: URL.init(fileURLWithPath: path),
+            display: true,
+            completionHandler: { (document, alreadyOpen, error) in
+                if let error = error {
+                    print("error opening file \(error)")
+                }
+        })
     }
 
     /// Resets the blink timer, if the cursor should be blinking
@@ -274,7 +286,7 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         var replacementRange = aRange
         var len = 0
         if let attrStr = aString as? NSAttributedString {
-            len = attrStr.string.count
+            len = attrStr.string.utf16.count
         } else if let str = aString as? NSString {
             len = str.length
         }
@@ -366,9 +378,9 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         partialInvalidate(invalid: dataSource.lines.cursorInval)
     }
 
-    // TODO: more functions should call this, just dividing by linespace doesn't account for descent
-    func yToLine(_ y: CGFloat) -> Int {
-        return Int(floor(max(y - dataSource.textMetrics.descent, 0) / dataSource.textMetrics.linespace))
+    func yOffsetToLine(_ y: CGFloat) -> Int {
+        let y = max(y - dataSource.textMetrics.topPadding, 0)
+        return Int(floor(y / dataSource.textMetrics.linespace))
     }
 
     func lineIxToBaseline(_ lineIx: Int) -> CGFloat {
@@ -379,9 +391,9 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     /// Note: - The returned position is not guaruanteed to be an existing line. For instance, if a buffer does not fill the current window, a point below the last line will return a buffer position with a line number exceeding the number of lines in the file. In this case position.column will always be zero.
     func bufferPositionFromPoint(_ point: NSPoint) -> BufferPosition {
         let point = self.convert(point, from: nil)
-        let x = point.x + scrollOrigin.x - dataSource.gutterWidth
-        let y = point.y + scrollOrigin.y
-        let lineIx = yToLine(y)
+        let x = point.x + dataSource.scrollOrigin.x - dataSource.gutterWidth
+        let y = point.y + dataSource.scrollOrigin.y
+        let lineIx = yOffsetToLine(y)
         if let line = getLine(lineIx) {
             let s = line.text
             let attrString = NSAttributedString(string: s, attributes: dataSource.textMetrics.attributes)
@@ -419,6 +431,24 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         }
     }
 
+    func annotationColor(for annotation: Annotation) -> UInt32 {
+        let selectionColor = self.isFrontmostView ? dataSource.theme.selection : dataSource.theme.inactiveSelection ?? dataSource.theme.selection
+        let selArgb = colorToArgb(selectionColor)
+        let highlightColors = dataSource.theme.findHighlights ?? [dataSource.theme.selection]
+        let highlightsArgb = highlightColors.map({
+            (highlightColor: NSColor) -> UInt32 in
+            colorToArgb(highlightColor)
+        })
+
+        switch annotation.type {
+        case AnnotationType.selection:
+            return selArgb
+        case AnnotationType.find:
+            let queryId = annotation.payload?["id"] as! Int
+            return highlightsArgb[queryId % highlightsArgb.count]
+        }
+    }
+
     /// Our equivalent of drawRect:, with rendering using TextPlane.
     ///
     /// Note: This function has side effects in two cases: It stashes
@@ -433,17 +463,14 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             return
         }
         let linespace = dataSource.textMetrics.linespace
-        let topPad = linespace - dataSource.textMetrics.ascent
-        let xOff = dataSource.gutterWidth + x0 - scrollOrigin.x
-        let yOff = topPad - scrollOrigin.y
-        let firstVisible = max(0, Int((floor(dirtyRect.origin.y - topPad + scrollOrigin.y) / linespace)))
-        let lastVisible = max(0, Int(ceil((dirtyRect.origin.y + dirtyRect.size.height - topPad + scrollOrigin.y) / linespace)))
+        let xOff = dataSource.gutterWidth + x0 - dataSource.scrollOrigin.x
+        let yOff = dataSource.textMetrics.topPadding - dataSource.scrollOrigin.y
 
         // Note: this locks the line cache for the duration of the render
         let lineCache = dataSource.lines.locked()
         let totalLines = lineCache.height
-        let first = min(totalLines, firstVisible)
-        let last = min(totalLines, lastVisible)
+        let first = min(yOffsetToLine(dirtyRect.origin.y + dataSource.scrollOrigin.y), totalLines)
+        let last = min(yOffsetToLine(dirtyRect.maxY + dataSource.scrollOrigin.y) + 1, totalLines)
         let lines = lineCache.blockingGet(lines: first..<last)
         let font = dataSource.textMetrics.font as CTFont
         let styleMap = dataSource.styleMap.locked()
@@ -454,13 +481,6 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         // also to improve batching of the OpenGL draw calls.
 
         // first pass: create TextLine objects and also draw background rects
-        let selectionColor = self.isFrontmostView ? dataSource.theme.selection : dataSource.theme.inactiveSelection ?? dataSource.theme.selection
-        let selArgb = colorToArgb(selectionColor)
-        let highlightColors = dataSource.theme.findHighlights
-        let highlightsArgb = (highlightColors ?? [])!.map({
-            (highlightColor: NSColor) -> UInt32 in
-            colorToArgb(highlightColor)
-        })
         let foregroundArgb = colorToArgb(dataSource.theme.foreground)
         let gutterArgb = colorToArgb(dataSource.theme.gutterForeground)
 
@@ -469,6 +489,11 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                                       noCursorArgb: gutterArgb,
                                       font: font, fontCache: renderer.fontCache)
         }
+
+        // keeps track of the next annotations to be drawn
+        let annotationsToBeDrawn = [AnnotationType.find, AnnotationType.selection]
+        let annotations = lineCache.annotations
+        let annotationsForLines = annotations.annotationsForLines(lines: lines, lineRange: first..<last)
 
         for lineIx in first..<last {
             let relLineIx = lineIx - first
@@ -483,9 +508,17 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             } else {
                 let builder = TextLineBuilder(line.text, font: font)
                 builder.setFgColor(argb: foregroundArgb)
-                styleMap.applyStyles(builder: builder, styles: line.styles, selColor: selArgb, highlightColors: highlightsArgb)
-                textLine = builder.build(fontCache: renderer.fontCache)
+                styleMap.applyStyles(builder: builder, styles: line.styles)
 
+                // draw all annotations that are active for the current line
+                for annotationType in annotationsToBeDrawn {
+                    for annotation in annotationsForLines[lineIx]![annotationType]! {
+                        let color = annotationColor(for: annotation.annotation)
+                        builder.addBgSpan(range: convertRange(NSMakeRange(annotation.startIx, annotation.endIx - annotation.startIx)), argb: color)
+                    }
+                }
+
+                textLine = builder.build(fontCache: renderer.fontCache)
                 let assoc = LineAssoc(textLine: textLine)
                 lineCache.setAssoc(lineIx, assoc: assoc)
                 textLines.append(textLine)
@@ -513,11 +546,19 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
 
         // fourth pass: draw carets
         let cursorArgb = colorToArgb(cursorColor)
+        var linesWithCursors = Set<UInt>()
+        var lastLogicalLine: UInt?
         for lineIx in first..<last {
             let relLineIx = lineIx - first
             if let textLine = textLines[relLineIx], let line = lines[relLineIx] {
+                if let logicalLine = line.number {
+                    lastLogicalLine = logicalLine
+                }
                 let y0 = yOff + linespace * CGFloat(lineIx)
                 for cursor in line.cursor {
+                    if let lastLogicalLine = lastLogicalLine {
+                        linesWithCursors.insert(lastLogicalLine)
+                    }
                     let utf16Ix = utf8_offset_to_utf16(line.text, cursor)
                     // Note: It's ugly that cursorPos is set as a side-effect
                     // TODO: disabled until firstRect logic is fixed
@@ -563,12 +604,14 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                 continue
             }
 
-            let gutterNumber = UInt(lineIx) + 1
-            let gutterTL = gutterCache!.lookupLineNumber(lineIdx: gutterNumber, hasCursor: line.containsCursor)
+            if let gutterNumber = line.number, let gutterCache = gutterCache {
+                let gutterTL = gutterCache.lookupLineNumber(lineIdx: gutterNumber,
+                                                            hasCursor: linesWithCursors.contains(gutterNumber))
 
-            let x = dataSource.gutterWidth - (gutterXPad + CGFloat(gutterTL.width))
-            let y0 = yOff + dataSource.textMetrics.ascent + linespace * CGFloat(lineIx)
-            renderer.drawLine(line: gutterTL, x0: GLfloat(x), y0: GLfloat(y0))
+                let x = dataSource.gutterWidth - (gutterXPad + CGFloat(gutterTL.width))
+                let y0 = yOff + dataSource.textMetrics.ascent + linespace * CGFloat(lineIx)
+                renderer.drawLine(line: gutterTL, x0: GLfloat(x), y0: GLfloat(y0))
+            }
         }
 
         lastRevisionRendered = lineCache.revision

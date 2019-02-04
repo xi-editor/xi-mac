@@ -102,7 +102,7 @@ extension Theme {
             lineHighlight: line_highlight ?? defaults.lineHighlight,
             findHighlights: Theme.generateHighlightColors(findHighlight: find_highlight ?? defaults.findHighlights?.first!),
             findHighlightForeground: find_highlight_foreground ?? defaults.findHighlightForeground,
-            gutter: gutter ?? defaults.gutter,
+            gutter: gutter ?? (background ?? defaults.gutter),
             gutterForeground: gutter_foreground ?? defaults.gutterForeground,
             selection: selection ?? defaults.selection,
             selectionForeground: selection_foreground ?? defaults.selectionForeground,

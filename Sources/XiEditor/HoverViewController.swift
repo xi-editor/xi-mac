@@ -123,7 +123,7 @@ extension EditViewController {
         if let event = hoverEvent {
             let hoverLine = editView.bufferPositionFromPoint(event.locationInWindow).line
             let symbolBaseline = editView.lineIxToBaseline(hoverLine)
-            let positioningPoint = NSPoint(x: event.locationInWindow.x, y: editView.frame.height + editView.scrollOrigin.y - symbolBaseline)
+            let positioningPoint = NSPoint(x: event.locationInWindow.x, y: editView.frame.height + scrollOrigin.y - symbolBaseline)
             let positioningSize = CGSize(width: 1, height: 1) // Generic size to center popover on cursor
 
             infoPopover.show(relativeTo: NSRect(origin: positioningPoint, size: positioningSize), of: self.view, preferredEdge: .minY)

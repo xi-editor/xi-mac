@@ -64,7 +64,7 @@
                                     <rect key="frame" x="0.0" y="255" width="465" height="15"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
-                                <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="O02-Lc-5gg">
+                                <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="O02-Lc-5gg" customClass="MarkerBar" customModule="XiEditor" customModuleProvider="target">
                                     <rect key="frame" x="465" y="0.0" width="15" height="255"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
@@ -499,10 +499,10 @@ Gw
                                                 <action selector="openPreferences:" target="7er-QZ-amI" id="dzf-4q-1J8"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Install Command Line Shortcut" id="Rhk-UC-PWm">
+                                        <menuItem title="Toggle Command Line" id="Rhk-UC-PWm" userLabel="Toggle Command Line">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
-                                                <action selector="installShortcut:" target="azf-ih-6fI" id="s8S-bc-cEL"/>
+                                                <action selector="toggleCli:" target="azf-ih-6fI" id="beN-id-CIc"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="gsd-kb-HGJ"/>
@@ -686,6 +686,11 @@ Gw
                                             <modifierMask key="keyEquivalentModifierMask" control="YES"/>
                                             <connections>
                                                 <action selector="decreaseNumber:" target="7er-QZ-amI" id="gdz-W0-fqj"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Toggle Comment" keyEquivalent="/" id="tIC-OG-slr">
+                                            <connections>
+                                                <action selector="toggleComment:" target="7er-QZ-amI" id="1zd-gi-dQv"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="PN7-qq-hhD"/>
@@ -1030,6 +1035,12 @@ Gw
                                                             <action selector="unindent:" target="7er-QZ-amI" id="83I-gO-x7f"/>
                                                         </connections>
                                                     </menuItem>
+                                                    <menuItem title="Reindent Lines" keyEquivalent="i" id="GXQ-jg-JVA" userLabel="Unindent">
+                                                        <modifierMask key="keyEquivalentModifierMask" control="YES" option="YES"/>
+                                                        <connections>
+                                                            <action selector="reindent:" target="7er-QZ-amI" id="83I-gO-x7k"/>
+                                                        </connections>
+                                                    </menuItem>
                                                 </items>
                                             </menu>
                                         </menuItem>
@@ -1216,7 +1227,11 @@ Gw
                 </application>
                 <customObject id="7er-QZ-amI" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
                 <customObject id="o5o-AY-Tmr" customClass="NSFontManager"/>
-                <customObject id="azf-ih-6fI" customClass="AppDelegate" customModule="XiEditor" customModuleProvider="target"/>
+                <customObject id="azf-ih-6fI" customClass="AppDelegate" customModule="XiEditor" customModuleProvider="target">
+                    <connections>
+                        <outlet property="cliToggle" destination="Rhk-UC-PWm" id="vHX-ok-D0f"/>
+                    </connections>
+                </customObject>
                 <userDefaultsController id="yco-8S-n0A"/>
                 <userDefaultsController id="auS-BU-5TV"/>
             </objects>
