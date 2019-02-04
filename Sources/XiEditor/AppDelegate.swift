@@ -407,6 +407,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, XiClient {
             document?.editViewController?.replaceStatus(status: status)
         }
     }
+    
+    func toggleTailConfigChanged(viewIdentifier: String, isTailEnabled: Bool) {
+        DispatchQueue.main.async { [weak self] in
+            let document = self?.documentForViewIdentifier(viewIdentifier: viewIdentifier)
+            document?.editViewController?.toggleTailConfigChanged(isTailEnabled)
+        }
+    }
 
     //MARK: - top-level interactions
     @IBAction func openPreferences(_ sender: NSMenuItem) {

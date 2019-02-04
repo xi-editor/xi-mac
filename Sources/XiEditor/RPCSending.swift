@@ -334,6 +334,14 @@ class StdoutRPCSender: RPCSending {
         case "replace_status":
             let status = params["status"] as! [String: AnyObject]
             client?.replaceStatus(viewIdentifier: viewIdentifier!, status: status)
+            
+        case "toggle_tail_config_changed":
+            let isTailEnabled = params["is_tail_enabled"] as! Bool
+            client?.toggleTailConfigChanged(
+                viewIdentifier: viewIdentifier!,
+                isTailEnabled: isTailEnabled
+            )
+            
 
         default:
             print("unknown notification \(method)")

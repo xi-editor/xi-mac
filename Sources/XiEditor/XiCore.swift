@@ -49,6 +49,7 @@ protocol XiCore: class {
     func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback?)
     func sendRpc(_ method: String, params: Any) -> RpcResult
     /// Will tail opened file if enabled.
+    /// If toggle succeeds the client will receive a `toggle_tail_config_changed` notification.
     func toggleTailConfig(identifier: ViewIdentifier, enabled: Bool)
 }
 
