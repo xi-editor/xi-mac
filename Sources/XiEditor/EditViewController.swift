@@ -373,7 +373,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             self?.document.updateChangeCount(hasNoUnsavedChanges ? .changeCleared : .changeDone)
             
             // Display the document's edited status in the window and tab titles.
-            if let window = self?.document.windowControllers[0] as? XiWindowController {
+            if let window = self?.document.windowControllers.first as? XiWindowController {
                 window.synchronizeWindowTitleWithDocumentName()
             }
             
