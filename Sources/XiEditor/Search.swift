@@ -368,11 +368,7 @@ extension EditViewController {
     }
 
     func findNext(wrapAround: Bool, allowSame: Bool) {
-        var params = ["wrap_around": wrapAround]
-        if allowSame {
-            params["allow_same"] = true
-        }
-        document.sendRpcAsync("find_next", params: params)
+        xiView.findNext(wrapAround: wrapAround, allowSame: allowSame, modifySelection: .set)
     }
 
     func findPrevious(wrapAround: Bool) {
@@ -478,12 +474,12 @@ extension EditViewController {
 
     @IBAction func addNextToSelection(_ sender: AnyObject?) {
         document.sendRpcAsync("selection_for_find", params: ["case_sensitive": false])
-        document.sendRpcAsync("find_next", params: ["wrap_around": false, "allow_same": true, "add_to_selection": false, "modify_selection": "add"])
+        xiView.findNext(wrapAround: false, allowSame: true, modifySelection: .add)
     }
 
     @IBAction func addNextToSelectionRemoveCurrent(_ sender: AnyObject?) {
         document.sendRpcAsync("selection_for_find", params: ["case_sensitive": false])
-        document.sendRpcAsync("find_next", params: ["wrap_around": true, "allow_same": true, "add_to_selection": true, "modify_selection": "add_removing_current"])
+        xiView.findNext(wrapAround: true, allowSame: true, modifySelection: .addRemovingCurrent)
     }
 
     @IBAction func selectionForReplace(_ sender: AnyObject?) {
