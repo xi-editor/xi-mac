@@ -14,6 +14,12 @@
 
 import Foundation
 
+enum SelectionModifier: String {
+    case none
+    case set
+    case add
+    case addRemovingCurrent = "add_removing_current"
+}
 
 protocol XiViewProxy: class {
     func resize(size: CGSize)
@@ -26,6 +32,8 @@ protocol XiViewProxy: class {
     func playRecording(name: String)
     func clearRecording(name: String)
 
+    /// Selects the next occurrence matching the search query.
+    func findNext(wrapAround: Bool, allowSame: Bool, modifySelection: SelectionModifier)
     /// Selects all occurrences matching the search query.
     func findAll()
     /// Shows/hides active search highlights.
@@ -85,6 +93,26 @@ final class XiViewConnection: XiViewProxy {
 
     func clearRecording(name: String) {
         sendRpcAsync("clear_recording", params: ["recording_name": name])
+    }
+
+    func findNext(wrapAround: Bool, allowSame: Bool, modifySelection: SelectionModifier) {
+        let params = createFindParamsFor(wrapAround: wrapAround, allowSame: allowSame, modifySelection: modifySelection)
+        sendRpcAsync("find_next", params: params)
+    }
+
+    /// All parameters are optional. Boolean parameters are by default `false` and `modify_selection` is `set` by default.
+    private func createFindParamsFor(wrapAround: Bool, allowSame: Bool, modifySelection: SelectionModifier) -> [String: Any] {
+        var params: [String: Any] = [:]
+        if wrapAround {
+            params["wrap_around"] = wrapAround
+        }
+        if allowSame {
+            params["allow_same"] = allowSame
+        }
+        if modifySelection != .set {
+            params["modify_selection"] = modifySelection.rawValue
+        }
+        return params
     }
 
     func findAll() {
