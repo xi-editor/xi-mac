@@ -32,6 +32,8 @@ protocol XiViewProxy: class {
     func playRecording(name: String)
     func clearRecording(name: String)
 
+    /// Selects the previous occurrence matching the search query.
+    func findPrevious(wrapAround: Bool, allowSame: Bool, modifySelection: SelectionModifier)
     /// Selects the next occurrence matching the search query.
     func findNext(wrapAround: Bool, allowSame: Bool, modifySelection: SelectionModifier)
     /// Selects all occurrences matching the search query.
@@ -93,6 +95,11 @@ final class XiViewConnection: XiViewProxy {
 
     func clearRecording(name: String) {
         sendRpcAsync("clear_recording", params: ["recording_name": name])
+    }
+
+    func findPrevious(wrapAround: Bool, allowSame: Bool, modifySelection: SelectionModifier) {
+        let params = createFindParamsFor(wrapAround: wrapAround, allowSame: allowSame, modifySelection: modifySelection)
+        sendRpcAsync("find_previous", params: params)
     }
 
     func findNext(wrapAround: Bool, allowSame: Bool, modifySelection: SelectionModifier) {
