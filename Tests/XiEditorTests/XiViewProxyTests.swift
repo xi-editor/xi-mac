@@ -129,6 +129,71 @@ class XiViewProxyTests: XCTestCase {
         wait(for: [asyncCalledExpectation], timeout: 1)
     }
 
+    func testFindPreviousWrapAround() {
+        let asyncCalledExpectation = expectation(description: "Async should be called")
+        let async: XiViewConnection.AsyncRpc = { method, params, _ in
+            XCTAssertEqual("find_previous", method)
+            let findParams = params as! [String: Bool]
+            XCTAssertEqual(["wrap_around": true], findParams)
+            asyncCalledExpectation.fulfill()
+        }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
+        connection.findPrevious(wrapAround: true, allowSame: false, modifySelection: .set)
+        wait(for: [asyncCalledExpectation], timeout: 1)
+    }
+
+    func testFindPreviousAllowSame() {
+        let asyncCalledExpectation = expectation(description: "Async should be called")
+        let async: XiViewConnection.AsyncRpc = { method, params, _ in
+            XCTAssertEqual("find_previous", method)
+            let findParams = params as! [String: Bool]
+            XCTAssertEqual(["allow_same": true], findParams)
+            asyncCalledExpectation.fulfill()
+        }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
+        connection.findPrevious(wrapAround: false, allowSame: true, modifySelection: .set)
+        wait(for: [asyncCalledExpectation], timeout: 1)
+    }
+
+    func testFindPreviousModifySelectionNone() {
+        let asyncCalledExpectation = expectation(description: "Async should be called")
+        let async: XiViewConnection.AsyncRpc = { method, params, _ in
+            XCTAssertEqual("find_previous", method)
+            let findParams = params as! [String: String]
+            XCTAssertEqual(["modify_selection": "none"], findParams)
+            asyncCalledExpectation.fulfill()
+        }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
+        connection.findPrevious(wrapAround: false, allowSame: false, modifySelection: .none)
+        wait(for: [asyncCalledExpectation], timeout: 1)
+    }
+
+    func testFindPreviousModifySelectionAdd() {
+        let asyncCalledExpectation = expectation(description: "Async should be called")
+        let async: XiViewConnection.AsyncRpc = { method, params, _ in
+            XCTAssertEqual("find_previous", method)
+            let findParams = params as! [String: String]
+            XCTAssertEqual(["modify_selection": "add"], findParams)
+            asyncCalledExpectation.fulfill()
+        }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
+        connection.findPrevious(wrapAround: false, allowSame: false, modifySelection: .add)
+        wait(for: [asyncCalledExpectation], timeout: 1)
+    }
+
+    func testFindPreviousModifySelectionAddRemovingCurrent() {
+        let asyncCalledExpectation = expectation(description: "Async should be called")
+        let async: XiViewConnection.AsyncRpc = { method, params, _ in
+            XCTAssertEqual("find_previous", method)
+            let findParams = params as! [String: String]
+            XCTAssertEqual(["modify_selection": "add_removing_current"], findParams)
+            asyncCalledExpectation.fulfill()
+        }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
+        connection.findPrevious(wrapAround: false, allowSame: false, modifySelection: .addRemovingCurrent)
+        wait(for: [asyncCalledExpectation], timeout: 1)
+    }
+
     func testFindNextWrapAround() {
         let asyncCalledExpectation = expectation(description: "Async should be called")
         let async: XiViewConnection.AsyncRpc = { method, params, _ in
