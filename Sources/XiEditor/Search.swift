@@ -372,9 +372,7 @@ extension EditViewController {
     }
 
     func findPrevious(wrapAround: Bool) {
-        document.sendRpcAsync("find_previous", params: [
-            "wrap_around": wrapAround
-        ])
+        xiView.findPrevious(wrapAround: wrapAround, allowSame: false, modifySelection: .set)
     }
 
     func find(_ queries: [FindQuery]) {
