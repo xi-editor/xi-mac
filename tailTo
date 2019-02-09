@@ -1,0 +1,10 @@
+#!/bin/bash
+
+x=1
+while [ $x -le 50 ]
+do
+	echo "Welcome $x" >> tailMe
+	x=$(( $x + 1 ))
+	sleep 1
+done
+echo "Bye" >> tailMe
