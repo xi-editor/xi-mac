@@ -73,6 +73,7 @@ enum RPCNotificationMethod: String {
     
     case findStatus = "find_status"
     case replaceStatus = "replace_status"
+    case toggle_tail_config_changed = "toggle_tail_config_changed"
 }
 
 /// A completion handler for a synchronous RPC
@@ -382,16 +383,12 @@ class StdoutRPCSender: RPCSending {
             let status = params["status"] as! [String: AnyObject]
             client?.replaceStatus(viewIdentifier: viewIdentifier!, status: status)
             
-        case "toggle_tail_config_changed":
+        case .toggle_tail_config_changed:
             let isTailEnabled = params["is_tail_enabled"] as! Bool
             client?.toggleTailConfigChanged(
                 viewIdentifier: viewIdentifier!,
                 isTailEnabled: isTailEnabled
             )
-            
-
-        default:
-            print("unknown notification \(method)")
         }
     }
 
