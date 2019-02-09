@@ -1,4 +1,4 @@
-// Copyright 2017 The xi-editor Authors.
+// Copyright 2018 The xi-editor Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,17 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import Cocoa
-
-class EditContainerView: NSView {
-
-    override var isFlipped: Bool {
-        return true
-    }
+public struct Arguments {
+    var fileInputs: [String] = []
+    var wait: Bool = false
+    var help: Bool = false
     
-    override func menu(for event: NSEvent) -> NSMenu? {
-        return contextMenu
+    public init(arguments: [String] = CommandLine.arguments) {
+        let actualArgs = Array(arguments.dropFirst())
+        for arg in actualArgs {
+            if arg == "--wait" || arg == "-w" {
+                self.wait = true
+            } else if arg == "--help" || arg == "-h" {
+                self.help = true
+            } else {
+                self.fileInputs.append(arg)
+            }
+        }
     }
-    
-    public var contextMenu: NSMenu?
 }
+

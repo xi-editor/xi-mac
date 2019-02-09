@@ -202,6 +202,7 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
     var wholeWords = false
     var id: Int? = nil
     var disableRemove = false
+    var lines: [Int] = []
 
     weak var parentFindView: FindViewController? = nil
 
@@ -332,7 +333,7 @@ extension EditViewController {
         if findViewController.view.isHidden || replaceHiddenChanged {
             findViewController.view.isHidden = false
             updateScrollPosition(previousOffset: 0)
-            document.sendRpcAsync("highlight_find", params: ["visible": true])
+            xiView.highlightFind(visible: true)
         }
 
         scrollView.contentInsets = NSEdgeInsetsMake(offset, 0, 0, 0)
@@ -353,7 +354,7 @@ extension EditViewController {
         }
 
         editView.window?.makeFirstResponder(editView)
-        document.sendRpcAsync("highlight_find", params: ["visible": false])
+        xiView.highlightFind(visible: false)
     }
 
     func updateScrollPosition(previousOffset: CGFloat) {
@@ -367,17 +368,11 @@ extension EditViewController {
     }
 
     func findNext(wrapAround: Bool, allowSame: Bool) {
-        var params = ["wrap_around": wrapAround]
-        if allowSame {
-            params["allow_same"] = true
-        }
-        document.sendRpcAsync("find_next", params: params)
+        xiView.findNext(wrapAround: wrapAround, allowSame: allowSame, modifySelection: .set)
     }
 
     func findPrevious(wrapAround: Bool) {
-        document.sendRpcAsync("find_previous", params: [
-            "wrap_around": wrapAround
-        ])
+        xiView.findPrevious(wrapAround: wrapAround, allowSame: false, modifySelection: .set)
     }
 
     func find(_ queries: [FindQuery]) {
@@ -386,54 +381,67 @@ extension EditViewController {
     }
 
     func findStatus(status: [[String: AnyObject]]) {
-        // status has the following expected format:
-        // [{
-        //      id: Int,
-        //      chars: String,
-        //      case_sensitive: Boolean,
-        //      whole_words: Boolean,
-        //      matches: Int
-        // }]
-        for statusQuery in status {
-            var query = findViewController.searchQueries.first(where: { $0.id == statusQuery["id"] as? Int })
+        var findMarker: [Marker] = []
+        let statusStructs = status.flatMap(FindStatus.init)
+        for statusQuery in statusStructs {
+            guard let firstStatus = statusStructs.first else { continue }
 
-            if query == nil {
-                if let newQuery = findViewController.searchQueries.first(where: { $0.id == nil }) {
-                    newQuery.id = statusQuery["id"] as? Int
-                    query = newQuery
-                } else {
-                    let searchField = findViewController.addSearchField(searchField: nil, becomeFirstResponder: false)
-                    searchField!.id = statusQuery["id"] as? String
-                    query = findViewController.searchQueries.first(where: { $0.id == statusQuery["id"] as? Int })
-                }
-            }
+            let query = queryController(in: findViewController, queryId: statusQuery.id)
 
-            if status.first?["chars"] != nil && !(status.first?["chars"] is NSNull) {
-                query?.searchField.stringValue = statusQuery["chars"] as! String
+            if firstStatus.chars != nil {
+                query?.searchField.stringValue = statusQuery.chars!
             } else {
                 // clear count
                 (query?.searchField as? FindSearchField)?.resultCount = nil
             }
 
-            if status.first?["case_sensitive"] != nil && !(status.first?["case_sensitive"] is NSNull) {
-                query?.ignoreCase = !(statusQuery["case_sensitive"] != nil)
+            if firstStatus.caseSensitive != nil {
+                query?.ignoreCase = !(statusQuery.caseSensitive != nil)
             }
 
-            if status.first?["whole_words"] != nil && !(status.first?["whole_words"] is NSNull) {
-                query?.wholeWords = statusQuery["whole_words"] as! Bool
+            if firstStatus.wholeWords != nil {
+                query?.wholeWords = statusQuery.wholeWords!
             }
 
-            if let resultCount = statusQuery["matches"] as? Int {
-                (query?.searchField as? FindSearchField)?.resultCount = resultCount
+            (query?.searchField as? FindSearchField)?.resultCount = statusQuery.matches
+
+            query?.lines = statusQuery.lines
+            statusQuery.lines.forEach {
+                findMarker.append(Marker($0, color: .orange))
             }
         }
 
         // remove finds that have been removed in core
-        let activeFinds = status.map({$0["id"] as? Int})
-        let obsoleteFinds = findViewController.searchQueries.filter({!activeFinds.contains($0.id) && $0.id != nil})
+        let activeFinds = statusStructs.map { $0.id }
+        // Note: the following can be simplified to .contains() when minimum SDK is Xcode 9.3
+        let obsoleteFinds = findViewController.searchQueries.filter({(find) -> Bool in
+            !activeFinds.contains(where: {$0 == find.id}) && find.id != nil})
         for query in obsoleteFinds {
             findViewController.removeSearchField(searchField: query)
         }
+
+        setMarker(findMarker)
+    }
+
+    private func queryController(in findViewController: FindViewController,
+                                 queryId: Int) -> SuplementaryFindViewController? {
+        var query = findViewController.searchQueries.first(where: { $0.id == queryId })
+
+        if query == nil {
+            if let newQuery = findViewController.searchQueries.first(where: { $0.id == nil }) {
+                newQuery.id = queryId
+                query = newQuery
+            } else {
+                let searchField = findViewController.addSearchField(searchField: nil, becomeFirstResponder: false)
+                searchField!.id = String(queryId)
+                query = findViewController.searchQueries.first(where: { $0.id == queryId })
+            }
+        }
+        return query
+    }
+
+    func setMarker(_ items: [Marker]) {
+        (scrollView.verticalScroller as! MarkerBar).setMarker(items)
     }
 
     func replaceNext() {
@@ -464,12 +472,12 @@ extension EditViewController {
 
     @IBAction func addNextToSelection(_ sender: AnyObject?) {
         document.sendRpcAsync("selection_for_find", params: ["case_sensitive": false])
-        document.sendRpcAsync("find_next", params: ["wrap_around": false, "allow_same": true, "add_to_selection": false, "modify_selection": "add"])
+        xiView.findNext(wrapAround: false, allowSame: true, modifySelection: .add)
     }
 
     @IBAction func addNextToSelectionRemoveCurrent(_ sender: AnyObject?) {
         document.sendRpcAsync("selection_for_find", params: ["case_sensitive": false])
-        document.sendRpcAsync("find_next", params: ["wrap_around": true, "allow_same": true, "add_to_selection": true, "modify_selection": "add_removing_current"])
+        xiView.findNext(wrapAround: true, allowSame: true, modifySelection: .addRemovingCurrent)
     }
 
     @IBAction func selectionForReplace(_ sender: AnyObject?) {
@@ -532,7 +540,7 @@ extension EditViewController {
             Swift.print("replaceAllInSelection not implemented")
 
         case .selectAll:
-            document.sendRpcAsync("find_all", params: [])
+            xiView.findAll()
 
         case .selectAllInSelection:
             Swift.print("selectAllInSelection not implemented")

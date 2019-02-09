@@ -1,4 +1,4 @@
-// Copyright 2017 The xi-editor Authors.
+// Copyright 2018 The xi-editor Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,17 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import Cocoa
+import Foundation
+import XiCliCore
 
-class EditContainerView: NSView {
+let args = Arguments()
+let tool = CommandLineTool(args: args)
 
-    override var isFlipped: Bool {
-        return true
-    }
-    
-    override func menu(for event: NSEvent) -> NSMenu? {
-        return contextMenu
-    }
-    
-    public var contextMenu: NSMenu?
+do {
+    try tool.run()
+} catch {
+    print("Whoops! An error occurred: \(error)")
+    exit(1)
 }

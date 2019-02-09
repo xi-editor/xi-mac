@@ -25,7 +25,7 @@ struct Style {
     var weight: Int?
     var attributes: [NSAttributedStringKey: Any] = [:]
     var fakeItalic = false
-    static let N_RESERVED_STYLES = 8
+    static let N_RESERVED_STYLES = 8        // todo: can be removed in the future for new update protocol
 
     init(font fromFont: NSFont, fgColor: NSColor?, bgColor: NSColor?, underline: Bool, italic: Bool, weight: Int?) {
         if let fgColor = fgColor {
@@ -79,7 +79,7 @@ struct StyleSpan {
     let style: StyleIdentifier
 
     /// given a line of text and an array of style values, generate an array of StyleSpans.
-    /// see https://github.com/google/xi-editor/blob/protocol_doc/doc/update.md
+    /// see http://xi-editor.github.io/xi-editor/docs/frontend-protocol.html#def_style
     static func styles(fromRaw raw: [Int], text: String) -> [StyleSpan] {
         var out: [StyleSpan] = []
         var ix = 0
@@ -110,22 +110,8 @@ class StyleMapState: UnfairLock {
     private var font: NSFont
     private var styles: [Style?] = []
 
-    init(font: NSFont) {
+    init(font: NSFont, theme: Theme) {
         self.font = font
-        let selectionStyle = Style(font: font,
-                                   fgColor: (NSApplication.shared.delegate as! AppDelegate).theme.selectionForeground,
-                                   bgColor: nil,
-                                   underline: false,
-                                   italic: false,
-                                   weight: nil)
-        let highlightStyle = Style(font: font,
-                                   fgColor: (NSApplication.shared.delegate as! AppDelegate).theme.findHighlightForeground,
-                                   bgColor: nil,
-                                   underline: false,
-                                   italic: false,
-                                   weight: nil)
-        self.styles.append(selectionStyle)
-        self.styles.append(highlightStyle)
     }
 
     func defStyle(json: [String: AnyObject]) {
@@ -137,7 +123,7 @@ class StyleMapState: UnfairLock {
         if let fg = json["fg_color"] as? UInt32 {
             fgColor = colorFromArgb(fg)
         } else {
-            fgColor = (NSApplication.shared.delegate as! AppDelegate).theme.foreground
+            fgColor = (NSApplication.shared.delegate as! AppDelegate).xiClient.theme.foreground
         }
         if let bg = json["bg_color"] as? UInt32 {
             bgColor = colorFromArgb(bg)
@@ -148,7 +134,7 @@ class StyleMapState: UnfairLock {
         var weight = json["weight"] as? Int
         if let w = weight {
             // convert to NSFont weight: (100-500 -> 2-6 (5 normal weight), 600-800 -> 8-10, 900 -> 12
-            // see https://github.com/google/xi-mac/pull/32#discussion_r115114037
+            // see https://github.com/xi-editor/xi-mac/pull/32#discussion_r115114037
             weight = Int(floor(1 + Float(w) * (0.01 + 3e-6 * Float(w))))
         }
 
@@ -164,16 +150,14 @@ class StyleMapState: UnfairLock {
         }
     }
 
-    func applyStyle(builder: TextLineBuilder, id: Int, range: NSRange, selColor: ARGBColor?) {
+    func applyStyle(builder: TextLineBuilder, id: Int, range: NSRange) {
         if id < 0 || id >= styles.count {
             print("stylemap can't resolve \(id)")
             return
         }
 
-        if id < Style.N_RESERVED_STYLES {
-            // Ignore foreground color for selection and highlight styles
-            builder.addBgSpan(range: convertRange(range), argb: selColor!)
-        } else {
+        // todo: remove once update protocol does not have reserved styles anymore
+        if id >= Style.N_RESERVED_STYLES {
             guard let style = styles[id] else { return }
             if let fgColor = style.fgColor {
                 builder.addFgSpan(range: convertRange(range), argb: colorToArgb(fgColor))
@@ -193,28 +177,12 @@ class StyleMapState: UnfairLock {
         }
     }
 
-    func applyStyles(builder: TextLineBuilder, styles: [StyleSpan], selColor: ARGBColor, highlightColors: [ARGBColor]) {
-        var selectionStyles: [StyleSpan] = []
-        var highlightStyles: [StyleSpan] = []
-
+    func applyStyles(builder: TextLineBuilder, styles: [StyleSpan]) {
         for styleSpan in styles {
-            if styleSpan.style == 0 {
-                selectionStyles.append(styleSpan)
-            } else if styleSpan.style < Style.N_RESERVED_STYLES {
-                highlightStyles.append(styleSpan)
-            } else {
+            if styleSpan.style >= Style.N_RESERVED_STYLES {
                 // Theme-provided background colors are rendered first
-                applyStyle(builder: builder, id: styleSpan.style, range: styleSpan.range, selColor: nil)
+                applyStyle(builder: builder, id: styleSpan.style, range: styleSpan.range)
             }
-        }
-        // Find highlights are rendered on top of background color
-        for span in highlightStyles {
-            let color = highlightColors[span.style - 1]
-            applyStyle(builder: builder, id: span.style, range: span.range, selColor: color)
-        }
-        // Selection color is rendered on top of find highlights
-        for span in selectionStyles {
-            applyStyle(builder: builder, id: span.style, range: span.range, selColor: selColor)
         }
     }
 
@@ -229,7 +197,7 @@ class StyleMapState: UnfairLock {
     func measureWidth(id: Int, s: String) -> Double {
         let builder = TextLineBuilder(s, font: self.font)
         let range = NSMakeRange(0, s.utf16.count)
-        applyStyle(builder: builder, id: id, range: range, selColor: 0)
+        applyStyle(builder: builder, id: id, range: range)
         return builder.measure()
     }
 
@@ -266,8 +234,8 @@ class StyleMapLocked {
     }
 
     /// Applies the styles to the text line builder.
-    func applyStyles(builder: TextLineBuilder, styles: [StyleSpan], selColor: ARGBColor, highlightColors: [ARGBColor]) {
-        inner.applyStyles(builder: builder, styles: styles, selColor: selColor, highlightColors: highlightColors)
+    func applyStyles(builder: TextLineBuilder, styles: [StyleSpan]) {
+        inner.applyStyles(builder: builder, styles: styles)
     }
 
     func updateFont(to font: NSFont) {
@@ -282,8 +250,8 @@ class StyleMapLocked {
 class StyleMap {
     private let state: StyleMapState
 
-    init(font: NSFont) {
-        state = StyleMapState(font: font)
+    init(font: NSFont, theme: Theme) {
+        state = StyleMapState(font: font, theme: theme)
     }
 
     func locked() -> StyleMapLocked {

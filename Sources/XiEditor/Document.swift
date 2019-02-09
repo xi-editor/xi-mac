@@ -78,6 +78,7 @@ class Document: NSDocument {
 
         self.editViewController = windowController.contentViewController as? EditViewController
         editViewController?.document = self
+        editViewController?.xiView = XiViewConnection(asyncRpc: sendRpcAsync, syncRpc: sendRpc)
         windowController.window?.delegate = editViewController
         self.addWindowController(windowController)
     }
@@ -128,7 +129,7 @@ class Document: NSDocument {
 
     /// Note: this is a blocking call, and will also fail if the tab name hasn't been set yet.
     /// We should try to migrate users to either fully async or callback based approaches.
-    func sendRpc(_ method: String, params: Any) -> RpcResult? {
+    func sendRpc(_ method: String, params: Any) -> RpcResult {
         Trace.shared.trace(method, .rpc, .begin)
         let inner = ["method": method as AnyObject, "params": params, "view_id": coreViewIdentifier as AnyObject] as [String : Any]
         let result = xiCore.sendRpc("edit", params: inner)

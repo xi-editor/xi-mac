@@ -14,10 +14,6 @@
 
 import Cocoa
 
-extension NSPasteboard.PasteboardType {
-    static let PlainText = NSPasteboard.PasteboardType(rawValue: "public.utf8-plain-text")
-}
-
 /// The EditViewDataSource protocol describes the properties that an editView uses to determine how to render its contents.
 protocol EditViewDataSource: class {
     var lines: LineCache<LineAssoc> { get }
@@ -26,6 +22,7 @@ protocol EditViewDataSource: class {
     var textMetrics: TextDrawingMetrics { get }
     var document: Document! { get }
     var gutterWidth: CGFloat { get }
+    var scrollOrigin: NSPoint { get }
     func maxWidthChanged(toWidth: Double)
 }
 
@@ -36,11 +33,12 @@ struct LineAssoc {
 
 /// Represents one search query
 struct FindQuery {
-    var id: Int?
-    var term: String?
-    var caseSensitive: Bool
-    var regex: Bool
-    var wholeWords: Bool
+    /// If we create a new query on the frontend it doesn't have an ID yet. The new query gets assigned an ID in core.
+    let id: Int?
+    let term: String?
+    let caseSensitive: Bool
+    let regex: Bool
+    let wholeWords: Bool
 
     func toJson() -> [String: Any] {
         var jsonQuery: [String: Any] = [
@@ -74,7 +72,11 @@ protocol FindDelegate: class {
     func updateScrollPosition(previousOffset: CGFloat)
 }
 
-class EditViewController: NSViewController, EditViewDataSource, FindDelegate, ScrollInterested {
+protocol MarkerDelegate: class {
+    func setMarker(_ items: [Marker])
+}
+
+class EditViewController: NSViewController, EditViewDataSource, FindDelegate, ScrollInterested, MarkerDelegate {
     @IBOutlet var scrollView: NSScrollView!
     @IBOutlet weak var editContainerView: EditContainerView!
     @IBOutlet var editView: EditView!
@@ -98,10 +100,12 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     var document: Document!
 
+    var xiView: XiViewProxy!
+
     var lines = LineCache<LineAssoc>()
 
     var textMetrics: TextDrawingMetrics {
-        return (NSApplication.shared.delegate as! AppDelegate).textMetrics
+        return styling.textMetrics
     }
 
     var gutterWidth: CGFloat = 0 {
@@ -114,11 +118,15 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     var styleMap: StyleMap {
-        return (NSApplication.shared.delegate as! AppDelegate).styleMap
+        return styling.styleMap
     }
 
     var theme: Theme {
-        return (NSApplication.shared.delegate as! AppDelegate).theme
+        return styling.theme
+    }
+
+    var scrollOrigin: CGPoint {
+        return self.scrollView?.contentView.bounds.origin ?? CGPoint.zero
     }
 
     /// A mapping of available plugins to activation status.
@@ -184,6 +192,17 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         }
     }
 
+    // TODO: There should be a mechanism to validate the availability of a menu item's action.
+    var contextMenu: NSMenu = {
+        let menu = NSMenu()
+        
+        menu.addItem(withTitle: "Cut", action: #selector(cut(_:)), keyEquivalent: "")
+        menu.addItem(withTitle: "Copy", action: #selector(copy(_:)), keyEquivalent: "")
+        menu.addItem(withTitle: "Paste", action: #selector(paste(_:)), keyEquivalent: "")
+        
+        return menu
+    }()
+    
     var unifiedTitlebar = false {
         didSet {
             // Dont check if value is same as previous
@@ -233,6 +252,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         super.viewDidLoad()
         shadowView.wantsLayer = true
         editView.dataSource = self
+        editContainerView.contextMenu = contextMenu
+        (scrollView.verticalScroller as! MarkerBar).markerDelegate = self
         scrollView.contentView.documentCursor = .iBeam
         scrollView.automaticallyAdjustsContentInsets = false
         scrollView.hasHorizontalScroller = true
@@ -280,7 +301,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         let newSize = CGSize(width: width, height: height)
         if newSize != _previousViewportSize {
             _previousViewportSize = newSize
-            document.sendRpcAsync("resize", params: ["width": width, "height": height])
+            xiView.resize(size: newSize)
         }
     }
 
@@ -298,18 +319,25 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         if infoPopover.isShown {
             infoPopover.performClose(self)
         }
-        editView.scrollOrigin = newOrigin
+
         shadowView.showLeftShadow = newOrigin.x > 0
         shadowView.showRightShadow = (editViewWidth.constant - (newOrigin.x + self.view.bounds.width)) > rightTextPadding
-        // TODO: this calculation doesn't take into account toppad; do in EditView in DRY fashion
-        let first = Int(floor(newOrigin.y / textMetrics.linespace))
-        let height = Int(ceil((scrollView.contentView.bounds.size.height) / textMetrics.linespace)) + 1
-        let last = first + height
 
+        let first = editView.yOffsetToLine(newOrigin.y)
+        let maxY = newOrigin.y + scrollView.contentView.bounds.size.height
+        // + 1 because this is an exclusive range
+        let last = editView.yOffsetToLine(maxY) + 1
         if first..<last != visibleLines {
             document.sendWillScroll(first: first, last: last)
             visibleLines = first..<last
         }
+        editView.needsDisplay = true
+    }
+
+    /// If we reuse an empty view when opening a file, we need to make sure we resend our size.
+    func prepareForReuse() {
+        _previousViewportSize = CGSize.zero
+        redrawEverything()
     }
 
     /// If font size or theme changes, we invalidate all views.
@@ -324,8 +352,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         editView.gutterCache = nil
         shadowView.updateShadowColor(newColor: theme.shadow)
         editView.needsDisplay = true
-        self.scrollPastEnd = ((NSApplication.shared.delegate as! AppDelegate).configCache["scroll_past_end"] as? Bool) ?? false
-        self.unifiedTitlebar = ((NSApplication.shared.delegate as! AppDelegate).configCache["unified_titlebar"] as? Bool) ?? false
+        let configCache = (NSApplication.shared.delegate as! AppDelegate).xiClient.configCache
+        self.scrollPastEnd = (configCache["scroll_past_end"] as? Bool) ?? false
+        self.unifiedTitlebar = (configCache["unified_titlebar"] as? Bool) ?? false
     }
 
     fileprivate func updateEditViewHeight() {
@@ -348,6 +377,12 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
         DispatchQueue.main.async { [weak self] in
             self?.document.updateChangeCount(hasNoUnsavedChanges ? .changeCleared : .changeDone)
+            
+            // Display the document's edited status in the window and tab titles.
+            if let window = self?.document.windowControllers.first as? XiWindowController {
+                window.synchronizeWindowTitleWithDocumentName()
+            }
+            
             self?.lineCount = self?.lines.height ?? 0
             self?.updateEditViewHeight()
             self?.editView.resetCursorTimer()
@@ -425,7 +460,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         "scrollToEndOfDocument:": "move_to_end_of_document",
         "transpose:": "transpose",
         "yank:": "yank",
-        "cancelOperation:": "cancel_operation",
         ]
 
     override func doCommand(by aSelector: Selector) {
@@ -448,7 +482,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         if !findViewController.view.isHidden {
             closeFind()
         } else {
-            document.sendRpcAsync("cancel_operation", params: [])
+            document.sendRpcAsync("collapse_selections", params: [])
         }
     }
 
@@ -480,11 +514,13 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     @objc func cut(_ sender: AnyObject?) {
-        cutCopy("cut")
+        let text = xiView.cut()
+        updatePasteboard(with: text)
     }
 
     @objc func copy(_ sender: AnyObject?) {
-        cutCopy("copy")
+        let text = xiView.copy()
+        updatePasteboard(with: text)
     }
 
     override func indent(_ sender: Any?) {
@@ -493,6 +529,10 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     @objc func unindent(_ sender: Any?) {
         document.sendRpcAsync("outdent", params: [])
+    }
+
+    @objc func reindent(_ sender: Any?) {
+        document.sendRpcAsync("reindent", params: [])
     }
 
     @objc func increaseNumber(_ sender: Any?) {
@@ -504,42 +544,30 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     @objc func toggleRecording(_ sender: Any?) {
-        document.sendRpcAsync("toggle_recording", params: ["recording_name": "DEFAULT"])
+        xiView.toggleRecording(name: "DEFAULT")
     }
 
     @objc func playRecording(_ sender: Any?) {
-        document.sendRpcAsync("play_recording", params: ["recording_name": "DEFAULT"])
+        xiView.playRecording(name: "DEFAULT")
     }
 
     @objc func clearRecording(_ sender: Any?) {
-        document.sendRpcAsync("clear_recording", params: ["recording_name": "DEFAULT"])
-    }
-
-    fileprivate func cutCopy(_ method: String) {
-        if let result = document?.sendRpc(method, params: []) {
-            switch result {
-            case .ok(let text):
-                if let text = text as? String {
-                    let pasteboard = NSPasteboard.general
-                    pasteboard.clearContents()
-                    pasteboard.writeObjects([text as NSPasteboardWriting])
-                }
-            case .error(let err):
-                print("cut/copy failed: \(err)")
-            }
-        }
+        xiView.clearRecording(name: "DEFAULT")
     }
 
     @objc func paste(_ sender: AnyObject?) {
+        NSPasteboard
+            .general
+            .string(forType: .string)
+            .flatMap({ xiView.paste(characters: $0) })
+    }
+    
+    fileprivate func updatePasteboard(with text: String?) {
+        guard let text = text else { return }
+        
         let pasteboard = NSPasteboard.general
-        if let items = pasteboard.pasteboardItems {
-            for element in items {
-                if let str = element.string(forType: .PlainText) {
-                    document.sendPaste(str)
-                    break
-                }
-            }
-        }
+        pasteboard.clearContents()
+        pasteboard.writeObjects([text as NSPasteboardWriting])
     }
 
     //MARK: Other system events
@@ -718,6 +746,10 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         document.xiCore.sendRpcAsync("modify_user_config", params: params, callback: nil)
     }
 
+    @IBAction func toggleComment(_ sender: Any?) {
+        document.sendRpcAsync("debug_toggle_comment", params: [])
+    }
+
     @objc func togglePlugin(_ sender: NSMenuItem) {
         let pluginName = sender.title
         let viewIdentifier = document.coreViewIdentifier!
@@ -768,8 +800,11 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     func handleFontChange(fontName: String?, fontSize: CGFloat?) {
-        (NSApplication.shared.delegate as! AppDelegate).handleFontChange(fontName: fontName,
-                                                                         fontSize: fontSize)
+        styling.handleFontChange(fontName: fontName, fontSize: fontSize)
+    }
+
+    private var styling: AppStyling {
+        return (NSApplication.shared.delegate as! AppDelegate).xiClient
     }
 
     func updatePluginMenu() {
@@ -961,6 +996,12 @@ extension EditViewController: NSWindowDelegate {
 
     func windowDidResignKey(_ notification: Notification) {
         editView.isFrontmostView = false
+    }
+    
+    @objc func windowShouldClose(_ sender: NSWindow) {
+        let path = self.document.fileURL?.path // To check if window contains file opened by cli
+        let notification = Notification.Name("io.xi-editor.XiEditor.FileClosed")
+        DistributedNotificationCenter.default().post(name: notification, object: nil, userInfo: ["path": path ?? "FILE_NOT_SAVED"])
     }
 }
 
