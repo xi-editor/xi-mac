@@ -259,6 +259,20 @@ class XiViewProxyTests: XCTestCase {
         wait(for: [asyncCalledExpectation], timeout: 1)
     }
 
+    func testMultiFind() {
+        let asyncCalledExpectation = expectation(description: "Async should be called")
+        let async: XiViewConnection.AsyncRpc = { method, params, _ in
+            XCTAssertEqual("multi_find", method)
+            let findParams = params as! [String: Any]
+            XCTAssertNotNil(findParams["queries"])
+            asyncCalledExpectation.fulfill()
+        }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
+        let query = FindQuery(id: nil, term: "term", caseSensitive: false, regex: false, wholeWords: false)
+        connection.multiFind(queries: [query])
+        wait(for: [asyncCalledExpectation], timeout: 1)
+    }
+
     func testFindAll() {
         let asyncCalledExpectation = expectation(description: "Async should be called")
         let async: XiViewConnection.AsyncRpc = { method, params,_ in
