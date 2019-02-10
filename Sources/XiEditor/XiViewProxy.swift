@@ -36,6 +36,8 @@ protocol XiViewProxy: class {
     func findPrevious(wrapAround: Bool, allowSame: Bool, modifySelection: SelectionModifier)
     /// Selects the next occurrence matching the search query.
     func findNext(wrapAround: Bool, allowSame: Bool, modifySelection: SelectionModifier)
+    // This find command supports multiple search queries.
+    func multiFind(queries: [FindQuery])
     /// Selects all occurrences matching the search query.
     func findAll()
     /// Shows/hides active search highlights.
@@ -120,6 +122,11 @@ final class XiViewConnection: XiViewProxy {
             params["modify_selection"] = modifySelection.rawValue
         }
         return params
+    }
+
+    func multiFind(queries: [FindQuery]) {
+        let jsonQueries = queries.map { $0.toJson() }
+        sendRpcAsync("multi_find", params: ["queries": jsonQueries])
     }
 
     func findAll() {
