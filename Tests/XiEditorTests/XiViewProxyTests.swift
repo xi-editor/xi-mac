@@ -129,6 +129,32 @@ class XiViewProxyTests: XCTestCase {
         wait(for: [asyncCalledExpectation], timeout: 1)
     }
 
+    func testSelectionForFindTrue() {
+        let asyncCalledExpectation = expectation(description: "Async should be called")
+        let async: XiViewConnection.AsyncRpc = { method, params, _ in
+            XCTAssertEqual("selection_for_find", method)
+            let selectionParams = params as! [String: Bool]
+            XCTAssertEqual(["case_sensitive": true], selectionParams)
+            asyncCalledExpectation.fulfill()
+        }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
+        connection.selectionForFind(caseSensitive: true)
+        wait(for: [asyncCalledExpectation], timeout: 1)
+    }
+
+    func testSelectionForFindFalse() {
+        let asyncCalledExpectation = expectation(description: "Async should be called")
+        let async: XiViewConnection.AsyncRpc = { method, params, _ in
+            XCTAssertEqual("selection_for_find", method)
+            let selectionParams = params as! [String: Bool]
+            XCTAssertEqual([:], selectionParams)
+            asyncCalledExpectation.fulfill()
+        }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
+        connection.selectionForFind(caseSensitive: false)
+        wait(for: [asyncCalledExpectation], timeout: 1)
+    }
+
     func testFindPreviousWrapAround() {
         let asyncCalledExpectation = expectation(description: "Async should be called")
         let async: XiViewConnection.AsyncRpc = { method, params, _ in
