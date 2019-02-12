@@ -151,7 +151,6 @@ final class XiViewConnection: XiViewProxy {
         sendRpcAsync("selection_for_find", params: params)
     }
 
-
     /// The parameter `case_sensitive` is optional and `false` if not set.
     func selectionForReplace(caseSensitive: Bool) {
         var params: [String: Bool] = [:]
