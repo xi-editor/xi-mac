@@ -142,22 +142,23 @@ final class XiViewConnection: XiViewProxy {
         sendRpcAsync("highlight_find", params: ["visible": visible])
     }
 
-    /// The parameter `case_sensitive` is optional and `false` if not set.
     func selectionForFind(caseSensitive: Bool) {
-        var params: [String: Bool] = [:]
-        if caseSensitive {
-            params["case_sensitive"] = caseSensitive
-        }
+        let params = createSelectionParamsFor(caseSensitive: caseSensitive)
         sendRpcAsync("selection_for_find", params: params)
     }
 
-    /// The parameter `case_sensitive` is optional and `false` if not set.
     func selectionForReplace(caseSensitive: Bool) {
-        var params: [String: Bool] = [:]
-        if caseSensitive {
-            params["case_sensitive"] = caseSensitive
-        }
+        let params = createSelectionParamsFor(caseSensitive: caseSensitive)
         sendRpcAsync("selection_for_replace", params: params)
+    }
+
+    /// The parameter `case_sensitive` is optional and `false` if not set.
+    private func createSelectionParamsFor(caseSensitive: Bool) -> [String: Bool] {
+        if caseSensitive {
+            return ["case_sensitive": caseSensitive]
+        } else {
+            return [:]
+        }
     }
 
     private func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback? = nil) {
