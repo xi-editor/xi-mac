@@ -42,6 +42,9 @@ protocol XiViewProxy: class {
     func findAll()
     /// Shows/hides active search highlights.
     func highlightFind(visible: Bool)
+
+    /// Sets the current selection as the search query.
+    func selectionForFind(caseSensitive: Bool)
 }
 
 final class XiViewConnection: XiViewProxy {
@@ -135,6 +138,15 @@ final class XiViewConnection: XiViewProxy {
 
     func highlightFind(visible: Bool) {
         sendRpcAsync("highlight_find", params: ["visible": visible])
+    }
+
+    /// The parameter `case_sensitive` is optional and `false` if not set.
+    func selectionForFind(caseSensitive: Bool) {
+        var params: [String: Bool] = [:]
+        if caseSensitive {
+            params["case_sensitive"] = caseSensitive
+        }
+        sendRpcAsync("selection_for_find", params: params)
     }
 
     private func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback? = nil) {
