@@ -480,7 +480,7 @@ extension EditViewController {
     }
 
     @IBAction func selectionForReplace(_ sender: AnyObject?) {
-        document.sendRpcAsync("selection_for_replace", params: [])
+        xiView.selectionForReplace(caseSensitive: false)
     }
 
     @IBAction func multipleSearchQueries(_ sender: AnyObject?) {
