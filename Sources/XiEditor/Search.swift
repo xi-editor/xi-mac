@@ -470,12 +470,12 @@ extension EditViewController {
     }
 
     @IBAction func addNextToSelection(_ sender: AnyObject?) {
-        document.sendRpcAsync("selection_for_find", params: ["case_sensitive": false])
+        xiView.selectionForFind(caseSensitive: false)
         xiView.findNext(wrapAround: false, allowSame: true, modifySelection: .add)
     }
 
     @IBAction func addNextToSelectionRemoveCurrent(_ sender: AnyObject?) {
-        document.sendRpcAsync("selection_for_find", params: ["case_sensitive": false])
+        xiView.selectionForFind(caseSensitive: false)
         xiView.findNext(wrapAround: true, allowSame: true, modifySelection: .addRemovingCurrent)
     }
 
@@ -533,7 +533,7 @@ extension EditViewController {
             replaceNext()
 
         case .setSearchString:
-            document.sendRpcAsync("selection_for_find", params: ["case_sensitive": false])
+            xiView.selectionForFind(caseSensitive: false)
 
         case .replaceAllInSelection:
             Swift.print("replaceAllInSelection not implemented")
