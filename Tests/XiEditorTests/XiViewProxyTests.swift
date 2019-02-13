@@ -129,6 +129,58 @@ class XiViewProxyTests: XCTestCase {
         wait(for: [asyncCalledExpectation], timeout: 1)
     }
 
+    func testSelectionForFindTrue() {
+        let asyncCalledExpectation = expectation(description: "Async should be called")
+        let async: XiViewConnection.AsyncRpc = { method, params, _ in
+            XCTAssertEqual("selection_for_find", method)
+            let selectionParams = params as! [String: Bool]
+            XCTAssertEqual(["case_sensitive": true], selectionParams)
+            asyncCalledExpectation.fulfill()
+        }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
+        connection.selectionForFind(caseSensitive: true)
+        wait(for: [asyncCalledExpectation], timeout: 1)
+    }
+
+    func testSelectionForFindFalse() {
+        let asyncCalledExpectation = expectation(description: "Async should be called")
+        let async: XiViewConnection.AsyncRpc = { method, params, _ in
+            XCTAssertEqual("selection_for_find", method)
+            let selectionParams = params as! [String: Bool]
+            XCTAssertEqual([:], selectionParams)
+            asyncCalledExpectation.fulfill()
+        }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
+        connection.selectionForFind(caseSensitive: false)
+        wait(for: [asyncCalledExpectation], timeout: 1)
+    }
+
+    func testSelectionForReplaceTrue() {
+        let asyncCalledExpectation = expectation(description: "Async should be called")
+        let async: XiViewConnection.AsyncRpc = { method, params, _ in
+            XCTAssertEqual("selection_for_replace", method)
+            let selectionParams = params as! [String: Bool]
+            XCTAssertEqual(["case_sensitive": true], selectionParams)
+            asyncCalledExpectation.fulfill()
+        }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
+        connection.selectionForReplace(caseSensitive: true)
+        wait(for: [asyncCalledExpectation], timeout: 1)
+    }
+
+    func testSelectionForReplaceFalse() {
+        let asyncCalledExpectation = expectation(description: "Async should be called")
+        let async: XiViewConnection.AsyncRpc = { method, params, _ in
+            XCTAssertEqual("selection_for_replace", method)
+            let selectionParams = params as! [String: Bool]
+            XCTAssertEqual([:], selectionParams)
+            asyncCalledExpectation.fulfill()
+        }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
+        connection.selectionForReplace(caseSensitive: false)
+        wait(for: [asyncCalledExpectation], timeout: 1)
+    }
+
     func testFindPreviousWrapAround() {
         let asyncCalledExpectation = expectation(description: "Async should be called")
         let async: XiViewConnection.AsyncRpc = { method, params, _ in
@@ -256,6 +308,20 @@ class XiViewProxyTests: XCTestCase {
         }
         let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
         connection.findNext(wrapAround: false, allowSame: false, modifySelection: .addRemovingCurrent)
+        wait(for: [asyncCalledExpectation], timeout: 1)
+    }
+
+    func testMultiFind() {
+        let asyncCalledExpectation = expectation(description: "Async should be called")
+        let async: XiViewConnection.AsyncRpc = { method, params, _ in
+            XCTAssertEqual("multi_find", method)
+            let findParams = params as! [String: Any]
+            XCTAssertNotNil(findParams["queries"])
+            asyncCalledExpectation.fulfill()
+        }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
+        let query = FindQuery(id: nil, term: "term", caseSensitive: false, regex: false, wholeWords: false)
+        connection.multiFind(queries: [query])
         wait(for: [asyncCalledExpectation], timeout: 1)
     }
 

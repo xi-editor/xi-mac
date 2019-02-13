@@ -36,10 +36,17 @@ protocol XiViewProxy: class {
     func findPrevious(wrapAround: Bool, allowSame: Bool, modifySelection: SelectionModifier)
     /// Selects the next occurrence matching the search query.
     func findNext(wrapAround: Bool, allowSame: Bool, modifySelection: SelectionModifier)
+    // This find command supports multiple search queries.
+    func multiFind(queries: [FindQuery])
     /// Selects all occurrences matching the search query.
     func findAll()
     /// Shows/hides active search highlights.
     func highlightFind(visible: Bool)
+
+    /// Sets the current selection as the search query.
+    func selectionForFind(caseSensitive: Bool)
+    /// Sets the current selection as the replacement string.
+    func selectionForReplace(caseSensitive: Bool)
 }
 
 final class XiViewConnection: XiViewProxy {
@@ -122,12 +129,36 @@ final class XiViewConnection: XiViewProxy {
         return params
     }
 
+    func multiFind(queries: [FindQuery]) {
+        let jsonQueries = queries.map { $0.toJson() }
+        sendRpcAsync("multi_find", params: ["queries": jsonQueries])
+    }
+
     func findAll() {
         sendRpcAsync("find_all", params: [])
     }
 
     func highlightFind(visible: Bool) {
         sendRpcAsync("highlight_find", params: ["visible": visible])
+    }
+
+    func selectionForFind(caseSensitive: Bool) {
+        let params = createSelectionParamsFor(caseSensitive: caseSensitive)
+        sendRpcAsync("selection_for_find", params: params)
+    }
+
+    func selectionForReplace(caseSensitive: Bool) {
+        let params = createSelectionParamsFor(caseSensitive: caseSensitive)
+        sendRpcAsync("selection_for_replace", params: params)
+    }
+
+    /// The parameter `case_sensitive` is optional and `false` if not set.
+    private func createSelectionParamsFor(caseSensitive: Bool) -> [String: Bool] {
+        if caseSensitive {
+            return ["case_sensitive": caseSensitive]
+        } else {
+            return [:]
+        }
     }
 
     private func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback? = nil) {
