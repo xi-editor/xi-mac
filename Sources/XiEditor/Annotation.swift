@@ -106,10 +106,9 @@ struct AnnotationStore {
                 while ix < annotationsOfType.count && annotationsOfType[ix].startLine <= lineIx {
                     if (annotationsOfType[ix].endLine >= lineIx) {
                         let annotation = annotationsOfType[ix]
-                        let start = annotation.startLine == lineIx ? annotation.startColumn : 0
-                        let end = annotation.endLine == lineIx ? annotation.endColumn : line.text.count
-                        let startIx = utf8_offset_to_utf16(line.text, start)
-                        let endIx = utf8_offset_to_utf16(line.text, end)
+                        let startIx = annotation.startLine == lineIx ? utf8_offset_to_utf16(line.text, annotation.startColumn) : 0
+                        let endIx = annotation.endLine == lineIx ? utf8_offset_to_utf16(line.text, annotation.endColumn) :  line.text.count
+
                         annotationsInLine.append(AnnotationSpan(startIx, endIx, annotation))
 
                         if annotation.endLine == lineIx {
