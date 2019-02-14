@@ -459,13 +459,8 @@ extension EditViewController {
         // todo: preserve case
     }
 
-    func replace(_ term: String?) {
-        var params: [String: Any] = [:]
-
-        if term != nil {
-            params["chars"] = term
-        }
-
+    func replace(_ term: String) {
+        let params: [String: Any] = ["chars": term]
         document.sendRpcAsync("replace", params: params)
     }
 

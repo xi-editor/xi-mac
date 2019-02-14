@@ -66,7 +66,7 @@ protocol FindDelegate: class {
     func closeFind()
     func findStatus(status: [[String: AnyObject]])
     func replaceStatus(status: [String: AnyObject])
-    func replace(_ term: String?)
+    func replace(_ term: String)
     func replaceNext()
     func replaceAll()
     func updateScrollPosition(previousOffset: CGFloat)
