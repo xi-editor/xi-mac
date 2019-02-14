@@ -43,6 +43,9 @@ protocol XiViewProxy: class {
     /// Shows/hides active search highlights.
     func highlightFind(visible: Bool)
 
+    /// Sets the replacement string.
+    func replace(chars: String)
+
     /// Sets the current selection as the search query.
     func selectionForFind(caseSensitive: Bool)
     /// Sets the current selection as the replacement string.
@@ -140,6 +143,10 @@ final class XiViewConnection: XiViewProxy {
 
     func highlightFind(visible: Bool) {
         sendRpcAsync("highlight_find", params: ["visible": visible])
+    }
+
+    func replace(chars: String) {
+        sendRpcAsync("replace", params: ["chars": chars])
     }
 
     func selectionForFind(caseSensitive: Bool) {
