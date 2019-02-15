@@ -460,8 +460,7 @@ extension EditViewController {
     }
 
     func replace(_ term: String) {
-        let params: [String: Any] = ["chars": term]
-        document.sendRpcAsync("replace", params: params)
+        xiView.replace(chars: term)
     }
 
     @IBAction func addNextToSelection(_ sender: AnyObject?) {
