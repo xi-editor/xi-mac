@@ -448,7 +448,7 @@ extension EditViewController {
     }
 
     func replaceAll() {
-        document.sendRpcAsync("replace_all", params: [])
+        xiView.replaceAll()
     }
 
     func replaceStatus(status: [String: AnyObject]) {
