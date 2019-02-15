@@ -142,6 +142,19 @@ class XiViewProxyTests: XCTestCase {
         wait(for: [asyncCalledExpectation], timeout: 1)
     }
 
+    func testReplaceNext() {
+        let asyncCalledExpectation = expectation(description: "Async should be called")
+        let async: XiViewConnection.AsyncRpc = { method, params, _ in
+            XCTAssertEqual("replace_next", method)
+            let replaceParams = params as! [String]
+            XCTAssertEqual([], replaceParams)
+            asyncCalledExpectation.fulfill()
+        }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
+        connection.replaceNext()
+        wait(for: [asyncCalledExpectation], timeout: 1)
+    }
+
     func testSelectionForFindTrue() {
         let asyncCalledExpectation = expectation(description: "Async should be called")
         let async: XiViewConnection.AsyncRpc = { method, params, _ in
