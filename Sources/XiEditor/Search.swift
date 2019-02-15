@@ -444,7 +444,7 @@ extension EditViewController {
     }
 
     func replaceNext() {
-        document.sendRpcAsync("replace_next", params: [])
+        xiView.replaceNext()
     }
 
     func replaceAll() {
