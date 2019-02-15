@@ -47,6 +47,8 @@ protocol XiViewProxy: class {
     func replace(chars: String)
     /// Replaces the next matching occurrence with the replacement string.
     func replaceNext()
+    /// Replaces all matching occurrences with the replacement string.
+    func replaceAll()
 
     /// Sets the current selection as the search query.
     func selectionForFind(caseSensitive: Bool)
@@ -153,6 +155,10 @@ final class XiViewConnection: XiViewProxy {
 
     func replaceNext() {
         sendRpcAsync("replace_next", params: [])
+    }
+
+    func replaceAll() {
+        sendRpcAsync("replace_all", params: [])
     }
 
     func selectionForFind(caseSensitive: Bool) {
