@@ -57,6 +57,8 @@ protocol XiViewProxy: class {
 
     /// Inserts the chars string at the current cursor locations.
     func insert(chars: String)
+    /// Deletes backwards.
+    func deleteBackward()
 }
 
 final class XiViewConnection: XiViewProxy {
@@ -186,6 +188,10 @@ final class XiViewConnection: XiViewProxy {
     func insert(chars: String) {
         let params = ["chars": chars]
         sendRpcAsync("insert", params: params)
+    }
+
+    func deleteBackward() {
+        sendRpcAsync("delete_backward", params: [])
     }
 
     private func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback? = nil) {

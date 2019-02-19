@@ -194,6 +194,19 @@ class XiViewProxyTests: XCTestCase {
         wait(for: [asyncCalledExpectation], timeout: 1)
     }
 
+    func testDeleteBackward() {
+        let asyncCalledExpectation = expectation(description: "Async should be called")
+        let async: XiViewConnection.AsyncRpc = { method, params, _ in
+            XCTAssertEqual("delete_backward", method)
+            let deleteParams = params as! [String]
+            XCTAssertEqual([], deleteParams)
+            asyncCalledExpectation.fulfill()
+        }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
+        connection.deleteBackward()
+        wait(for: [asyncCalledExpectation], timeout: 1)
+    }
+
     func testSelectionForFindFalse() {
         let asyncCalledExpectation = expectation(description: "Async should be called")
         let async: XiViewConnection.AsyncRpc = { method, params, _ in
