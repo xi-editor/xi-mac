@@ -52,6 +52,16 @@ public final class CommandLineTool {
     func resolvePath(from input: String) throws -> String {
         let fileManager = FileManager.default
         var filePath: URL!
+
+        // Small helper function used to determine if path is not a folder.
+        func pathIsDirectory(_ path: String) -> Bool {
+            var isDirectory = ObjCBool(false)
+            if fileManager.fileExists(atPath: path, isDirectory: &isDirectory) {
+                return isDirectory.boolValue
+            } else {
+                return false
+            }
+        }
         
         if input.hasPrefix("/") {
             filePath = URL(fileURLWithPath: input)
@@ -70,6 +80,10 @@ public final class CommandLineTool {
         }
         
         let pathString = filePath.path
+
+        guard !pathIsDirectory(pathString) else {
+            throw CliError.pathIsDirectory
+        }
         
         if !fileManager.fileExists(atPath: pathString) {
             let createSuccess = fileManager.createFile(atPath: pathString, contents: nil, attributes: nil)
@@ -135,5 +149,6 @@ public extension CommandLineTool {
     enum CliError: Swift.Error {
         case couldNotCreateFile
         case failedToOpenEditor
+        case pathIsDirectory
     }
 }
