@@ -1,7 +1,7 @@
 ---
 layout: title-page
-title: Jekyll Help
-apple_title: Jekyll Help
+title: Xi-Editor User Guide
+apple_title: Xi-Editor User Guide
 anchor: title-page
 menu_exclude: true
 robots: anchors

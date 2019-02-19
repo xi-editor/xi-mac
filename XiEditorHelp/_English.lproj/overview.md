@@ -1,64 +1,20 @@
 ---
-title: Overview
-description: Overview functionality and main window layout
+title: About Xi-Editor
+description: An overview of Xi-Editor
 order: -.INF
 ---
 
-This is the Jekyll Apple Help template. This overview has some markdown samples.
+_(Pronounced "Zigh")_
 
-## Images
+The xi editor project is an attempt to build a high quality text editor, using modern software engineering techniques. It is initially built for Mac OS X, using Cocoa for the user interface. There are also frontends for other operating systems available from third-party developers.
 
-![JekyllHelp Overview](overview.png)
+Goals include:
 
-## Links
-
-- [Normal Link to topic-1, "Do Something"](topic-1.html)
-- [Help anchor-link to the index page anchor, "title-page"](help:anchor=title-page+{{ site.bookid }})
-- [Help openbook-link to Apple's Mac Help](help:openbook=com.apple.machelp)
-- <!-- Note use of + for space. Alternatively use %20 -->
-  [Help anchor-link to Safari's keyboard shortcuts](help:anchor=cpsh003+bookID=com.apple.safari.help)
-
-## Lists
-
-* Red
-* Green
-* Blue
-
-0. Red
-0. Green
-0. Blue
-
-## Inline Styles
-
-- *Emphasis*
-- **Strong**
-- `inline code`
-
-## Code
-
-Plain Code:
-
-    tell application "Foo"
-        beep
-    end tell
-
-Jekyll Highlighted Code:
-
-{% highlight applescript %}
-tell application "Foo"
-    beep
-end tell
-{% endhighlight %}
-
-## Blockquotes
-
-> This is a blockquote. Lorem ipsum dolor sit amet,
-> consectetuer adipiscing elit. Aliquam hendrerit mi posuere lectus.
-> Vestibulum enim wisi, viverra nec, fringilla in, laoreet vitae, risus.
-
-## Table
-
-Column 1 Header | Column 2 Header
-:--- | :---
-Cell 1 | Cell 2
-Cell 3 | Cell 4
+- **Incredibly high performance**. All editing operations should commit and paint
+  in under 16ms. The editor should never make you wait for anything.
+- **Beauty**. The editor should fit well on a modern desktop, and not look like a
+  throwback from the &apos;80s or &apos;90s. Text drawing should be done with the best
+  technology available (Core Text on Mac, DirectWrite on Windows, etc.), and
+  support Unicode fully.
+- **Reliability**. Crashing, hanging, or losing work should never happen.
+- **Developer friendliness**. It should be easy to customize xi editor, whether by adding plug-ins or hacking on the core.
