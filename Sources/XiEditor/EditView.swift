@@ -102,7 +102,7 @@ struct GutterCache {
 typealias BufferPosition = (line: Int, column: Int)
 
 
-func insertedStringToJson(_ stringToInsert: NSString) -> Any {
+func insertedStringToJson(_ stringToInsert: String) -> Any {
     return ["chars": stringToInsert]
 }
 
@@ -298,8 +298,8 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             dataSource.document.sendRpcAsync("delete_backward", params  : [])
         }
         if let attrStr = aString as? NSAttributedString {
-            dataSource.document.sendRpcAsync("insert", params: insertedStringToJson(attrStr.string as NSString))
-        } else if let str = aString as? NSString {
+            dataSource.document.sendRpcAsync("insert", params: insertedStringToJson(attrStr.string))
+        } else if let str = aString as? String {
             dataSource.document.sendRpcAsync("insert", params: insertedStringToJson(str))
         }
         return NSMakeRange(replacementRange.location, len)
