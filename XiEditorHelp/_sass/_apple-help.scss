@@ -1,0 +1,222 @@
+
+/*
+
+Tip: How to examine Apple's Yosemite help CSS
+
+The HelpViewer doesn't allow one to inspect pages, but all of Yosemite's help is available online.
+Use the share button to get URLs. For example:
+
+https://help.apple.com/safari/mac/8.0/index.html?localePath=en.lproj
+
+The online help uses different styling then in HelpViewer.
+To get the online help to render identically, use Safari's Inspector to:
+
+- Change html element class 'is-not-hv' to 'is-hv'
+- Delete the banner at html > body > div > header
+
+Now the page looks/works the same as in HelpViewer (except for responsive styles).
+
+*/
+
+// Base variable defaults, which can be overridden
+
+$base-font-family: HelveticaNeue, 'Helvetica Neue', Helvetica, sans-serif !default;;
+$base-font-size:   12px !default;
+$small-font-size:  $base-font-size * 0.875 !default;
+$base-line-height: 1.5 !default;
+
+$spacing-unit:     30px !default;
+
+$text-color:       #484848 !default;
+$background-color: #ffffff !default;
+$brand-color:      #007aff !default;
+
+$grey-color:       #828282;
+$grey-color-light: lighten($grey-color, 40%);
+$grey-color-dark:  darken($grey-color, 25%);
+
+@import
+"base",
+"syntax-highlighting"
+;
+
+
+// Overall page structure
+
+html, body {
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+	-webkit-font-smoothing: antialiased;
+	font-weight: normal;
+
+	@media print {
+		height: auto;
+	}
+}
+
+body {
+	position: relative;
+	max-width: 956px;
+	margin: 0 auto;
+	background-color: rgb(230, 233, 234);
+}
+
+header.banner {
+	position: absolute;
+	top: 0;	left: 0; bottom: 0;	width: 210px;
+	overflow-y: auto;
+	border-right: 1px solid $grey-color-light;
+	z-index: 1;
+	background-color: white;
+
+	@media print {
+		display: none;
+	}
+}
+
+
+main {
+	position: absolute;
+	top: 0; bottom: 0; left: 210px; right: 0;
+	overflow-y: auto;
+	padding: 50px 63px;
+	background-color: white;
+
+	@media print {
+		position: static;
+	}
+}
+
+// Minimal responsiveness
+
+@media all and (max-width:874px) {
+	body:not(.show-banner) header.banner {
+        left: -210px;
+    }
+	main {
+		left: 0;
+		padding: 5% 5%;
+	}
+}
+
+
+// Styling of the main content for Jekyll layouts
+
+.title-page main {
+	header {
+		text-align: center;
+		h1 { font-size: 39px; }
+	}
+}
+
+.help-page main {
+	h1 {
+		font-size: 27px;
+		line-height: 1.2;
+		margin-bottom: 1em;
+		&::before {
+			background-image: url('../book-icon.png');
+			background-size: 30px 30px;
+			content:"";
+			display: inline-block;
+			height: 30px; width: 30px;
+			margin: 0 10px -5px 0;
+		}
+	}
+}
+
+
+// Simple element styling
+
+a {
+	&:hover, &:visited {
+		color: $brand-color;
+	}
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	line-height: 2.29558;
+}
+
+tbody {
+	border-top: 1px solid $grey-color-light;
+}
+
+tr {
+	border-bottom: 1px solid $grey-color-light;
+}
+
+pre {
+	overflow: auto;
+}
+
+pre, code {
+	background-color: #f7f7f7;
+	font-size: 1em;
+}
+
+blockquote {
+	font-size: $base-font-size * 1.25;
+}
+
+// Navigation Menu styles
+
+nav#menu {
+    
+    ul {
+		list-style: none;
+		margin: 0;
+	}
+
+	li {
+		line-height: 17px;
+		&.active {
+			background-color: rgb(242, 242, 242);
+		}
+		&.group::before {
+			position: absolute;
+			margin: 0.5em 0 0 1em;
+			font-size: 75%;
+			content: "▼"; display: inline; color: $grey-color;
+			pointer-events: none;
+		}
+		&.group.collapsed::before {
+			content: "▶";
+		}
+	}
+
+	a {
+		display: block;
+		padding: 0.5em 0em 0.5em 2em;
+		color: $text-color;
+		cursor: pointer;
+		&:visited {
+			color: $text-color;
+		}
+		&:hover {
+			text-decoration: none;
+			color: $brand-color;
+		}
+	}
+	
+	ul ul a {
+		padding-left: 3.2em;
+	}
+}
+
+
+// Animated Dynamic menu styles
+
+// Hide dynamic content, if Javascript is available.
+.js .dynamic {
+	visibility: hidden;
+}
+
+.animate ul {
+	visibility: visible;
+	overflow: hidden;
+	transition: max-height 0.3s ease-in-out;
+}

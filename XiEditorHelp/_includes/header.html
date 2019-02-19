@@ -1,0 +1,33 @@
+<header class="banner">
+	{% comment %}
+	Apple Help's hiutil doesn't index text inside NAV elements, however it only applies to immediate text (a bug?).
+	Thus, all text inside this NAV section is also tightly wrapped with NAVs to prevent indexing.
+	{% endcomment %}
+	<nav id="menu" class="dynamic">
+		{% assign title_page = site[page.collection] | has: "group_order" | first %}
+		{% assign topics_tree = site[page.collection] | tree_by_with_prop_lookup: "group", "order", title_page.group_order | stable_sort: "order" %}
+		<ul>
+		{% for node in topics_tree %}
+			{% if node.name %}
+				{% assign sorted_topics = node.items | sort: "order" %}
+				<li class="group">
+					<a name="name"><nav>{{ node.name }}</nav></a>
+					<ul name="list">
+					{% for topic in sorted_topics %}{% if topic.menu_exclude != true %}
+						<li{% if page.url == topic.url %} class="active"{% endif %}>
+							<a href="{{ page.rel_root }}{{ topic.url }}"><nav>{{ topic.title }}</nav></a>
+						</li>
+					{% endif %}{% endfor %}
+					</ul>
+				</li>
+			{% else %}
+				{% if node.menu_exclude != true %}
+				<li{% if page.url == node.url %} class="active"{% endif %}>
+					<a href="{{ page.rel_root }}{{ node.url }}"><nav>{{ node.title }}</nav></a>
+				</li>
+				{% endif %}
+			{% endif %}
+		{% endfor %}
+		</ul>
+	</nav>
+</header>

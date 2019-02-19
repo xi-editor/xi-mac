@@ -1,0 +1,15 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg height="486px" width="838px" viewBox="0 0 838 486" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+  <desc>Jekyll Apple Help Overview</desc>
+	<image xlink:href="screenshot.png" x="100" y="0" height="486px" width="638px"/>
+	<g font-family="HelveticaNeue, 'Helvetica Neue', Helvetica, sans-serif" font-size="20px">
+	<text x="10" y="243">Menu</text>
+	<text x="783" y="243">Topic</text>
+	</g>
+	<g stroke="black" >
+		<line x1="70" y1="238" x2="132" y2="238" stroke-width="4"/>
+		<line x1="779" y1="238" x2="698" y2="238" stroke-width="4"/>
+	</g>
+</svg>
+<!-- Use <object type="image/svg+xml" data="overview.svg" style="max-width: 100%; pointer-events: none;"></object> -->

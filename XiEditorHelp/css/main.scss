@@ -1,0 +1,21 @@
+---
+# Only the main Sass file needs front matter (the dashes are enough)
+---
+@charset "utf-8";
+
+// Default variables that can be overridden
+
+// $base-font-family: HelveticaNeue, 'Helvetica Neue', Helvetica, sans-serif;
+// $base-font-size:   12px;
+// $small-font-size:  $base-font-size * 0.875;
+// $base-line-height: 1.5;
+
+// $spacing-unit:     30px;
+
+// $text-color:       #484848;
+// $background-color: #ffffff;
+// $brand-color:      #007aff;
+
+// Import apple-help styles from `sass_dir` (defaults to `_sass`)
+@import "apple-help";
+
