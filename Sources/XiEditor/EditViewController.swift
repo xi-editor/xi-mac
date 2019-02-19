@@ -21,6 +21,7 @@ protocol EditViewDataSource: class {
     var theme: Theme { get }
     var textMetrics: TextDrawingMetrics { get }
     var document: Document! { get }
+    var xiView: XiViewProxy! { get }
     var gutterWidth: CGFloat { get }
     var scrollOrigin: NSPoint { get }
     func maxWidthChanged(toWidth: Double)
