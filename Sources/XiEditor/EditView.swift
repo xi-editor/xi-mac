@@ -101,11 +101,6 @@ struct GutterCache {
 /// A line-column index into a displayed text buffer.
 typealias BufferPosition = (line: Int, column: Int)
 
-
-func insertedStringToJson(_ stringToInsert: String) -> Any {
-    return ["chars": stringToInsert]
-}
-
 func colorFromArgb(_ argb: UInt32) -> NSColor {
     return NSColor(red: CGFloat((argb >> 16) & 0xff) * 1.0/255,
         green: CGFloat((argb >> 8) & 0xff) * 1.0/255,
@@ -298,9 +293,9 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             dataSource.document.sendRpcAsync("delete_backward", params  : [])
         }
         if let attrStr = aString as? NSAttributedString {
-            dataSource.document.sendRpcAsync("insert", params: insertedStringToJson(attrStr.string))
+            dataSource.xiView.insert(chars: attrStr.string)
         } else if let str = aString as? String {
-            dataSource.document.sendRpcAsync("insert", params: insertedStringToJson(str))
+            dataSource.xiView.insert(chars: str)
         }
         return NSMakeRange(replacementRange.location, len)
     }
