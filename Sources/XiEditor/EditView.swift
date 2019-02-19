@@ -290,7 +290,7 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             replacementRange.length = 0
         }
         for _ in 0..<aRange.length {
-            dataSource.document.sendRpcAsync("delete_backward", params  : [])
+            dataSource.xiView.deleteBackward()
         }
         if let attrStr = aString as? NSAttributedString {
             dataSource.xiView.insert(chars: attrStr.string)
@@ -316,7 +316,7 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     func removeMarkedText() {
         if (_markedRange.location != NSNotFound) {
             for _ in 0..<_markedRange.length {
-                dataSource.document.sendRpcAsync("delete_backward", params: [])
+                dataSource.xiView.deleteBackward()
             }
         }
         _markedRange = NSMakeRange(NSNotFound, 0)
