@@ -54,6 +54,9 @@ protocol XiViewProxy: class {
     func selectionForFind(caseSensitive: Bool)
     /// Sets the current selection as the replacement string.
     func selectionForReplace(caseSensitive: Bool)
+
+    /// Inserts the chars string at the current cursor locations.
+    func insert(chars: String)
 }
 
 final class XiViewConnection: XiViewProxy {
@@ -178,6 +181,11 @@ final class XiViewConnection: XiViewProxy {
         } else {
             return [:]
         }
+    }
+
+    func insert(chars: String) {
+        let params = ["chars": chars]
+        sendRpcAsync("insert", params: params)
     }
 
     private func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback? = nil) {
