@@ -20,7 +20,8 @@ Now the page looks/works the same as in HelpViewer (except for responsive styles
 
 // Base variable defaults, which can be overridden
 
-$base-font-family: HelveticaNeue, 'Helvetica Neue', Helvetica, sans-serif !default;;
+// $base-font-family: HelveticaNeue, 'Helvetica Neue', Helvetica, sans-serif !default;;
+$base-font-family: 'Roboto', 'Helvetica', sans-serif !default;
 $base-font-size:   12px !default;
 $small-font-size:  $base-font-size * 0.875 !default;
 $base-line-height: 1.5 !default;

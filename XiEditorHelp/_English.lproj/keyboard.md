@@ -13,6 +13,8 @@ order: .INF
 | Open preferences  | Command (⌘)-, |
 | Quit application  | Command (⌘)-Q |
 
+---
+
 ## Find and replace
 
 | Action           | Shortcut      |
