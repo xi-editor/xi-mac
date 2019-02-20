@@ -54,10 +54,10 @@ public final class CommandLineTool {
         var filePath: URL!
 
         // Small helper function used to determine if path is not a folder.
-        func pathIsDirectory(_ path: String) -> Bool {
+        func pathIsNotDirectory(_ path: String) -> Bool {
             var isDirectory = ObjCBool(false)
             if fileManager.fileExists(atPath: path, isDirectory: &isDirectory) {
-                return isDirectory.boolValue
+                return !isDirectory.boolValue
             } else {
                 return false
             }
@@ -81,7 +81,7 @@ public final class CommandLineTool {
         
         let pathString = filePath.path
 
-        guard !pathIsDirectory(pathString) else {
+        guard pathIsNotDirectory(pathString) else {
             throw CliError.pathIsDirectory
         }
         
