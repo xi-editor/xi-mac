@@ -59,7 +59,7 @@ public final class CommandLineTool {
             if fileManager.fileExists(atPath: path, isDirectory: &isDirectory) {
                 return !isDirectory.boolValue
             } else {
-                return false
+                return true
             }
         }
         
