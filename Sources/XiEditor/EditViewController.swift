@@ -677,7 +677,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         } else {
             fatalError("insertText: called with undocumented type")
         }
-        document.sendRpcAsync("insert", params: ["chars": text])
+        xiView.insert(chars: text)
     }
 
     // we intercept this method to check if we should open a new tab
