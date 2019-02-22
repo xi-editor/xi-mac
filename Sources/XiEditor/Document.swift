@@ -156,7 +156,7 @@ class Document: NSDocument {
     }
 
     func sendWillScroll(first: Int, last: Int) {
-        sendRpcAsync("scroll", params: [first, last])
+        editViewController?.xiView.scroll(firstLine: first, lastLine: last)
     }
 
     func sendPaste(_ pasteString: String) {
