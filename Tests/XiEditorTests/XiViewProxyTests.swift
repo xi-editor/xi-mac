@@ -77,6 +77,19 @@ class XiViewProxyTests: XCTestCase {
         XCTAssertEqual(result!, testCopyCharacters)
     }
 
+    func testScroll() {
+        let asyncCalledExpectation = expectation(description: "Async should be called")
+        let async: XiViewConnection.AsyncRpc = { method, params, _ in
+            XCTAssertEqual("scroll", method)
+            let scrollParams = params as! [Int]
+            XCTAssertEqual([23, 42], scrollParams)
+            asyncCalledExpectation.fulfill()
+        }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
+        connection.scroll(firstLine: 23, lastLine: 42)
+        wait(for: [asyncCalledExpectation], timeout: 1)
+    }
+
     func testToggleRecording() {
         let asyncCalledExpectation = expectation(description: "Async should be called")
         let async: XiViewConnection.AsyncRpc = { method, params,_ in

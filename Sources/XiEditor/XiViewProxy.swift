@@ -28,6 +28,12 @@ protocol XiViewProxy: class {
     func copy() -> String?
     func cut() -> String?
 
+    /// Notifies the back-end of the visible scroll region, defined as the first and last
+    /// (non-inclusive) formatted lines. The visible scroll region is used to compute movement
+    /// distance for page up and page down commands, and also controls the size of the fragment
+    /// sent in the update method.
+    func scroll(firstLine: Int, lastLine: Int)
+
     func toggleRecording(name: String)
     func playRecording(name: String)
     func clearRecording(name: String)
@@ -102,6 +108,10 @@ final class XiViewConnection: XiViewProxy {
             print("\(method) failed: \(err)")
             return nil
         }
+    }
+
+    func scroll(firstLine: Int, lastLine: Int) {
+        sendRpcAsync("scroll", params: [firstLine, lastLine])
     }
 
     func toggleRecording(name: String) {
