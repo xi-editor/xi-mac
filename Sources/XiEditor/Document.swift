@@ -159,10 +159,6 @@ class Document: NSDocument {
         editViewController?.xiView.scroll(firstLine: first, lastLine: last)
     }
 
-    func sendPaste(_ pasteString: String) {
-        sendRpcAsync("paste", params: ["chars": pasteString])
-    }
-
     func updateAsync(update: [String: AnyObject]) {
         if let editVC = editViewController {
             editVC.updateAsync(update: update)
