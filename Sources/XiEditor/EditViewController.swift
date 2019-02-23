@@ -578,33 +578,34 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         self.editView.inputContext?.handleEvent(theEvent)
     }
 
-    // Determines the gesture type based on flags and click count.
-    private func clickGestureType(event: NSEvent) -> String {
+    private func granularity(for event: NSEvent) -> String {
         let inGutter = event.locationInWindow.x < self.gutterWidth
-        let clickCount = event.clickCount
-
-        if event.modifierFlags.contains(.command) {
-            if clickCount >= 3 || inGutter {
-                return "multi_line_select"
-            } else if clickCount == 2 {
-                return "multi_word_select"
-            } else {
-                return "toggle_sel"
-            }
-        } else if event.modifierFlags.contains(.shift) {
-            // TODO: When shift+clicking on the gutter, perform a line range select
-            // (the gesture doesn't exist yet in core)
-            return "range_select"
-        } else if event.modifierFlags.contains(.option) {
-            return "request_hover"
+        if event.clickCount >= 3 || inGutter {
+            return "line"
+        } else if event.clickCount == 2 {
+            return "word"
         } else {
-            if clickCount >= 3 || inGutter {
-                return "line_select"
-            } else if clickCount == 2 {
-                return "word_select"
-            } else {
-                return "point_select"
-            }
+            return "point"
+        }
+    }
+
+    // Determines the gesture type based on flags and click count.
+    private func clickGestureType(event: NSEvent) -> Any {
+        let granularity = self.granularity(for: event)
+
+        if event.modifierFlags.contains(.shift) {
+            return [
+                "select_extend": [
+                    "granularity": granularity
+                ]
+            ]
+        } else {
+            return [
+                "select": [
+                    "granularity": granularity,
+                    "multi": event.modifierFlags.contains(.command)
+                ]
+            ]
         }
     }
 
@@ -615,19 +616,17 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         infoPopover.performClose(self)
         editView.unmarkText()
         editView.inputContext?.discardMarkedText()
-        let position  = editView.bufferPositionFromPoint(theEvent.locationInWindow)
+        let position = editView.bufferPositionFromPoint(theEvent.locationInWindow)
         lastDragPosition = position
 
-        let gestureType = clickGestureType(event: theEvent)
-
-        if gestureType == "request_hover" {
+        if theEvent.modifierFlags.contains(.option) {
             hoverEvent = theEvent
             sendHover()
         } else {
             document.sendRpcAsync("gesture", params: [
                 "line": position.line,
                 "col": position.column,
-                "ty": gestureType
+                "ty": clickGestureType(event: theEvent)
                 ])
         }
 
@@ -640,8 +639,11 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         let dragPosition = editView.bufferPositionFromPoint(theEvent.locationInWindow)
         if let last = lastDragPosition, last != dragPosition {
             lastDragPosition = dragPosition
-            let flags = theEvent.modifierFlags.rawValue >> 16
-            document.sendRpcAsync("drag", params: [dragPosition.line, dragPosition.column, flags])
+            document.sendRpcAsync("gesture", params: [
+                "line": dragPosition.line,
+                "col": dragPosition.column,
+                "ty": "drag"
+                ])
         }
         dragEvent = theEvent
     }
