@@ -52,7 +52,7 @@ protocol XiClient: AnyObject {
     /// - Note: Each item in the list is a dictionary with `name` and `running` fields,
     /// where `name` is the name of the plugin, and `running` is a bool indicating
     // whether this plugin is currently running.
-    func availablePlugins(viewIdentifier: String, plugins: [[String: AnyObject]])
+    func availablePlugins(viewIdentifier: String, plugins: [Plugin])
 
     /// A notification containing the currently available commands for the named plugin.
     func updateCommands(viewIdentifier: String, plugin: String, commands: [Command])
