@@ -82,7 +82,7 @@ class ClientImplementation: XiClient, DocumentsProviding, ConfigCacheProviding, 
             UserDefaults.standard.set(name, forKey: USER_DEFAULTS_THEME_KEY)
             self?.theme = theme
             self?.orderedDocuments.forEach { document in
-                document.editViewController?.themeChanged(name)
+				document.editViewController?.themeChanged(name)
             }
         }
     }
@@ -124,12 +124,9 @@ class ClientImplementation: XiClient, DocumentsProviding, ConfigCacheProviding, 
         }
     }
 
-    func availablePlugins(viewIdentifier: String, plugins: [[String: AnyObject]]) {
+    func availablePlugins(viewIdentifier: String, plugins: [Plugin]) {
         let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
-        var available: [String: Bool] = [:]
-        for item in plugins {
-            available[item["name"] as! String] = item["running"] as? Bool
-        }
+        let available = Dictionary(uniqueKeysWithValues: plugins.map { p in (p.name, p.running) })
         DispatchQueue.main.async {
             document?.editViewController?.availablePlugins = available
         }

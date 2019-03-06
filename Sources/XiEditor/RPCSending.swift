@@ -75,6 +75,23 @@ enum RPCNotificationMethod: String {
     case replaceStatus = "replace_status"
 }
 
+struct Plugin {
+	let name: String
+	let running: Bool
+}
+
+extension Plugin {
+	init?(jsonObject: [String: Any]) {
+		guard let name = jsonObject["name"] as? String,
+			let running = jsonObject["running"] as? Bool else {
+				assertionFailure("Invalid json from core for 'available_plugins': \(jsonObject)")
+				return nil
+		}
+
+		self.init(name: name, running: running)
+	}
+}
+
 /// A completion handler for a synchronous RPC
 typealias RpcCallback = (RpcResult) -> ()
 
@@ -326,10 +343,17 @@ class StdoutRPCSender: RPCSending {
                 viewIdentifier: viewIdentifier!,
                 languageIdentifier: languageIdentifier
             )
-            
+
         case .availablePlugins:
-            let plugins = params["plugins"] as! [[String: AnyObject]]
-            client?.availablePlugins(viewIdentifier: viewIdentifier!, plugins: plugins)
+			let pluginJson = params["plugins"] as! [[String: Any]]
+			let plugins: [Plugin] = pluginJson
+				.map { Plugin(jsonObject: $0) }
+				.compactMap { $0 }
+
+			client?.availablePlugins(
+				viewIdentifier: viewIdentifier!,
+				plugins: plugins
+			)
             
         case .availableLanguages:
             let languages = params["languages"] as! [String]
