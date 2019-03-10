@@ -196,7 +196,7 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
     let wholeWordsMenuTag = 104
     let removeMenuTag = 105
 
-    var ignoreCase = true
+    var caseSensitive = false
     var wrapAround = true
     var regex = false
     var wholeWords = false
@@ -230,7 +230,7 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
     override func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
         switch menuItem.tag {
         case ignoreCaseMenuTag:
-            menuItem.state = ignoreCase ? .on : .off
+            menuItem.state = !caseSensitive ? .on : .off
         case wrapAroundMenuTag:
             menuItem.state = wrapAround ? .on : .off
         case regexMenuTag:
@@ -275,7 +275,7 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
     }
 
     @IBAction func selectIgnoreCaseMenuAction(_ sender: NSMenuItem) {
-        ignoreCase = !ignoreCase
+        caseSensitive = !caseSensitive
         parentFindView?.redoFind()
     }
 
@@ -308,7 +308,7 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
         return FindQuery(
             id: id,
             term: searchField.stringValue,
-            caseSensitive: !ignoreCase,
+            caseSensitive: caseSensitive,
             regex: regex,
             wholeWords: wholeWords
         )
@@ -395,7 +395,7 @@ extension EditViewController {
             }
 
             if firstStatus.caseSensitive != nil {
-                query?.ignoreCase = !(statusQuery.caseSensitive != nil)
+                query?.caseSensitive = (statusQuery.caseSensitive != nil && statusQuery.caseSensitive!)
             }
 
             if firstStatus.wholeWords != nil {
