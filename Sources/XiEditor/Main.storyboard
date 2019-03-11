@@ -443,10 +443,10 @@ Gw
                 </viewController>
                 <menu title="Find Menu" autoenablesItems="NO" id="RHe-lc-wA0">
                     <items>
-                        <menuItem title="Ignore Case" state="on" tag="101" id="kHJ-AD-dbh">
+                        <menuItem title="Case Sensitive" tag="101" id="kHJ-AD-dbh">
                             <modifierMask key="keyEquivalentModifierMask"/>
                             <connections>
-                                <action selector="selectIgnoreCaseMenuAction:" target="uoL-yg-E2H" id="gmM-OH-nDw"/>
+                                <action selector="selectCaseSensitiveMenuAction:" target="uoL-yg-E2H" id="wnU-1k-TRL"/>
                             </connections>
                         </menuItem>
                         <menuItem title="Wrap Around" state="on" tag="102" id="EJI-Cs-6OX">

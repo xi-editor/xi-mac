@@ -190,7 +190,7 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
     let resultCountLabel = Label(title: "")
 
     // assigned in IB
-    let ignoreCaseMenuTag = 101
+    let caseSensitiveMenuTag = 101
     let wrapAroundMenuTag = 102
     let regexMenuTag = 103
     let wholeWordsMenuTag = 104
@@ -229,8 +229,8 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
     // we use this to make sure that UI corresponds to our state
     override func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
         switch menuItem.tag {
-        case ignoreCaseMenuTag:
-            menuItem.state = !caseSensitive ? .on : .off
+        case caseSensitiveMenuTag:
+            menuItem.state = caseSensitive ? .on : .off
         case wrapAroundMenuTag:
             menuItem.state = wrapAround ? .on : .off
         case regexMenuTag:
@@ -274,7 +274,7 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
         parentFindView?.redoFind()
     }
 
-    @IBAction func selectIgnoreCaseMenuAction(_ sender: NSMenuItem) {
+    @IBAction func selectCaseSensitiveMenuAction(_ sender: NSMenuItem) {
         caseSensitive = !caseSensitive
         parentFindView?.redoFind()
     }
