@@ -16,6 +16,7 @@
 		0C66CB2E218F5CDB00F6F899 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C66CB2D218F5CDB00F6F899 /* main.swift */; };
 		28F1ED4A1EC4C735008839BE /* Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F1ED491EC4C735008839BE /* Search.swift */; };
 		31D2A51721B6BF3C005919F0 /* XiEditor.help in Resources */ = {isa = PBXBuildFile; fileRef = 31D2A51621B6BF3C005919F0 /* XiEditor.help */; };
+		3F9C4E7D223D7E3200669C75 /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9C4E7C223D7E3200669C75 /* Types.swift */; };
 		4DC153D32165202B000EB215 /* XiWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DC153D22165202B000EB215 /* XiWindowController.swift */; };
 		4DCB4AF020576A6F00476F75 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 4DCB4AEF20576A6E00476F75 /* fonts */; };
 		6038770720057B4500AABF17 /* XiDocumentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6038770620057B4500AABF17 /* XiDocumentController.swift */; };
@@ -141,6 +142,7 @@
 		0C66CB36218F5E8A00F6F899 /* CommandLineTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandLineTool.swift; sourceTree = "<group>"; };
 		28F1ED491EC4C735008839BE /* Search.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
 		31D2A51621B6BF3C005919F0 /* XiEditor.help */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = XiEditor.help; sourceTree = "<group>"; };
+		3F9C4E7C223D7E3200669C75 /* Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
 		4DC153D22165202B000EB215 /* XiWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiWindowController.swift; sourceTree = "<group>"; };
 		4DCB4AEF20576A6E00476F75 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
 		6038770620057B4500AABF17 /* XiDocumentController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiDocumentController.swift; sourceTree = "<group>"; };
@@ -308,6 +310,14 @@
 			path = Resources;
 			sourceTree = SOURCE_ROOT;
 		};
+		3F9C4E7B223D7E1F00669C75 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				3F9C4E7C223D7E3200669C75 /* Types.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
 		AE499DC31C82BB2B002D68AF = {
 			isa = PBXGroup;
 			children = (
@@ -336,6 +346,7 @@
 		AE499DCE1C82BB2B002D68AF /* XiEditor */ = {
 			isa = PBXGroup;
 			children = (
+				3F9C4E7B223D7E1F00669C75 /* Core */,
 				AED22D741FE8366D0096E7C3 /* XiTextPlane */,
 				6BA1873A1FDDD7B6008220DA /* XiClipView.swift */,
 				6083722E2058597B00E9CF5D /* ShadowView.swift */,
@@ -714,6 +725,7 @@
 				6083722F2058597B00E9CF5D /* ShadowView.swift in Sources */,
 				E1288E8020B06E9C0068EEB9 /* StatusBar.swift in Sources */,
 				AEC4F6CA1FFB02F10060E10E /* Trace.swift in Sources */,
+				3F9C4E7D223D7E3200669C75 /* Types.swift in Sources */,
 				6BF9575B1FD70C420010BAE6 /* Client.swift in Sources */,
 				AED23F181C83CBED002246CE /* EditView.swift in Sources */,
 				D8D319F0218CB39A00D108D4 /* XiCore.swift in Sources */,
