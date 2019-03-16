@@ -121,10 +121,15 @@ fileprivate class LineCacheState<T>: UnfairLock {
         var oldIx = 0
 
         for op in ops as! [[String: AnyObject]] {
-            guard let op_type = op["op"] as? String else { return inval }
-            guard let n = op["n"] as? Int else { return inval }
+            guard
+				let json_type = op["op"] as? String,
+				let op_type = UpdateOperationType(rawValue: json_type),
+				let n = op["n"] as? Int else {
+					return inval
+			}
+
             switch op_type {
-            case "invalidate":
+            case .Invalidate:
                 // Add only lines that were not already invalid
                 let curLine = newInvalidBefore + newLines.count + newInvalidAfter
                 let ix = curLine - nInvalidBefore
@@ -140,7 +145,7 @@ fileprivate class LineCacheState<T>: UnfairLock {
                 } else {
                     newInvalidAfter += n
                 }
-            case "ins":
+            case .Insert:
                 for _ in 0..<newInvalidAfter {
                     newLines.append(nil)
                 }
@@ -150,7 +155,7 @@ fileprivate class LineCacheState<T>: UnfairLock {
                 for json_line in json_lines {
                     newLines.append(Line(fromJson: json_line))
                 }
-            case "copy", "update":
+			case .Copy, .Update:
                 var nRemaining = n
                 if oldIx < nInvalidBefore {
                     let nInvalid = min(n, nInvalidBefore - oldIx)
@@ -168,11 +173,11 @@ fileprivate class LineCacheState<T>: UnfairLock {
                     }
                     newInvalidAfter = 0
                     let nCopy = min(nRemaining, nInvalidBefore + lines.count - oldIx)
-                    if oldIx != newInvalidBefore + newLines.count || op_type != "copy" {
+                    if oldIx != newInvalidBefore + newLines.count || op_type != .Copy {
                         inval.addRange(start: newInvalidBefore + newLines.count, n: nCopy)
                     }
                     let startIx = oldIx - nInvalidBefore
-                    if op_type == "copy" {
+                    if op_type == .Copy {
                         var lineNumber = op["ln"] as! UInt
                         let toCopy = lines[startIx ..< startIx + nCopy]
                         // ??: `.first` returns an optional, and the items in the list are also optionals
@@ -206,7 +211,7 @@ fileprivate class LineCacheState<T>: UnfairLock {
                     newInvalidAfter += nRemaining
                 }
                 oldIx += nRemaining
-            case "skip":
+            case .Skip:
                 oldIx += n
             default:
                 print("unknown op type \(op_type)")
