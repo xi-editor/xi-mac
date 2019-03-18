@@ -59,10 +59,10 @@ class ClientImplementation: XiClient, DocumentsProviding, ConfigCacheProviding, 
 
     // MARK: - XiClient protocol
 
-    func update(viewIdentifier: String, update: [String: AnyObject], rev: UInt64?) {
+	func update(viewIdentifier: String, params: UpdateParams, rev: UInt64?) {
         let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
         if document == nil { print("document missing for view id \(viewIdentifier)") }
-        document?.updateAsync(update: update)
+		document?.updateAsync(params: params)
     }
 
     func scroll(viewIdentifier: String, line: Int, column: Int) {

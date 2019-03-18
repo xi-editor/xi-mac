@@ -296,10 +296,11 @@ class StdoutRPCSender: RPCSending {
     }
 
     private func handleNotification(json: [String: AnyObject]) {
-        guard let jsonMethod = json["method"] as? String,
-              let params = json["params"],
-              let method = RPCNotificationMethod(rawValue: jsonMethod)
-            else {
+        guard
+			let jsonMethod = json["method"] as? String,
+			let params = json["params"] as? [String: Any],
+			let method = RPCNotificationMethod(rawValue: jsonMethod)
+			else {
                 assertionFailure("unknown json from core: \(json)")
                 return
         }
@@ -308,8 +309,8 @@ class StdoutRPCSender: RPCSending {
         
         switch method {
         case .update:
-            let update = params["update"] as! [String: AnyObject]
-            self.client?.update(viewIdentifier: viewIdentifier!, update: update, rev: nil)
+			let updateParams = UpdateParams(fromJson: params)!
+			self.client?.update(viewIdentifier: viewIdentifier!, params: updateParams, rev: nil)
 
         case .scrollTo:
             let line = params["line"] as! Int
@@ -317,7 +318,7 @@ class StdoutRPCSender: RPCSending {
             self.client?.scroll(viewIdentifier: viewIdentifier!, line: line, column: col)
 
         case .defStyle:
-            client?.defineStyle(style: params as! [String: AnyObject])
+            client?.defineStyle(style: params as [String: AnyObject])
 
         case .pluginStarted:
             let plugin = params["plugin"] as! String
