@@ -159,9 +159,9 @@ class Document: NSDocument {
         editViewController?.xiView.scroll(firstLine: first, lastLine: last)
     }
 
-    func updateAsync(update: [String: AnyObject]) {
+	func updateAsync(params: UpdateParams) {
         if let editVC = editViewController {
-            editVC.updateAsync(update: update)
+            editVC.updateAsync(params: params)
         }
     }
 

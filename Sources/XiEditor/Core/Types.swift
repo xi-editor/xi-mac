@@ -22,5 +22,26 @@ enum UpdateOperationType: String {
 	case Insert = "ins"
 	case Update = "update"
 	case Skip = "skip"
-	
+}
+
+struct UpdateParams {
+	// We elide the intermediate "update" part of the JSON struct
+	let annotations: [[String: Any]]
+	let ops: [[String: Any]]
+	let pristine: Bool
+
+	init?(fromJson json: [String: Any]) {
+		 guard
+			let update = json["update"] as? [String: Any],
+			let annotations = update["annotations"] as? [[String: Any]],
+			let ops = update["ops"] as? [[String: Any]]
+			else {
+				assertionFailure("Invalid 'update' params JSON: \(json)")
+				return nil
+		}
+
+		self.annotations = annotations
+		self.ops = ops
+		self.pristine = update["pristine"] as? Bool ?? false
+	}
 }

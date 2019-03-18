@@ -108,19 +108,17 @@ fileprivate class LineCacheState<T>: UnfairLock {
 
     /// Updates the state by applying a delta. The update format is detailed in the
     /// [xi-core docs](http://xi-editor.github.io/xi-editor/docs/frontend-protocol.html#view-update-protocol).
-    func applyUpdate(update: [String: AnyObject]) -> InvalSet {
-        let updateAnnotations = update["annotations"] as? [[String: AnyObject]] ?? []
-        annotations = AnnotationStore(from: updateAnnotations)
+    func applyUpdate(params: UpdateParams) -> InvalSet {
+        annotations = AnnotationStore(from: params.annotations)
 
         let inval = InvalSet()
-        guard let ops = update["ops"] else { return inval }
         let oldHeight = height
         var newInvalidBefore = 0
         var newLines: [Line<T>?] = []
         var newInvalidAfter = 0
         var oldIx = 0
 
-        for op in ops as! [[String: AnyObject]] {
+        for op in params.ops {
             guard
 				let json_type = op["op"] as? String,
 				let op_type = UpdateOperationType(rawValue: json_type),
@@ -348,9 +346,9 @@ class LineCacheLocked<T> {
     }
 
     /// Returns range of lines that have been invalidated
-    func applyUpdate(update: [String: AnyObject]) -> InvalSet {
+    func applyUpdate(params: UpdateParams) -> InvalSet {
         Trace.shared.trace("applyUpdate", .main, .begin)
-        let inval = inner.applyUpdate(update: update)
+        let inval = inner.applyUpdate(params: params)
         Trace.shared.trace("applyUpdate", .main, .end)
         if inner.isWaiting {
             shouldSignal = true

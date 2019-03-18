@@ -20,7 +20,7 @@ protocol XiClient: AnyObject {
     /// An update to the contents of a given view. The structure of the `update`
     /// param is described in detail in the
     // [documentation](http://xi-editor.github.io/xi-editor/docs/frontend-protocol.html#view-update-protocol).
-    func update(viewIdentifier: String, update: [String: AnyObject], rev: UInt64?)
+    func update(viewIdentifier: String, params: UpdateParams, rev: UInt64?)
 
     /// A notification that a given view should scroll, if necessary, such
     /// that the given line and column are visible.
