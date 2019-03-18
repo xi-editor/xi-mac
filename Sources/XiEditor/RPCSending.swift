@@ -283,7 +283,7 @@ class StdoutRPCSender: RPCSending {
             let jsonMethod = json["method"] as? String,
             let params = json["params"] as? [String: Any],
             let method = RPCNotificationMethod(rawValue: jsonMethod)
-            else {
+        else {
                 assertionFailure("unknown json from core: \(json)")
                 return
         }
