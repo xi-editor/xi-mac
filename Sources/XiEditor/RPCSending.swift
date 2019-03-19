@@ -309,7 +309,9 @@ class StdoutRPCSender: RPCSending {
         
         switch method {
         case .update:
-			let updateParams = UpdateParams(fromJson: params)!
+			guard let updateParams = UpdateParams(fromJson: params) else {
+				return
+			}
 			self.client?.update(viewIdentifier: viewIdentifier!, params: updateParams, rev: nil)
 
         case .scrollTo:

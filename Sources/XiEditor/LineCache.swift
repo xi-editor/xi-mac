@@ -32,7 +32,7 @@ struct Line<T> {
         return cursor.count > 0
     }
 
-    init(fromJson json: [String: AnyObject]) {
+    init(fromJson json: [String: Any]) {
         // this could be a more clear exception
         text = json["text"] as! String
         cursor = json["cursor"] as? [Int] ?? []
@@ -45,7 +45,7 @@ struct Line<T> {
     }
 
     /// Create a new line, applying new styles to an existing line's text
-    init?(updateFromJson line: Line?, json: [String: AnyObject]) {
+    init?(updateFromJson line: Line?, json: [String: Any]) {
         guard let line = line else { return nil }
         self.text = line.text
         self.number = line.number
@@ -119,44 +119,36 @@ fileprivate class LineCacheState<T>: UnfairLock {
         var oldIx = 0
 
         for op in params.ops {
-            guard
-				let json_type = op["op"] as? String,
-				let op_type = UpdateOperationType(rawValue: json_type),
-				let n = op["n"] as? Int else {
-					return inval
-			}
-
-            switch op_type {
+            switch op.type {
             case .Invalidate:
                 // Add only lines that were not already invalid
                 let curLine = newInvalidBefore + newLines.count + newInvalidAfter
                 let ix = curLine - nInvalidBefore
-                if ix + n > 0 && ix < lines.count {
-                    for i in max(ix, 0) ..< min(ix + n, lines.count) {
+                if ix + op.n > 0 && ix < lines.count {
+                    for i in max(ix, 0) ..< min(ix + op.n, lines.count) {
                         if lines[i] != nil {
                             inval.addRange(start: i + nInvalidBefore, n: 1)
                         }
                     }
                 }
                 if newLines.count == 0 {
-                    newInvalidBefore += n
+                    newInvalidBefore += op.n
                 } else {
-                    newInvalidAfter += n
+                    newInvalidAfter += op.n
                 }
             case .Insert:
                 for _ in 0..<newInvalidAfter {
                     newLines.append(nil)
                 }
                 newInvalidAfter = 0
-                inval.addRange(start: newInvalidBefore + newLines.count, n: n)
-                guard let json_lines = op["lines"] as? [[String: AnyObject]] else { return inval }
-                for json_line in json_lines {
+                inval.addRange(start: newInvalidBefore + newLines.count, n: op.n)
+                for json_line in op.lines {
                     newLines.append(Line(fromJson: json_line))
                 }
 			case .Copy, .Update:
-                var nRemaining = n
+                var nRemaining = op.n
                 if oldIx < nInvalidBefore {
-                    let nInvalid = min(n, nInvalidBefore - oldIx)
+                    let nInvalid = min(op.n, nInvalidBefore - oldIx)
                     if newLines.count == 0 {
                         newInvalidBefore += nInvalid
                     } else {
@@ -171,12 +163,12 @@ fileprivate class LineCacheState<T>: UnfairLock {
                     }
                     newInvalidAfter = 0
                     let nCopy = min(nRemaining, nInvalidBefore + lines.count - oldIx)
-                    if oldIx != newInvalidBefore + newLines.count || op_type != .Copy {
+                    if oldIx != newInvalidBefore + newLines.count || op.type != .Copy {
                         inval.addRange(start: newInvalidBefore + newLines.count, n: nCopy)
                     }
                     let startIx = oldIx - nInvalidBefore
-                    if op_type == .Copy {
-                        var lineNumber = op["ln"] as! UInt
+                    if op.type == .Copy {
+                        var lineNumber = op.ln
                         let toCopy = lines[startIx ..< startIx + nCopy]
                         // ??: `.first` returns an optional, and the items in the list are also optionals
                         if toCopy.first??.number == nil {
@@ -193,10 +185,9 @@ fileprivate class LineCacheState<T>: UnfairLock {
                             newLines.append(line)
                         }
                     } else {
-                        guard let json_lines = op["lines"] as? [[String: AnyObject]] else { return inval }
-                        var jsonIx = n - nRemaining
+                        var jsonIx = op.n - nRemaining
                         for ix in startIx ..< startIx + nCopy {
-                            newLines.append(Line(updateFromJson: lines[ix], json: json_lines[jsonIx]))
+                            newLines.append(Line(updateFromJson: lines[ix], json: op.lines[jsonIx]))
                             jsonIx += 1
                         }
                     }
@@ -210,9 +201,7 @@ fileprivate class LineCacheState<T>: UnfairLock {
                 }
                 oldIx += nRemaining
             case .Skip:
-                oldIx += n
-            default:
-                print("unknown op type \(op_type)")
+                oldIx += op.n
             }
         }
         nInvalidBefore = newInvalidBefore
