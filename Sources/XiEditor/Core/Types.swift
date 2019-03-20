@@ -50,43 +50,66 @@ struct UpdateParams {
 struct UpdateOperation {
     let type: UpdateOperationType
     let n: Int
-    let lines: [[String: Any]]
+    let lines: [UpdatedLine]
     let ln: UInt
+}
 
+extension UpdateOperation {
     init?(fromJson json: [String: Any]) {
         guard
             let json_type = json["op"] as? String,
             let op_type = UpdateOperationType(rawValue: json_type),
-            let n = json["n"] as? Int else {
+            let n = json["n"] as? Int
+        else {
                 assertionFailure("Invalid 'op' json: \(json)")
                 return nil
         }
 
-        self.type = op_type
-        self.n = n
-
-        switch self.type {
+        switch op_type {
         case .Insert:
-            self.ln = 0
-            guard let lines = json["lines"] as? [[String:Any]] else {
+            guard let lines_json = json["lines"] as? [[String: Any]] else {
                 assertionFailure("Invalid 'op' json for '\(json_type)'. Invalid 'lines': \(json)")
                 return nil
             }
-            self.lines = lines
+            let lines = lines_json.compactMap({json in UpdatedLine(fromJson: json)})
+            if lines_json.count != lines.count {
+                return nil
+            }
+            self.init(type: op_type, n: n, lines: lines, ln: 0)
 
         case .Copy, .Update:
-            self.lines = []
             guard let ln = json["ln"] as? UInt else {
                 assertionFailure("Invalid 'op' json for '\(json_type)'. Invalid 'ln': \(json)")
                 return nil
             }
 
-            self.ln = ln
+            self.init(type: op_type, n: n, lines: [], ln: ln)
 
         default:
-            self.ln = 0
-            self.lines = []
-            () // no-op
+            self.init(type: op_type, n: n, lines: [], ln: 0)
+        }
+    }
+}
+
+struct UpdatedLine {
+    var text: String
+    var cursor: [Int]
+    var styles: [StyleSpan]
+    
+    /// This line's logical number, if it is the start of a logical line
+    var number: UInt?
+}
+
+extension UpdatedLine {
+    init(fromJson json: [String: Any]) {
+        // this could be a more clear exception
+        text = json["text"] as! String
+        cursor = json["cursor"] as? [Int] ?? []
+        number = json["ln"] as? UInt
+        if let styles = json["styles"] as? [Int] {
+            self.styles = StyleSpan.styles(fromRaw: styles, text: self.text)
+        } else {
+            self.styles = []
         }
     }
 }
