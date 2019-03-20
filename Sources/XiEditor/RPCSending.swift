@@ -334,7 +334,7 @@ class StdoutRPCSender: RPCSending {
             let pluginJson = params["plugins"] as! [[String: Any]]
             let plugins: [Plugin] = pluginJson
                 .map { Plugin(jsonObject: $0) }
-                .compactMap { $0 }
+                .flatMap { $0 }
 
             client?.availablePlugins(
                 viewIdentifier: viewIdentifier!,

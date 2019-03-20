@@ -60,7 +60,7 @@ struct UpdateParams {
         self.annotations = annotations
 
         // STOPSHIP (jeremy): Should we throw/assert if any of these return nil? Probably yes especially for DEBUG
-        self.ops = ops.compactMap { opJson in UpdateOperation(fromJson: opJson) }
+        self.ops = ops.flatMap { opJson in UpdateOperation(fromJson: opJson) }
         self.pristine = update["pristine"] as? Bool ?? false
     }
 }
@@ -89,7 +89,7 @@ extension UpdateOperation {
                 assertionFailure("Invalid 'op' json for '\(json_type)'. Invalid 'lines': \(json)")
                 return nil
             }
-            let lines = lines_json.compactMap({json in UpdatedLine(fromJson: json)})
+            let lines = lines_json.flatMap({json in UpdatedLine(fromJson: json)})
             if lines_json.count != lines.count {
                 return nil
             }
