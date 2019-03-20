@@ -34,11 +34,11 @@ extension Plugin {
 enum UpdateOperationType: String {
     typealias RawValue = String
 
-    case Copy = "copy"
-    case Invalidate = "invalidate"
-    case Insert = "ins"
-    case Update = "update"
-    case Skip = "skip"
+    case copy = "copy"
+    case invalidate = "invalidate"
+    case insert = "ins"
+    case update = "update"
+    case skip = "skip"
 }
 
 struct UpdateParams {
@@ -84,7 +84,7 @@ extension UpdateOperation {
         }
 
         switch op_type {
-        case .Insert:
+        case .insert:
             guard let lines_json = json["lines"] as? [[String: Any]] else {
                 assertionFailure("Invalid 'op' json for '\(json_type)'. Invalid 'lines': \(json)")
                 return nil
@@ -95,7 +95,7 @@ extension UpdateOperation {
             }
             self.init(type: op_type, n: n, lines: lines, ln: 0)
 
-        case .Copy, .Update:
+        case .copy, .update:
             guard let ln = json["ln"] as? UInt else {
                 assertionFailure("Invalid 'op' json for '\(json_type)'. Invalid 'ln': \(json)")
                 return nil

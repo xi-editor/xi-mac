@@ -114,7 +114,7 @@ fileprivate class LineCacheState<T>: UnfairLock {
 
         for op in params.ops {
             switch op.type {
-            case .Invalidate:
+            case .invalidate:
                 // Add only lines that were not already invalid
                 let curLine = newInvalidBefore + newLines.count + newInvalidAfter
                 let ix = curLine - nInvalidBefore
@@ -130,14 +130,14 @@ fileprivate class LineCacheState<T>: UnfairLock {
                 } else {
                     newInvalidAfter += op.n
                 }
-            case .Insert:
+            case .insert:
                 for _ in 0..<newInvalidAfter {
                     newLines.append(nil)
                 }
                 newInvalidAfter = 0
                 inval.addRange(start: newInvalidBefore + newLines.count, n: op.n)
                 newLines.append(contentsOf: op.lines.map(Line.init))
-			case .Copy, .Update:
+			case .copy, .update:
                 var nRemaining = op.n
                 if oldIx < nInvalidBefore {
                     let nInvalid = min(op.n, nInvalidBefore - oldIx)
@@ -155,11 +155,11 @@ fileprivate class LineCacheState<T>: UnfairLock {
                     }
                     newInvalidAfter = 0
                     let nCopy = min(nRemaining, nInvalidBefore + lines.count - oldIx)
-                    if oldIx != newInvalidBefore + newLines.count || op.type != .Copy {
+                    if oldIx != newInvalidBefore + newLines.count || op.type != .copy {
                         inval.addRange(start: newInvalidBefore + newLines.count, n: nCopy)
                     }
                     let startIx = oldIx - nInvalidBefore
-                    if op.type == .Copy {
+                    if op.type == .copy {
                         var lineNumber = op.ln
                         let toCopy = lines[startIx ..< startIx + nCopy]
                         // ??: `.first` returns an optional, and the items in the list are also optionals
@@ -192,7 +192,7 @@ fileprivate class LineCacheState<T>: UnfairLock {
                     newInvalidAfter += nRemaining
                 }
                 oldIx += nRemaining
-            case .Skip:
+            case .skip:
                 oldIx += op.n
             }
         }
