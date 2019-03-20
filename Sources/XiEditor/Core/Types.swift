@@ -92,12 +92,12 @@ extension UpdateOperation {
 }
 
 struct UpdatedLine {
-    var text: String
-    var cursor: [Int]
-    var styles: [StyleSpan]
-    
+    let text: String
+    let cursor: [Int]
+    let styles: [StyleSpan]
+
     /// This line's logical number, if it is the start of a logical line
-    var number: UInt?
+    let number: UInt?
 }
 
 extension UpdatedLine {

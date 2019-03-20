@@ -364,9 +364,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     // MARK: - Core Commands
 
     /// handles the `update` RPC. This is called from a dedicated thread.
-	func updateAsync(params: UpdateParams) {
+    func updateAsync(params: UpdateParams) {
         let lineCache = lines.locked()
-		let inval = lineCache.applyUpdate(params: params)
+        let inval = lineCache.applyUpdate(params: params)
         let hasNoUnsavedChanges = params.pristine
         let revision = lineCache.revision
 

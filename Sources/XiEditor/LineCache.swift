@@ -17,20 +17,20 @@ import Foundation
 /// A half-open range representing lines in a document.
 typealias LineRange = CountableRange<Int>
 
+/// Represents a single line, including rendering information.
 struct Line<T> {
-    var text: String
-    var cursor: [Int]
-    var styles: [StyleSpan]
+    let text: String
+    let cursor: [Int]
+    let styles: [StyleSpan]
     /// This line's logical number, if it is the start of a logical line
     var number: UInt?
+    /// Associated data, to be managed by client
+    var assoc: T?
 
     /// A Boolean indicating whether this line contains a cursor.
     var containsCursor: Bool {
         return cursor.count > 0
     }
-
-    /// Associated data, to be managed by client
-    var assoc: T?
 }
 
 extension Line {
