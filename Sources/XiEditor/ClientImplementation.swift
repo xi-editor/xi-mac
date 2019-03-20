@@ -59,10 +59,10 @@ class ClientImplementation: XiClient, DocumentsProviding, ConfigCacheProviding, 
 
     // MARK: - XiClient protocol
 
-	func update(viewIdentifier: String, params: UpdateParams, rev: UInt64?) {
+    func update(viewIdentifier: String, params: UpdateParams, rev: UInt64?) {
         let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
         if document == nil { print("document missing for view id \(viewIdentifier)") }
-		document?.updateAsync(params: params)
+        document?.updateAsync(params: params)
     }
 
     func scroll(viewIdentifier: String, line: Int, column: Int) {
@@ -82,7 +82,7 @@ class ClientImplementation: XiClient, DocumentsProviding, ConfigCacheProviding, 
             UserDefaults.standard.set(name, forKey: USER_DEFAULTS_THEME_KEY)
             self?.theme = theme
             self?.orderedDocuments.forEach { document in
-				document.editViewController?.themeChanged(name)
+                document.editViewController?.themeChanged(name)
             }
         }
     }

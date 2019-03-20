@@ -32,36 +32,37 @@ extension Plugin {
 }
 
 enum UpdateOperationType: String {
-	typealias RawValue = String
+    typealias RawValue = String
 
-	case Copy = "copy"
-	case Invalidate = "invalidate"
-	case Insert = "ins"
-	case Update = "update"
-	case Skip = "skip"
+    case Copy = "copy"
+    case Invalidate = "invalidate"
+    case Insert = "ins"
+    case Update = "update"
+    case Skip = "skip"
 }
 
 struct UpdateParams {
-	// We elide the intermediate "update" part of the JSON struct
-	let annotations: [[String: Any]]
-	let ops: [UpdateOperation]
-	let pristine: Bool
+    // We elide the intermediate "update" part of the JSON struct
+    let annotations: [[String: Any]]
+    let ops: [UpdateOperation]
+    let pristine: Bool
 
-	init?(fromJson json: [String: Any]) {
-		 guard
-			let update = json["update"] as? [String: Any],
-			let annotations = update["annotations"] as? [[String: Any]],
-			let ops = update["ops"] as? [[String: Any]]
-			else {
-				assertionFailure("Invalid 'update' params JSON: \(json)")
-				return nil
-		}
+    init?(fromJson json: [String: Any]) {
+         guard
+            let update = json["update"] as? [String: Any],
+            let annotations = update["annotations"] as? [[String: Any]],
+            let ops = update["ops"] as? [[String: Any]]
+            else {
+                assertionFailure("Invalid 'update' params JSON: \(json)")
+                return nil
+        }
 
-		self.annotations = annotations
+        self.annotations = annotations
+
         // STOPSHIP (jeremy): Should we throw/assert if any of these return nil? Probably yes especially for DEBUG
         self.ops = ops.compactMap { opJson in UpdateOperation(fromJson: opJson) }
-		self.pristine = update["pristine"] as? Bool ?? false
-	}
+        self.pristine = update["pristine"] as? Bool ?? false
+    }
 }
 
 struct UpdateOperation {
