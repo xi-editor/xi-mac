@@ -17,44 +17,39 @@ import Foundation
 /// A half-open range representing lines in a document.
 typealias LineRange = CountableRange<Int>
 
-/// Represents a single line, including rendering information.
 struct Line<T> {
     var text: String
     var cursor: [Int]
     var styles: [StyleSpan]
     /// This line's logical number, if it is the start of a logical line
     var number: UInt?
-    /// Associated data, to be managed by client
-    var assoc: T?
 
     /// A Boolean indicating whether this line contains a cursor.
     var containsCursor: Bool {
         return cursor.count > 0
     }
 
-    init(fromJson json: [String: Any]) {
-        // this could be a more clear exception
-        text = json["text"] as! String
-        cursor = json["cursor"] as? [Int] ?? []
-        number = json["ln"] as? UInt
-        if let styles = json["styles"] as? [Int] {
-            self.styles = StyleSpan.styles(fromRaw: styles, text: self.text)
-        } else {
-            self.styles = []
-        }
+    /// Associated data, to be managed by client
+    var assoc: T?
+}
+
+extension Line {
+    init(fromLine line: UpdatedLine) {
+        self.text = line.text
+        self.cursor = line.cursor
+        self.styles = line.styles
+        self.number = line.number
     }
 
-    /// Create a new line, applying new styles to an existing line's text
-    init?(updateFromJson line: Line?, json: [String: Any]) {
-        guard let line = line else { return nil }
-        self.text = line.text
-        self.number = line.number
-        cursor = json["cursor"] as? [Int] ?? line.cursor
-        if let styles = json["styles"] as? [Int] {
-            self.styles = StyleSpan.styles(fromRaw: styles, text: self.text)
-        } else {
-            self.styles = line.styles
-        }
+    /// Create a new line, applying new styles to this line's text
+    func updatingFrom(_ line: UpdatedLine) -> Line {
+        return Line(
+            text: self.text,
+            cursor: line.cursor,
+            styles: line.styles.count > 0 ? line.styles : self.styles,
+            number: line.number,
+            assoc: self.assoc
+        )
     }
 }
 
@@ -142,9 +137,9 @@ fileprivate class LineCacheState<T>: UnfairLock {
                 }
                 newInvalidAfter = 0
                 inval.addRange(start: newInvalidBefore + newLines.count, n: op.n)
-                for json_line in op.lines {
-                    newLines.append(Line(fromJson: json_line))
-                }
+                newLines.append(contentsOf: op.lines.map({
+                    Line.init(fromLine: $0)
+                }))
 			case .Copy, .Update:
                 var nRemaining = op.n
                 if oldIx < nInvalidBefore {
@@ -187,7 +182,7 @@ fileprivate class LineCacheState<T>: UnfairLock {
                     } else {
                         var jsonIx = op.n - nRemaining
                         for ix in startIx ..< startIx + nCopy {
-                            newLines.append(Line(updateFromJson: lines[ix], json: op.lines[jsonIx]))
+                            newLines.append(lines[ix]?.updatingFrom(op.lines[jsonIx]))
                             jsonIx += 1
                         }
                     }
