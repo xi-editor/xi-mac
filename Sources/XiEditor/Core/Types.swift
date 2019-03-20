@@ -14,6 +14,23 @@
 
 import Foundation
 
+struct Plugin {
+    let name: String
+    let running: Bool
+}
+
+extension Plugin {
+    init?(jsonObject: [String: Any]) {
+        guard let name = jsonObject["name"] as? String,
+            let running = jsonObject["running"] as? Bool else {
+                assertionFailure("Invalid json from core for 'available_plugins': \(jsonObject)")
+                return nil
+        }
+
+        self.init(name: name, running: running)
+    }
+}
+
 enum UpdateOperationType: String {
 	typealias RawValue = String
 
