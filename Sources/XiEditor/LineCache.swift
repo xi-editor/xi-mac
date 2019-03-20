@@ -17,7 +17,6 @@ import Foundation
 /// A half-open range representing lines in a document.
 typealias LineRange = CountableRange<Int>
 
-/// Represents a single line, including rendering information.
 struct Line<T> {
     let text: String
     let cursor: [Int]
