@@ -220,7 +220,7 @@ class StdoutRPCSender: RPCSending {
     }
 
     private func handleRaw(_ data: Data) {
-		self.rpcLogWriter?.write(bytes: RECV_BYTES + data + NEW_LINE)
+		self.rpcLogWriter?.write(bytes: RECV_BYTES + data)
 
 		Trace.shared.trace("handleRaw", .rpc, .begin)
         do {
