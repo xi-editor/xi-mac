@@ -137,7 +137,7 @@ fileprivate class LineCacheState<T>: UnfairLock {
                 newInvalidAfter = 0
                 inval.addRange(start: newInvalidBefore + newLines.count, n: op.n)
                 newLines.append(contentsOf: op.lines.map(Line.init))
-			case .copy, .update:
+            case .copy, .update:
                 var nRemaining = op.n
                 if oldIx < nInvalidBefore {
                     let nInvalid = min(op.n, nInvalidBefore - oldIx)
