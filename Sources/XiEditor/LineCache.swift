@@ -41,7 +41,7 @@ extension Line {
     }
 
     /// Create a new line, applying new styles to this line's text
-    func updatingFrom(_ line: UpdatedLine) -> Line {
+    func updating(from line: UpdatedLine) -> Line {
         return Line(
             text: self.text,
             cursor: line.cursor,
@@ -136,9 +136,7 @@ fileprivate class LineCacheState<T>: UnfairLock {
                 }
                 newInvalidAfter = 0
                 inval.addRange(start: newInvalidBefore + newLines.count, n: op.n)
-                newLines.append(contentsOf: op.lines.map({
-                    Line.init(fromLine: $0)
-                }))
+                newLines.append(contentsOf: op.lines.map(Line.init))
 			case .Copy, .Update:
                 var nRemaining = op.n
                 if oldIx < nInvalidBefore {
@@ -181,7 +179,7 @@ fileprivate class LineCacheState<T>: UnfairLock {
                     } else {
                         var jsonIx = op.n - nRemaining
                         for ix in startIx ..< startIx + nCopy {
-                            newLines.append(lines[ix]?.updatingFrom(op.lines[jsonIx]))
+                            newLines.append(lines[ix]?.updating(from: op.lines[jsonIx]))
                             jsonIx += 1
                         }
                     }

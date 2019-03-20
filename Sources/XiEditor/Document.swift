@@ -163,7 +163,7 @@ class Document: NSDocument {
         sendRpcAsync("paste", params: ["chars": pasteString])
     }
 
-	func updateAsync(params: UpdateParams) {
+    func updateAsync(params: UpdateParams) {
         editViewController?.updateAsync(params: params)
     }
 
