@@ -20,8 +20,8 @@ import AppKit
 let XI_RPC_LOG = "XI_CLIENT_RPC_LOG"
 
 let NEW_LINE = [0x0a as UInt8]
-let SEND_LOG_PREFIX = "SEND:".data(using: .utf8)!
-let RECV_LOG_PREFIX = "RECV:".data(using: .utf8)!
+let SEND_LOG_PREFIX = "[CLIENT] ".data(using: .utf8)!
+let RECV_LOG_PREFIX = "[CORE]   ".data(using: .utf8)!
 
 /// An error returned from core
 struct RemoteError {
