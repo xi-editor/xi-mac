@@ -154,7 +154,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
         findDelegate.closeFind()
     }
 
-    public func findStatus(status: [[String: AnyObject]]) {
+    public func findStatus(status: [FindStatus]) {
         findDelegate.findStatus(status: status)
     }
 
@@ -169,7 +169,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
         findDelegate.replaceNext()
     }
 
-    public func replaceStatus(status: [String: AnyObject]) {
+    public func replaceStatus(status: ReplaceStatus) {
         findDelegate.replaceStatus(status: status)
     }
 
@@ -379,26 +379,23 @@ extension EditViewController {
         xiView.multiFind(queries: queries)
     }
 
-    func findStatus(status: [[String: AnyObject]]) {
+    func findStatus(status: [FindStatus]) {
         var findMarker: [Marker] = []
-        let statusStructs = status.flatMap(FindStatus.init)
-        for statusQuery in statusStructs {
-            guard let firstStatus = statusStructs.first else { continue }
-
+        for statusQuery in status {
             let query = queryController(in: findViewController, queryId: statusQuery.id)
 
-            if firstStatus.chars != nil {
+            if statusQuery.chars != nil {
                 query?.searchField.stringValue = statusQuery.chars!
             } else {
                 // clear count
                 (query?.searchField as? FindSearchField)?.resultCount = nil
             }
 
-            if firstStatus.caseSensitive != nil {
+            if statusQuery.caseSensitive != nil {
                 query?.caseSensitive = (statusQuery.caseSensitive != nil && statusQuery.caseSensitive!)
             }
 
-            if firstStatus.wholeWords != nil {
+            if statusQuery.wholeWords != nil {
                 query?.wholeWords = statusQuery.wholeWords!
             }
 
@@ -411,7 +408,7 @@ extension EditViewController {
         }
 
         // remove finds that have been removed in core
-        let activeFinds = statusStructs.map { $0.id }
+        let activeFinds = status.map { $0.id }
         // Note: the following can be simplified to .contains() when minimum SDK is Xcode 9.3
         let obsoleteFinds = findViewController.searchQueries.filter({(find) -> Bool in
             !activeFinds.contains(where: {$0 == find.id}) && find.id != nil})
@@ -451,10 +448,8 @@ extension EditViewController {
         xiView.replaceAll()
     }
 
-    func replaceStatus(status: [String: AnyObject]) {
-        if status["chars"] != nil && !(status["chars"] is NSNull) {
-            findViewController.replaceField.stringValue = status["chars"] as! String
-        }
+    func replaceStatus(status: ReplaceStatus) {
+        findViewController.replaceField.stringValue = status.chars
 
         // todo: preserve case
     }

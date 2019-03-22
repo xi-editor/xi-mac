@@ -386,11 +386,14 @@ class StdoutRPCSender: RPCSending {
 
         case .findStatus:
             let status = params["queries"] as! [[String: AnyObject]]
-            client?.findStatus(viewIdentifier: viewIdentifier!, status: status)
+            // STOPSHIP(jeremy): Handle deserialization failures
+            let statusStructs = status.flatMap(FindStatus.init)
+            client?.findStatus(viewIdentifier: viewIdentifier!, status: statusStructs)
 
         case .replaceStatus:
             let status = params["status"] as! [String: AnyObject]
-            client?.replaceStatus(viewIdentifier: viewIdentifier!, status: status)
+            let replaceStatus = ReplaceStatus(fromJson: status)!
+            client?.replaceStatus(viewIdentifier: viewIdentifier!, status: replaceStatus)
         }
     }
 

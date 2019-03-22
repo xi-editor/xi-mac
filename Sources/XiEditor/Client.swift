@@ -82,8 +82,8 @@ protocol XiClient: AnyObject {
     func measureWidth(args: [[String: AnyObject]]) -> [[Double]]
 
     /// A notification containing the current find status.
-    func findStatus(viewIdentifier: String, status: [[String: AnyObject]])
+    func findStatus(viewIdentifier: String, status: [FindStatus])
 
     /// A notification containing the current replace status.
-    func replaceStatus(viewIdentifier: String, status: [String: AnyObject])
+    func replaceStatus(viewIdentifier: String, status: ReplaceStatus)
 }

@@ -195,14 +195,14 @@ class ClientImplementation: XiClient, DocumentsProviding, ConfigCacheProviding, 
         return styleMap.locked().measureWidths(args)
     }
 
-    func findStatus(viewIdentifier: ViewIdentifier, status: [[String : AnyObject]]) {
+    func findStatus(viewIdentifier: ViewIdentifier, status: [FindStatus]) {
         let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
         DispatchQueue.main.async {
             document?.editViewController?.findStatus(status: status)
         }
     }
 
-    func replaceStatus(viewIdentifier: ViewIdentifier, status: [String : AnyObject]) {
+    func replaceStatus(viewIdentifier: ViewIdentifier, status: ReplaceStatus) {
         let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
         DispatchQueue.main.async {
             document?.editViewController?.replaceStatus(status: status)

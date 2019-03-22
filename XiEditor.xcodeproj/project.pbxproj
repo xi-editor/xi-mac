@@ -17,6 +17,7 @@
 		28F1ED4A1EC4C735008839BE /* Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F1ED491EC4C735008839BE /* Search.swift */; };
 		31D2A51721B6BF3C005919F0 /* XiEditor.help in Resources */ = {isa = PBXBuildFile; fileRef = 31D2A51621B6BF3C005919F0 /* XiEditor.help */; };
 		3F9C4E7D223D7E3200669C75 /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9C4E7C223D7E3200669C75 /* Types.swift */; };
+		3FC496ED22447E37003D1533 /* ReplaceStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FC496EC22447E37003D1533 /* ReplaceStatus.swift */; };
 		4DC153D32165202B000EB215 /* XiWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DC153D22165202B000EB215 /* XiWindowController.swift */; };
 		4DCB4AF020576A6F00476F75 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 4DCB4AEF20576A6E00476F75 /* fonts */; };
 		6038770720057B4500AABF17 /* XiDocumentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6038770620057B4500AABF17 /* XiDocumentController.swift */; };
@@ -143,6 +144,7 @@
 		28F1ED491EC4C735008839BE /* Search.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
 		31D2A51621B6BF3C005919F0 /* XiEditor.help */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = XiEditor.help; sourceTree = "<group>"; };
 		3F9C4E7C223D7E3200669C75 /* Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
+		3FC496EC22447E37003D1533 /* ReplaceStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplaceStatus.swift; sourceTree = "<group>"; };
 		4DC153D22165202B000EB215 /* XiWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiWindowController.swift; sourceTree = "<group>"; };
 		4DCB4AEF20576A6E00476F75 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
 		6038770620057B4500AABF17 /* XiDocumentController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiDocumentController.swift; sourceTree = "<group>"; };
@@ -313,7 +315,9 @@
 		3F9C4E7B223D7E1F00669C75 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				D803A9A521C7CCB90042DE8F /* FindStatus.swift */,
 				3F9C4E7C223D7E3200669C75 /* Types.swift */,
+				3FC496EC22447E37003D1533 /* ReplaceStatus.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -372,7 +376,6 @@
 				6B53F5F11EF963EB00A4C664 /* Theme.swift */,
 				6B90DD211F14110B00DF3CE2 /* UserInputPromptController.swift */,
 				28F1ED491EC4C735008839BE /* Search.swift */,
-				D803A9A521C7CCB90042DE8F /* FindStatus.swift */,
 				E1288E7F20B06E9C0068EEB9 /* StatusBar.swift */,
 				832910D820229C2D0042C32B /* Fps.swift */,
 				E16BB89720FE42A600A0D7A1 /* HoverViewController.swift */,
@@ -732,6 +735,7 @@
 				D8D319F0218CB39A00D108D4 /* XiCore.swift in Sources */,
 				95368BAB21D0B466000FAC40 /* Annotation.swift in Sources */,
 				AE499DD01C82BB2B002D68AF /* AppDelegate.swift in Sources */,
+				3FC496ED22447E37003D1533 /* ReplaceStatus.swift in Sources */,
 				AEC4F6B31FF5AF130060E10E /* UnfairLock.swift in Sources */,
 				95FD9935218689A500C32AF1 /* MarkerBar.swift in Sources */,
 				28F1ED4A1EC4C735008839BE /* Search.swift in Sources */,
