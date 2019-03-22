@@ -25,7 +25,7 @@ class TestClientImplementation: XiClient {
         self.findStatusAction = findStatusAction
     }
 
-    func update(viewIdentifier: String, update: [String : AnyObject], rev: UInt64?) {
+    func update(viewIdentifier: String, params: UpdateParams, rev: UInt64?) {
     }
 
     func scroll(viewIdentifier: String, line: Int, column: Int) {
@@ -52,7 +52,7 @@ class TestClientImplementation: XiClient {
     func pluginStopped(viewIdentifier: String, pluginName: String) {
     }
 
-    func availablePlugins(viewIdentifier: String, plugins: [[String : AnyObject]]) {
+    func availablePlugins(viewIdentifier: String, plugins: [Plugin]) {
     }
 
     func updateCommands(viewIdentifier: String, plugin: String, commands: [Command]) {
