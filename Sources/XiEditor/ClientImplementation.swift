@@ -191,7 +191,7 @@ class ClientImplementation: XiClient, DocumentsProviding, ConfigCacheProviding, 
         }
     }
 
-    func measureWidth(args: [[String : AnyObject]]) -> [[Double]] {
+    func measureWidth(args: [MeasureWidthParams]) -> [[Double]] {
         return styleMap.locked().measureWidths(args)
     }
 

@@ -268,10 +268,17 @@ class StdoutRPCSender: RPCSending {
 
         switch method {
         case .measureWidth:
-            guard let args = params as? [[String: AnyObject]],
-                let result = client?.measureWidth(args: args) else {
-                    assertionFailure("unexpected data from core: \(params)")
-                    return
+            guard let argsJson = params as? [[String: AnyObject]] else {
+                assertionFailure("unexpected data from core: \(params)")
+                return
+            }
+
+            // STOPSHIP (jeremy): Handle deserialization issues!
+            let args = argsJson.flatMap(MeasureWidthParams.init)
+
+            guard let result = client?.measureWidth(args: args) else {
+                assertionFailure("measure_width request from core failed: \(params)")
+                return
             }
 
             sendResult(id: id, result: result)
@@ -284,8 +291,8 @@ class StdoutRPCSender: RPCSending {
             let params = json["params"] as? [String: Any],
             let method = RPCNotificationMethod(rawValue: jsonMethod)
         else {
-                assertionFailure("unknown json from core: \(json)")
-                return
+            assertionFailure("unknown json from core: \(json)")
+            return
         }
 
         let viewIdentifier = params["view_id"] as? ViewIdentifier
@@ -332,9 +339,7 @@ class StdoutRPCSender: RPCSending {
 
         case .availablePlugins:
             let pluginJson = params["plugins"] as! [[String: Any]]
-            let plugins: [Plugin] = pluginJson
-                .map { Plugin(jsonObject: $0) }
-                .flatMap { $0 }
+            let plugins = pluginJson.flatMap(Plugin.init)
 
             client?.availablePlugins(
                 viewIdentifier: viewIdentifier!,

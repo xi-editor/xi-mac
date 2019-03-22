@@ -201,17 +201,13 @@ class StyleMapState: UnfairLock {
         return builder.measure()
     }
 
-    func measureWidths(_ args: [[String: AnyObject]]) -> [[Double]] {
+    func measureWidths(_ args: [MeasureWidthParams]) -> [[Double]] {
         Trace.shared.trace("measureWidths", .main, .begin)
         defer { Trace.shared.trace("measureWidths", .main, .end) }
 
-        return args.map({(arg: [String: AnyObject]) -> [Double] in
-            guard let id = arg["id"] as? Int, let strings = arg["strings"] as? [String] else {
-                print("invalid measure_widths request")
-                return []
-            }
-            return strings.map({(s: String) -> Double in measureWidth(id: id, s: s)})
-        })
+        return args.map { p in
+            return p.strings.map { s in measureWidth(id: p.id, s: s)}
+        }
     }
 }
 
@@ -242,7 +238,7 @@ class StyleMapLocked {
         inner.updateFont(to: font)
     }
 
-    func measureWidths(_ args: [[String: AnyObject]]) -> [[Double]] {
+    func measureWidths(_ args: [MeasureWidthParams]) -> [[Double]] {
         return inner.measureWidths(args)
     }
 }

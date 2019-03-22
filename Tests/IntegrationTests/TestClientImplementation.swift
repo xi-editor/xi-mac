@@ -76,7 +76,7 @@ class TestClientImplementation: XiClient {
     func configChanged(viewIdentifier: String, changes: [String : AnyObject]) {
     }
 
-    func measureWidth(args: [[String : AnyObject]]) -> [[Double]] {
+    func measureWidth(args: [MeasureWidthParams]) -> [[Double]] {
         fatalError("not implemented")
     }
 
