@@ -381,24 +381,23 @@ extension EditViewController {
 
     func findStatus(status: [[String: AnyObject]]) {
         var findMarker: [Marker] = []
+
         let statusStructs = status.flatMap(FindStatus.init)
         for statusQuery in statusStructs {
-            guard let firstStatus = statusStructs.first else { continue }
-
             let query = queryController(in: findViewController, queryId: statusQuery.id)
 
-            if firstStatus.chars != nil {
+            if statusQuery.chars != nil {
                 query?.searchField.stringValue = statusQuery.chars!
             } else {
                 // clear count
                 (query?.searchField as? FindSearchField)?.resultCount = nil
             }
 
-            if firstStatus.caseSensitive != nil {
+            if statusQuery.caseSensitive != nil {
                 query?.caseSensitive = (statusQuery.caseSensitive != nil && statusQuery.caseSensitive!)
             }
 
-            if firstStatus.wholeWords != nil {
+            if statusQuery.wholeWords != nil {
                 query?.wholeWords = statusQuery.wholeWords!
             }
 
