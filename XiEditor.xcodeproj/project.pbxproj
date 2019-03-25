@@ -319,7 +319,6 @@
 				AE499DCD1C82BB2B002D68AF /* Products */,
 			);
 			sourceTree = "<group>";
-			usesTabs = 0;
 		};
 		AE499DCD1C82BB2B002D68AF /* Products */ = {
 			isa = PBXGroup;
