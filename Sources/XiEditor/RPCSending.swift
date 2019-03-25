@@ -207,14 +207,14 @@ class StdoutRPCSender: RPCSending {
     private func sendJson(_ json: Any) {
         do {
             var data = try JSONSerialization.data(withJSONObject: json, options: [])
-			data.append(NEW_LINE, count: 1)
+            data.append(NEW_LINE, count: 1)
 
-			if let writer = self.rpcLogWriter {
+            if let writer = self.rpcLogWriter {
                 writer.write(bytes: CLIENT_LOG_PREFIX)
                 writer.write(bytes: data)
-			}
+            }
 
-			inHandle.write(data as Data)
+            inHandle.write(data as Data)
         } catch _ {
             print("error serializing to json")
         }
