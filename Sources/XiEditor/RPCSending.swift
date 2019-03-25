@@ -20,8 +20,8 @@ import AppKit
 let XI_RPC_LOG = "XI_CLIENT_RPC_LOG"
 
 let NEW_LINE = [0x0a as UInt8]
-let SEND_LOG_PREFIX = "[CLIENT] ".data(using: .utf8)!
-let RECV_LOG_PREFIX = "[CORE]   ".data(using: .utf8)!
+let CLIENT_LOG_PREFIX = "[CLIENT] ".data(using: .utf8)!
+let CORE_LOG_PREFIX = "[CORE]   ".data(using: .utf8)!
 
 /// An error returned from core
 struct RemoteError {
@@ -210,7 +210,7 @@ class StdoutRPCSender: RPCSending {
 			data.append(NEW_LINE, count: 1)
 
 			if let writer = self.rpcLogWriter {
-                writer.write(bytes: SEND_LOG_PREFIX)
+                writer.write(bytes: CLIENT_LOG_PREFIX)
                 writer.write(bytes: data)
 			}
 
@@ -226,10 +226,10 @@ class StdoutRPCSender: RPCSending {
     }
 
     private func handleRaw(_ data: Data) {
-		if let writer = self.rpcLogWriter {
-            writer.write(bytes: RECV_LOG_PREFIX)
-			writer.write(bytes: data)
-		}
+        if let writer = self.rpcLogWriter {
+            writer.write(bytes: CORE_LOG_PREFIX)
+            writer.write(bytes: data)
+        }
 
         Trace.shared.trace("handleRaw", .rpc, .begin)
         do {
