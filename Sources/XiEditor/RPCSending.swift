@@ -206,9 +206,15 @@ class StdoutRPCSender: RPCSending {
 
     private func sendJson(_ json: Any) {
         do {
-            let data = try JSONSerialization.data(withJSONObject: json, options: []) + NEW_LINE
-            self.rpcLogWriter?.write(bytes: SEND_LOG_PREFIX + data)
-            inHandle.write(data)
+            var data = try JSONSerialization.data(withJSONObject: json, options: [])
+			data.append(NEW_LINE, count: 1)
+
+			if let writer = self.rpcLogWriter {
+                writer.write(bytes: SEND_LOG_PREFIX)
+                writer.write(bytes: data)
+			}
+
+			inHandle.write(data as Data)
         } catch _ {
             print("error serializing to json")
         }
@@ -220,7 +226,10 @@ class StdoutRPCSender: RPCSending {
     }
 
     private func handleRaw(_ data: Data) {
-        self.rpcLogWriter?.write(bytes: RECV_LOG_PREFIX + data)
+		if let writer = self.rpcLogWriter {
+            writer.write(bytes: RECV_LOG_PREFIX)
+			writer.write(bytes: data)
+		}
 
         Trace.shared.trace("handleRaw", .rpc, .begin)
         do {
