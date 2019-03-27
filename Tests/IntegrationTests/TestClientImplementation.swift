@@ -31,7 +31,7 @@ class TestClientImplementation: XiClient {
     func scroll(viewIdentifier: String, line: Int, column: Int) {
     }
 
-    func defineStyle(style: [String : AnyObject]) {
+    func defineStyle(params: DefStyleParams) {
     }
 
     func themeChanged(name: String, theme: Theme) {

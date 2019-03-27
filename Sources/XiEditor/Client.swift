@@ -27,7 +27,7 @@ protocol XiClient: AnyObject {
     func scroll(viewIdentifier: String, line: Int, column: Int)
 
     /// A notification containing a new style definition.
-    func defineStyle(style: [String: AnyObject])
+    func defineStyle(params: DefStyleParams)
 
     /// A notification that the current theme has changed.
     func themeChanged(name: String, theme: Theme)

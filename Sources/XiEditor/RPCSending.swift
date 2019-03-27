@@ -321,7 +321,10 @@ class StdoutRPCSender: RPCSending {
             self.client?.scroll(viewIdentifier: viewIdentifier!, line: line, column: col)
 
         case .defStyle:
-            client?.defineStyle(style: params as [String: AnyObject])
+            guard let defStyleParams = DefStyleParams(fromJson: params) else {
+                return
+            }
+            client?.defineStyle(params: defStyleParams)
 
         case .pluginStarted:
             let plugin = params["plugin"] as! String

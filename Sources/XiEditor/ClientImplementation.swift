@@ -72,9 +72,9 @@ class ClientImplementation: XiClient, DocumentsProviding, ConfigCacheProviding, 
         }
     }
 
-    func defineStyle(style: [String: AnyObject]) {
+    func defineStyle(params: DefStyleParams) {
         // defineStyle, like update, is handled on the read thread.
-        styleMap.locked().defStyle(json: style)
+        styleMap.locked().defStyle(params: params)
     }
 
     func themeChanged(name: String, theme: Theme) {
