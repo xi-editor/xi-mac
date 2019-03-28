@@ -23,11 +23,14 @@ class XiCliCoreTests: XCTestCase {
         super.setUp()
         let testArguments = Arguments(arguments: ["test.txt", "--wait"])
         commandLineTool = CommandLineTool(args: testArguments)
-        FileManager.default.createFile(atPath: "test.txt", contents: "This is a tester file".data(using: .utf8), attributes: nil)
+        let fileManager = FileManager.default
+        fileManager.createFile(atPath: "test.txt", contents: "This is a tester file".data(using: .utf8), attributes: nil)
+        try? fileManager.createSymbolicLink(atPath: "test_link.txt", withDestinationPath: "test.txt")
     }
     
     override func tearDown() {
         super.tearDown()
+        try? FileManager.default.removeItem(atPath: "test_link.txt")
         try? FileManager.default.removeItem(atPath: "test.txt")
     }
 
@@ -41,13 +44,13 @@ class XiCliCoreTests: XCTestCase {
     }
 
     func testResolveAbsolutePath() {
-        let fileManager = FileManager.default
-        var tempDir = fileManager.temporaryDirectory
-        tempDir.appendPathComponent("testResolvePath")
-        fileManager.createFile(atPath: tempDir.path, contents: "This is a tester file".data(using: .utf8), attributes: nil)
+        let fromPath = fileInTempDir("testResolvePath")
+        FileManager
+            .default
+            .createFile(atPath: fromPath, contents: "This is a tester file".data(using: .utf8), attributes: nil)
         do {
-            let path = try commandLineTool.resolvePath(from: tempDir.path)
-            XCTAssert(path == tempDir.path)
+            let path = try commandLineTool.resolvePath(from: fromPath)
+            XCTAssert(path == fromPath)
         } catch {
             XCTFail("temp file in temp dir not found")
         }
@@ -56,16 +59,21 @@ class XiCliCoreTests: XCTestCase {
     func testResolveRelativePath() {
         do {
             let path = try commandLineTool.resolvePath(from: "test.txt")
-
-            var expextedDir = URL(string: FileManager.default.currentDirectoryPath)!
-            expextedDir.appendPathComponent("test.txt")
-            let expectedPath = expextedDir.path
-
+            let expectedPath = fileInCurrentDir("test.txt")
             XCTAssert(path == expectedPath, "path does not match expected")
         } catch {
             XCTFail("temp file not found")
         }
+    }
 
+    func testResolveSymlink() {
+        do {
+            let path = try commandLineTool.resolvePath(from: "test_link.txt")
+            let expectedPath = fileInCurrentDir("test.txt")
+            XCTAssert(path == expectedPath, "path does not match expected")
+        } catch {
+            XCTFail("symbolic link file not found")
+        }
     }
 
     func testFileOpen() {
@@ -75,11 +83,11 @@ class XiCliCoreTests: XCTestCase {
     func testObserver() {
         let group = DispatchGroup()
         group.enter()
-
-        let filePaths = ["filePath1", "filePath2"]
-        commandLineTool.setObserver(group: group, filePaths: filePaths)
-        DistributedNotificationCenter.default().post(name: Notification.Name("io.xi-editor.XiEditor.FileClosed"), object: nil, userInfo: ["path": filePaths.first!])
-        DistributedNotificationCenter.default().post(name: Notification.Name("io.xi-editor.XiEditor.FileClosed"), object: nil, userInfo: ["path": filePaths.last!])
+        let observedPaths = ["filePath1", "test_link.txt"]
+        let expectedPaths = [fileInCurrentDir("filePath1"), fileInCurrentDir("test.txt")]
+        commandLineTool.setObserver(group: group, filePaths: expectedPaths)
+        DistributedNotificationCenter.default().post(name: Notification.Name("io.xi-editor.XiEditor.FileClosed"), object: nil, userInfo: ["path": observedPaths.first!])
+        DistributedNotificationCenter.default().post(name: Notification.Name("io.xi-editor.XiEditor.FileClosed"), object: nil, userInfo: ["path": observedPaths.last!])
         let expectation = XCTestExpectation(description: "Notification Recieved")
 
         let queue = OperationQueue()
@@ -90,4 +98,15 @@ class XiCliCoreTests: XCTestCase {
         expectation.fulfill()
     }
 
+    func fileInCurrentDir(_ filename: String) -> String {
+        var url = URL(string: FileManager.default.currentDirectoryPath)!
+        url.appendPathComponent(filename)
+        return url.path
+    }
+
+    func fileInTempDir(_ filename: String) -> String {
+        var url = FileManager.default.temporaryDirectory
+        url.appendPathComponent(filename)
+        return url.path
+    }
 }
