@@ -869,7 +869,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     func resolveParams(_ command: Command, completion: @escaping ([String: AnyObject]?) -> ()) {
         guard !command.args.isEmpty else {
-            completion(command.params)
+            completion(command.params as [String : AnyObject])
             return
         }
         self.presentViewControllerAsSheet(userInputController)

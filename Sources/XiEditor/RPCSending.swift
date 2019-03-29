@@ -49,11 +49,6 @@ enum RPCRequestMethod: String {
 }
 
 enum RPCNotificationMethod: String {
-    case alert
-
-    case update
-    case updateCommands = "update_cmds"
-
     case addStatusItem = "add_status_item"
     case updateStatusItem = "update_status_item"
     case removeStatusItem = "remove_status_item"
@@ -297,6 +292,24 @@ class StdoutRPCSender: RPCSending {
     }
 
     private func handleNotification(json: [String: AnyObject]) {
+        // The new way! Add more cases here.
+        if let notification = CoreNotification.fromJson(json) {
+            switch notification {
+            case let .alert(message: message):
+                self.client?.alert(text: message)
+            case let .updateCommands(viewIdentifier, plugin, commands):
+                self.client?.updateCommands(viewIdentifier: viewIdentifier,
+                                            plugin: plugin,
+                                            commands: commands)
+            case let .update(viewIdentifier, params):
+                self.client?.update(viewIdentifier: viewIdentifier,
+                                    params: params, rev: nil)
+            }
+
+            // New style handled this notification...
+            return
+        }
+
         guard
             let jsonMethod = json["method"] as? String,
             let params = json["params"] as? [String: Any],
@@ -309,12 +322,6 @@ class StdoutRPCSender: RPCSending {
         let viewIdentifier = params["view_id"] as? ViewIdentifier
 
         switch method {
-        case .update:
-            guard let updateParams = UpdateParams(fromJson: params) else {
-                return
-            }
-            self.client?.update(viewIdentifier: viewIdentifier!, params: updateParams, rev: nil)
-
         case .scrollTo:
             let line = params["line"] as! Int
             let col = params["col"] as! Int
@@ -364,23 +371,9 @@ class StdoutRPCSender: RPCSending {
             let languages = params["languages"] as! [String]
             client?.availableLanguages(languages: languages)
 
-        case .updateCommands:
-            let plugin = params["plugin"] as! String
-            let cmdsJson = params["cmds"] as! [[String: AnyObject]]
-            let cmds = cmdsJson.map { Command(jsonObject: $0) }
-                .filter { $0 != nil }
-                .map { $0! }
-
-            client?.updateCommands(viewIdentifier: viewIdentifier!,
-                                   plugin: plugin, commands: cmds)
-
         case .configurationChanged:
             let changes = params["changes"] as! [String: AnyObject]
             client?.configChanged(viewIdentifier: viewIdentifier!, changes: changes)
-
-        case .alert:
-            let message = params["msg"] as! String
-            client?.alert(text: message)
 
         case .addStatusItem:
             let source = params["source"] as! String

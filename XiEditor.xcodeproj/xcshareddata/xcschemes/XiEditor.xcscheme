@@ -99,6 +99,11 @@
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
+            key = "XI_CLIENT_RPC_LOG"
+            value = "/Users/jeremy/Desktop/xi-mac.log"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
             key = "RUST_BACKTRACE"
             value = "FULL"
             isEnabled = "YES">

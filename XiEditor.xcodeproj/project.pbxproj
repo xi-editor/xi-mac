@@ -18,6 +18,7 @@
 		31D2A51721B6BF3C005919F0 /* XiEditor.help in Resources */ = {isa = PBXBuildFile; fileRef = 31D2A51621B6BF3C005919F0 /* XiEditor.help */; };
 		3F9C4E7D223D7E3200669C75 /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9C4E7C223D7E3200669C75 /* Types.swift */; };
 		3FB1FC36224B2B180038C8A3 /* DefStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FB1FC35224B2B180038C8A3 /* DefStyle.swift */; };
+		3FBCA858224D9563004575AB /* CoreNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FBCA857224D9563004575AB /* CoreNotification.swift */; };
 		3FC496ED22447E37003D1533 /* ReplaceStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FC496EC22447E37003D1533 /* ReplaceStatus.swift */; };
 		3FC496EF22448332003D1533 /* MeasureWidth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FC496EE22448332003D1533 /* MeasureWidth.swift */; };
 		4DC153D32165202B000EB215 /* XiWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DC153D22165202B000EB215 /* XiWindowController.swift */; };
@@ -147,6 +148,7 @@
 		31D2A51621B6BF3C005919F0 /* XiEditor.help */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = XiEditor.help; sourceTree = "<group>"; };
 		3F9C4E7C223D7E3200669C75 /* Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
 		3FB1FC35224B2B180038C8A3 /* DefStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefStyle.swift; sourceTree = "<group>"; };
+		3FBCA857224D9563004575AB /* CoreNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreNotification.swift; sourceTree = "<group>"; };
 		3FC496EC22447E37003D1533 /* ReplaceStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplaceStatus.swift; sourceTree = "<group>"; };
 		3FC496EE22448332003D1533 /* MeasureWidth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeasureWidth.swift; sourceTree = "<group>"; };
 		4DC153D22165202B000EB215 /* XiWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiWindowController.swift; sourceTree = "<group>"; };
@@ -324,6 +326,7 @@
 				3FC496EC22447E37003D1533 /* ReplaceStatus.swift */,
 				3FC496EE22448332003D1533 /* MeasureWidth.swift */,
 				3FB1FC35224B2B180038C8A3 /* DefStyle.swift */,
+				3FBCA857224D9563004575AB /* CoreNotification.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -722,6 +725,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F53EA2AF1DCAAA170071ACFD /* EditViewController.swift in Sources */,
+				3FBCA858224D9563004575AB /* CoreNotification.swift in Sources */,
 				4DC153D32165202B000EB215 /* XiWindowController.swift in Sources */,
 				AED22D7C1FE8428D0096E7C3 /* ShaderProgram.swift in Sources */,
 				3FB1FC36224B2B180038C8A3 /* DefStyle.swift in Sources */,
