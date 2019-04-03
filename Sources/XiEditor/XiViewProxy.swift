@@ -69,6 +69,7 @@ protocol XiViewProxy: class {
     /// transformations
     /// The following methods act by modifying the current selection.
     func uppercase()
+    func lowercase()
 }
 
 final class XiViewConnection: XiViewProxy {
@@ -144,6 +145,10 @@ final class XiViewConnection: XiViewProxy {
 
     func uppercase() {
         sendRpcAsync("uppercase", params: [])
+    }
+
+    func lowercase() {
+        sendRpcAsync("lowercase", params: [])
     }
 
     /// All parameters are optional. Boolean parameters are by default `false` and `modify_selection` is `set` by default.
