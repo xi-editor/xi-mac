@@ -527,7 +527,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     @objc func reindent(_ sender: Any?) {
-        document.sendRpcAsync("reindent", params: [])
+        xiView.reindent()
     }
 
     @objc func increaseNumber(_ sender: Any?) {
