@@ -519,7 +519,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     override func indent(_ sender: Any?) {
-        document.sendRpcAsync("indent", params: [])
+        xiView.indent()
     }
 
     @objc func unindent(_ sender: Any?) {
