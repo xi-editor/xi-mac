@@ -71,6 +71,7 @@ protocol XiViewProxy: class {
     func uppercase()
     func lowercase()
     func capitalize()
+    func indent()
 }
 
 final class XiViewConnection: XiViewProxy {
@@ -154,6 +155,10 @@ final class XiViewConnection: XiViewProxy {
 
     func capitalize() {
         sendRpcAsync("capitalize", params: [])
+    }
+
+    func indent() {
+        sendRpcAsync("indent", params: [])
     }
 
     /// All parameters are optional. Boolean parameters are by default `false` and `modify_selection` is `set` by default.
