@@ -489,7 +489,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     override func uppercaseWord(_ sender: Any?) {
-        document.sendRpcAsync("uppercase", params: [])
+        xiView.uppercase()
     }
 
     override func lowercaseWord(_ sender: Any?) {
