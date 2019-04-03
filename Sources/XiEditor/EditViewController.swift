@@ -497,7 +497,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     override func capitalizeWord(_ sender: Any?) {
-        document.sendRpcAsync("capitalize", params: [])
+        xiView.capitalize()
     }
 
     @objc func undo(_ sender: AnyObject?) {
