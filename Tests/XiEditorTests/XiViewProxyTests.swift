@@ -458,5 +458,16 @@ class XiViewProxyTests: XCTestCase {
         wait(for: [asyncCalledExpectation], timeout: 1)
     }
 
+    func testOutdent() {
+        let asyncCalledExpectation = expectation(description: "Async should be called")
+        let async: XiViewConnection.AsyncRpc = { method, _, _ in
+            XCTAssertEqual("outdent", method)
+            asyncCalledExpectation.fulfill()
+        }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
+        connection.outdent()
+        wait(for: [asyncCalledExpectation], timeout: 1)
+    }
+
     private let unusedSync: XiViewConnection.SyncRpc = { _,_ in return .ok("not implemented in tests" as AnyObject) }
 }
