@@ -72,6 +72,7 @@ protocol XiViewProxy: class {
     func lowercase()
     func capitalize()
     func indent()
+    func outdent()
 }
 
 final class XiViewConnection: XiViewProxy {
@@ -159,6 +160,10 @@ final class XiViewConnection: XiViewProxy {
 
     func indent() {
         sendRpcAsync("indent", params: [])
+    }
+
+    func outdent() {
+        sendRpcAsync("outdent", params: [])
     }
 
     /// All parameters are optional. Boolean parameters are by default `false` and `modify_selection` is `set` by default.
