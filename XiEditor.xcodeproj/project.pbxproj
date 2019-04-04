@@ -15,7 +15,7 @@
 		0C62059821B63C0900A9758F /* libXiCliCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C62058D21B63B8E00A9758F /* libXiCliCore.a */; };
 		0C66CB2E218F5CDB00F6F899 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C66CB2D218F5CDB00F6F899 /* main.swift */; };
 		28F1ED4A1EC4C735008839BE /* Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F1ED491EC4C735008839BE /* Search.swift */; };
-		31D2A51721B6BF3C005919F0 /* XiEditor.help in Resources */ = {isa = PBXBuildFile; fileRef = 31D2A51621B6BF3C005919F0 /* XiEditor.help */; };
+		3128C749221B852B00951A3B /* XiEditorHelp.help in Resources */ = {isa = PBXBuildFile; fileRef = 3128C740221B815700951A3B /* XiEditorHelp.help */; };
 		4DC153D32165202B000EB215 /* XiWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DC153D22165202B000EB215 /* XiWindowController.swift */; };
 		4DCB4AF020576A6F00476F75 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 4DCB4AEF20576A6E00476F75 /* fonts */; };
 		6038770720057B4500AABF17 /* XiDocumentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6038770620057B4500AABF17 /* XiDocumentController.swift */; };
@@ -93,6 +93,13 @@
 			remoteGlobalIDString = 0C66CB2A218F5CDB00F6F899;
 			remoteInfo = XiCli;
 		};
+		3128C747221B84F100951A3B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AE499DC41C82BB2B002D68AF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3128C73F221B815700951A3B;
+			remoteInfo = XiEditorHelp;
+		};
 		AE499DDC1C82BB2B002D68AF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AE499DC41C82BB2B002D68AF /* Project object */;
@@ -140,7 +147,8 @@
 		0C66CB34218F5DF100F6F899 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0C66CB36218F5E8A00F6F899 /* CommandLineTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandLineTool.swift; sourceTree = "<group>"; };
 		28F1ED491EC4C735008839BE /* Search.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
-		31D2A51621B6BF3C005919F0 /* XiEditor.help */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = XiEditor.help; sourceTree = "<group>"; };
+		3128C740221B815700951A3B /* XiEditorHelp.help */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XiEditorHelp.help; sourceTree = BUILT_PRODUCTS_DIR; };
+		3128C74C221B8B1000951A3B /* XiEditorHelp */ = {isa = PBXFileReference; lastKnownFileType = folder; path = XiEditorHelp; sourceTree = "<group>"; };
 		4DC153D22165202B000EB215 /* XiWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiWindowController.swift; sourceTree = "<group>"; };
 		4DCB4AEF20576A6E00476F75 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
 		6038770620057B4500AABF17 /* XiDocumentController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiDocumentController.swift; sourceTree = "<group>"; };
@@ -227,6 +235,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		3128C73D221B815700951A3B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AE499DC91C82BB2B002D68AF /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -303,7 +318,6 @@
 			isa = PBXGroup;
 			children = (
 				4DCB4AEF20576A6E00476F75 /* fonts */,
-				31D2A51621B6BF3C005919F0 /* XiEditor.help */,
 			);
 			path = Resources;
 			sourceTree = SOURCE_ROOT;
@@ -317,6 +331,7 @@
 				31D2A51321B6BEEC005919F0 /* Resources */,
 				D023DA021CD071B40087EC0A /* xicore */,
 				AE499DCD1C82BB2B002D68AF /* Products */,
+				3128C74C221B8B1000951A3B /* XiEditorHelp */,
 			);
 			sourceTree = "<group>";
 			usesTabs = 0;
@@ -330,6 +345,7 @@
 				0C66CB2B218F5CDB00F6F899 /* XiCli */,
 				0C62058D21B63B8E00A9758F /* libXiCliCore.a */,
 				0C53410A21B746AA004A9550 /* XiCliCoreTests.xctest */,
+				3128C740221B815700951A3B /* XiEditorHelp.help */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -506,6 +522,24 @@
 			productReference = 0C66CB2B218F5CDB00F6F899 /* XiCli */;
 			productType = "com.apple.product-type.tool";
 		};
+		3128C73F221B815700951A3B /* XiEditorHelp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3128C745221B815700951A3B /* Build configuration list for PBXNativeTarget "XiEditorHelp" */;
+			buildPhases = (
+				3128C73C221B815700951A3B /* Sources */,
+				3128C73D221B815700951A3B /* Frameworks */,
+				3128C73E221B815700951A3B /* Resources */,
+				3128C746221B823400951A3B /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = XiEditorHelp;
+			productName = XiEditorHelp;
+			productReference = 3128C740221B815700951A3B /* XiEditorHelp.help */;
+			productType = "com.apple.product-type.bundle";
+		};
 		AE499DCB1C82BB2B002D68AF /* XiEditor */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = AE499DEF1C82BB2B002D68AF /* Build configuration list for PBXNativeTarget "XiEditor" */;
@@ -517,6 +551,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				3128C748221B84F100951A3B /* PBXTargetDependency */,
 				0C53411921B7816B004A9550 /* PBXTargetDependency */,
 				D023DA051CD072400087EC0A /* PBXTargetDependency */,
 			);
@@ -583,6 +618,10 @@
 						CreatedOnToolsVersion = 10.1;
 						ProvisioningStyle = Manual;
 					};
+					3128C73F221B815700951A3B = {
+						CreatedOnToolsVersion = 10.1;
+						ProvisioningStyle = Automatic;
+					};
 					AE499DCB1C82BB2B002D68AF = {
 						CreatedOnToolsVersion = 7.2;
 						LastSwiftMigration = 0900;
@@ -622,6 +661,7 @@
 				AE499DDA1C82BB2B002D68AF /* XiEditorTests */,
 				AE499DE51C82BB2B002D68AF /* XiEditorUITests */,
 				0C53410921B746AA004A9550 /* XiCliCoreTests */,
+				3128C73F221B815700951A3B /* XiEditorHelp */,
 			);
 		};
 /* End PBXProject section */
@@ -634,12 +674,18 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		3128C73E221B815700951A3B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AE499DCA1C82BB2B002D68AF /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				0C53411A21B786F3004A9550 /* XiCli in Resources */,
-				31D2A51721B6BF3C005919F0 /* XiEditor.help in Resources */,
 				4DCB4AF020576A6F00476F75 /* fonts in Resources */,
 				F53EA2AD1DCAA8110071ACFD /* Main.storyboard in Resources */,
 				AE228F5D1C897CE7000E9B0F /* xi-core in Resources */,
@@ -650,6 +696,7 @@
 				AED22D821FE84B4B0096E7C3 /* solid.v.glsl in Resources */,
 				AE041BA61D4327EB0069AB8B /* plugins in Resources */,
 				AE499DD21C82BB2B002D68AF /* Assets.xcassets in Resources */,
+				3128C749221B852B00951A3B /* XiEditorHelp.help in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -669,6 +716,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		3128C746221B823400951A3B /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/bin/make -C \"$(dirname \"$PRODUCT_SETTINGS_PATH\")\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		0C53410621B746AA004A9550 /* Sources */ = {
@@ -693,6 +760,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				0C66CB2E218F5CDB00F6F899 /* main.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3128C73C221B815700951A3B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -777,6 +851,11 @@
 			isa = PBXTargetDependency;
 			target = 0C66CB2A218F5CDB00F6F899 /* XiCli */;
 			targetProxy = 0C53411821B7816B004A9550 /* PBXContainerItemProxy */;
+		};
+		3128C748221B84F100951A3B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3128C73F221B815700951A3B /* XiEditorHelp */;
+			targetProxy = 3128C747221B84F100951A3B /* PBXContainerItemProxy */;
 		};
 		AE499DDD1C82BB2B002D68AF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -926,6 +1005,53 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.0;
+			};
+			name = Release;
+		};
+		3128C743221B815700951A3B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = XiEditorHelp/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.Xi.XiMac.Help.XiEditorHelp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = help;
+			};
+			name = Debug;
+		};
+		3128C744221B815700951A3B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = XiEditorHelp/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.Xi.XiMac.Help.XiEditorHelp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = help;
 			};
 			name = Release;
 		};
@@ -1153,6 +1279,15 @@
 			buildConfigurations = (
 				0C66CB2F218F5CDB00F6F899 /* Debug */,
 				0C66CB30218F5CDB00F6F899 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3128C745221B815700951A3B /* Build configuration list for PBXNativeTarget "XiEditorHelp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3128C743221B815700951A3B /* Debug */,
+				3128C744221B815700951A3B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

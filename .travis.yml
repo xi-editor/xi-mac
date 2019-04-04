@@ -14,7 +14,7 @@ rust:
 cache: cargo
 
 before_script:
-  - sudo gem install xcpretty
+  - sudo gem install xcpretty jekyll
 
 script:
   - xcodebuild test -scheme XiEditor | xcpretty -s && exit ${PIPESTATUS[0]}
