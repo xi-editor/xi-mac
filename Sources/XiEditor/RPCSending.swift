@@ -49,13 +49,11 @@ enum RPCRequestMethod: String {
 }
 
 enum RPCNotificationMethod: String {
-    case addStatusItem = "add_status_item"
     case updateStatusItem = "update_status_item"
     case removeStatusItem = "remove_status_item"
 
     case configurationChanged = "config_changed"
 
-    case scrollTo = "scroll_to"
     case defStyle = "def_style"
 
     case availablePlugins = "available_plugins"
@@ -301,6 +299,13 @@ class StdoutRPCSender: RPCSending {
                 self.client?.updateCommands(viewIdentifier: viewIdentifier,
                                             plugin: plugin,
                                             commands: commands)
+                
+            case let .scrollTo(viewIdentifier: viewIdentifier, line: line, column: column):
+                self.client?.scroll(viewIdentifier: viewIdentifier, line: line, column: column)
+
+            case let .addStatusItem(viewIdentifier: viewIdentifier, source: source, key: key, value: value, alignment: alignment):
+                self.client?.addStatusItem(viewIdentifier: viewIdentifier, source: source, key: key, value: value, alignment: alignment)
+
             case let .update(viewIdentifier, params):
                 self.client?.update(viewIdentifier: viewIdentifier,
                                     params: params, rev: nil)
@@ -322,11 +327,6 @@ class StdoutRPCSender: RPCSending {
         let viewIdentifier = params["view_id"] as? ViewIdentifier
 
         switch method {
-        case .scrollTo:
-            let line = params["line"] as! Int
-            let col = params["col"] as! Int
-            self.client?.scroll(viewIdentifier: viewIdentifier!, line: line, column: col)
-
         case .defStyle:
             guard let defStyleParams = DefStyleParams(fromJson: params) else {
                 return
@@ -374,13 +374,6 @@ class StdoutRPCSender: RPCSending {
         case .configurationChanged:
             let changes = params["changes"] as! [String: AnyObject]
             client?.configChanged(viewIdentifier: viewIdentifier!, changes: changes)
-
-        case .addStatusItem:
-            let source = params["source"] as! String
-            let key = params["key"] as! String
-            let value = params["value"] as! String
-            let alignment = params["alignment"] as! String
-            client?.addStatusItem(viewIdentifier: viewIdentifier!, source: source, key: key, value: value, alignment: alignment)
 
         case .updateStatusItem:
             let key = params["key"] as! String

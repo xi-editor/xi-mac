@@ -44,6 +44,11 @@ enum CoreNotification {
 
     case updateCommands(viewIdentifier: ViewIdentifier, plugin: String, commands: [Command])
 
+    case scrollTo(viewIdentifier: ViewIdentifier, line: Int, column: Int)
+
+    case addStatusItem(viewIdentifier: ViewIdentifier, source: String, key: String, value: String, alignment: String
+    )
+
     case update(viewIdentifier: ViewIdentifier, params: UpdateParams)
 
 
@@ -73,10 +78,33 @@ enum CoreNotification {
                 return .updateCommands(viewIdentifier: viewIdentifier!, plugin: plugin, commands: commands)
             }
 
+        case "add_status_item":
+            if
+                let source = jsonParams["source"] as? String,
+                let key = jsonParams["key"] as? String,
+                let value = jsonParams["value"] as? String,
+                let alignment = jsonParams["alignment"] as? String
+            {
+                return .addStatusItem(viewIdentifier: viewIdentifier!,
+                                      source: source,
+                                      key: key,
+                                      value: value,
+                                      alignment: alignment)
+            }
+
+        case "scroll_to":
+            if
+                let line = jsonParams["line"] as? Int,
+                let column = jsonParams["col"] as? Int
+            {
+                return .scrollTo(viewIdentifier: viewIdentifier!, line: line, column: column)
+            }
+
         case "update":
             if let params = UpdateParams(fromJson: jsonParams) {
                 return .update(viewIdentifier: viewIdentifier!, params: params)
             }
+
         default:
             // STOPSHIP: re-enable this once everything moved to CoreNotification
             //assertionFailure("Unsupported notification method from core: \(jsonMethod)")
