@@ -73,7 +73,7 @@ class TestClientImplementation: XiClient {
     func showHover(viewIdentifier: String, requestIdentifier: Int, result: String) {
     }
 
-    func configChanged(viewIdentifier: String, changes: [String : AnyObject]) {
+    func configChanged(viewIdentifier: String, changes: Config) {
     }
 
     func measureWidth(args: [MeasureWidthParams]) -> [[Double]] {

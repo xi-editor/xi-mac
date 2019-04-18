@@ -37,7 +37,7 @@ struct FindStatus {
     /// Line numbers which have find results.
     let lines: [Int]
 
-    init?(from json: [String: AnyObject]) {
+    init?(from json: [String: Any]) {
         guard let id = json["id"] as? Int,
             let matches = json["matches"] as? Int,
             let lines = json["lines"] as? [Int] else { return nil }

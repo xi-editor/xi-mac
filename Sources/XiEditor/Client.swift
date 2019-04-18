@@ -74,7 +74,7 @@ protocol XiClient: AnyObject {
     /// - Note: The first time this message is sent, `changes` contains all defined
     // config keys and their values. Subsequent calls contain only those items which
     // have changed since the previous call.
-    func configChanged(viewIdentifier: String, changes: [String: AnyObject])
+    func configChanged(viewIdentifier: String, changes: Config)
 
     /// A request to measure the width of strings. Each item in the list is a dictionary
     /// where `style` is the id of the style and `strings` is an array of strings to

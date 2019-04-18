@@ -48,30 +48,6 @@ enum RPCRequestMethod: String {
     case measureWidth = "measure_width"
 }
 
-enum RPCNotificationMethod: String {
-    case updateStatusItem = "update_status_item"
-    case removeStatusItem = "remove_status_item"
-
-    case configurationChanged = "config_changed"
-
-    case defStyle = "def_style"
-
-    case availablePlugins = "available_plugins"
-    case pluginStarted = "plugin_started"
-    case pluginStopped = "plugin_stopped"
-
-    case availableThemes = "available_themes"
-    case themeChanged = "theme_changed"
-
-    case availableLanguages = "available_languages"
-    case languageChanged = "language_changed"
-
-    case showHover = "show_hover"
-
-    case findStatus = "find_status"
-    case replaceStatus = "replace_status"
-}
-
 /// A completion handler for a synchronous RPC
 typealias RpcCallback = (RpcResult) -> ()
 
@@ -272,13 +248,13 @@ class StdoutRPCSender: RPCSending {
 
         switch method {
         case .measureWidth:
-            guard let argsJson = params as? [[String: AnyObject]] else {
+            guard
+                let argsJson = params as? [[String: Any]],
+                let args = argsJson.xiCompactMap(MeasureWidthParams.init)
+            else {
                 assertionFailure("unexpected data from core: \(params)")
                 return
             }
-
-            // STOPSHIP (jeremy): Handle deserialization issues!
-            let args = argsJson.flatMap(MeasureWidthParams.init)
 
             guard let result = client?.measureWidth(args: args) else {
                 assertionFailure("measure_width request from core failed: \(params)")
@@ -293,112 +269,60 @@ class StdoutRPCSender: RPCSending {
         // The new way! Add more cases here.
         if let notification = CoreNotification.fromJson(json) {
             switch notification {
-            case let .alert(message: message):
+            case let .alert(message):
                 self.client?.alert(text: message)
+
             case let .updateCommands(viewIdentifier, plugin, commands):
                 self.client?.updateCommands(viewIdentifier: viewIdentifier,
                                             plugin: plugin,
                                             commands: commands)
                 
-            case let .scrollTo(viewIdentifier: viewIdentifier, line: line, column: column):
+            case let .scrollTo(viewIdentifier, line, column):
                 self.client?.scroll(viewIdentifier: viewIdentifier, line: line, column: column)
 
-            case let .addStatusItem(viewIdentifier: viewIdentifier, source: source, key: key, value: value, alignment: alignment):
+            case let .addStatusItem(viewIdentifier, source, key, value, alignment):
                 self.client?.addStatusItem(viewIdentifier: viewIdentifier, source: source, key: key, value: value, alignment: alignment)
+            case let .updateStatusItem(viewIdentifier, key, value):
+                self.client?.updateStatusItem(viewIdentifier: viewIdentifier, key: key, value: value)
+            case let .removeStatusItem(viewIdentifier, key):
+                self.client?.removeStatusItem(viewIdentifier: viewIdentifier, key: key)
 
             case let .update(viewIdentifier, params):
                 self.client?.update(viewIdentifier: viewIdentifier,
                                     params: params, rev: nil)
+
+            case let .configChanged(viewIdentifier, config):
+                self.client?.configChanged(viewIdentifier: viewIdentifier, changes: config)
+
+            case let .defStyle(params):
+                self.client?.defineStyle(params: params)
+
+            case let .availablePlugins(viewIdentifier, plugins):
+                self.client?.availablePlugins(viewIdentifier: viewIdentifier, plugins: plugins)
+            case let .pluginStarted(viewIdentifier, plugin):
+                self.client?.pluginStarted(viewIdentifier: viewIdentifier, pluginName: plugin)
+            case let .pluginStopped(viewIdentifier, pluginName):
+                self.client?.pluginStopped(viewIdentifier: viewIdentifier, pluginName: pluginName)
+
+            case let .availableThemes(themes):
+                self.client?.availableThemes(themes: themes)
+            case let .themeChanged(name, theme):
+                self.client?.themeChanged(name: name, theme: theme)
+
+            case let .availableLanguages(languages):
+                self.client?.availableLanguages(languages: languages)
+            case let .languageChanged(viewIdentifier, languageIdentifier):
+                self.client?.languageChanged(viewIdentifier: viewIdentifier, languageIdentifier: languageIdentifier)
+            case let .showHover(viewIdentifier, requestIdentifier, result):
+                self.client?.showHover(viewIdentifier: viewIdentifier, requestIdentifier: requestIdentifier, result: result)
+            case let .findStatus(viewIdentifier, status):
+                self.client?.findStatus(viewIdentifier: viewIdentifier, status: status)
+            case let .replaceStatus(viewIdentifier, status):
+                self.client?.replaceStatus(viewIdentifier: viewIdentifier, status: status)
             }
 
             // New style handled this notification...
             return
-        }
-
-        guard
-            let jsonMethod = json["method"] as? String,
-            let params = json["params"] as? [String: Any],
-            let method = RPCNotificationMethod(rawValue: jsonMethod)
-        else {
-            assertionFailure("unknown json from core: \(json)")
-            return
-        }
-
-        let viewIdentifier = params["view_id"] as? ViewIdentifier
-
-        switch method {
-        case .defStyle:
-            guard let defStyleParams = DefStyleParams(fromJson: params) else {
-                return
-            }
-            client?.defineStyle(params: defStyleParams)
-
-        case .pluginStarted:
-            let plugin = params["plugin"] as! String
-            client?.pluginStarted(viewIdentifier: viewIdentifier!, pluginName: plugin)
-
-        case .pluginStopped:
-            let plugin = params["plugin"] as! String
-            client?.pluginStopped(viewIdentifier: viewIdentifier!, pluginName: plugin)
-
-        case .availableThemes:
-            let themes = params["themes"] as! [String]
-            client?.availableThemes(themes: themes)
-
-        case .themeChanged:
-            let name = params["name"] as! String
-            let themeJson = params["theme"] as! [String: AnyObject]
-            let theme = Theme(jsonObject: themeJson)
-            client?.themeChanged(name: name, theme: theme)
-
-        case .languageChanged:
-            let languageIdentifier = params["language_id"] as! String
-            client?.languageChanged(
-                viewIdentifier: viewIdentifier!,
-                languageIdentifier: languageIdentifier
-            )
-
-        case .availablePlugins:
-            let pluginJson = params["plugins"] as! [[String: Any]]
-            let plugins = pluginJson.flatMap(Plugin.init)
-
-            client?.availablePlugins(
-                viewIdentifier: viewIdentifier!,
-                plugins: plugins
-            )
-
-        case .availableLanguages:
-            let languages = params["languages"] as! [String]
-            client?.availableLanguages(languages: languages)
-
-        case .configurationChanged:
-            let changes = params["changes"] as! [String: AnyObject]
-            client?.configChanged(viewIdentifier: viewIdentifier!, changes: changes)
-
-        case .updateStatusItem:
-            let key = params["key"] as! String
-            let value = params["value"] as! String
-            client?.updateStatusItem(viewIdentifier: viewIdentifier!, key: key, value: value)
-
-        case .removeStatusItem:
-            let key = params["key"] as! String
-            client?.removeStatusItem(viewIdentifier: viewIdentifier!, key: key)
-
-        case .showHover:
-            let requestIdentifier = params["request_id"] as! Int
-            let result = params["result"] as! String
-            client?.showHover(viewIdentifier: viewIdentifier!, requestIdentifier: requestIdentifier, result: result)
-
-        case .findStatus:
-            let status = params["queries"] as! [[String: AnyObject]]
-            // STOPSHIP(jeremy): Handle deserialization failures
-            let statusStructs = status.flatMap(FindStatus.init)
-            client?.findStatus(viewIdentifier: viewIdentifier!, status: statusStructs)
-
-        case .replaceStatus:
-            let status = params["status"] as! [String: AnyObject]
-            let replaceStatus = ReplaceStatus(fromJson: status)!
-            client?.replaceStatus(viewIdentifier: viewIdentifier!, status: replaceStatus)
         }
     }
 

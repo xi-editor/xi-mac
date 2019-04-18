@@ -48,19 +48,19 @@ struct UpdateParams {
     let pristine: Bool
 
     init?(fromJson json: [String: Any]) {
-         guard
+        guard
             let update = json["update"] as? [String: Any],
             let annotations = update["annotations"] as? [[String: Any]],
-            let ops = update["ops"] as? [[String: Any]]
-            else {
+            let ops = update["ops"] as? [[String: Any]],
+            let updates = ops.xiCompactMap(UpdateOperation.init)
+        else {
                 assertionFailure("Invalid 'update' params JSON: \(json)")
                 return nil
         }
 
         self.annotations = annotations
 
-        // STOPSHIP (jeremy): Should we throw/assert if any of these return nil? Probably yes especially for DEBUG
-        self.ops = ops.flatMap { opJson in UpdateOperation(fromJson: opJson) }
+        self.ops = updates
         self.pristine = update["pristine"] as? Bool ?? false
     }
 }
@@ -85,12 +85,11 @@ extension UpdateOperation {
 
         switch op_type {
         case .insert:
-            guard let lines_json = json["lines"] as? [[String: Any]] else {
+            guard
+                let lines_json = json["lines"] as? [[String: Any]],
+                let lines = lines_json.xiCompactMap(UpdatedLine.init)
+            else {
                 assertionFailure("Invalid 'op' json for '\(json_type)'. Invalid 'lines': \(json)")
-                return nil
-            }
-            let lines = lines_json.flatMap({json in UpdatedLine(fromJson: json)})
-            if lines_json.count != lines.count {
                 return nil
             }
             self.init(type: op_type, n: n, lines: lines, ln: 0)

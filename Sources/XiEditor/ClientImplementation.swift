@@ -179,15 +179,19 @@ class ClientImplementation: XiClient, DocumentsProviding, ConfigCacheProviding, 
 
     // Stores the config dict so new windows don't have to wait for core to send it.
     // The main purpose of this is ensuring that `unified_titlebar` applies immediately.
-    var configCache: [String: AnyObject] = [:]
+    var configCache = Config(fontFace: nil, fontSize: nil, scrollPastEnd: nil, unifiedToolbar: nil)
 
-    func configChanged(viewIdentifier: ViewIdentifier, changes: [String : AnyObject]) {
-        for (key, value) in changes {
-            self.configCache[key] = value
-        }
+    func configChanged(viewIdentifier: ViewIdentifier, changes: Config) {
+        self.configCache = Config(
+            fontFace: changes.fontFace ?? self.configCache.fontFace,
+            fontSize: changes.fontSize ?? self.configCache.fontSize,
+            scrollPastEnd: changes.scrollPastEnd ?? self.configCache.scrollPastEnd,
+            unifiedToolbar: changes.unifiedToolbar ?? self.configCache.unifiedToolbar
+        )
+
         let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
         DispatchQueue.main.async {
-            document?.editViewController?.configChanged(changes: changes)
+            document?.editViewController?.configChanged(config: self.configCache)
         }
     }
 

@@ -16,8 +16,8 @@ import Foundation
 
 extension Array where Element == [String: Any] {
     /// A variant of the new built-in compactMap.
-    /// This variant transforms returns an array containing the non-nil results
-    /// of calling the given transformation with each element of this sequence.
+    /// This variant returns an array containing the non-nil results of calling
+    /// the given transformation with each element of this sequence.
     /// If any transform fails and returns nil, then the entire operation fails
     /// and returns nil.
     func xiCompactMap<ElementOfResult>(
@@ -46,11 +46,30 @@ enum CoreNotification {
 
     case scrollTo(viewIdentifier: ViewIdentifier, line: Int, column: Int)
 
-    case addStatusItem(viewIdentifier: ViewIdentifier, source: String, key: String, value: String, alignment: String
-    )
+    case addStatusItem(viewIdentifier: ViewIdentifier, source: String, key: String, value: String, alignment: String)
+    case updateStatusItem(viewIdentifier: ViewIdentifier, key: String, value: String)
+    case removeStatusItem(viewIdentifier: ViewIdentifier, key: String)
 
     case update(viewIdentifier: ViewIdentifier, params: UpdateParams)
 
+    case configChanged(viewIdentifier: ViewIdentifier, config: Config)
+
+    case defStyle(params: DefStyleParams)
+
+    case availablePlugins(viewIdentifier: ViewIdentifier, plugins: [Plugin])
+    case pluginStarted(viewIdentifier: ViewIdentifier, pluginName: String)
+    case pluginStopped(viewIdentifier: ViewIdentifier, pluginName: String)
+
+    case availableThemes(themes: [String])
+    case themeChanged(name: String, theme: Theme)
+
+    case availableLanguages(languages: [String])
+    case languageChanged(viewIdentifier: ViewIdentifier, languageIdentifier: String)
+
+    case showHover(viewIdentifier: ViewIdentifier, requestIdentifier: Int, result: String)
+
+    case findStatus(viewIdentifier: ViewIdentifier, status: [FindStatus])
+    case replaceStatus(viewIdentifier: ViewIdentifier, status: ReplaceStatus)
 
     static func fromJson(_ json: [String: Any]) -> CoreNotification? {
         guard
@@ -92,6 +111,19 @@ enum CoreNotification {
                                       alignment: alignment)
             }
 
+        case "update_status_item":
+            if
+                let key = jsonParams["key"] as? String,
+                let value = jsonParams["value"] as? String
+            {
+                return .updateStatusItem(viewIdentifier: viewIdentifier!, key: key, value: value)
+            }
+
+        case "remove_status_item":
+            if let key = jsonParams["key"] as? String {
+                return .removeStatusItem(viewIdentifier: viewIdentifier!, key: key)
+            }
+
         case "scroll_to":
             if
                 let line = jsonParams["line"] as? Int,
@@ -103,6 +135,97 @@ enum CoreNotification {
         case "update":
             if let params = UpdateParams(fromJson: jsonParams) {
                 return .update(viewIdentifier: viewIdentifier!, params: params)
+            }
+
+        case "def_style":
+            if let params = DefStyleParams(fromJson: jsonParams) {
+                return .defStyle(params: params)
+            }
+
+        case "plugin_started":
+            if let pluginName = jsonParams["plugin"] as? String {
+                return .pluginStarted(viewIdentifier: viewIdentifier!, pluginName: pluginName)
+            }
+
+        case "plugin_stopped":
+            if let pluginName = jsonParams["plugin"] as? String {
+                return .pluginStopped(viewIdentifier: viewIdentifier!, pluginName: pluginName)
+            }
+
+        case "available_themes":
+            if let themes = jsonParams["themes"] as? [String] {
+                return .availableThemes(themes: themes)
+            }
+
+        case "theme_changed":
+            if
+                let name = jsonParams["name"] as? String,
+                let themeJson = jsonParams["theme"] as? [String: Any]
+            {
+                return .themeChanged(
+                    name: name,
+                    theme: Theme(fromJson: themeJson)
+                )
+            }
+
+        case "language_changed":
+            if let languageIdentifier = jsonParams["language_id"] as? String {
+                return .languageChanged(
+                    viewIdentifier: viewIdentifier!,
+                    languageIdentifier: languageIdentifier
+                )
+            }
+
+        case "available_plugins":
+            if
+                let pluginsJson = jsonParams["plugins"] as? [[String: Any]],
+                let plugins = pluginsJson.xiCompactMap(Plugin.init)
+            {
+                return .availablePlugins(
+                    viewIdentifier: viewIdentifier!,
+                    plugins: plugins
+                )
+            }
+
+        case "available_languages":
+            if let languages = jsonParams["languages"] as? [String] {
+                return .availableLanguages(languages: languages)
+            }
+
+        case "config_changed":
+            if
+                let changesJson = jsonParams["changes"] as? [String: Any],
+                let config = Config(fromJson: changesJson)
+            {
+                return .configChanged(viewIdentifier: viewIdentifier!, config: config)
+            }
+
+        case "show_hover":
+            if
+                let requestIdentifier = jsonParams["request_id"] as? Int,
+                let result = jsonParams["result"] as? String
+            {
+                return .showHover(
+                    viewIdentifier: viewIdentifier!,
+                    requestIdentifier: requestIdentifier,
+                    result: result
+                )
+            }
+
+        case "find_status":
+            if
+                let statuses = jsonParams["queries"] as? [[String: Any]],
+                let statusStructs = statuses.xiCompactMap(FindStatus.init)
+            {
+                return .findStatus(viewIdentifier: viewIdentifier!, status: statusStructs)
+            }
+
+        case "replace_status":
+            if
+                let status = jsonParams["status"] as? [String: Any],
+                let replaceStatus = ReplaceStatus(fromJson: status)
+            {
+                return .replaceStatus(viewIdentifier: viewIdentifier!, status: replaceStatus)
             }
 
         default:
