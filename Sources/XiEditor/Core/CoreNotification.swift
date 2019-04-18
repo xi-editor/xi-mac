@@ -229,15 +229,14 @@ enum CoreNotification {
             }
 
         default:
-            // STOPSHIP: re-enable this once everything moved to CoreNotification
-            //assertionFailure("Unsupported notification method from core: \(jsonMethod)")
+            assertionFailure("Unsupported notification method from core: \(jsonMethod)")
             return nil
         }
 
-        // STOPSHIP: re-enable this which is slightly different than the `default`
-        // case above. This catches failure in parsing the `default` catches an
-        // unsupported method from core.
-        //assertionFailure("Failed parsing 'update' params for core notification: \(jsonParams)")
+        // This is slightly different than the `default` case above. This
+        // catches failure in parsing, the `default` catches an unsupported
+        // method from core.
+        assertionFailure("Failed parsing 'update' params for core notification: \(jsonParams)")
         return nil
     }
 }
