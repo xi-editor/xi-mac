@@ -21,6 +21,7 @@
 		3FBCA858224D9563004575AB /* CoreNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FBCA857224D9563004575AB /* CoreNotification.swift */; };
 		3FC496ED22447E37003D1533 /* ReplaceStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FC496EC22447E37003D1533 /* ReplaceStatus.swift */; };
 		3FC496EF22448332003D1533 /* MeasureWidth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FC496EE22448332003D1533 /* MeasureWidth.swift */; };
+		3FD524102268C5B100843657 /* CoreRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FD5240F2268C5B100843657 /* CoreRequest.swift */; };
 		3FE905F8225F13BD008F0CAF /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FE905F7225F13BD008F0CAF /* Config.swift */; };
 		4DC153D32165202B000EB215 /* XiWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DC153D22165202B000EB215 /* XiWindowController.swift */; };
 		4DCB4AF020576A6F00476F75 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 4DCB4AEF20576A6E00476F75 /* fonts */; };
@@ -152,6 +153,7 @@
 		3FBCA857224D9563004575AB /* CoreNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreNotification.swift; sourceTree = "<group>"; };
 		3FC496EC22447E37003D1533 /* ReplaceStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplaceStatus.swift; sourceTree = "<group>"; };
 		3FC496EE22448332003D1533 /* MeasureWidth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeasureWidth.swift; sourceTree = "<group>"; };
+		3FD5240F2268C5B100843657 /* CoreRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreRequest.swift; sourceTree = "<group>"; };
 		3FE905F7225F13BD008F0CAF /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		4DC153D22165202B000EB215 /* XiWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiWindowController.swift; sourceTree = "<group>"; };
 		4DCB4AEF20576A6E00476F75 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
@@ -325,6 +327,7 @@
 			children = (
 				3FE905F7225F13BD008F0CAF /* Config.swift */,
 				3FBCA857224D9563004575AB /* CoreNotification.swift */,
+				3FD5240F2268C5B100843657 /* CoreRequest.swift */,
 				3FB1FC35224B2B180038C8A3 /* DefStyle.swift */,
 				D803A9A521C7CCB90042DE8F /* FindStatus.swift */,
 				3FC496EE22448332003D1533 /* MeasureWidth.swift */,
@@ -759,6 +762,7 @@
 				F5BDBF371DCA9D2C0042430B /* Document.swift in Sources */,
 				6B0C298B2033C39500EA07AF /* XiWindow.swift in Sources */,
 				D803A9A621C7CCB90042DE8F /* FindStatus.swift in Sources */,
+				3FD524102268C5B100843657 /* CoreRequest.swift in Sources */,
 				6038770720057B4500AABF17 /* XiDocumentController.swift in Sources */,
 				6B90DD221F14110B00DF3CE2 /* UserInputPromptController.swift in Sources */,
 				D80F2D8421CEB4F90090BDA0 /* XiViewProxy.swift in Sources */,

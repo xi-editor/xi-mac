@@ -44,10 +44,6 @@ enum RpcResult {
     case ok(AnyObject)
 }
 
-enum RPCRequestMethod: String {
-    case measureWidth = "measure_width"
-}
-
 /// A completion handler for a synchronous RPC
 typealias RpcCallback = (RpcResult) -> ()
 
@@ -236,27 +232,14 @@ class StdoutRPCSender: RPCSending {
         }
     }
 
-    private func handleRequest(json: [String: AnyObject]) {
-        guard let jsonMethod = json["method"] as? String,
-            let params = json["params"],
-            let id = json["id"],
-            let method = RPCRequestMethod(rawValue: jsonMethod)
-            else {
-                assertionFailure("unknown json from core: \(json)")
-                return
+    private func handleRequest(json: [String: Any]) {
+        guard let request = CoreRequest.fromJson(json) else {
+            return
         }
 
-        switch method {
-        case .measureWidth:
-            guard
-                let argsJson = params as? [[String: Any]],
-                let args = argsJson.xiCompactMap(MeasureWidthParams.init)
-            else {
-                assertionFailure("unexpected data from core: \(params)")
-                return
-            }
-
-            guard let result = client?.measureWidth(args: args) else {
+        switch request {
+        case let .measureWidth(id, params):
+            guard let result = client?.measureWidth(args: params) else {
                 assertionFailure("measure_width request from core failed: \(params)")
                 return
             }
@@ -266,63 +249,63 @@ class StdoutRPCSender: RPCSending {
     }
 
     private func handleNotification(json: [String: AnyObject]) {
-        // The new way! Add more cases here.
-        if let notification = CoreNotification.fromJson(json) {
-            switch notification {
-            case let .alert(message):
-                self.client?.alert(text: message)
-
-            case let .updateCommands(viewIdentifier, plugin, commands):
-                self.client?.updateCommands(viewIdentifier: viewIdentifier,
-                                            plugin: plugin,
-                                            commands: commands)
-                
-            case let .scrollTo(viewIdentifier, line, column):
-                self.client?.scroll(viewIdentifier: viewIdentifier, line: line, column: column)
-
-            case let .addStatusItem(viewIdentifier, source, key, value, alignment):
-                self.client?.addStatusItem(viewIdentifier: viewIdentifier, source: source, key: key, value: value, alignment: alignment)
-            case let .updateStatusItem(viewIdentifier, key, value):
-                self.client?.updateStatusItem(viewIdentifier: viewIdentifier, key: key, value: value)
-            case let .removeStatusItem(viewIdentifier, key):
-                self.client?.removeStatusItem(viewIdentifier: viewIdentifier, key: key)
-
-            case let .update(viewIdentifier, params):
-                self.client?.update(viewIdentifier: viewIdentifier,
-                                    params: params, rev: nil)
-
-            case let .configChanged(viewIdentifier, config):
-                self.client?.configChanged(viewIdentifier: viewIdentifier, changes: config)
-
-            case let .defStyle(params):
-                self.client?.defineStyle(params: params)
-
-            case let .availablePlugins(viewIdentifier, plugins):
-                self.client?.availablePlugins(viewIdentifier: viewIdentifier, plugins: plugins)
-            case let .pluginStarted(viewIdentifier, plugin):
-                self.client?.pluginStarted(viewIdentifier: viewIdentifier, pluginName: plugin)
-            case let .pluginStopped(viewIdentifier, pluginName):
-                self.client?.pluginStopped(viewIdentifier: viewIdentifier, pluginName: pluginName)
-
-            case let .availableThemes(themes):
-                self.client?.availableThemes(themes: themes)
-            case let .themeChanged(name, theme):
-                self.client?.themeChanged(name: name, theme: theme)
-
-            case let .availableLanguages(languages):
-                self.client?.availableLanguages(languages: languages)
-            case let .languageChanged(viewIdentifier, languageIdentifier):
-                self.client?.languageChanged(viewIdentifier: viewIdentifier, languageIdentifier: languageIdentifier)
-            case let .showHover(viewIdentifier, requestIdentifier, result):
-                self.client?.showHover(viewIdentifier: viewIdentifier, requestIdentifier: requestIdentifier, result: result)
-            case let .findStatus(viewIdentifier, status):
-                self.client?.findStatus(viewIdentifier: viewIdentifier, status: status)
-            case let .replaceStatus(viewIdentifier, status):
-                self.client?.replaceStatus(viewIdentifier: viewIdentifier, status: status)
-            }
-
-            // New style handled this notification...
+        guard let notification = CoreNotification.fromJson(json) else {
             return
+        }
+
+        switch notification {
+        case let .alert(message):
+            self.client?.alert(text: message)
+
+        case let .updateCommands(viewIdentifier, plugin, commands):
+            self.client?.updateCommands(viewIdentifier: viewIdentifier,
+                                        plugin: plugin,
+                                        commands: commands)
+
+        case let .scrollTo(viewIdentifier, line, column):
+            self.client?.scroll(viewIdentifier: viewIdentifier, line: line, column: column)
+
+        case let .addStatusItem(viewIdentifier, source, key, value, alignment):
+            self.client?.addStatusItem(viewIdentifier: viewIdentifier, source: source, key: key, value: value, alignment: alignment)
+        case let .updateStatusItem(viewIdentifier, key, value):
+            self.client?.updateStatusItem(viewIdentifier: viewIdentifier, key: key, value: value)
+        case let .removeStatusItem(viewIdentifier, key):
+            self.client?.removeStatusItem(viewIdentifier: viewIdentifier, key: key)
+
+        case let .update(viewIdentifier, params):
+            self.client?.update(viewIdentifier: viewIdentifier,
+                                params: params, rev: nil)
+
+        case let .configChanged(viewIdentifier, config):
+            self.client?.configChanged(viewIdentifier: viewIdentifier, changes: config)
+
+        case let .defStyle(params):
+            self.client?.defineStyle(params: params)
+
+        case let .availablePlugins(viewIdentifier, plugins):
+            self.client?.availablePlugins(viewIdentifier: viewIdentifier, plugins: plugins)
+        case let .pluginStarted(viewIdentifier, plugin):
+            self.client?.pluginStarted(viewIdentifier: viewIdentifier, pluginName: plugin)
+        case let .pluginStopped(viewIdentifier, pluginName):
+            self.client?.pluginStopped(viewIdentifier: viewIdentifier, pluginName: pluginName)
+
+        case let .availableThemes(themes):
+            self.client?.availableThemes(themes: themes)
+        case let .themeChanged(name, theme):
+            self.client?.themeChanged(name: name, theme: theme)
+
+        case let .availableLanguages(languages):
+            self.client?.availableLanguages(languages: languages)
+        case let .languageChanged(viewIdentifier, languageIdentifier):
+            self.client?.languageChanged(viewIdentifier: viewIdentifier, languageIdentifier: languageIdentifier)
+
+        case let .showHover(viewIdentifier, requestIdentifier, result):
+            self.client?.showHover(viewIdentifier: viewIdentifier, requestIdentifier: requestIdentifier, result: result)
+
+        case let .findStatus(viewIdentifier, status):
+            self.client?.findStatus(viewIdentifier: viewIdentifier, status: status)
+        case let .replaceStatus(viewIdentifier, status):
+            self.client?.replaceStatus(viewIdentifier: viewIdentifier, status: status)
         }
     }
 

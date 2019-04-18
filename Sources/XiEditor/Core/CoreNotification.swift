@@ -39,6 +39,7 @@ extension Array where Element == [String: Any] {
     }
 }
 
+/// A notification from core.
 enum CoreNotification {
     case alert(message: String)
 
