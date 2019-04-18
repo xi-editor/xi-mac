@@ -490,15 +490,15 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     override func uppercaseWord(_ sender: Any?) {
-        document.sendRpcAsync("uppercase", params: [])
+        xiView.uppercase()
     }
 
     override func lowercaseWord(_ sender: Any?) {
-        document.sendRpcAsync("lowercase", params: [])
+        xiView.lowercase()
     }
 
     override func capitalizeWord(_ sender: Any?) {
-        document.sendRpcAsync("capitalize", params: [])
+        xiView.capitalize()
     }
 
     @objc func undo(_ sender: AnyObject?) {
@@ -520,15 +520,15 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     override func indent(_ sender: Any?) {
-        document.sendRpcAsync("indent", params: [])
+        xiView.indent()
     }
 
     @objc func unindent(_ sender: Any?) {
-        document.sendRpcAsync("outdent", params: [])
+        xiView.outdent()
     }
 
     @objc func reindent(_ sender: Any?) {
-        document.sendRpcAsync("reindent", params: [])
+        xiView.reindent()
     }
 
     @objc func increaseNumber(_ sender: Any?) {

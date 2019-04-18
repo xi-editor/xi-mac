@@ -63,23 +63,7 @@ public final class CommandLineTool {
             }
         }
         
-        if input.hasPrefix("/") {
-            filePath = URL(fileURLWithPath: input)
-        } else if input.hasPrefix("~") {
-            var input = input
-            input.remove(at: input.startIndex)
-            if #available(OSX 10.12, *) {
-                filePath = fileManager.homeDirectoryForCurrentUser
-            } else {
-                filePath = URL(fileURLWithPath: NSHomeDirectory())
-            }
-            filePath.appendPathComponent(input)
-        } else {
-            let basePath = URL(fileURLWithPath: fileManager.currentDirectoryPath)
-            filePath = basePath.appendingPathComponent(input)
-        }
-        
-        let pathString = filePath.path
+        let pathString = canonicalPath(input)
 
         guard pathIsNotDirectory(pathString) else {
             throw CliError.pathIsDirectory
@@ -116,7 +100,7 @@ public final class CommandLineTool {
 
         var filePaths = filePaths
         notificationCenter.addObserver(forName: notification, object: nil, queue: notificationQueue) { notification in
-            let passedPath = notification.userInfo!["path"] as! String
+            let passedPath = self.canonicalPath(notification.userInfo!["path"] as! String)
             if let index = filePaths.index(of: passedPath) {
                 filePaths.remove(at: index)
             }
@@ -142,6 +126,10 @@ public final class CommandLineTool {
                     prints this
                 """
         print(message)
+    }
+
+    func canonicalPath(_ path: String) -> String {
+        return URL(fileURLWithPath: path).standardizedFileURL.resolvingSymlinksInPath().path
     }
 }
 

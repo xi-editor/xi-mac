@@ -65,6 +65,15 @@ protocol XiViewProxy: class {
     func insert(chars: String)
     /// Deletes backwards.
     func deleteBackward()
+
+    /// transformations
+    /// The following methods act by modifying the current selection.
+    func uppercase()
+    func lowercase()
+    func capitalize()
+    func indent()
+    func outdent()
+    func reindent()
 }
 
 final class XiViewConnection: XiViewProxy {
@@ -134,6 +143,32 @@ final class XiViewConnection: XiViewProxy {
     func findNext(wrapAround: Bool, allowSame: Bool, modifySelection: SelectionModifier) {
         let params = createFindParamsFor(wrapAround: wrapAround, allowSame: allowSame, modifySelection: modifySelection)
         sendRpcAsync("find_next", params: params)
+    }
+
+    // MARK: - transformations
+
+    func uppercase() {
+        sendRpcAsync("uppercase", params: [])
+    }
+
+    func lowercase() {
+        sendRpcAsync("lowercase", params: [])
+    }
+
+    func capitalize() {
+        sendRpcAsync("capitalize", params: [])
+    }
+
+    func indent() {
+        sendRpcAsync("indent", params: [])
+    }
+
+    func outdent() {
+        sendRpcAsync("outdent", params: [])
+    }
+
+    func reindent() {
+        sendRpcAsync("reindent", params: [])
     }
 
     /// All parameters are optional. Boolean parameters are by default `false` and `modify_selection` is `set` by default.
