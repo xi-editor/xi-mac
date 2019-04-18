@@ -17,11 +17,9 @@ import Foundation
 struct ReplaceStatus {
     let chars: String
 
-    init?(fromJson: [String: Any] ){
-        guard
-            let chars = fromJson["chars"] as? String
-            // !(chars is NSNull)
-        else {
+    init?(fromJson: [String: Any] ) {
+        // Core might send "chars" as NSNull, but that is still treated as nil
+        guard let chars = fromJson["chars"] as? String else {
             return nil
         }
 
