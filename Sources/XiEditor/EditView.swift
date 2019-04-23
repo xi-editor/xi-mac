@@ -447,6 +447,12 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         case AnnotationType.find:
             let queryId = annotation.payload?["id"] as! Int
             return highlightsArgb[queryId % highlightsArgb.count]
+        case AnnotationType.added:
+            return colorToArgb(dataSource.theme.gutterAdded!)
+        case AnnotationType.deleted:
+            return colorToArgb(dataSource.theme.gutterDeleted!)
+        case AnnotationType.modified:
+            return colorToArgb(dataSource.theme.gutterModified!)
         }
     }
 
@@ -594,6 +600,8 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             }
         }
 
+        let gutterAnnotations = [AnnotationType.added, AnnotationType.deleted, AnnotationType.modified]
+
         // gutter drawing
         // Note: drawing the gutter background after the text effectively clips the text. This
         // is a bit of a hack, and some optimization might be possible with real clipping
@@ -611,6 +619,22 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
 
                 let x = dataSource.gutterWidth - (gutterXPad + CGFloat(gutterTL.width))
                 let y0 = yOff + dataSource.textMetrics.ascent + linespace * CGFloat(lineIx)
+
+                for annotationType in gutterAnnotations {
+                    var annotations = annotationsForLines[lineIx]![annotationType]!
+                    let annotation = annotations.next()
+
+                    if annotation != nil {
+                        let color = annotationColor(for: annotation!.annotation)
+
+                        if annotationType == AnnotationType.deleted {
+                            renderer.drawSolidRect(x: GLfloat(dataSource.gutterWidth - 3.0), y: GLfloat(linespace * CGFloat(lineIx)), width: GLfloat(3.0), height: GLfloat(3.0), argb: color)
+                        } else {
+                            renderer.drawSolidRect(x: GLfloat(dataSource.gutterWidth - 3.0), y: GLfloat(linespace * CGFloat(lineIx) + 3.0), width: GLfloat(3.0), height: GLfloat(linespace), argb: color)
+                        }
+                    }
+                }
+
                 renderer.drawLine(line: gutterTL, x0: GLfloat(x), y0: GLfloat(y0))
             }
         }
