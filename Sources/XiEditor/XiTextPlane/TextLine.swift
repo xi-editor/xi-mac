@@ -27,7 +27,7 @@ class TextLineBuilder {
 
     init(_ text: String, font: CTFont) {
         let attributes = [
-            NSAttributedStringKey.font: font,
+            NSAttributedString.Key.font: font,
             ]
         self.font = font
         self.attrString = NSMutableAttributedString(string: text, attributes: attributes)
@@ -65,7 +65,7 @@ class TextLineBuilder {
     }
 
     func addFontSpan(range: CountableRange<Int>, font: CTFont) {
-        let attrs = [NSAttributedStringKey.font: font]
+        let attrs = [NSAttributedString.Key.font: font]
         attrString.addAttributes(attrs, range: NSRange(range))
     }
 

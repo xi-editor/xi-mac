@@ -23,24 +23,24 @@ struct Style {
     let underline: Bool
     let italic: Bool
     let weight: Int?
-    let attributes: [NSAttributedStringKey: Any]
+    let attributes: [NSAttributedString.Key: Any]
     let fakeItalic: Bool
 
     static let N_RESERVED_STYLES = 8        // todo: can be removed in the future for new update protocol
 
     init(fromFont: NSFont, fgColor: NSColor?, bgColor: NSColor?, underline: Bool, italic: Bool, weight: Int?) {
-        var attributes: [NSAttributedStringKey: Any] = [:]
+        var attributes: [NSAttributedString.Key: Any] = [:]
 
         if let fgColor = fgColor {
-            attributes[NSAttributedStringKey.foregroundColor] = fgColor
+            attributes[NSAttributedString.Key.foregroundColor] = fgColor
         }
 
         if let bgColor = bgColor, bgColor.alphaComponent != 0.0 {
-            attributes[NSAttributedStringKey.backgroundColor] = bgColor
+            attributes[NSAttributedString.Key.backgroundColor] = bgColor
         }
 
         if underline {
-            attributes[NSAttributedStringKey.underlineStyle] = NSUnderlineStyle.styleSingle.rawValue
+            attributes[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue
         }
 
         let fm = NSFontManager.shared
@@ -53,7 +53,7 @@ struct Style {
             if let f = closestMatch(of: fromFont, traits: traits, weight: weight ?? fm.weight(of: fromFont)) {
                 font = f
             } else {
-                attributes[NSAttributedStringKey.obliqueness] = 0.2
+                attributes[NSAttributedString.Key.obliqueness] = 0.2
                 fakeItalic = true
             }
         }
@@ -63,7 +63,7 @@ struct Style {
         }
 
         if let font = font {
-            attributes[NSAttributedStringKey.font] = font
+            attributes[NSAttributedString.Key.font] = font
         }
 
         self.font = font
@@ -115,7 +115,7 @@ struct StyleSpan {
 }
 
 func utf8_offset_to_utf16(_ s: String, _ ix: Int) -> Int {
-    return s.utf8.index(s.utf8.startIndex, offsetBy: ix).encodedOffset
+    return s.utf8.index(s.utf8.startIndex, offsetBy: ix).utf16Offset(in: s)
 }
 
 /// A store of text styles, indexable by id.
