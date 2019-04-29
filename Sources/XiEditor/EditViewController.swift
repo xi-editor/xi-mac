@@ -65,8 +65,8 @@ protocol FindDelegate: class {
     func findNext(wrapAround: Bool, allowSame: Bool)
     func findPrevious(wrapAround: Bool)
     func closeFind()
-    func findStatus(status: [[String: AnyObject]])
-    func replaceStatus(status: [String: AnyObject])
+    func findStatus(status: [FindStatus])
+    func replaceStatus(status: ReplaceStatus)
     func replace(_ term: String)
     func replaceNext()
     func replaceAll()
@@ -347,9 +347,10 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         editView.gutterCache = nil
         shadowView.updateShadowColor(newColor: theme.shadow)
         editView.needsDisplay = true
+
         let configCache = (NSApplication.shared.delegate as! AppDelegate).xiClient.configCache
-        self.scrollPastEnd = (configCache["scroll_past_end"] as? Bool) ?? false
-        self.unifiedTitlebar = (configCache["unified_titlebar"] as? Bool) ?? false
+        self.scrollPastEnd = configCache.scrollPastEnd ?? false
+        self.unifiedTitlebar = configCache.unifiedToolbar ?? false
     }
 
     fileprivate func updateEditViewHeight() {
@@ -364,10 +365,10 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     // MARK: - Core Commands
 
     /// handles the `update` RPC. This is called from a dedicated thread.
-    func updateAsync(update: [String: AnyObject]) {
+    func updateAsync(params: UpdateParams) {
         let lineCache = lines.locked()
-        let inval = lineCache.applyUpdate(update: update)
-        let hasNoUnsavedChanges = update["pristine"] as? Bool ?? false
+        let inval = lineCache.applyUpdate(params: params)
+        let hasNoUnsavedChanges = params.pristine
         let revision = lineCache.revision
 
         DispatchQueue.main.async { [weak self] in
@@ -773,22 +774,21 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         self.availableCommands[plugin] = commands
     }
 
-    public func configChanged(changes: [String: AnyObject]) {
-        for (key, _) in changes {
-            switch key {
-            case "font_size", "font_face":
-                self.handleFontChange(fontName: changes["font_face"] as? String,
-                                      fontSize: changes["font_size"] as? CGFloat)
+    public func configChanged(config: Config) {
+        if
+            let fontFace = config.fontFace,
+            let fontSize = config.fontSize
+        {
+            self.handleFontChange(fontName: fontFace,
+                                  fontSize: fontSize)
+        }
 
-            case "scroll_past_end":
-                self.scrollPastEnd = changes["scroll_past_end"] as! Bool
+        if let scrollPastEnd = config.scrollPastEnd {
+            self.scrollPastEnd = scrollPastEnd
+        }
 
-            case "unified_titlebar":
-                self.unifiedTitlebar = changes["unified_titlebar"] as! Bool
-
-            default:
-                break
-            }
+        if let unifiedToolbar = config.unifiedToolbar {
+            self.unifiedTitlebar = unifiedToolbar
         }
     }
 
@@ -869,7 +869,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     func resolveParams(_ command: Command, completion: @escaping ([String: AnyObject]?) -> ()) {
         guard !command.args.isEmpty else {
-            completion(command.params)
+            completion(command.params as [String : AnyObject])
             return
         }
         self.presentViewControllerAsSheet(userInputController)

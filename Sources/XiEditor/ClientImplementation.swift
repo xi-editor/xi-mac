@@ -59,10 +59,10 @@ class ClientImplementation: XiClient, DocumentsProviding, ConfigCacheProviding, 
 
     // MARK: - XiClient protocol
 
-    func update(viewIdentifier: String, update: [String: AnyObject], rev: UInt64?) {
+    func update(viewIdentifier: String, params: UpdateParams, rev: UInt64?) {
         let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
         if document == nil { print("document missing for view id \(viewIdentifier)") }
-        document?.updateAsync(update: update)
+        document?.updateAsync(params: params)
     }
 
     func scroll(viewIdentifier: String, line: Int, column: Int) {
@@ -72,9 +72,9 @@ class ClientImplementation: XiClient, DocumentsProviding, ConfigCacheProviding, 
         }
     }
 
-    func defineStyle(style: [String: AnyObject]) {
+    func defineStyle(params: DefStyleParams) {
         // defineStyle, like update, is handled on the read thread.
-        styleMap.locked().defStyle(json: style)
+        styleMap.locked().defStyle(params: params)
     }
 
     func themeChanged(name: String, theme: Theme) {
@@ -124,12 +124,9 @@ class ClientImplementation: XiClient, DocumentsProviding, ConfigCacheProviding, 
         }
     }
 
-    func availablePlugins(viewIdentifier: String, plugins: [[String: AnyObject]]) {
+    func availablePlugins(viewIdentifier: String, plugins: [Plugin]) {
         let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
-        var available: [String: Bool] = [:]
-        for item in plugins {
-            available[item["name"] as! String] = item["running"] as? Bool
-        }
+        let available = Dictionary(uniqueKeysWithValues: plugins.map { p in (p.name, p.running) })
         DispatchQueue.main.async {
             document?.editViewController?.availablePlugins = available
         }
@@ -182,30 +179,34 @@ class ClientImplementation: XiClient, DocumentsProviding, ConfigCacheProviding, 
 
     // Stores the config dict so new windows don't have to wait for core to send it.
     // The main purpose of this is ensuring that `unified_titlebar` applies immediately.
-    var configCache: [String: AnyObject] = [:]
+    var configCache = Config(fontFace: nil, fontSize: nil, scrollPastEnd: nil, unifiedToolbar: nil)
 
-    func configChanged(viewIdentifier: ViewIdentifier, changes: [String : AnyObject]) {
-        for (key, value) in changes {
-            self.configCache[key] = value
-        }
+    func configChanged(viewIdentifier: ViewIdentifier, changes: Config) {
+        self.configCache = Config(
+            fontFace: changes.fontFace ?? self.configCache.fontFace,
+            fontSize: changes.fontSize ?? self.configCache.fontSize,
+            scrollPastEnd: changes.scrollPastEnd ?? self.configCache.scrollPastEnd,
+            unifiedToolbar: changes.unifiedToolbar ?? self.configCache.unifiedToolbar
+        )
+
         let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
         DispatchQueue.main.async {
-            document?.editViewController?.configChanged(changes: changes)
+            document?.editViewController?.configChanged(config: self.configCache)
         }
     }
 
-    func measureWidth(args: [[String : AnyObject]]) -> [[Double]] {
+    func measureWidth(args: [MeasureWidthParams]) -> [[Double]] {
         return styleMap.locked().measureWidths(args)
     }
 
-    func findStatus(viewIdentifier: ViewIdentifier, status: [[String : AnyObject]]) {
+    func findStatus(viewIdentifier: ViewIdentifier, status: [FindStatus]) {
         let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
         DispatchQueue.main.async {
             document?.editViewController?.findStatus(status: status)
         }
     }
 
-    func replaceStatus(viewIdentifier: ViewIdentifier, status: [String : AnyObject]) {
+    func replaceStatus(viewIdentifier: ViewIdentifier, status: ReplaceStatus) {
         let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
         DispatchQueue.main.async {
             document?.editViewController?.replaceStatus(status: status)

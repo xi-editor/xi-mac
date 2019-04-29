@@ -54,7 +54,7 @@ typealias AnnotationSpan = (startIx: Int, endIx: Int, annotation: Annotation)
 struct AnnotationStore {
     var annotations: [AnnotationType: [Annotation]]
 
-    init(from json: [[String: AnyObject]]) {
+    init(from json: [[String: Any]]) {
         annotations = [:]
 
         for annotationType in AnnotationType.all {

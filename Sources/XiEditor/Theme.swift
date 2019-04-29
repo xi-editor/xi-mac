@@ -76,23 +76,23 @@ extension Theme {
             )
     }
 
-    init(jsonObject dict: [String: AnyObject]) {
-        let foreground = NSColor(jsonRgbaColor: dict["foreground"] as? [String: AnyObject] ?? [:])
-        let background = NSColor(jsonRgbaColor: dict["background"] as? [String: AnyObject] ?? [:])
-        let caret = NSColor(jsonRgbaColor: dict["caret"] as? [String: AnyObject] ?? [:])
-        let line_highlight = NSColor(jsonRgbaColor: dict["line_highlight"] as? [String: AnyObject] ?? [:])
+    init(fromJson json: [String: Any]) {
+        let foreground = NSColor(jsonRgbaColor: json["foreground"] as? [String: Any] ?? [:])
+        let background = NSColor(jsonRgbaColor: json["background"] as? [String: Any] ?? [:])
+        let caret = NSColor(jsonRgbaColor: json["caret"] as? [String: Any] ?? [:])
+        let line_highlight = NSColor(jsonRgbaColor: json["line_highlight"] as? [String: Any] ?? [:])
 
-        let find_highlight: NSColor? = NSColor(jsonRgbaColor: dict["find_highlight"] as? [String: AnyObject] ?? [:])
-        let find_highlight_foreground = NSColor(jsonRgbaColor: dict["find_highlight_foreground"] as? [String: AnyObject] ?? [:])
-        let gutter = NSColor(jsonRgbaColor: dict["gutter"] as? [String: AnyObject] ?? [:])
-        let gutter_foreground = NSColor(jsonRgbaColor: dict["gutter_foreground"] as? [String: AnyObject] ?? [:])
+        let find_highlight: NSColor? = NSColor(jsonRgbaColor: json["find_highlight"] as? [String: Any] ?? [:])
+        let find_highlight_foreground = NSColor(jsonRgbaColor: json["find_highlight_foreground"] as? [String: Any] ?? [:])
+        let gutter = NSColor(jsonRgbaColor: json["gutter"] as? [String: Any] ?? [:])
+        let gutter_foreground = NSColor(jsonRgbaColor: json["gutter_foreground"] as? [String: Any] ?? [:])
 
-        let selection = NSColor(jsonRgbaColor: dict["selection"] as? [String: AnyObject] ?? [:])
-        let selection_foreground = NSColor(jsonRgbaColor: dict["selection_foreground"] as? [String: AnyObject] ?? [:])
-        let selection_border = NSColor(jsonRgbaColor: dict["selection_border"] as? [String: AnyObject] ?? [:])
-        let inactive_selection = NSColor(jsonRgbaColor: dict["inactive_selection"] as? [String: AnyObject] ?? [:])
-        let inactive_selection_foreground = NSColor(jsonRgbaColor: dict["inactive_selection_foreground"] as? [String: AnyObject] ?? [:])
-        let shadow = NSColor(jsonRgbaColor: dict["shadow"] as? [String: AnyObject] ?? [:])
+        let selection = NSColor(jsonRgbaColor: json["selection"] as? [String: Any] ?? [:])
+        let selection_foreground = NSColor(jsonRgbaColor: json["selection_foreground"] as? [String: Any] ?? [:])
+        let selection_border = NSColor(jsonRgbaColor: json["selection_border"] as? [String: Any] ?? [:])
+        let inactive_selection = NSColor(jsonRgbaColor: json["inactive_selection"] as? [String: Any] ?? [:])
+        let inactive_selection_foreground = NSColor(jsonRgbaColor: json["inactive_selection_foreground"] as? [String: Any] ?? [:])
+        let shadow = NSColor(jsonRgbaColor: json["shadow"] as? [String: Any] ?? [:])
 
         let defaults = Theme.defaultTheme()
         self.init(
@@ -130,7 +130,7 @@ extension Theme {
 }
 
 extension NSColor {
-    convenience init?(jsonRgbaColor dict: [String: AnyObject]) {
+    convenience init?(jsonRgbaColor dict: [String: Any]) {
         guard let red = dict["r"] as? CGFloat,
               let green = dict["g"] as? CGFloat,
               let blue = dict["b"] as? CGFloat,

@@ -377,9 +377,8 @@ extension DocumentsProviding {
     }
 
 }
-
 protocol ConfigCacheProviding {
-    var configCache: [String: AnyObject] { get }
+    var configCache: Config { get }
 }
 
 protocol AppStyling {

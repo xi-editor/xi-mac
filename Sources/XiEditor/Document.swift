@@ -159,10 +159,12 @@ class Document: NSDocument {
         editViewController?.xiView.scroll(firstLine: first, lastLine: last)
     }
 
-    func updateAsync(update: [String: AnyObject]) {
-        if let editVC = editViewController {
-            editVC.updateAsync(update: update)
-        }
+    func sendPaste(_ pasteString: String) {
+        sendRpcAsync("paste", params: ["chars": pasteString])
+    }
+
+    func updateAsync(params: UpdateParams) {
+        editViewController?.updateAsync(params: params)
     }
 
     /// Returns the frame to be used for the next new window.

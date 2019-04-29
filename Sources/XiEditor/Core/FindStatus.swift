@@ -16,19 +16,6 @@ import Foundation
 
 struct FindStatus {
 
-    init?(from json: [String: AnyObject]) {
-        guard let id = json["id"] as? Int,
-            let matches = json["matches"] as? Int,
-            let lines = json["lines"] as? [Int] else { return nil }
-        self.id = id
-        self.matches = matches
-        self.lines = lines
-        chars = json["chars"] as? String
-        caseSensitive = json["case_sensitive"] as? Bool
-        isRegex = json["is_regex"] as? Bool
-        wholeWords = json["whole_words"] as? Bool
-    }
-
     /// Identifier for the current search query.
     let id: Int
 
@@ -49,4 +36,17 @@ struct FindStatus {
 
     /// Line numbers which have find results.
     let lines: [Int]
+
+    init?(from json: [String: Any]) {
+        guard let id = json["id"] as? Int,
+            let matches = json["matches"] as? Int,
+            let lines = json["lines"] as? [Int] else { return nil }
+        self.id = id
+        self.matches = matches
+        self.lines = lines
+        chars = json["chars"] as? String
+        caseSensitive = json["case_sensitive"] as? Bool
+        isRegex = json["is_regex"] as? Bool
+        wholeWords = json["whole_words"] as? Bool
+    }
 }
