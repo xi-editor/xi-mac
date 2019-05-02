@@ -405,7 +405,7 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
 
     private func utf8_offset_to_utf16(_ s: String, _ ix: Int) -> Int {
         // String(s.utf8.prefix(ix)).utf16.count
-        return s.utf8.index(s.utf8.startIndex, offsetBy: ix).utf16Offset(in: s)
+        return s.utf8.index(s.utf8.startIndex, offsetBy: ix).encodedOffset
     }
 
     private func utf16_offset_to_utf8(_ s: String, _ ix: Int) -> Int {
