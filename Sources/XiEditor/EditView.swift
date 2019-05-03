@@ -32,7 +32,7 @@ extension NSFont {
 /// A store of properties used to determine the layout of text.
 struct TextDrawingMetrics {
     let font: NSFont
-    let attributes: [NSAttributedStringKey: AnyObject]
+    let attributes: [NSAttributedString.Key: AnyObject]
     let ascent: CGFloat
     let descent: CGFloat
     let leading: CGFloat
@@ -226,7 +226,7 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
 
     override func draggingEnded(_ sender: NSDraggingInfo) {
         // open file dragged into window
-        guard let pasteboard = sender.draggingPasteboard().propertyList(forType: NSPasteboard.PasteboardType(rawValue: "NSFilenamesPboardType")) as? NSArray,
+        guard let pasteboard = sender.draggingPasteboard.propertyList(forType: NSPasteboard.PasteboardType(rawValue: "NSFilenamesPboardType")) as? NSArray,
             let path = pasteboard.firstObject as? String
         else { return }
 
@@ -343,7 +343,7 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         return NSAttributedString()
     }
 
-    func validAttributesForMarkedText() -> [NSAttributedStringKey] {
+    func validAttributesForMarkedText() -> [NSAttributedString.Key] {
         return [.foregroundColor, .backgroundColor]
     }
 

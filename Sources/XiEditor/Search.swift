@@ -20,7 +20,7 @@ extension NSColor {
     static var veryLightGray = NSColor(white: 246.0/256.0, alpha: 1.0)
 }
 
-class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlTextEditingDelegate {
+class FindViewController: NSViewController, NSSearchFieldDelegate {
     weak var findDelegate: FindDelegate!
     static let MAX_SEARCH_QUERIES = 7
 
@@ -79,8 +79,8 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
 
     @objc @discardableResult public func addSearchField(searchField: SuplementaryFindViewController?, becomeFirstResponder: Bool) -> FindSearchField? {
         if searchQueries.count < FindViewController.MAX_SEARCH_QUERIES {
-            let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
-            let newSearchFieldController = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Suplementary Find View Controller")) as! SuplementaryFindViewController
+            let storyboard = NSStoryboard(name: NSStoryboard.Name("Main"), bundle: nil)
+            let newSearchFieldController = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier("Suplementary Find View Controller")) as! SuplementaryFindViewController
 
             newSearchFieldController.parentFindView = self
 
@@ -132,12 +132,6 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
         }
     }
 
-    override func controlTextDidChange(_ obj: Notification) {
-        if obj.object as? NSTextField == replaceField {
-            findDelegate.replace(replaceField.stringValue)
-        }
-    }
-
     func redoFind() {
         findDelegate.find(searchQueries.map({ $0.toFindQuery() }))
     }
@@ -181,7 +175,15 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     }
 }
 
-class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, NSControlTextEditingDelegate {
+extension FindViewController: NSControlTextEditingDelegate {
+    func controlTextDidChange(_ obj: Notification) {
+        if obj.object as? NSTextField == replaceField {
+            findDelegate.replace(replaceField.stringValue)
+        }
+    }
+}
+
+class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, NSControlTextEditingDelegate, NSMenuItemValidation {
     @IBOutlet weak var searchField: NSSearchField!
     @IBOutlet weak var addButton: NSButton!
     @IBOutlet weak var deleteButton: NSButton!
@@ -226,8 +228,9 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
         menu.addItem(recentClear)
     }
 
+    // MARK: - NSMenuItemValidation
     // we use this to make sure that UI corresponds to our state
-    override func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
+    func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
         switch menuItem.tag {
         case caseSensitiveMenuTag:
             menuItem.state = caseSensitive ? .on : .off
@@ -244,6 +247,8 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
         }
         return true
     }
+
+    // MARK: -
 
     func updateColor(newBackgroundColor: NSColor, unifiedTitlebar: Bool) {
         self.view.layer?.backgroundColor = unifiedTitlebar ? newBackgroundColor.cgColor : NSColor.veryLightGray.cgColor
