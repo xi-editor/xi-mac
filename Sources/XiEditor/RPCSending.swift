@@ -23,6 +23,8 @@ let NEW_LINE = [0x0a as UInt8]
 let CLIENT_LOG_PREFIX = "[CLIENT] ".data(using: .utf8)!
 let CORE_LOG_PREFIX = "[CORE]   ".data(using: .utf8)!
 
+let NEWLINE_CHAR = UInt8(ascii:"\n")
+
 /// An error returned from core
 struct RemoteError {
     let code: Int
@@ -55,10 +57,9 @@ protocol RPCSending {
 }
 
 class StdoutRPCSender: RPCSending {
-
     private let task = Process()
     private var inHandle: FileHandle  // stdin of core process
-    private var recvBuf: Data
+    private var recvBuf = Data()
     weak var client: XiClient?
     private let rpcLogWriter: FileWriter?
     private var lastLogs = CircleBuffer<String>(capacity: 100)
@@ -93,7 +94,6 @@ class StdoutRPCSender: RPCSending {
         let inPipe = Pipe()
         task.standardInput = inPipe
         inHandle = inPipe.fileHandleForWriting
-        recvBuf = Data()
 
         outPipe.fileHandleForReading.readabilityHandler = { handle in
             let data = handle.availableData
@@ -145,28 +145,31 @@ class StdoutRPCSender: RPCSending {
         if data.count == 0 {
             return
         }
-        let scanStart = recvBuf.count
-        recvBuf.append(data)
-        let recvBufLen = recvBuf.count
 
-        var newCount = 0
-        recvBuf.withUnsafeMutableBytes { (recvBufBytes: UnsafeMutablePointer<UInt8>) -> Void in
-            var i = 0
-            for j in scanStart..<recvBufLen {
-                // TODO: using memchr would probably be faster
-                if recvBufBytes[j] == UInt8(ascii:"\n") {
-                    let bufferPointer = UnsafeBufferPointer(start: recvBufBytes.advanced(by: i), count: j + 1 - i)
-                    let dataPacket = Data(bufferPointer)
-                    handleRaw(dataPacket)
+        // Split incoming bytes into "packets" (separated by newlines)
+        // and dispatch to the app to handle
+        data.withUnsafeBytes { buffer in
+            var i = buffer.startIndex
+            for j in buffer.startIndex..<buffer.endIndex {
+                if buffer[j] == NEWLINE_CHAR {
+                    let bytes = Data(buffer[i..<j])
+                    if recvBuf.count > 0 {
+                        // Handle leftover bytes from last call
+                        recvBuf.append(bytes)
+                        handleRaw(recvBuf)
+                        recvBuf = Data()
+                    } else {
+                        handleRaw(bytes)
+                    }
+
                     i = j + 1
                 }
             }
-            if i < recvBufLen {
-                memmove(recvBufBytes, recvBufBytes + i, recvBufLen - i)
+
+            if i < buffer.endIndex {
+                recvBuf.append(Data(buffer[i..<buffer.endIndex]))
             }
-            newCount = recvBufLen - i
         }
-        recvBuf.count = newCount
     }
 
     private func sendJson(_ json: Any) {

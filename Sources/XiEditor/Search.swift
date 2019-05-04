@@ -85,8 +85,8 @@ class FindViewController: NSViewController, NSSearchFieldDelegate {
             newSearchFieldController.parentFindView = self
 
             if searchField != nil {
-                searchQueries.insert(newSearchFieldController, at: searchQueries.index(of: searchField!)! + 1)
-                searchFieldsStackView.insertView(newSearchFieldController.view, at: searchQueries.index(of: searchField!)! + 1, in: .center)
+                searchQueries.insert(newSearchFieldController, at: searchQueries.firstIndex(of: searchField!)! + 1)
+                searchFieldsStackView.insertView(newSearchFieldController.view, at: searchQueries.firstIndex(of: searchField!)! + 1, in: .center)
             } else {
                 searchQueries.append(newSearchFieldController)
                 searchFieldsStackView.insertView(newSearchFieldController.view, at: searchQueries.count - 1, in: .center)
@@ -154,7 +154,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate {
 
     @objc public func removeSearchField(searchField: SuplementaryFindViewController) {
         searchFieldsStackView.removeView(searchField.view)
-        searchQueries.remove(at: searchQueries.index(of: searchField)!)
+        searchQueries.remove(at: searchQueries.firstIndex(of: searchField)!)
         searchFieldsNextKeyView()
         searchFieldsButtonsState()
     }
@@ -543,6 +543,9 @@ extension EditViewController {
 
         case .hideReplaceInterface:
             Swift.print("hideReplaceInterface not implemented")
+
+        @unknown default:
+            fatalError("Unexpected action: \(action)")
         }
     }
 }
