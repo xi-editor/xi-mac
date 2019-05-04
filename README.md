@@ -42,7 +42,7 @@ Screenshot (will need to be updated as syntax coloring and UI polish is added):
 
 ### Requirements
 
-- [Xcode 10.1](https://developer.apple.com/xcode/)
+- [Xcode 10.2](https://developer.apple.com/xcode/)
 - [Rust](https://www.rust-lang.org/). We test against the latest stable version,
 and recommend installing through [rustup](https://rustup.rs).
 
