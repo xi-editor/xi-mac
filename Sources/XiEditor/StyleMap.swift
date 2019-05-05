@@ -115,7 +115,7 @@ struct StyleSpan {
 }
 
 func utf8_offset_to_utf16(_ s: String, _ ix: Int) -> Int {
-    return s.utf8.index(s.utf8.startIndex, offsetBy: ix).encodedOffset
+    return s.utf8.index(s.utf8.startIndex, offsetBy: ix).utf16Offset(in: s)
 }
 
 /// A store of text styles, indexable by id.

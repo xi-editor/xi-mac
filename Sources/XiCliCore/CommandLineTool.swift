@@ -101,7 +101,7 @@ public final class CommandLineTool {
         var filePaths = filePaths
         notificationCenter.addObserver(forName: notification, object: nil, queue: notificationQueue) { notification in
             let passedPath = self.canonicalPath(notification.userInfo!["path"] as! String)
-            if let index = filePaths.index(of: passedPath) {
+            if let index = filePaths.firstIndex(of: passedPath) {
                 filePaths.remove(at: index)
             }
 
