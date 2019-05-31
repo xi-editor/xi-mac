@@ -60,10 +60,9 @@ class Document: NSDocument {
     override func makeWindowControllers() {
         // save this before instantiating because instantiating overwrites with the default position
         let newFrame = frameForNewWindow()
-        var windowController: NSWindowController!
         let storyboard = NSStoryboard(name: NSStoryboard.Name("Main"), bundle: nil)
-        windowController = (storyboard.instantiateController(
-            withIdentifier: NSStoryboard.SceneIdentifier("Document Window Controller")) as! NSWindowController)
+        let windowController = (storyboard.instantiateController(
+            withIdentifier: NSStoryboard.SceneIdentifier("Document Window Controller")) as! XiWindowController)
 
         if #available(OSX 10.12, *) {
             windowController.window?.tabbingIdentifier = NSWindow.TabbingIdentifier("xi-global-tab-group")
@@ -73,10 +72,16 @@ class Document: NSDocument {
             Document.tabbingMode = .automatic
         }
 
+        if sidebarItems.isEmpty {
+            windowController.hideSidebar()
+        }
+
         windowController.window?.setFrame(newFrame, display: true)
         windowController.window?.minSize = Document.minWinSize
 
-        self.editViewController = windowController.contentViewController as? EditViewController
+        guard let splitViewController = windowController.contentViewController as? NSSplitViewController else { return }
+
+        self.editViewController = splitViewController.children.last as? EditViewController
         editViewController?.document = self
         editViewController?.xiView = XiViewConnection(asyncRpc: sendRpcAsync, syncRpc: sendRpc)
         windowController.window?.delegate = editViewController

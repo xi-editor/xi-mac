@@ -227,6 +227,11 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     var hoverEvent: NSEvent?
 
+    private var sidebar: SidebarViewController? {
+        let splitViewController = self.parent as? NSSplitViewController
+        return splitViewController?.splitViewItems.first?.viewController as? SidebarViewController
+    }
+
     let statusBar = StatusBar(frame: .zero)
 
     // Popover that manages hover views.
@@ -254,6 +259,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         scrollView.hasHorizontalScroller = true
         scrollView.usesPredominantAxisScrolling = true
         (scrollView.contentView as? XiClipView)?.delegate = self
+        sidebar?.syncStructure()
     }
 
     override func viewDidAppear() {
@@ -903,6 +909,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             subItem.state = NSControl.StateValue(rawValue: (subItem.title == theme) ? 1 : 0)
         }
         self.unifiedTitlebar = { self.unifiedTitlebar }()
+        sidebar?.themeChanged()
     }
     
     public func languageChanged(_ languageIdentifier: String) {

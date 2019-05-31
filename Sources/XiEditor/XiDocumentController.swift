@@ -110,6 +110,16 @@ class XiDocumentController: NSDocumentController, AlertPresenting {
         openPanel.showsHiddenFiles = true
         return super.runModalOpenPanel(openPanel, forTypes: types)
     }
+
+    public func openDocumentIntoNewTab(withContentsOf url: URL,
+                                       display displayDocument: Bool,
+                                       completionHandler: @escaping (NSDocument?, Bool, Error?) -> Void) {
+        if #available(OSX 10.12, *) {
+            Document.tabbingMode = .preferred
+        }
+
+        self.openDocument(withContentsOf: url, display: displayDocument, completionHandler: completionHandler)
+    }
     
     override func openDocument(withContentsOf url: URL,
                                display displayDocument: Bool,

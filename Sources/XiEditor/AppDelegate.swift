@@ -298,6 +298,60 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         })
     }
 
+    @IBAction func openDocument(_ sender: Any?) {
+        let dialog = NSOpenPanel()
+
+        dialog.allowsMultipleSelection = false
+        dialog.canChooseFiles = true
+        dialog.showsHiddenFiles = true
+        dialog.canCreateDirectories = true
+        dialog.canChooseDirectories = true
+
+        guard
+            dialog.runModal() == .OK,
+            let result = dialog.url
+            else { return }
+
+        var isDirectory: ObjCBool = false
+
+        if FileManager.default.fileExists(atPath: result.path, isDirectory: &isDirectory) {
+            if isDirectory.boolValue {
+                DispatchQueue.global(qos: .userInitiated).async {
+                    let parent = FileSystemItem.createParents(url: result)
+                    let newItem = FileSystemItem(path: result.absoluteString, parent: parent)
+
+                    DispatchQueue.main.async {
+                        sidebarItems.addItem(newItem)
+
+                        // Don't have a window open
+                        if NSApp.keyWindow == nil {
+                            NSDocumentController.shared.newDocument(nil)
+                        } else {
+                            // Has a window open so show sidebar
+                            (NSApp.keyWindow?.windowController as? XiWindowController)?.showSidebar()
+                        }
+                    }
+                }
+            } else {
+                // When opening a single file, we want to open it in its own window
+                if #available(OSX 10.12, *) {
+                    Document.tabbingMode = .disallowed
+                }
+
+                NSDocumentController.shared.openDocument(
+                    withContentsOf: result,
+                    display: true,
+                    completionHandler: { (document, alreadyOpen, error) in
+                        if let error = error {
+                            print("error opening preferences \(error)")
+                        }
+                        // When opening a file in its own window we don't want to display the sidebar
+                        (NSApp.keyWindow?.windowController as? XiWindowController)?.hideSidebar()
+                });
+            }
+        }
+    }
+
     //- MARK: - helpers
 
     func getUserConfigDirectory() -> String {

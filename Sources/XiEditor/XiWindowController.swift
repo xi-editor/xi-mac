@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import Cocoa
 import AppKit.NSWindowController
 
 final class XiWindowController: NSWindowController {
@@ -36,5 +37,21 @@ final class XiWindowController: NSWindowController {
         windowTitle += displayName
         
         return windowTitle
+    }
+
+    private var sidebarSplitItem: NSSplitViewItem? {
+        return (contentViewController as? NSSplitViewController)?.splitViewItems.first
+    }
+
+    override var acceptsFirstResponder: Bool {
+        return true
+    }
+
+    public func hideSidebar() {
+        sidebarSplitItem?.isCollapsed = true
+    }
+
+    public func showSidebar() {
+        sidebarSplitItem?.isCollapsed = false
     }
 }
