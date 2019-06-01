@@ -1,10 +1,10 @@
-// Copyright 2018 Google LLC
+// Copyright 2019 The xi-editor Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+// https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,8 +18,16 @@ class SidebarViewController: NSViewController {
 
     @IBOutlet weak var sidebar: NSOutlineView!
 
+    // Whether the sidebar's structure has been synced yet
+    // The structure is only set once on first load
+    var structureHasSynced = false
+
     private var styling: AppStyling {
         return (NSApplication.shared.delegate as! AppDelegate).xiClient
+    }
+
+    private var windowController: XiWindowController? {
+        return view.window?.windowController as? XiWindowController
     }
 
     var theme: Theme {
@@ -63,7 +71,14 @@ class SidebarViewController: NSViewController {
 
     /// TODO: Sync the structure (expanded/collapsed/selected) of each windows sidebar
     public func syncStructure() {
+        updateItems()
 
+        if !structureHasSynced {
+            syncSidebarStructure()
+            structureHasSynced = true
+        }
+
+        syncSelectedRow()
     }
 
     /// Called when the a row in the sidebar is double clicked
@@ -78,7 +93,67 @@ class SidebarViewController: NSViewController {
     }
 
     @objc private func updateItems() {
-        self.sidebar.reloadData()
+        sidebar.reloadData()
+    }
+
+    // MARK: - Private functions for controlling the sidebar view UI
+
+    /// Sync the expanded/collapsed structure of the sidebar
+    private func syncSidebarStructure() {
+        var row = 0
+
+        // A while loop is used since when an item is expanded,
+        // the numberOfRows increases and must be recalculated
+        while row < sidebar.numberOfRows {
+            guard
+                let rowItem = sidebar.item(atRow: row) as? FileSystemItem
+            else { continue }
+
+            syncItemStructure(rowItem)
+
+            row += 1
+        }
+    }
+
+    /// Recursive function that when given an item, expands it
+    /// and all of its nested children, if necessary
+    private func syncItemStructure(_ item: FileSystemItem) {
+        if item.isExpanded {
+            sidebar.expandItem(item)
+        } else {
+            return
+        }
+
+        let childIndexes = item.numberOfChildren - 1
+
+        guard childIndexes >= 0 else { return }
+
+        for index in 0...childIndexes {
+            let child = item.child(at: index)
+
+            if child.isExpanded {
+                sidebar.expandItem(child)
+                syncItemStructure(child)
+            }
+        }
+    }
+
+    private func syncSelectedRow() {
+        let doc = windowController?.document as? Document
+
+        var selectedRow: Int?
+
+        for row in IndexSet(integersIn: 0..<sidebar.numberOfRows) {
+            let rowItem = sidebar.item(atRow: row) as? FileSystemItem
+
+            if rowItem?.fullPath == doc?.fileURL?.relativePath {
+                selectedRow = row
+            }
+        }
+
+        if let selected = selectedRow {
+            sidebar.selectRowIndexes(IndexSet(integer: selected), byExtendingSelection: false)
+        }
     }
 
 }
@@ -115,12 +190,30 @@ extension SidebarViewController: NSOutlineViewDataSource {
         return true
     }
 
+    // Whether the row should be expanded
+    func outlineView(_ outlineView: NSOutlineView, shouldExpandItem item: Any) -> Bool {
+        guard let item = item as? FileSystemItem else { return false }
+
+        item.isExpanded = true
+
+        return true
+    }
+
+    // Whether a row should be collapsed
+    func outlineView(_ outlineView: NSOutlineView, shouldCollapseItem item: Any) -> Bool {
+        guard let item = item as? FileSystemItem else { return false }
+
+        item.isExpanded = false
+
+        return true
+    }
+
     // When a row is selected
     func outlineViewSelectionDidChange(_ notification: Notification) {
         guard
             let outlineView = notification.object as? NSOutlineView,
             let doc = outlineView.item(atRow: outlineView.selectedRow) as? FileSystemItem
-            else { return }
+        else { return }
 
         let rows = IndexSet(integersIn: 0..<outlineView.numberOfRows)
 

@@ -14,13 +14,20 @@
 
 import Cocoa
 
-final class FileSystemItem {
+func == (lhs: FileSystemItem, rhs: FileSystemItem) -> Bool {
+  return lhs.fullPath == rhs.fullPath
+}
+
+final class FileSystemItem: Equatable {
 
     fileprivate var relativePath: String!
     fileprivate var parent: FileSystemItem?
+    fileprivate lazy var children: [FileSystemItem] = getChildren()
+
+    public var isExpanded: Bool = false
 
     public var numberOfChildren: Int {
-        return children().count
+        return children.count
     }
 
     public var name: String {
@@ -68,12 +75,12 @@ final class FileSystemItem {
     // MARK: - Public methods
 
     public func child(at index: Int) -> FileSystemItem {
-        return children()[index]
+        return children[index]
     }
 
     // MARK: - Private methods
 
-    private func children() -> [FileSystemItem] {
+    private func getChildren() -> [FileSystemItem] {
         let fileManager = FileManager.default
         var isDirectory: ObjCBool = false
         var children = [FileSystemItem]()

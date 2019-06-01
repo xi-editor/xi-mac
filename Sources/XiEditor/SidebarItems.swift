@@ -26,13 +26,13 @@ final class SidebarItems {
         return items.isEmpty
     }
 
-    public func addItem(_ doc: FileSystemItem) {
+    public func addItem(_ item: FileSystemItem) {
         // Already exists
-        if items.firstIndex(where: { $0.fullPath == doc.fullPath }) != nil {
+        if contains(item) {
             return
         }
 
-        items.append(doc)
+        items.append(item)
         self.postItemsChangedNotification()
     }
 
@@ -41,6 +41,10 @@ final class SidebarItems {
             items.remove(at: index)
             self.postItemsChangedNotification()
         }
+    }
+
+    private func contains(_ item: FileSystemItem) -> Bool {
+        return items.contains(item)
     }
 
     // Propagate notification for anything to listen to whenever the sidebar items are changed
