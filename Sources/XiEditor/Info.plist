@@ -16,6 +16,20 @@
 	<array>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
+			<array/>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.text</string>
+				<string>public.data</string>
+				<string>public.source-code</string>
+			</array>
+			<key>NSDocumentClass</key>
+			<string>$(PRODUCT_MODULE_NAME).Document</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
 			<array>
 				<string>*</string>
 			</array>
@@ -53,7 +67,5 @@
 	<string>Main</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
-	<key>NSSupportsAutomaticGraphicsSwitching</key>
-	<true/>
 </dict>
 </plist>
