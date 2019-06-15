@@ -137,7 +137,6 @@
 
 /* Begin PBXFileReference section */
 		0C1F5B2921B5EFA300B7CE15 /* Arguments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Arguments.swift; sourceTree = "<group>"; };
-		0C4460AE21895F980035E3C1 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		0C53410A21B746AA004A9550 /* XiCliCoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XiCliCoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C53410C21B746AA004A9550 /* XiCliCoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiCliCoreTests.swift; sourceTree = "<group>"; };
 		0C53410E21B746AA004A9550 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -340,7 +339,6 @@
 		AE499DC31C82BB2B002D68AF = {
 			isa = PBXGroup;
 			children = (
-				0C4460AE21895F980035E3C1 /* Package.swift */,
 				0C4460AC218955400035E3C1 /* Sources */,
 				0C4460AD218955700035E3C1 /* Tests */,
 				31D2A51321B6BEEC005919F0 /* Resources */,
