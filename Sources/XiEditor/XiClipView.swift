@@ -21,8 +21,13 @@ protocol ScrollInterested: class {
 class XiClipView: NSClipView {
     weak var delegate: ScrollInterested?
 
+    // Smooth scrolling (like the MacBook trackpad or Apple Magic Mouse) sends scroll events that are chunked, continuous and cumulative, 
+    // and thus the scroll view's clipView's bounds is set properly (in small increments) for each of these small chunks of scrolling. 
+    // Scrolling with notched mice scrolls in discrete units, takes into account acceleration but does not redraw the view when the view is continuously redrawn (like in xi-mac) during scrolling. 
+    // This is because the bounds origin is only set after the scrolling has stopped completely.
+    // We bypass this by simply setting the bound origin immediately. 
     override func scroll(to newOrigin: NSPoint) {
         delegate?.willScroll(to: newOrigin)
-        super.scroll(to: newOrigin)
+        super.setBoundsOrigin(newOrigin)
     }
 }
