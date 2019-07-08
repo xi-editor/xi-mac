@@ -123,9 +123,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return applicationDirectory
     }()
 
-    // The default name for XiEditor's error logs
-    let defaultCoreLogName = "xi_tmp.log"
-
     lazy var errorLogDirectory: URL? = {
         let logDirectory = FileManager.default.urls(
             for: .libraryDirectory,
@@ -189,17 +186,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         // Set Cli Menu Title
         renameCliToggle()
-    }
-    
-    // Clean up temporary Xi stderr log
-    func applicationWillTerminate(_ notification: Notification) {
-        if let tmpErrLogFile = errorLogDirectory?.appendingPathComponent(defaultCoreLogName) {
-            do {
-                try FileManager.default.removeItem(at: tmpErrLogFile)
-            } catch let err as NSError {
-                print("Failed to remove temporary log file. \(err)")
-            }
-        }
     }
     
     // MARK: - CLI Menu Items
