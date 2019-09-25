@@ -325,6 +325,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         if first..<last != visibleLines {
             document.sendWillScroll(first: first, last: last)
             visibleLines = first..<last
+
+            // Cancels the scroll animation to prevent jerky scrolling.
+            scrollView.contentView.setBoundsOrigin(newOrigin)
         }
         editView.needsDisplay = true
     }
