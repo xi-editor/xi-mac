@@ -123,6 +123,7 @@ func colorToArgb(_ color: NSColor) -> UInt32 {
 final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     var lastRevisionRendered = 0
     var gutterXPad: CGFloat = 8
+    var gutterAnnotationWidth = 3
     var gutterCache: GutterCache?
 
     weak var dataSource: EditViewDataSource!
@@ -628,9 +629,9 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                         let color = annotationColor(for: annotation!.annotation)
 
                         if annotationType == AnnotationType.deleted {
-                            renderer.drawSolidRect(x: GLfloat(dataSource.gutterWidth - 3.0), y: GLfloat(linespace * CGFloat(lineIx)), width: GLfloat(3.0), height: GLfloat(3.0), argb: color)
+                            renderer.drawSolidRect(x: GLfloat(dataSource.gutterWidth - CGFloat(gutterAnnotationWidth)), y: GLfloat(yOff + dataSource.textMetrics.ascent + linespace * CGFloat(lineIx - 1)), width: GLfloat(gutterAnnotationWidth), height: GLfloat(3.0), argb: color)
                         } else {
-                            renderer.drawSolidRect(x: GLfloat(dataSource.gutterWidth - 3.0), y: GLfloat(linespace * CGFloat(lineIx) + 3.0), width: GLfloat(3.0), height: GLfloat(linespace), argb: color)
+                            renderer.drawSolidRect(x: GLfloat(dataSource.gutterWidth - CGFloat(gutterAnnotationWidth)), y: GLfloat(yOff + linespace * CGFloat(lineIx)), width: GLfloat(gutterAnnotationWidth), height: GLfloat(linespace), argb: color)
                         }
                     }
                 }

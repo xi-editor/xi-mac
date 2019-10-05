@@ -59,7 +59,6 @@ struct UpdateParams {
         }
 
         self.annotations = annotations
-
         self.ops = updates
         self.pristine = update["pristine"] as? Bool ?? false
     }

@@ -106,12 +106,20 @@ fileprivate class LineCacheState<T>: UnfairLock {
         annotations = AnnotationStore(from: params.annotations)
 
         let inval = InvalSet()
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> Update annotations on scrolling
         if params.ops.isEmpty {
             // do not invalidate lines if only there are no update operations, e.g. when only updating annotations
             return inval
         }
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> Update annotations on scrolling
         let oldHeight = height
         var newInvalidBefore = 0
         var newLines: [Line<T>?] = []
@@ -210,6 +218,7 @@ fileprivate class LineCacheState<T>: UnfairLock {
         if height < oldHeight {
             inval.addRange(start: height, end: oldHeight)
         }
+
         return inval
     }
 
