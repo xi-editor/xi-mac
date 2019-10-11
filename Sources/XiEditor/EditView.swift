@@ -124,6 +124,7 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     var lastRevisionRendered = 0
     var gutterXPad: CGFloat = 8
     var gutterAnnotationWidth = 3
+    var deletedAnnotationHeight = 3
     var gutterCache: GutterCache?
 
     weak var dataSource: EditViewDataSource!
@@ -622,16 +623,22 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                 let y0 = yOff + dataSource.textMetrics.ascent + linespace * CGFloat(lineIx)
 
                 for annotationType in gutterAnnotations {
-                    var annotations = annotationsForLines[lineIx]![annotationType]!
-                    let annotation = annotations.next()
-
-                    if annotation != nil {
-                        let color = annotationColor(for: annotation!.annotation)
+                    var lineAnnotations = annotationsForLines[lineIx]![annotationType]!
+                    while let lineAnnotation = lineAnnotations.next() {
+                        let color = annotationColor(for: lineAnnotation.annotation)
 
                         if annotationType == AnnotationType.deleted {
-                            renderer.drawSolidRect(x: GLfloat(dataSource.gutterWidth - CGFloat(gutterAnnotationWidth)), y: GLfloat(yOff + dataSource.textMetrics.ascent + linespace * CGFloat(lineIx - 1)), width: GLfloat(gutterAnnotationWidth), height: GLfloat(3.0), argb: color)
+                            renderer.drawSolidRect(x: GLfloat(dataSource.gutterWidth - CGFloat(gutterAnnotationWidth)),
+                                                   y: GLfloat(yOff + dataSource.textMetrics.ascent + linespace * CGFloat(lineIx - 1)),
+                                                   width: GLfloat(gutterAnnotationWidth),
+                                                   height: GLfloat(deletedAnnotationHeight),
+                                                   argb: color)
                         } else {
-                            renderer.drawSolidRect(x: GLfloat(dataSource.gutterWidth - CGFloat(gutterAnnotationWidth)), y: GLfloat(yOff + linespace * CGFloat(lineIx)), width: GLfloat(gutterAnnotationWidth), height: GLfloat(linespace), argb: color)
+                            renderer.drawSolidRect(x: GLfloat(dataSource.gutterWidth - CGFloat(gutterAnnotationWidth)),
+                                                   y: GLfloat(yOff + linespace * CGFloat(lineIx)),
+                                                   width: GLfloat(gutterAnnotationWidth),
+                                                   height: GLfloat(linespace),
+                                                   argb: color)
                         }
                     }
                 }
