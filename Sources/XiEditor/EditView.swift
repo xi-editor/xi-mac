@@ -224,11 +224,17 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         return true
     }
 
-    override func draggingEnded(_ sender: NSDraggingInfo) {
+    override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
+        return sender.draggingSourceOperationMask.intersection([.generic])
+    }
+
+    override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
         // open file dragged into window
         guard let pasteboard = sender.draggingPasteboard.propertyList(forType: NSPasteboard.PasteboardType(rawValue: "NSFilenamesPboardType")) as? NSArray,
             let path = pasteboard.firstObject as? String
-        else { return }
+        else {
+            return false
+        }
 
         NSDocumentController.shared.openDocument(
             withContentsOf: URL.init(fileURLWithPath: path),
@@ -238,6 +244,7 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                     print("error opening file \(error)")
                 }
         })
+        return true
     }
 
     /// Resets the blink timer, if the cursor should be blinking
