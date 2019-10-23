@@ -96,6 +96,7 @@ class Document: NSDocument {
             xiCore.closeView(identifier: identifier)
         }
         super.close()
+        editViewController?.postDocumentClosedNotification()
     }
 
     override var isEntireFileLoaded: Bool {
