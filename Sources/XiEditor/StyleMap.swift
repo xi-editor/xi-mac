@@ -17,31 +17,35 @@ import Cocoa
 
 /// A represents a given text style.
 struct Style {
-    var font: NSFont?
-    var fgColor: NSColor?
-    var bgColor: NSColor?
-    var underline: Bool
-    var italic: Bool
-    var weight: Int?
-    var attributes: [NSAttributedStringKey: Any] = [:]
-    var fakeItalic = false
+    let font: NSFont?
+    let fgColor: NSColor?
+    let bgColor: NSColor?
+    let underline: Bool
+    let italic: Bool
+    let weight: Int?
+    let attributes: [NSAttributedString.Key: Any]
+    let fakeItalic: Bool
+
     static let N_RESERVED_STYLES = 8        // todo: can be removed in the future for new update protocol
 
-    init(font fromFont: NSFont, fgColor: NSColor?, bgColor: NSColor?, underline: Bool, italic: Bool, weight: Int?) {
+    init(fromFont: NSFont, fgColor: NSColor?, bgColor: NSColor?, underline: Bool, italic: Bool, weight: Int?) {
+        var attributes: [NSAttributedString.Key: Any] = [:]
+
         if let fgColor = fgColor {
-            attributes[NSAttributedStringKey.foregroundColor] = fgColor
+            attributes[NSAttributedString.Key.foregroundColor] = fgColor
         }
 
         if let bgColor = bgColor, bgColor.alphaComponent != 0.0 {
-            attributes[NSAttributedStringKey.backgroundColor] = bgColor
+            attributes[NSAttributedString.Key.backgroundColor] = bgColor
         }
 
         if underline {
-            attributes[NSAttributedStringKey.underlineStyle] = NSUnderlineStyle.styleSingle.rawValue
+            attributes[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue
         }
 
         let fm = NSFontManager.shared
         var font: NSFont?
+        var fakeItalic = false
 
         if italic {
             var traits = fm.traits(of: fromFont)
@@ -49,7 +53,7 @@ struct Style {
             if let f = closestMatch(of: fromFont, traits: traits, weight: weight ?? fm.weight(of: fromFont)) {
                 font = f
             } else {
-                attributes[NSAttributedStringKey.obliqueness] = 0.2
+                attributes[NSAttributedString.Key.obliqueness] = 0.2
                 fakeItalic = true
             }
         }
@@ -59,7 +63,7 @@ struct Style {
         }
 
         if let font = font {
-            attributes[NSAttributedStringKey.font] = font
+            attributes[NSAttributedString.Key.font] = font
         }
 
         self.font = font
@@ -68,6 +72,15 @@ struct Style {
         self.underline = underline
         self.italic = italic
         self.weight = weight
+        self.attributes = attributes
+        self.fakeItalic = fakeItalic
+    }
+
+    func withFont(_ font: NSFont) -> Style {
+        return Style(
+            fromFont: font,
+            fgColor: self.fgColor, bgColor: self.bgColor,
+            underline: self.underline, italic: self.italic, weight: self.weight)
     }
 }
 
@@ -102,7 +115,7 @@ struct StyleSpan {
 }
 
 func utf8_offset_to_utf16(_ s: String, _ ix: Int) -> Int {
-    return s.utf8.index(s.utf8.startIndex, offsetBy: ix).encodedOffset
+    return s.utf8.index(s.utf8.startIndex, offsetBy: ix).utf16Offset(in: s)
 }
 
 /// A store of text styles, indexable by id.
@@ -114,39 +127,34 @@ class StyleMapState: UnfairLock {
         self.font = font
     }
 
-    func defStyle(json: [String: AnyObject]) {
-        guard let styleID = json["id"] as? Int else { return }
-
+    func defStyle(params: DefStyleParams) {
         let fgColor: NSColor
-        var bgColor: NSColor? = nil
 
-        if let fg = json["fg_color"] as? UInt32 {
-            fgColor = colorFromArgb(fg)
+        if let fg = params.fgColor {
+            fgColor = fg
         } else {
             fgColor = (NSApplication.shared.delegate as! AppDelegate).xiClient.theme.foreground
         }
-        if let bg = json["bg_color"] as? UInt32 {
-            bgColor = colorFromArgb(bg)
-        }
 
-        let underline = json["underline"] as? Bool ?? false
-        let italic = json["italic"] as? Bool ?? false
-        var weight = json["weight"] as? Int
-        if let w = weight {
+        var weight = params.weight
+        if let w = params.weight {
             // convert to NSFont weight: (100-500 -> 2-6 (5 normal weight), 600-800 -> 8-10, 900 -> 12
             // see https://github.com/xi-editor/xi-mac/pull/32#discussion_r115114037
             weight = Int(floor(1 + Float(w) * (0.01 + 3e-6 * Float(w))))
         }
 
-        let style = Style(font: font, fgColor: fgColor, bgColor: bgColor,
-                          underline: underline, italic: italic, weight: weight)
-        while styles.count < styleID {
+        let style = Style(fromFont: font, fgColor: fgColor, bgColor: params.bgColor,
+                          underline: params.underline,
+                          italic: params.italic,
+                          weight: weight)
+
+        while styles.count < params.styleID   {
             styles.append(nil)
         }
-        if styles.count == styleID {
+        if styles.count == params.styleID {
             styles.append(style)
         } else {
-            styles[styleID] = style
+            styles[params.styleID] = style
         }
     }
 
@@ -189,8 +197,7 @@ class StyleMapState: UnfairLock {
     func updateFont(to font: NSFont) {
         self.font = font
         styles = styles.map { $0.map {
-            Style(font: font, fgColor: $0.fgColor, bgColor: $0.bgColor,
-                  underline: $0.underline, italic: $0.italic, weight: $0.weight)
+            $0.withFont(font)
         } }
     }
 
@@ -201,17 +208,13 @@ class StyleMapState: UnfairLock {
         return builder.measure()
     }
 
-    func measureWidths(_ args: [[String: AnyObject]]) -> [[Double]] {
+    func measureWidths(_ args: [MeasureWidthParams]) -> [[Double]] {
         Trace.shared.trace("measureWidths", .main, .begin)
         defer { Trace.shared.trace("measureWidths", .main, .end) }
 
-        return args.map({(arg: [String: AnyObject]) -> [Double] in
-            guard let id = arg["id"] as? Int, let strings = arg["strings"] as? [String] else {
-                print("invalid measure_widths request")
-                return []
-            }
-            return strings.map({(s: String) -> Double in measureWidth(id: id, s: s)})
-        })
+        return args.map { p in
+            return p.strings.map { s in measureWidth(id: p.id, s: s)}
+        }
     }
 }
 
@@ -229,8 +232,8 @@ class StyleMapLocked {
     }
 
     /// Defines a style that can then be referred to by index.
-    func defStyle(json: [String: AnyObject]) {
-        inner.defStyle(json: json)
+    func defStyle(params: DefStyleParams) {
+        inner.defStyle(params: params)
     }
 
     /// Applies the styles to the text line builder.
@@ -242,7 +245,7 @@ class StyleMapLocked {
         inner.updateFont(to: font)
     }
 
-    func measureWidths(_ args: [[String: AnyObject]]) -> [[Double]] {
+    func measureWidths(_ args: [MeasureWidthParams]) -> [[Double]] {
         return inner.measureWidths(args)
     }
 }

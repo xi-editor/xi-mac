@@ -20,7 +20,7 @@ extension NSColor {
     static var veryLightGray = NSColor(white: 246.0/256.0, alpha: 1.0)
 }
 
-class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlTextEditingDelegate {
+class FindViewController: NSViewController, NSSearchFieldDelegate {
     weak var findDelegate: FindDelegate!
     static let MAX_SEARCH_QUERIES = 7
 
@@ -79,14 +79,14 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
 
     @objc @discardableResult public func addSearchField(searchField: SuplementaryFindViewController?, becomeFirstResponder: Bool) -> FindSearchField? {
         if searchQueries.count < FindViewController.MAX_SEARCH_QUERIES {
-            let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
-            let newSearchFieldController = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Suplementary Find View Controller")) as! SuplementaryFindViewController
+            let storyboard = NSStoryboard(name: NSStoryboard.Name("Main"), bundle: nil)
+            let newSearchFieldController = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier("Suplementary Find View Controller")) as! SuplementaryFindViewController
 
             newSearchFieldController.parentFindView = self
 
             if searchField != nil {
-                searchQueries.insert(newSearchFieldController, at: searchQueries.index(of: searchField!)! + 1)
-                searchFieldsStackView.insertView(newSearchFieldController.view, at: searchQueries.index(of: searchField!)! + 1, in: .center)
+                searchQueries.insert(newSearchFieldController, at: searchQueries.firstIndex(of: searchField!)! + 1)
+                searchFieldsStackView.insertView(newSearchFieldController.view, at: searchQueries.firstIndex(of: searchField!)! + 1, in: .center)
             } else {
                 searchQueries.append(newSearchFieldController)
                 searchFieldsStackView.insertView(newSearchFieldController.view, at: searchQueries.count - 1, in: .center)
@@ -132,12 +132,6 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
         }
     }
 
-    override func controlTextDidChange(_ obj: Notification) {
-        if obj.object as? NSTextField == replaceField {
-            findDelegate.replace(replaceField.stringValue)
-        }
-    }
-
     func redoFind() {
         findDelegate.find(searchQueries.map({ $0.toFindQuery() }))
     }
@@ -154,13 +148,13 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
         findDelegate.closeFind()
     }
 
-    public func findStatus(status: [[String: AnyObject]]) {
+    public func findStatus(status: [FindStatus]) {
         findDelegate.findStatus(status: status)
     }
 
     @objc public func removeSearchField(searchField: SuplementaryFindViewController) {
         searchFieldsStackView.removeView(searchField.view)
-        searchQueries.remove(at: searchQueries.index(of: searchField)!)
+        searchQueries.remove(at: searchQueries.firstIndex(of: searchField)!)
         searchFieldsNextKeyView()
         searchFieldsButtonsState()
     }
@@ -169,7 +163,7 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
         findDelegate.replaceNext()
     }
 
-    public func replaceStatus(status: [String: AnyObject]) {
+    public func replaceStatus(status: ReplaceStatus) {
         findDelegate.replaceStatus(status: status)
     }
 
@@ -181,7 +175,15 @@ class FindViewController: NSViewController, NSSearchFieldDelegate, NSControlText
     }
 }
 
-class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, NSControlTextEditingDelegate {
+extension FindViewController: NSControlTextEditingDelegate {
+    func controlTextDidChange(_ obj: Notification) {
+        if obj.object as? NSTextField == replaceField {
+            findDelegate.replace(replaceField.stringValue)
+        }
+    }
+}
+
+class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, NSControlTextEditingDelegate, NSMenuItemValidation {
     @IBOutlet weak var searchField: NSSearchField!
     @IBOutlet weak var addButton: NSButton!
     @IBOutlet weak var deleteButton: NSButton!
@@ -190,13 +192,13 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
     let resultCountLabel = Label(title: "")
 
     // assigned in IB
-    let ignoreCaseMenuTag = 101
+    let caseSensitiveMenuTag = 101
     let wrapAroundMenuTag = 102
     let regexMenuTag = 103
     let wholeWordsMenuTag = 104
     let removeMenuTag = 105
 
-    var ignoreCase = true
+    var caseSensitive = false
     var wrapAround = true
     var regex = false
     var wholeWords = false
@@ -226,11 +228,12 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
         menu.addItem(recentClear)
     }
 
+    // MARK: - NSMenuItemValidation
     // we use this to make sure that UI corresponds to our state
-    override func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
+    func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
         switch menuItem.tag {
-        case ignoreCaseMenuTag:
-            menuItem.state = ignoreCase ? .on : .off
+        case caseSensitiveMenuTag:
+            menuItem.state = caseSensitive ? .on : .off
         case wrapAroundMenuTag:
             menuItem.state = wrapAround ? .on : .off
         case regexMenuTag:
@@ -244,6 +247,8 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
         }
         return true
     }
+
+    // MARK: -
 
     func updateColor(newBackgroundColor: NSColor, unifiedTitlebar: Bool) {
         self.view.layer?.backgroundColor = unifiedTitlebar ? newBackgroundColor.cgColor : NSColor.veryLightGray.cgColor
@@ -274,8 +279,8 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
         parentFindView?.redoFind()
     }
 
-    @IBAction func selectIgnoreCaseMenuAction(_ sender: NSMenuItem) {
-        ignoreCase = !ignoreCase
+    @IBAction func selectCaseSensitiveMenuAction(_ sender: NSMenuItem) {
+        caseSensitive = !caseSensitive
         parentFindView?.redoFind()
     }
 
@@ -308,7 +313,7 @@ class SuplementaryFindViewController: NSViewController, NSSearchFieldDelegate, N
         return FindQuery(
             id: id,
             term: searchField.stringValue,
-            caseSensitive: !ignoreCase,
+            caseSensitive: caseSensitive,
             regex: regex,
             wholeWords: wholeWords
         )
@@ -379,26 +384,23 @@ extension EditViewController {
         xiView.multiFind(queries: queries)
     }
 
-    func findStatus(status: [[String: AnyObject]]) {
+    func findStatus(status: [FindStatus]) {
         var findMarker: [Marker] = []
-        let statusStructs = status.flatMap(FindStatus.init)
-        for statusQuery in statusStructs {
-            guard let firstStatus = statusStructs.first else { continue }
-
+        for statusQuery in status {
             let query = queryController(in: findViewController, queryId: statusQuery.id)
 
-            if firstStatus.chars != nil {
+            if statusQuery.chars != nil {
                 query?.searchField.stringValue = statusQuery.chars!
             } else {
                 // clear count
                 (query?.searchField as? FindSearchField)?.resultCount = nil
             }
 
-            if firstStatus.caseSensitive != nil {
-                query?.ignoreCase = !(statusQuery.caseSensitive != nil)
+            if statusQuery.caseSensitive != nil {
+                query?.caseSensitive = (statusQuery.caseSensitive != nil && statusQuery.caseSensitive!)
             }
 
-            if firstStatus.wholeWords != nil {
+            if statusQuery.wholeWords != nil {
                 query?.wholeWords = statusQuery.wholeWords!
             }
 
@@ -411,9 +413,9 @@ extension EditViewController {
         }
 
         // remove finds that have been removed in core
-        let activeFinds = statusStructs.map { $0.id }
+        let activeFinds = status.map { $0.id }
         // Note: the following can be simplified to .contains() when minimum SDK is Xcode 9.3
-        let obsoleteFinds = findViewController.searchQueries.filter({(find) -> Bool in
+        let obsoleteFinds = findViewController.searchQueries.filter({ find in
             !activeFinds.contains(where: {$0 == find.id}) && find.id != nil})
         for query in obsoleteFinds {
             findViewController.removeSearchField(searchField: query)
@@ -444,29 +446,21 @@ extension EditViewController {
     }
 
     func replaceNext() {
-        document.sendRpcAsync("replace_next", params: [])
+        xiView.replaceNext()
     }
 
     func replaceAll() {
-        document.sendRpcAsync("replace_all", params: [])
+        xiView.replaceAll()
     }
 
-    func replaceStatus(status: [String: AnyObject]) {
-        if status["chars"] != nil && !(status["chars"] is NSNull) {
-            findViewController.replaceField.stringValue = status["chars"] as! String
-        }
+    func replaceStatus(status: ReplaceStatus) {
+        findViewController.replaceField.stringValue = status.chars
 
         // todo: preserve case
     }
 
-    func replace(_ term: String?) {
-        var params: [String: Any] = [:]
-
-        if term != nil {
-            params["chars"] = term
-        }
-
-        document.sendRpcAsync("replace", params: params)
+    func replace(_ term: String) {
+        xiView.replace(chars: term)
     }
 
     @IBAction func addNextToSelection(_ sender: AnyObject?) {
@@ -549,6 +543,9 @@ extension EditViewController {
 
         case .hideReplaceInterface:
             Swift.print("hideReplaceInterface not implemented")
+
+        @unknown default:
+            fatalError("Unexpected action: \(action)")
         }
     }
 }

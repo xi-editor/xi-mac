@@ -16,6 +16,13 @@
 		0C66CB2E218F5CDB00F6F899 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C66CB2D218F5CDB00F6F899 /* main.swift */; };
 		28F1ED4A1EC4C735008839BE /* Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F1ED491EC4C735008839BE /* Search.swift */; };
 		31D2A51721B6BF3C005919F0 /* XiEditor.help in Resources */ = {isa = PBXBuildFile; fileRef = 31D2A51621B6BF3C005919F0 /* XiEditor.help */; };
+		3F9C4E7D223D7E3200669C75 /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9C4E7C223D7E3200669C75 /* Types.swift */; };
+		3FB1FC36224B2B180038C8A3 /* DefStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FB1FC35224B2B180038C8A3 /* DefStyle.swift */; };
+		3FBCA858224D9563004575AB /* CoreNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FBCA857224D9563004575AB /* CoreNotification.swift */; };
+		3FC496ED22447E37003D1533 /* ReplaceStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FC496EC22447E37003D1533 /* ReplaceStatus.swift */; };
+		3FC496EF22448332003D1533 /* MeasureWidth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FC496EE22448332003D1533 /* MeasureWidth.swift */; };
+		3FD524102268C5B100843657 /* CoreRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FD5240F2268C5B100843657 /* CoreRequest.swift */; };
+		3FE905F8225F13BD008F0CAF /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FE905F7225F13BD008F0CAF /* Config.swift */; };
 		4DC153D32165202B000EB215 /* XiWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DC153D22165202B000EB215 /* XiWindowController.swift */; };
 		4DCB4AF020576A6F00476F75 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 4DCB4AEF20576A6E00476F75 /* fonts */; };
 		6038770720057B4500AABF17 /* XiDocumentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6038770620057B4500AABF17 /* XiDocumentController.swift */; };
@@ -130,7 +137,6 @@
 
 /* Begin PBXFileReference section */
 		0C1F5B2921B5EFA300B7CE15 /* Arguments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Arguments.swift; sourceTree = "<group>"; };
-		0C4460AE21895F980035E3C1 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		0C53410A21B746AA004A9550 /* XiCliCoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XiCliCoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C53410C21B746AA004A9550 /* XiCliCoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiCliCoreTests.swift; sourceTree = "<group>"; };
 		0C53410E21B746AA004A9550 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -141,6 +147,13 @@
 		0C66CB36218F5E8A00F6F899 /* CommandLineTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandLineTool.swift; sourceTree = "<group>"; };
 		28F1ED491EC4C735008839BE /* Search.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
 		31D2A51621B6BF3C005919F0 /* XiEditor.help */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = XiEditor.help; sourceTree = "<group>"; };
+		3F9C4E7C223D7E3200669C75 /* Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
+		3FB1FC35224B2B180038C8A3 /* DefStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefStyle.swift; sourceTree = "<group>"; };
+		3FBCA857224D9563004575AB /* CoreNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreNotification.swift; sourceTree = "<group>"; };
+		3FC496EC22447E37003D1533 /* ReplaceStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplaceStatus.swift; sourceTree = "<group>"; };
+		3FC496EE22448332003D1533 /* MeasureWidth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeasureWidth.swift; sourceTree = "<group>"; };
+		3FD5240F2268C5B100843657 /* CoreRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreRequest.swift; sourceTree = "<group>"; };
+		3FE905F7225F13BD008F0CAF /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		4DC153D22165202B000EB215 /* XiWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiWindowController.swift; sourceTree = "<group>"; };
 		4DCB4AEF20576A6E00476F75 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
 		6038770620057B4500AABF17 /* XiDocumentController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiDocumentController.swift; sourceTree = "<group>"; };
@@ -308,10 +321,24 @@
 			path = Resources;
 			sourceTree = SOURCE_ROOT;
 		};
+		3F9C4E7B223D7E1F00669C75 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				3FE905F7225F13BD008F0CAF /* Config.swift */,
+				3FBCA857224D9563004575AB /* CoreNotification.swift */,
+				3FD5240F2268C5B100843657 /* CoreRequest.swift */,
+				3FB1FC35224B2B180038C8A3 /* DefStyle.swift */,
+				D803A9A521C7CCB90042DE8F /* FindStatus.swift */,
+				3FC496EE22448332003D1533 /* MeasureWidth.swift */,
+				3FC496EC22447E37003D1533 /* ReplaceStatus.swift */,
+				3F9C4E7C223D7E3200669C75 /* Types.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
 		AE499DC31C82BB2B002D68AF = {
 			isa = PBXGroup;
 			children = (
-				0C4460AE21895F980035E3C1 /* Package.swift */,
 				0C4460AC218955400035E3C1 /* Sources */,
 				0C4460AD218955700035E3C1 /* Tests */,
 				31D2A51321B6BEEC005919F0 /* Resources */,
@@ -319,6 +346,7 @@
 				AE499DCD1C82BB2B002D68AF /* Products */,
 			);
 			sourceTree = "<group>";
+			usesTabs = 0;
 		};
 		AE499DCD1C82BB2B002D68AF /* Products */ = {
 			isa = PBXGroup;
@@ -336,6 +364,7 @@
 		AE499DCE1C82BB2B002D68AF /* XiEditor */ = {
 			isa = PBXGroup;
 			children = (
+				3F9C4E7B223D7E1F00669C75 /* Core */,
 				AED22D741FE8366D0096E7C3 /* XiTextPlane */,
 				6BA1873A1FDDD7B6008220DA /* XiClipView.swift */,
 				6083722E2058597B00E9CF5D /* ShadowView.swift */,
@@ -360,7 +389,6 @@
 				6B53F5F11EF963EB00A4C664 /* Theme.swift */,
 				6B90DD211F14110B00DF3CE2 /* UserInputPromptController.swift */,
 				28F1ED491EC4C735008839BE /* Search.swift */,
-				D803A9A521C7CCB90042DE8F /* FindStatus.swift */,
 				E1288E7F20B06E9C0068EEB9 /* StatusBar.swift */,
 				832910D820229C2D0042C32B /* Fps.swift */,
 				E16BB89720FE42A600A0D7A1 /* HoverViewController.swift */,
@@ -603,7 +631,7 @@
 			};
 			buildConfigurationList = AE499DC71C82BB2B002D68AF /* Build configuration list for PBXProject "XiEditor" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
@@ -700,8 +728,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				F53EA2AF1DCAAA170071ACFD /* EditViewController.swift in Sources */,
+				3FBCA858224D9563004575AB /* CoreNotification.swift in Sources */,
 				4DC153D32165202B000EB215 /* XiWindowController.swift in Sources */,
 				AED22D7C1FE8428D0096E7C3 /* ShaderProgram.swift in Sources */,
+				3FE905F8225F13BD008F0CAF /* Config.swift in Sources */,
+				3FB1FC36224B2B180038C8A3 /* DefStyle.swift in Sources */,
 				AED22D861FE877000096E7C3 /* TextLine.swift in Sources */,
 				6B0DCDD61E832101007C14A3 /* EditContainerView.swift in Sources */,
 				AE0243F61E4BDF8A00641BDA /* StyleMap.swift in Sources */,
@@ -712,19 +743,23 @@
 				6B53F5F21EF963EB00A4C664 /* Theme.swift in Sources */,
 				AE499DF91C82C835002D68AF /* RPCSending.swift in Sources */,
 				6083722F2058597B00E9CF5D /* ShadowView.swift in Sources */,
+				3FC496EF22448332003D1533 /* MeasureWidth.swift in Sources */,
 				E1288E8020B06E9C0068EEB9 /* StatusBar.swift in Sources */,
 				AEC4F6CA1FFB02F10060E10E /* Trace.swift in Sources */,
+				3F9C4E7D223D7E3200669C75 /* Types.swift in Sources */,
 				6BF9575B1FD70C420010BAE6 /* Client.swift in Sources */,
 				AED23F181C83CBED002246CE /* EditView.swift in Sources */,
 				D8D319F0218CB39A00D108D4 /* XiCore.swift in Sources */,
 				95368BAB21D0B466000FAC40 /* Annotation.swift in Sources */,
 				AE499DD01C82BB2B002D68AF /* AppDelegate.swift in Sources */,
+				3FC496ED22447E37003D1533 /* ReplaceStatus.swift in Sources */,
 				AEC4F6B31FF5AF130060E10E /* UnfairLock.swift in Sources */,
 				95FD9935218689A500C32AF1 /* MarkerBar.swift in Sources */,
 				28F1ED4A1EC4C735008839BE /* Search.swift in Sources */,
 				F5BDBF371DCA9D2C0042430B /* Document.swift in Sources */,
 				6B0C298B2033C39500EA07AF /* XiWindow.swift in Sources */,
 				D803A9A621C7CCB90042DE8F /* FindStatus.swift in Sources */,
+				3FD524102268C5B100843657 /* CoreRequest.swift in Sources */,
 				6038770720057B4500AABF17 /* XiDocumentController.swift in Sources */,
 				6B90DD221F14110B00DF3CE2 /* UserInputPromptController.swift in Sources */,
 				D80F2D8421CEB4F90090BDA0 /* XiViewProxy.swift in Sources */,
@@ -815,7 +850,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.XiCliCoreTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
@@ -837,7 +871,6 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.XiCliCoreTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
 		};
@@ -858,7 +891,6 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
@@ -878,7 +910,6 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
 		};
@@ -902,7 +933,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
@@ -924,7 +954,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.Cli";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
 		};
@@ -979,6 +1008,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -1026,6 +1056,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -1034,12 +1065,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-Debug";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "$(SRCROOT)/Sources/XiEditor/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				OTHER_SWIFT_FLAGS = "-D DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.Editor";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
@@ -1052,7 +1083,6 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.Editor";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
 		};
@@ -1065,7 +1095,6 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.XiEditorTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/XiEditor.app/Contents/MacOS/XiEditor";
 			};
 			name = Debug;
@@ -1079,7 +1108,6 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.XiEditorTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/XiEditor.app/Contents/MacOS/XiEditor";
 			};
 			name = Release;
@@ -1092,7 +1120,6 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.XiEditorUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
 				TEST_TARGET_NAME = XiEditor;
 				USES_XCTRUNNER = YES;
 			};
@@ -1106,7 +1133,6 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.XiEditorUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
 				TEST_TARGET_NAME = XiEditor;
 				USES_XCTRUNNER = YES;
 			};

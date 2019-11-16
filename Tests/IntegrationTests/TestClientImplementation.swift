@@ -25,13 +25,13 @@ class TestClientImplementation: XiClient {
         self.findStatusAction = findStatusAction
     }
 
-    func update(viewIdentifier: String, update: [String : AnyObject], rev: UInt64?) {
+    func update(viewIdentifier: String, params: UpdateParams, rev: UInt64?) {
     }
 
     func scroll(viewIdentifier: String, line: Int, column: Int) {
     }
 
-    func defineStyle(style: [String : AnyObject]) {
+    func defineStyle(params: DefStyleParams) {
     }
 
     func themeChanged(name: String, theme: Theme) {
@@ -52,7 +52,7 @@ class TestClientImplementation: XiClient {
     func pluginStopped(viewIdentifier: String, pluginName: String) {
     }
 
-    func availablePlugins(viewIdentifier: String, plugins: [[String : AnyObject]]) {
+    func availablePlugins(viewIdentifier: String, plugins: [Plugin]) {
     }
 
     func updateCommands(viewIdentifier: String, plugin: String, commands: [Command]) {
@@ -73,18 +73,18 @@ class TestClientImplementation: XiClient {
     func showHover(viewIdentifier: String, requestIdentifier: Int, result: String) {
     }
 
-    func configChanged(viewIdentifier: String, changes: [String : AnyObject]) {
+    func configChanged(viewIdentifier: String, changes: Config) {
     }
 
-    func measureWidth(args: [[String : AnyObject]]) -> [[Double]] {
+    func measureWidth(args: [MeasureWidthParams]) -> [[Double]] {
         fatalError("not implemented")
     }
 
-    func findStatus(viewIdentifier: String, status: [[String : AnyObject]]) {
-        findStatusAction(status.flatMap(FindStatus.init))
+    func findStatus(viewIdentifier: String, status: [FindStatus]) {
+        findStatusAction(status)
     }
 
-    func replaceStatus(viewIdentifier: String, status: [String : AnyObject]) {
+    func replaceStatus(viewIdentifier: String, status: ReplaceStatus) {
     }
     
     func toggleTailConfigChanged(viewIdentifier: String, isTailEnabled: Bool) {

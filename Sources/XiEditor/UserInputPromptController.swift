@@ -15,7 +15,7 @@
 import Cocoa
 
 /// A small popover window for collecting user input
-class UserInputPromptController: NSViewController, NSTextFieldDelegate, NSComboBoxDelegate {
+class UserInputPromptController: NSViewController, NSComboBoxDelegate {
 
     private var command: Command?
     private var argumentIter: AnyIterator<Argument>?
@@ -42,7 +42,7 @@ class UserInputPromptController: NSViewController, NSTextFieldDelegate, NSComboB
     }
 
     public func collectInput(forCommand command: Command, completion: @escaping ([String: AnyObject]?) -> ()) {
-        self.resolved = command.params
+        self.resolved = command.params as [String: AnyObject]
         self.command = command
         self.argumentIter = AnyIterator(command.args.makeIterator())
         self.completion = completion
@@ -99,7 +99,13 @@ class UserInputPromptController: NSViewController, NSTextFieldDelegate, NSComboB
         promptForNextArgument()
     }
 
-    override func controlTextDidChange(_ obj: Notification) {
+    func comboBoxWillDismiss(_ notification: Notification) {
+        self.controlTextDidChange(notification)
+    }
+}
+
+extension UserInputPromptController: NSTextFieldDelegate {
+    func controlTextDidChange(_ obj: Notification) {
         var valid = false
         switch currentArg!.type {
         case .number:
@@ -116,9 +122,5 @@ class UserInputPromptController: NSViewController, NSTextFieldDelegate, NSComboB
             valid = optionStrings!.contains(comboBox.stringValue)
         }
         submitButton.isEnabled = valid
-    }
-
-    func comboBoxWillDismiss(_ notification: Notification) {
-        self.controlTextDidChange(notification)
     }
 }

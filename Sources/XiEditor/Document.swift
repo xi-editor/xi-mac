@@ -61,12 +61,12 @@ class Document: NSDocument {
         // save this before instantiating because instantiating overwrites with the default position
         let newFrame = frameForNewWindow()
         var windowController: NSWindowController!
-        let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
+        let storyboard = NSStoryboard(name: NSStoryboard.Name("Main"), bundle: nil)
         windowController = (storyboard.instantiateController(
-            withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Document Window Controller")) as! NSWindowController)
+            withIdentifier: NSStoryboard.SceneIdentifier("Document Window Controller")) as! NSWindowController)
 
         if #available(OSX 10.12, *) {
-            windowController.window?.tabbingIdentifier = NSWindow.TabbingIdentifier(rawValue: "xi-global-tab-group")
+            windowController.window?.tabbingIdentifier = NSWindow.TabbingIdentifier("xi-global-tab-group")
             // Temporarily override the user's preference based on which menu item was selected
             windowController.window?.tabbingMode = Document.tabbingMode
             // Reset for next time
@@ -96,6 +96,7 @@ class Document: NSDocument {
             xiCore.closeView(identifier: identifier)
         }
         super.close()
+        editViewController?.postDocumentClosedNotification()
     }
 
     override var isEntireFileLoaded: Bool {
@@ -156,17 +157,15 @@ class Document: NSDocument {
     }
 
     func sendWillScroll(first: Int, last: Int) {
-        sendRpcAsync("scroll", params: [first, last])
+        editViewController?.xiView.scroll(firstLine: first, lastLine: last)
     }
 
     func sendPaste(_ pasteString: String) {
         sendRpcAsync("paste", params: ["chars": pasteString])
     }
 
-    func updateAsync(update: [String: AnyObject]) {
-        if let editVC = editViewController {
-            editVC.updateAsync(update: update)
-        }
+    func updateAsync(params: UpdateParams) {
+        editViewController?.updateAsync(params: params)
     }
 
     /// Returns the frame to be used for the next new window.

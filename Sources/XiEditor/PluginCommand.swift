@@ -25,7 +25,7 @@ struct Command {
     let description: String
     let method: String
     let type: RpcType
-    let params: [String: AnyObject]
+    let params: [String: Any]
     let args: [Argument]
 
     var requiresUserInput: Bool {
@@ -41,17 +41,16 @@ struct Argument {
         case bool = "Bool"
         case string = "String"
         case choice = "Choice"
-
     }
 
     struct ArgumentOption {
         let title: String
-        let value: AnyObject
+        let value: Any
 
-        init?(jsonObject dict: [String: AnyObject]) {
-            guard let title = dict["title"] as? String,
-                let value = dict["value"] else {
-                    print("failed to parse argument option \(dict)")
+        init?(fromJson json: [String: Any]) {
+            guard let title = json["title"] as? String,
+                let value = json["value"] else {
+                    print("failed to parse argument option \(json)")
                     return nil
             }
             self.title = title
@@ -66,24 +65,23 @@ struct Argument {
     let options: [ArgumentOption]
 }
 
-
 extension Command {
-    init?(jsonObject dict: [String: AnyObject]) {
-        guard let title = dict["title"] as? String,
-            let description = dict["description"] as? String,
-            let rpc_cmd = dict["rpc_cmd"] as? [String: AnyObject],
+    init?(fromJson json: [String: Any]) {
+        guard let title = json["title"] as? String,
+            let description = json["description"] as? String,
+            let rpc_cmd = json["rpc_cmd"] as? [String: AnyObject],
             let method = rpc_cmd["method"] as? String,
             let rpcTypeName = rpc_cmd["rpc_type"] as? String,
             let rpcType = RpcType(rawValue: rpcTypeName),
-            let params = rpc_cmd["params"] as? [String: AnyObject],
-            let args = dict["args"] as? [[String: AnyObject]]? else {
-                print("malformed command \(dict)")
+            let params = rpc_cmd["params"] as? [String: Any],
+            let args = json["args"] as? [[String: Any]]? else {
+                print("malformed command \(json)")
                 return nil
         }
 
         var parsedArgs: [Argument] = []
         for rawArg in args ?? [] {
-            if let parsed = Argument(jsonObject: rawArg) {
+            if let parsed = Argument(fromJson: rawArg) {
                 parsedArgs.append(parsed)
             } else {
                 print("failed to parse command \(title), bad argument \(rawArg)")
@@ -93,17 +91,16 @@ extension Command {
         self.init(title: title, description: description, method: method,
                   type: rpcType, params: params, args: parsedArgs)
     }
-
 }
 
 extension Argument {
-    init?(jsonObject dict: [String: AnyObject]) {
-        guard let key = dict["key"] as? String,
-            let title = dict["title"] as? String,
-            let description = dict["description"] as? String,
-            let typeName = dict["arg_type"] as? String,
+    init?(fromJson json: [String: Any]) {
+        guard let key = json["key"] as? String,
+            let title = json["title"] as? String,
+            let description = json["description"] as? String,
+            let typeName = json["arg_type"] as? String,
             let type = ArgumentType(rawValue: typeName),
-            let options = dict["options"] as? [[String: AnyObject]]?,
+            let options = json["options"] as? [[String: Any]]?,
             !(type == .choice && options == nil)
         else {
                 return nil
@@ -111,7 +108,7 @@ extension Argument {
 
         var parsedOptions = [ArgumentOption]()
         for opt in options ?? [] {
-            if let parsed = ArgumentOption(jsonObject: opt) {
+            if let parsed = ArgumentOption(fromJson: opt) {
                 parsedOptions.append(parsed)
             } else {
                 print("failed to parse option \(opt)")

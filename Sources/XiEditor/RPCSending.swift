@@ -19,6 +19,12 @@ import AppKit
 /// These logs can be used for profiling & debugging.
 let XI_RPC_LOG = "XI_CLIENT_RPC_LOG"
 
+let NEW_LINE = [0x0a as UInt8]
+let CLIENT_LOG_PREFIX = "[CLIENT] ".data(using: .utf8)!
+let CORE_LOG_PREFIX = "[CORE]   ".data(using: .utf8)!
+
+let NEWLINE_CHAR = UInt8(ascii:"\n")
+
 /// An error returned from core
 struct RemoteError {
     let code: Int
@@ -27,7 +33,7 @@ struct RemoteError {
 
     init?(json: [String: AnyObject]) {
         guard let code = json["code"] as? Int,
-        let message = json["message"] as? String else { return nil }
+            let message = json["message"] as? String else { return nil }
         self.code = code
         self.message = message
         self.data = json["data"]
@@ -40,6 +46,7 @@ enum RpcResult {
     case ok(AnyObject)
 }
 
+<<<<<<< HEAD
 enum RPCRequestMethod: String {
     case measureWidth = "measure_width"
 }
@@ -76,6 +83,8 @@ enum RPCNotificationMethod: String {
     case toggleTailConfigChanged = "toggle_tail_config_changed"
 }
 
+=======
+>>>>>>> master
 /// A completion handler for a synchronous RPC
 typealias RpcCallback = (RpcResult) -> ()
 
@@ -87,10 +96,9 @@ protocol RPCSending {
 }
 
 class StdoutRPCSender: RPCSending {
-
     private let task = Process()
     private var inHandle: FileHandle  // stdin of core process
-    private var recvBuf: Data
+    private var recvBuf = Data()
     weak var client: XiClient?
     private let rpcLogWriter: FileWriter?
     private var lastLogs = CircleBuffer<String>(capacity: 100)
@@ -125,13 +133,12 @@ class StdoutRPCSender: RPCSending {
         let inPipe = Pipe()
         task.standardInput = inPipe
         inHandle = inPipe.fileHandleForWriting
-        recvBuf = Data()
 
         outPipe.fileHandleForReading.readabilityHandler = { handle in
             let data = handle.availableData
             self.recvHandler(data)
         }
-        
+
         let errPipe = Pipe()
         task.standardError = errPipe
         errPipe.fileHandleForReading.readabilityHandler = { [weak self] handle in
@@ -144,14 +151,14 @@ class StdoutRPCSender: RPCSending {
                 self?.lastLogs.push(errString)
             }
         }
-        
+
         // save backtrace on core crash
         task.terminationHandler = { [weak self] process in
             guard process.terminationStatus != 0, let strongSelf = self else {
                 print("xi-core exited with code 0")
                 return
             }
-            
+
             print("xi-core exited with code \(process.terminationStatus), attempting to save log")
 
             let dateFormatter = DateFormatter()
@@ -177,39 +184,44 @@ class StdoutRPCSender: RPCSending {
         if data.count == 0 {
             return
         }
-        let scanStart = recvBuf.count
-        recvBuf.append(data)
-        let recvBufLen = recvBuf.count
 
-        var newCount = 0
-        recvBuf.withUnsafeMutableBytes { (recvBufBytes: UnsafeMutablePointer<UInt8>) -> Void in
-            var i = 0
-            for j in scanStart..<recvBufLen {
-                // TODO: using memchr would probably be faster
-                if recvBufBytes[j] == UInt8(ascii:"\n") {
-                    let bufferPointer = UnsafeBufferPointer(start: recvBufBytes.advanced(by: i), count: j + 1 - i)
-                    let dataPacket = Data(bufferPointer)
-                    handleRaw(dataPacket)
+        // Split incoming bytes into "packets" (separated by newlines)
+        // and dispatch to the app to handle
+        data.withUnsafeBytes { buffer in
+            var i = buffer.startIndex
+            for j in buffer.startIndex..<buffer.endIndex {
+                if buffer[j] == NEWLINE_CHAR {
+                    let bytes = Data(buffer[i..<j])
+                    if recvBuf.count > 0 {
+                        // Handle leftover bytes from last call
+                        recvBuf.append(bytes)
+                        handleRaw(recvBuf)
+                        recvBuf = Data()
+                    } else {
+                        handleRaw(bytes)
+                    }
+
                     i = j + 1
                 }
             }
-            if i < recvBufLen {
-                memmove(recvBufBytes, recvBufBytes + i, recvBufLen - i)
+
+            if i < buffer.endIndex {
+                recvBuf.append(Data(buffer[i..<buffer.endIndex]))
             }
-            newCount = recvBufLen - i
         }
-        recvBuf.count = newCount
     }
 
     private func sendJson(_ json: Any) {
         do {
-            let data = try JSONSerialization.data(withJSONObject: json, options: [])
-            let mutdata = NSMutableData()
-            mutdata.append(data)
-            let nl = [0x0a as UInt8]
-            mutdata.append(nl, length: 1)
-            rpcLogWriter?.write(bytes: mutdata as Data)
-            inHandle.write(mutdata as Data)
+            var data = try JSONSerialization.data(withJSONObject: json, options: [])
+            data.append(NEW_LINE, count: 1)
+
+            if let writer = self.rpcLogWriter {
+                writer.write(bytes: CLIENT_LOG_PREFIX)
+                writer.write(bytes: data)
+            }
+
+            inHandle.write(data as Data)
         } catch _ {
             print("error serializing to json")
         }
@@ -221,6 +233,11 @@ class StdoutRPCSender: RPCSending {
     }
 
     private func handleRaw(_ data: Data) {
+        if let writer = self.rpcLogWriter {
+            writer.write(bytes: CORE_LOG_PREFIX)
+            writer.write(bytes: data)
+        }
+
         Trace.shared.trace("handleRaw", .rpc, .begin)
         do {
             let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
@@ -257,22 +274,16 @@ class StdoutRPCSender: RPCSending {
         }
     }
 
-    private func handleRequest(json: [String: AnyObject]) {
-        guard let jsonMethod = json["method"] as? String,
-              let params = json["params"],
-              let id = json["id"],
-              let method = RPCRequestMethod(rawValue: jsonMethod)
-            else {
-                assertionFailure("unknown json from core: \(json)")
-                return
+    private func handleRequest(json: [String: Any]) {
+        guard let request = CoreRequest.fromJson(json) else {
+            return
         }
 
-        switch method {
-        case .measureWidth:
-            guard let args = params as? [[String: AnyObject]],
-                  let result = client?.measureWidth(args: args) else {
-                    assertionFailure("unexpected data from core: \(params)")
-                    return
+        switch request {
+        case let .measureWidth(id, params):
+            guard let result = client?.measureWidth(args: params) else {
+                assertionFailure("measure_width request from core failed: \(params)")
+                return
             }
 
             sendResult(id: id, result: result)
@@ -280,14 +291,11 @@ class StdoutRPCSender: RPCSending {
     }
 
     private func handleNotification(json: [String: AnyObject]) {
-        guard let jsonMethod = json["method"] as? String,
-              let params = json["params"],
-              let method = RPCNotificationMethod(rawValue: jsonMethod)
-            else {
-                assertionFailure("unknown json from core: \(json)")
-                return
+        guard let notification = CoreNotification.fromJson(json) else {
+            return
         }
 
+<<<<<<< HEAD
         let viewIdentifier = params["view_id"] as? ViewIdentifier
         
         switch method {
@@ -389,6 +397,61 @@ class StdoutRPCSender: RPCSending {
                 viewIdentifier: viewIdentifier!,
                 isTailEnabled: isTailEnabled
             )
+=======
+        switch notification {
+        case let .alert(message):
+            self.client?.alert(text: message)
+
+        case let .updateCommands(viewIdentifier, plugin, commands):
+            self.client?.updateCommands(viewIdentifier: viewIdentifier,
+                                        plugin: plugin,
+                                        commands: commands)
+
+        case let .scrollTo(viewIdentifier, line, column):
+            self.client?.scroll(viewIdentifier: viewIdentifier, line: line, column: column)
+
+        case let .addStatusItem(viewIdentifier, source, key, value, alignment):
+            self.client?.addStatusItem(viewIdentifier: viewIdentifier, source: source, key: key, value: value, alignment: alignment)
+        case let .updateStatusItem(viewIdentifier, key, value):
+            self.client?.updateStatusItem(viewIdentifier: viewIdentifier, key: key, value: value)
+        case let .removeStatusItem(viewIdentifier, key):
+            self.client?.removeStatusItem(viewIdentifier: viewIdentifier, key: key)
+
+        case let .update(viewIdentifier, params):
+            self.client?.update(viewIdentifier: viewIdentifier,
+                                params: params, rev: nil)
+
+        case let .configChanged(viewIdentifier, config):
+            self.client?.configChanged(viewIdentifier: viewIdentifier, changes: config)
+
+        case let .defStyle(params):
+            self.client?.defineStyle(params: params)
+
+        case let .availablePlugins(viewIdentifier, plugins):
+            self.client?.availablePlugins(viewIdentifier: viewIdentifier, plugins: plugins)
+        case let .pluginStarted(viewIdentifier, plugin):
+            self.client?.pluginStarted(viewIdentifier: viewIdentifier, pluginName: plugin)
+        case let .pluginStopped(viewIdentifier, pluginName):
+            self.client?.pluginStopped(viewIdentifier: viewIdentifier, pluginName: pluginName)
+
+        case let .availableThemes(themes):
+            self.client?.availableThemes(themes: themes)
+        case let .themeChanged(name, theme):
+            self.client?.themeChanged(name: name, theme: theme)
+
+        case let .availableLanguages(languages):
+            self.client?.availableLanguages(languages: languages)
+        case let .languageChanged(viewIdentifier, languageIdentifier):
+            self.client?.languageChanged(viewIdentifier: viewIdentifier, languageIdentifier: languageIdentifier)
+
+        case let .showHover(viewIdentifier, requestIdentifier, result):
+            self.client?.showHover(viewIdentifier: viewIdentifier, requestIdentifier: requestIdentifier, result: result)
+
+        case let .findStatus(viewIdentifier, status):
+            self.client?.findStatus(viewIdentifier: viewIdentifier, status: status)
+        case let .replaceStatus(viewIdentifier, status):
+            self.client?.replaceStatus(viewIdentifier: viewIdentifier, status: status)
+>>>>>>> master
         }
     }
 

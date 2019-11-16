@@ -77,6 +77,19 @@ class XiViewProxyTests: XCTestCase {
         XCTAssertEqual(result!, testCopyCharacters)
     }
 
+    func testScroll() {
+        let asyncCalledExpectation = expectation(description: "Async should be called")
+        let async: XiViewConnection.AsyncRpc = { method, params, _ in
+            XCTAssertEqual("scroll", method)
+            let scrollParams = params as! [Int]
+            XCTAssertEqual([23, 42], scrollParams)
+            asyncCalledExpectation.fulfill()
+        }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
+        connection.scroll(firstLine: 23, lastLine: 42)
+        wait(for: [asyncCalledExpectation], timeout: 1)
+    }
+
     func testToggleRecording() {
         let asyncCalledExpectation = expectation(description: "Async should be called")
         let async: XiViewConnection.AsyncRpc = { method, params,_ in
@@ -129,6 +142,45 @@ class XiViewProxyTests: XCTestCase {
         wait(for: [asyncCalledExpectation], timeout: 1)
     }
 
+    func testReplace() {
+        let asyncCalledExpectation = expectation(description: "Async should be called")
+        let async: XiViewConnection.AsyncRpc = { method, params, _ in
+            XCTAssertEqual("replace", method)
+            let replaceParams = params as! [String: String]
+            XCTAssertEqual(["chars": "replacement"], replaceParams)
+            asyncCalledExpectation.fulfill()
+        }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
+        connection.replace(chars: "replacement")
+        wait(for: [asyncCalledExpectation], timeout: 1)
+    }
+
+    func testReplaceNext() {
+        let asyncCalledExpectation = expectation(description: "Async should be called")
+        let async: XiViewConnection.AsyncRpc = { method, params, _ in
+            XCTAssertEqual("replace_next", method)
+            let replaceParams = params as! [String]
+            XCTAssertEqual([], replaceParams)
+            asyncCalledExpectation.fulfill()
+        }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
+        connection.replaceNext()
+        wait(for: [asyncCalledExpectation], timeout: 1)
+    }
+
+    func testReplaceAll() {
+        let asyncCalledExpectation = expectation(description: "Async should be called")
+        let async: XiViewConnection.AsyncRpc = { method, params, _ in
+            XCTAssertEqual("replace_all", method)
+            let replaceParams = params as! [String]
+            XCTAssertEqual([], replaceParams)
+            asyncCalledExpectation.fulfill()
+        }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
+        connection.replaceAll()
+        wait(for: [asyncCalledExpectation], timeout: 1)
+    }
+
     func testSelectionForFindTrue() {
         let asyncCalledExpectation = expectation(description: "Async should be called")
         let async: XiViewConnection.AsyncRpc = { method, params, _ in
@@ -139,6 +191,32 @@ class XiViewProxyTests: XCTestCase {
         }
         let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
         connection.selectionForFind(caseSensitive: true)
+        wait(for: [asyncCalledExpectation], timeout: 1)
+    }
+
+    func testInsert() {
+        let asyncCalledExpectation = expectation(description: "Async should be called")
+        let async: XiViewConnection.AsyncRpc = { method, params, _ in
+            XCTAssertEqual("insert", method)
+            let insertParams = params as! [String: String]
+            XCTAssertEqual(["chars": "lorem ipsum"], insertParams)
+            asyncCalledExpectation.fulfill()
+        }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
+        connection.insert(chars: "lorem ipsum")
+        wait(for: [asyncCalledExpectation], timeout: 1)
+    }
+
+    func testDeleteBackward() {
+        let asyncCalledExpectation = expectation(description: "Async should be called")
+        let async: XiViewConnection.AsyncRpc = { method, params, _ in
+            XCTAssertEqual("delete_backward", method)
+            let deleteParams = params as! [String]
+            XCTAssertEqual([], deleteParams)
+            asyncCalledExpectation.fulfill()
+        }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
+        connection.deleteBackward()
         wait(for: [asyncCalledExpectation], timeout: 1)
     }
 
@@ -333,6 +411,72 @@ class XiViewProxyTests: XCTestCase {
         }
         let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
         connection.findAll()
+        wait(for: [asyncCalledExpectation], timeout: 1)
+    }
+
+    func testUppercase() {
+        let asyncCalledExpectation = expectation(description: "Async should be called")
+        let async: XiViewConnection.AsyncRpc = { method, _, _ in
+            XCTAssertEqual("uppercase", method)
+            asyncCalledExpectation.fulfill()
+        }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
+        connection.uppercase()
+        wait(for: [asyncCalledExpectation], timeout: 1)
+    }
+
+    func testLowercase() {
+        let asyncCalledExpectation = expectation(description: "Async should be called")
+        let async: XiViewConnection.AsyncRpc = { method, _, _ in
+            XCTAssertEqual("lowercase", method)
+            asyncCalledExpectation.fulfill()
+        }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
+        connection.lowercase()
+        wait(for: [asyncCalledExpectation], timeout: 1)
+    }
+
+    func testCapitalize() {
+        let asyncCalledExpectation = expectation(description: "Async should be called")
+        let async: XiViewConnection.AsyncRpc = { method, _, _ in
+            XCTAssertEqual("capitalize", method)
+            asyncCalledExpectation.fulfill()
+        }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
+        connection.capitalize()
+        wait(for: [asyncCalledExpectation], timeout: 1)
+    }
+
+    func testIndent() {
+        let asyncCalledExpectation = expectation(description: "Async should be called")
+        let async: XiViewConnection.AsyncRpc = { method, _, _ in
+            XCTAssertEqual("indent", method)
+            asyncCalledExpectation.fulfill()
+        }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
+        connection.indent()
+        wait(for: [asyncCalledExpectation], timeout: 1)
+    }
+
+    func testOutdent() {
+        let asyncCalledExpectation = expectation(description: "Async should be called")
+        let async: XiViewConnection.AsyncRpc = { method, _, _ in
+            XCTAssertEqual("outdent", method)
+            asyncCalledExpectation.fulfill()
+        }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
+        connection.outdent()
+        wait(for: [asyncCalledExpectation], timeout: 1)
+    }
+
+    func testReindent() {
+        let asyncCalledExpectation = expectation(description: "Async should be called")
+        let async: XiViewConnection.AsyncRpc = { method, _, _ in
+            XCTAssertEqual("reindent", method)
+            asyncCalledExpectation.fulfill()
+        }
+        let connection: XiViewProxy = XiViewConnection(asyncRpc: async, syncRpc: unusedSync)
+        connection.reindent()
         wait(for: [asyncCalledExpectation], timeout: 1)
     }
 

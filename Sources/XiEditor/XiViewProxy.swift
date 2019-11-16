@@ -28,6 +28,12 @@ protocol XiViewProxy: class {
     func copy() -> String?
     func cut() -> String?
 
+    /// Notifies the back-end of the visible scroll region, defined as the first and last
+    /// (non-inclusive) formatted lines. The visible scroll region is used to compute movement
+    /// distance for page up and page down commands, and also controls the size of the fragment
+    /// sent in the update method.
+    func scroll(firstLine: Int, lastLine: Int)
+
     func toggleRecording(name: String)
     func playRecording(name: String)
     func clearRecording(name: String)
@@ -43,10 +49,31 @@ protocol XiViewProxy: class {
     /// Shows/hides active search highlights.
     func highlightFind(visible: Bool)
 
+    /// Sets the replacement string.
+    func replace(chars: String)
+    /// Replaces the next matching occurrence with the replacement string.
+    func replaceNext()
+    /// Replaces all matching occurrences with the replacement string.
+    func replaceAll()
+
     /// Sets the current selection as the search query.
     func selectionForFind(caseSensitive: Bool)
     /// Sets the current selection as the replacement string.
     func selectionForReplace(caseSensitive: Bool)
+
+    /// Inserts the chars string at the current cursor locations.
+    func insert(chars: String)
+    /// Deletes backwards.
+    func deleteBackward()
+
+    /// transformations
+    /// The following methods act by modifying the current selection.
+    func uppercase()
+    func lowercase()
+    func capitalize()
+    func indent()
+    func outdent()
+    func reindent()
 }
 
 final class XiViewConnection: XiViewProxy {
@@ -92,6 +119,10 @@ final class XiViewConnection: XiViewProxy {
         }
     }
 
+    func scroll(firstLine: Int, lastLine: Int) {
+        sendRpcAsync("scroll", params: [firstLine, lastLine])
+    }
+
     func toggleRecording(name: String) {
         sendRpcAsync("toggle_recording", params: ["recording_name": name])
     }
@@ -112,6 +143,32 @@ final class XiViewConnection: XiViewProxy {
     func findNext(wrapAround: Bool, allowSame: Bool, modifySelection: SelectionModifier) {
         let params = createFindParamsFor(wrapAround: wrapAround, allowSame: allowSame, modifySelection: modifySelection)
         sendRpcAsync("find_next", params: params)
+    }
+
+    // MARK: - transformations
+
+    func uppercase() {
+        sendRpcAsync("uppercase", params: [])
+    }
+
+    func lowercase() {
+        sendRpcAsync("lowercase", params: [])
+    }
+
+    func capitalize() {
+        sendRpcAsync("capitalize", params: [])
+    }
+
+    func indent() {
+        sendRpcAsync("indent", params: [])
+    }
+
+    func outdent() {
+        sendRpcAsync("outdent", params: [])
+    }
+
+    func reindent() {
+        sendRpcAsync("reindent", params: [])
     }
 
     /// All parameters are optional. Boolean parameters are by default `false` and `modify_selection` is `set` by default.
@@ -142,6 +199,18 @@ final class XiViewConnection: XiViewProxy {
         sendRpcAsync("highlight_find", params: ["visible": visible])
     }
 
+    func replace(chars: String) {
+        sendRpcAsync("replace", params: ["chars": chars])
+    }
+
+    func replaceNext() {
+        sendRpcAsync("replace_next", params: [])
+    }
+
+    func replaceAll() {
+        sendRpcAsync("replace_all", params: [])
+    }
+
     func selectionForFind(caseSensitive: Bool) {
         let params = createSelectionParamsFor(caseSensitive: caseSensitive)
         sendRpcAsync("selection_for_find", params: params)
@@ -159,6 +228,15 @@ final class XiViewConnection: XiViewProxy {
         } else {
             return [:]
         }
+    }
+
+    func insert(chars: String) {
+        let params = ["chars": chars]
+        sendRpcAsync("insert", params: params)
+    }
+
+    func deleteBackward() {
+        sendRpcAsync("delete_backward", params: [])
     }
 
     private func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback? = nil) {

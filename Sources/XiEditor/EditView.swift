@@ -32,7 +32,7 @@ extension NSFont {
 /// A store of properties used to determine the layout of text.
 struct TextDrawingMetrics {
     let font: NSFont
-    let attributes: [NSAttributedStringKey: AnyObject]
+    let attributes: [NSAttributedString.Key: AnyObject]
     let ascent: CGFloat
     let descent: CGFloat
     let leading: CGFloat
@@ -100,11 +100,6 @@ struct GutterCache {
 
 /// A line-column index into a displayed text buffer.
 typealias BufferPosition = (line: Int, column: Int)
-
-
-func insertedStringToJson(_ stringToInsert: NSString) -> Any {
-    return ["chars": stringToInsert]
-}
 
 func colorFromArgb(_ argb: UInt32) -> NSColor {
     return NSColor(red: CGFloat((argb >> 16) & 0xff) * 1.0/255,
@@ -229,11 +224,17 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         return true
     }
 
-    override func draggingEnded(_ sender: NSDraggingInfo) {
+    override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
+        return sender.draggingSourceOperationMask.intersection([.generic])
+    }
+
+    override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
         // open file dragged into window
-        guard let pasteboard = sender.draggingPasteboard().propertyList(forType: NSPasteboard.PasteboardType(rawValue: "NSFilenamesPboardType")) as? NSArray,
+        guard let pasteboard = sender.draggingPasteboard.propertyList(forType: NSPasteboard.PasteboardType(rawValue: "NSFilenamesPboardType")) as? NSArray,
             let path = pasteboard.firstObject as? String
-        else { return }
+        else {
+            return false
+        }
 
         NSDocumentController.shared.openDocument(
             withContentsOf: URL.init(fileURLWithPath: path),
@@ -243,6 +244,7 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
                     print("error opening file \(error)")
                 }
         })
+        return true
     }
 
     /// Resets the blink timer, if the cursor should be blinking
@@ -295,12 +297,12 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             replacementRange.length = 0
         }
         for _ in 0..<aRange.length {
-            dataSource.document.sendRpcAsync("delete_backward", params  : [])
+            dataSource.xiView.deleteBackward()
         }
         if let attrStr = aString as? NSAttributedString {
-            dataSource.document.sendRpcAsync("insert", params: insertedStringToJson(attrStr.string as NSString))
-        } else if let str = aString as? NSString {
-            dataSource.document.sendRpcAsync("insert", params: insertedStringToJson(str))
+            dataSource.xiView.insert(chars: attrStr.string)
+        } else if let str = aString as? String {
+            dataSource.xiView.insert(chars: str)
         }
         return NSMakeRange(replacementRange.location, len)
     }
@@ -321,7 +323,7 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     func removeMarkedText() {
         if (_markedRange.location != NSNotFound) {
             for _ in 0..<_markedRange.length {
-                dataSource.document.sendRpcAsync("delete_backward", params: [])
+                dataSource.xiView.deleteBackward()
             }
         }
         _markedRange = NSMakeRange(NSNotFound, 0)
@@ -348,7 +350,7 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         return NSAttributedString()
     }
 
-    func validAttributesForMarkedText() -> [NSAttributedStringKey] {
+    func validAttributesForMarkedText() -> [NSAttributedString.Key] {
         return [.foregroundColor, .backgroundColor]
     }
 
@@ -409,8 +411,7 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     }
 
     private func utf8_offset_to_utf16(_ s: String, _ ix: Int) -> Int {
-        // String(s.utf8.prefix(ix)).utf16.count
-        return s.utf8.index(s.utf8.startIndex, offsetBy: ix).encodedOffset
+        return s.utf8.index(s.utf8.startIndex, offsetBy: ix).utf16Offset(in: s)
     }
 
     private func utf16_offset_to_utf8(_ s: String, _ ix: Int) -> Int {

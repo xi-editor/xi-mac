@@ -21,6 +21,7 @@ protocol EditViewDataSource: class {
     var theme: Theme { get }
     var textMetrics: TextDrawingMetrics { get }
     var document: Document! { get }
+    var xiView: XiViewProxy! { get }
     var gutterWidth: CGFloat { get }
     var scrollOrigin: NSPoint { get }
     func maxWidthChanged(toWidth: Double)
@@ -64,9 +65,9 @@ protocol FindDelegate: class {
     func findNext(wrapAround: Bool, allowSame: Bool)
     func findPrevious(wrapAround: Bool)
     func closeFind()
-    func findStatus(status: [[String: AnyObject]])
-    func replaceStatus(status: [String: AnyObject])
-    func replace(_ term: String?)
+    func findStatus(status: [FindStatus])
+    func replaceStatus(status: ReplaceStatus)
+    func replace(_ term: String)
     func replaceNext()
     func replaceAll()
     func updateScrollPosition(previousOffset: CGFloat)
@@ -76,7 +77,7 @@ protocol MarkerDelegate: class {
     func setMarker(_ items: [Marker])
 }
 
-class EditViewController: NSViewController, EditViewDataSource, FindDelegate, ScrollInterested, MarkerDelegate {
+class EditViewController: NSViewController, EditViewDataSource, FindDelegate, ScrollInterested, MarkerDelegate, NSMenuItemValidation {
     @IBOutlet var scrollView: NSScrollView!
     @IBOutlet weak var editContainerView: EditContainerView!
     @IBOutlet var editView: EditView!
@@ -86,8 +87,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     @IBOutlet weak var editViewWidth: NSLayoutConstraint!
 
     lazy var findViewController: FindViewController! = {
-        let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
-        let controller = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Find View Controller")) as! FindViewController
+        let storyboard = NSStoryboard(name: NSStoryboard.Name("Main"), bundle: nil)
+        let controller = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier("Find View Controller")) as! FindViewController
         controller.findDelegate = self
         self.view.addSubview(controller.view)
         controller.view.translatesAutoresizingMaskIntoConstraints = false
@@ -330,6 +331,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         if first..<last != visibleLines {
             document.sendWillScroll(first: first, last: last)
             visibleLines = first..<last
+
+            // Cancels the scroll animation to prevent jerky scrolling.
+            scrollView.contentView.setBoundsOrigin(newOrigin)
         }
         editView.needsDisplay = true
     }
@@ -352,9 +356,10 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         editView.gutterCache = nil
         shadowView.updateShadowColor(newColor: theme.shadow)
         editView.needsDisplay = true
+
         let configCache = (NSApplication.shared.delegate as! AppDelegate).xiClient.configCache
-        self.scrollPastEnd = (configCache["scroll_past_end"] as? Bool) ?? false
-        self.unifiedTitlebar = (configCache["unified_titlebar"] as? Bool) ?? false
+        self.scrollPastEnd = configCache.scrollPastEnd ?? false
+        self.unifiedTitlebar = configCache.unifiedToolbar ?? false
     }
 
     fileprivate func updateEditViewHeight() {
@@ -369,10 +374,10 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     // MARK: - Core Commands
 
     /// handles the `update` RPC. This is called from a dedicated thread.
-    func updateAsync(update: [String: AnyObject]) {
+    func updateAsync(params: UpdateParams) {
         let lineCache = lines.locked()
-        let inval = lineCache.applyUpdate(update: update)
-        let hasNoUnsavedChanges = update["pristine"] as? Bool ?? false
+        let inval = lineCache.applyUpdate(params: params)
+        let hasNoUnsavedChanges = params.pristine
         let revision = lineCache.revision
 
         DispatchQueue.main.async { [weak self] in
@@ -494,15 +499,15 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     override func uppercaseWord(_ sender: Any?) {
-        document.sendRpcAsync("uppercase", params: [])
+        xiView.uppercase()
     }
 
     override func lowercaseWord(_ sender: Any?) {
-        document.sendRpcAsync("lowercase", params: [])
+        xiView.lowercase()
     }
 
     override func capitalizeWord(_ sender: Any?) {
-        document.sendRpcAsync("capitalize", params: [])
+        xiView.capitalize()
     }
 
     @objc func undo(_ sender: AnyObject?) {
@@ -524,15 +529,15 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     }
 
     override func indent(_ sender: Any?) {
-        document.sendRpcAsync("indent", params: [])
+        xiView.indent()
     }
 
     @objc func unindent(_ sender: Any?) {
-        document.sendRpcAsync("outdent", params: [])
+        xiView.outdent()
     }
 
     @objc func reindent(_ sender: Any?) {
-        document.sendRpcAsync("reindent", params: [])
+        xiView.reindent()
     }
 
     @objc func increaseNumber(_ sender: Any?) {
@@ -583,33 +588,34 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         self.editView.inputContext?.handleEvent(theEvent)
     }
 
-    // Determines the gesture type based on flags and click count.
-    private func clickGestureType(event: NSEvent) -> String {
+    private func granularity(for event: NSEvent) -> String {
         let inGutter = event.locationInWindow.x < self.gutterWidth
-        let clickCount = event.clickCount
-
-        if event.modifierFlags.contains(.command) {
-            if clickCount >= 3 || inGutter {
-                return "multi_line_select"
-            } else if clickCount == 2 {
-                return "multi_word_select"
-            } else {
-                return "toggle_sel"
-            }
-        } else if event.modifierFlags.contains(.shift) {
-            // TODO: When shift+clicking on the gutter, perform a line range select
-            // (the gesture doesn't exist yet in core)
-            return "range_select"
-        } else if event.modifierFlags.contains(.option) {
-            return "request_hover"
+        if event.clickCount >= 3 || inGutter {
+            return "line"
+        } else if event.clickCount == 2 {
+            return "word"
         } else {
-            if clickCount >= 3 || inGutter {
-                return "line_select"
-            } else if clickCount == 2 {
-                return "word_select"
-            } else {
-                return "point_select"
-            }
+            return "point"
+        }
+    }
+
+    // Determines the gesture type based on flags and click count.
+    private func clickGestureType(event: NSEvent) -> Any {
+        let granularity = self.granularity(for: event)
+
+        if event.modifierFlags.contains(.shift) {
+            return [
+                "select_extend": [
+                    "granularity": granularity
+                ]
+            ]
+        } else {
+            return [
+                "select": [
+                    "granularity": granularity,
+                    "multi": event.modifierFlags.contains(.command)
+                ]
+            ]
         }
     }
 
@@ -620,19 +626,17 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         infoPopover.performClose(self)
         editView.unmarkText()
         editView.inputContext?.discardMarkedText()
-        let position  = editView.bufferPositionFromPoint(theEvent.locationInWindow)
+        let position = editView.bufferPositionFromPoint(theEvent.locationInWindow)
         lastDragPosition = position
 
-        let gestureType = clickGestureType(event: theEvent)
-
-        if gestureType == "request_hover" {
+        if theEvent.modifierFlags.contains(.option) {
             hoverEvent = theEvent
             sendHover()
         } else {
             document.sendRpcAsync("gesture", params: [
                 "line": position.line,
                 "col": position.column,
-                "ty": gestureType
+                "ty": clickGestureType(event: theEvent)
                 ])
         }
 
@@ -645,8 +649,11 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         let dragPosition = editView.bufferPositionFromPoint(theEvent.locationInWindow)
         if let last = lastDragPosition, last != dragPosition {
             lastDragPosition = dragPosition
-            let flags = theEvent.modifierFlags.rawValue >> 16
-            document.sendRpcAsync("drag", params: [dragPosition.line, dragPosition.column, flags])
+            document.sendRpcAsync("gesture", params: [
+                "line": dragPosition.line,
+                "col": dragPosition.column,
+                "ty": "drag"
+                ])
         }
         dragEvent = theEvent
     }
@@ -682,7 +689,7 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         } else {
             fatalError("insertText: called with undocumented type")
         }
-        document.sendRpcAsync("insert", params: ["chars": text])
+        xiView.insert(chars: text)
     }
 
     // we intercept this method to check if we should open a new tab
@@ -702,7 +709,8 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         NSDocumentController.shared.newDocument(sender)
     }
 
-    override func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
+    // MARK: - NSMenuItemValidation
+    func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
         // disable the New Tab menu item when running in 10.12
         if menuItem.tag == 10 {
             if #available(OSX 10.12, *) { return true }
@@ -780,22 +788,21 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         self.availableCommands[plugin] = commands
     }
 
-    public func configChanged(changes: [String: AnyObject]) {
-        for (key, _) in changes {
-            switch key {
-            case "font_size", "font_face":
-                self.handleFontChange(fontName: changes["font_face"] as? String,
-                                      fontSize: changes["font_size"] as? CGFloat)
+    public func configChanged(config: Config) {
+        if
+            let fontFace = config.fontFace,
+            let fontSize = config.fontSize
+        {
+            self.handleFontChange(fontName: fontFace,
+                                  fontSize: fontSize)
+        }
 
-            case "scroll_past_end":
-                self.scrollPastEnd = changes["scroll_past_end"] as! Bool
+        if let scrollPastEnd = config.scrollPastEnd {
+            self.scrollPastEnd = scrollPastEnd
+        }
 
-            case "unified_titlebar":
-                self.unifiedTitlebar = changes["unified_titlebar"] as! Bool
-
-            default:
-                break
-            }
+        if let unifiedToolbar = config.unifiedToolbar {
+            self.unifiedTitlebar = unifiedToolbar
         }
     }
 
@@ -879,23 +886,23 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             } else {
                 Swift.print("failed to resolve command params")
             }
-            if self?.userInputController.presenting != nil {
-                self?.dismissViewController(self!.userInputController)
+            if self?.userInputController.presentingViewController != nil {
+                self?.dismiss(self!.userInputController)
             }
         })
     }
 
     func resolveParams(_ command: Command, completion: @escaping ([String: AnyObject]?) -> ()) {
         guard !command.args.isEmpty else {
-            completion(command.params)
+            completion(command.params as [String : AnyObject])
             return
         }
-        self.presentViewControllerAsSheet(userInputController)
+        self.presentAsSheet(userInputController)
         userInputController.collectInput(forCommand: command, completion: completion)
     }
 
     lazy var userInputController: UserInputPromptController = {
-        return self.storyboard!.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "InputPromptController"))
+        return self.storyboard!.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier("InputPromptController"))
             as! UserInputPromptController
     }()
 
@@ -984,6 +991,12 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     @IBAction func duplicateLine(_ sender: NSMenuItem) {
         document.sendRpcAsync("duplicate_line", params: [])
     }
+    
+    func postDocumentClosedNotification() {
+        let path = self.document.fileURL?.path // To check if window contains file opened by cli
+        let notification = Notification.Name("io.xi-editor.XiEditor.FileClosed")
+        DistributedNotificationCenter.default().post(name: notification, object: nil, userInfo: ["path": path ?? "FILE_NOT_SAVED"])
+    }
 }
 
 // we set this in Document.swift when we load a new window or tab.
@@ -996,12 +1009,6 @@ extension EditViewController: NSWindowDelegate {
 
     func windowDidResignKey(_ notification: Notification) {
         editView.isFrontmostView = false
-    }
-    
-    @objc func windowShouldClose(_ sender: NSWindow) {
-        let path = self.document.fileURL?.path // To check if window contains file opened by cli
-        let notification = Notification.Name("io.xi-editor.XiEditor.FileClosed")
-        DistributedNotificationCenter.default().post(name: notification, object: nil, userInfo: ["path": path ?? "FILE_NOT_SAVED"])
     }
 }
 

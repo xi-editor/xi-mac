@@ -52,24 +52,22 @@ public final class CommandLineTool {
     func resolvePath(from input: String) throws -> String {
         let fileManager = FileManager.default
         var filePath: URL!
-        
-        if input.hasPrefix("/") {
-            filePath = URL(fileURLWithPath: input)
-        } else if input.hasPrefix("~") {
-            var input = input
-            input.remove(at: input.startIndex)
-            if #available(OSX 10.12, *) {
-                filePath = fileManager.homeDirectoryForCurrentUser
+
+        // Small helper function used to determine if path is not a folder.
+        func pathIsNotDirectory(_ path: String) -> Bool {
+            var isDirectory = ObjCBool(false)
+            if fileManager.fileExists(atPath: path, isDirectory: &isDirectory) {
+                return !isDirectory.boolValue
             } else {
-                filePath = URL(fileURLWithPath: NSHomeDirectory())
+                return true
             }
-            filePath.appendPathComponent(input)
-        } else {
-            let basePath = URL(fileURLWithPath: fileManager.currentDirectoryPath)
-            filePath = basePath.appendingPathComponent(input)
         }
         
-        let pathString = filePath.path
+        let pathString = canonicalPath(input)
+
+        guard pathIsNotDirectory(pathString) else {
+            throw CliError.pathIsDirectory
+        }
         
         if !fileManager.fileExists(atPath: pathString) {
             let createSuccess = fileManager.createFile(atPath: pathString, contents: nil, attributes: nil)
@@ -102,8 +100,8 @@ public final class CommandLineTool {
 
         var filePaths = filePaths
         notificationCenter.addObserver(forName: notification, object: nil, queue: notificationQueue) { notification in
-            let passedPath = notification.userInfo!["path"] as! String
-            if let index = filePaths.index(of: passedPath) {
+            let passedPath = self.canonicalPath(notification.userInfo!["path"] as! String)
+            if let index = filePaths.firstIndex(of: passedPath) {
                 filePaths.remove(at: index)
             }
 
@@ -129,11 +127,16 @@ public final class CommandLineTool {
                 """
         print(message)
     }
+
+    func canonicalPath(_ path: String) -> String {
+        return URL(fileURLWithPath: path).standardizedFileURL.resolvingSymlinksInPath().path
+    }
 }
 
 public extension CommandLineTool {
     enum CliError: Swift.Error {
         case couldNotCreateFile
         case failedToOpenEditor
+        case pathIsDirectory
     }
 }

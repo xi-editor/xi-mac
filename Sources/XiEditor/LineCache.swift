@@ -17,11 +17,10 @@ import Foundation
 /// A half-open range representing lines in a document.
 typealias LineRange = CountableRange<Int>
 
-/// Represents a single line, including rendering information.
 struct Line<T> {
-    var text: String
-    var cursor: [Int]
-    var styles: [StyleSpan]
+    let text: String
+    let cursor: [Int]
+    let styles: [StyleSpan]
     /// This line's logical number, if it is the start of a logical line
     var number: UInt?
     /// Associated data, to be managed by client
@@ -31,30 +30,25 @@ struct Line<T> {
     var containsCursor: Bool {
         return cursor.count > 0
     }
+}
 
-    init(fromJson json: [String: AnyObject]) {
-        // this could be a more clear exception
-        text = json["text"] as! String
-        cursor = json["cursor"] as? [Int] ?? []
-        number = json["ln"] as? UInt
-        if let styles = json["styles"] as? [Int] {
-            self.styles = StyleSpan.styles(fromRaw: styles, text: self.text)
-        } else {
-            self.styles = []
-        }
+extension Line {
+    init(fromLine line: UpdatedLine) {
+        self.text = line.text
+        self.cursor = line.cursor
+        self.styles = line.styles
+        self.number = line.number
     }
 
-    /// Create a new line, applying new styles to an existing line's text
-    init?(updateFromJson line: Line?, json: [String: AnyObject]) {
-        guard let line = line else { return nil }
-        self.text = line.text
-        self.number = line.number
-        cursor = json["cursor"] as? [Int] ?? line.cursor
-        if let styles = json["styles"] as? [Int] {
-            self.styles = StyleSpan.styles(fromRaw: styles, text: self.text)
-        } else {
-            self.styles = line.styles
-        }
+    /// Create a new line, applying new styles to this line's text
+    func updating(from line: UpdatedLine) -> Line {
+        return Line(
+            text: self.text,
+            cursor: line.cursor,
+            styles: line.styles.count > 0 ? line.styles : self.styles,
+            number: line.number,
+            assoc: self.assoc
+        )
     }
 }
 
@@ -108,52 +102,51 @@ fileprivate class LineCacheState<T>: UnfairLock {
 
     /// Updates the state by applying a delta. The update format is detailed in the
     /// [xi-core docs](http://xi-editor.github.io/xi-editor/docs/frontend-protocol.html#view-update-protocol).
-    func applyUpdate(update: [String: AnyObject]) -> InvalSet {
-        let updateAnnotations = update["annotations"] as? [[String: AnyObject]] ?? []
-        annotations = AnnotationStore(from: updateAnnotations)
+    func applyUpdate(params: UpdateParams) -> InvalSet {
+        annotations = AnnotationStore(from: params.annotations)
 
         let inval = InvalSet()
-        guard let ops = update["ops"] else { return inval }
+        
+        if params.ops.isEmpty {
+            // do not invalidate lines if only there are no update operations, e.g. when only updating annotations
+            return inval
+        }
+        
         let oldHeight = height
         var newInvalidBefore = 0
         var newLines: [Line<T>?] = []
         var newInvalidAfter = 0
         var oldIx = 0
 
-        for op in ops as! [[String: AnyObject]] {
-            guard let op_type = op["op"] as? String else { return inval }
-            guard let n = op["n"] as? Int else { return inval }
-            switch op_type {
-            case "invalidate":
+        for op in params.ops {
+            switch op.type {
+            case .invalidate:
                 // Add only lines that were not already invalid
                 let curLine = newInvalidBefore + newLines.count + newInvalidAfter
                 let ix = curLine - nInvalidBefore
-                if ix + n > 0 && ix < lines.count {
-                    for i in max(ix, 0) ..< min(ix + n, lines.count) {
+                if ix + op.n > 0 && ix < lines.count {
+                    for i in max(ix, 0) ..< min(ix + op.n, lines.count) {
                         if lines[i] != nil {
                             inval.addRange(start: i + nInvalidBefore, n: 1)
                         }
                     }
                 }
                 if newLines.count == 0 {
-                    newInvalidBefore += n
+                    newInvalidBefore += op.n
                 } else {
-                    newInvalidAfter += n
+                    newInvalidAfter += op.n
                 }
-            case "ins":
+            case .insert:
                 for _ in 0..<newInvalidAfter {
                     newLines.append(nil)
                 }
                 newInvalidAfter = 0
-                inval.addRange(start: newInvalidBefore + newLines.count, n: n)
-                guard let json_lines = op["lines"] as? [[String: AnyObject]] else { return inval }
-                for json_line in json_lines {
-                    newLines.append(Line(fromJson: json_line))
-                }
-            case "copy", "update":
-                var nRemaining = n
+                inval.addRange(start: newInvalidBefore + newLines.count, n: op.n)
+                newLines.append(contentsOf: op.lines.map(Line.init))
+            case .copy, .update:
+                var nRemaining = op.n
                 if oldIx < nInvalidBefore {
-                    let nInvalid = min(n, nInvalidBefore - oldIx)
+                    let nInvalid = min(op.n, nInvalidBefore - oldIx)
                     if newLines.count == 0 {
                         newInvalidBefore += nInvalid
                     } else {
@@ -168,12 +161,12 @@ fileprivate class LineCacheState<T>: UnfairLock {
                     }
                     newInvalidAfter = 0
                     let nCopy = min(nRemaining, nInvalidBefore + lines.count - oldIx)
-                    if oldIx != newInvalidBefore + newLines.count || op_type != "copy" {
+                    if oldIx != newInvalidBefore + newLines.count || op.type != .copy {
                         inval.addRange(start: newInvalidBefore + newLines.count, n: nCopy)
                     }
                     let startIx = oldIx - nInvalidBefore
-                    if op_type == "copy" {
-                        var lineNumber = op["ln"] as! UInt
+                    if op.type == .copy {
+                        var lineNumber = op.ln
                         let toCopy = lines[startIx ..< startIx + nCopy]
                         // ??: `.first` returns an optional, and the items in the list are also optionals
                         if toCopy.first??.number == nil {
@@ -190,10 +183,9 @@ fileprivate class LineCacheState<T>: UnfairLock {
                             newLines.append(line)
                         }
                     } else {
-                        guard let json_lines = op["lines"] as? [[String: AnyObject]] else { return inval }
-                        var jsonIx = n - nRemaining
+                        var jsonIx = op.n - nRemaining
                         for ix in startIx ..< startIx + nCopy {
-                            newLines.append(Line(updateFromJson: lines[ix], json: json_lines[jsonIx]))
+                            newLines.append(lines[ix]?.updating(from: op.lines[jsonIx]))
                             jsonIx += 1
                         }
                     }
@@ -206,10 +198,8 @@ fileprivate class LineCacheState<T>: UnfairLock {
                     newInvalidAfter += nRemaining
                 }
                 oldIx += nRemaining
-            case "skip":
-                oldIx += n
-            default:
-                print("unknown op type \(op_type)")
+            case .skip:
+                oldIx += op.n
             }
         }
         nInvalidBefore = newInvalidBefore
@@ -343,9 +333,9 @@ class LineCacheLocked<T> {
     }
 
     /// Returns range of lines that have been invalidated
-    func applyUpdate(update: [String: AnyObject]) -> InvalSet {
+    func applyUpdate(params: UpdateParams) -> InvalSet {
         Trace.shared.trace("applyUpdate", .main, .begin)
-        let inval = inner.applyUpdate(update: update)
+        let inval = inner.applyUpdate(params: params)
         Trace.shared.trace("applyUpdate", .main, .end)
         if inner.isWaiting {
             shouldSignal = true

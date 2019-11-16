@@ -98,33 +98,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     lazy var defaultConfigDirectory: URL = {
-        let applicationDirectory = FileManager.default.urls(
+        return FileManager.default.urls(
             for: .applicationSupportDirectory,
             in: .userDomainMask)
             .first!
             .appendingPathComponent("XiEditor")
-
-        // create application support directory and copy preferences file on first run
-        if !FileManager.default.fileExists(atPath: applicationDirectory.path) {
-            do {
-
-                try FileManager.default.createDirectory(at: applicationDirectory,
-                                                        withIntermediateDirectories: true,
-                                                        attributes: nil)
-                let preferencesPath = applicationDirectory.appendingPathComponent(PREFERENCES_FILE_NAME)
-                let defaultConfigPath = Bundle.main.url(forResource: "client_example", withExtension: "toml")
-                try FileManager.default.copyItem(at: defaultConfigPath!, to: preferencesPath)
-
-
-            } catch let err  {
-                fatalError("Failed to create application support directory \(applicationDirectory.path). \(err)")
-            }
-        }
-        return applicationDirectory
     }()
-
-    // The default name for XiEditor's error logs
-    let defaultCoreLogName = "xi_tmp.log"
 
     lazy var errorLogDirectory: URL? = {
         let logDirectory = FileManager.default.urls(
@@ -171,7 +150,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let xiCore = CoreConnection(rpcSender: rpcSender)
         self.xiCore = xiCore
         updateRpcTracingConfig(collectSamplesOnBoot)
-
+        setupConfigDirectory()
         xiCore.clientStarted(configDir: getUserConfigDirectory(), clientExtrasDir: bundledPluginPath)
 
         // fallback values used by NSUserDefaults
@@ -189,17 +168,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         // Set Cli Menu Title
         renameCliToggle()
-    }
-    
-    // Clean up temporary Xi stderr log
-    func applicationWillTerminate(_ notification: Notification) {
-        if let tmpErrLogFile = errorLogDirectory?.appendingPathComponent(defaultCoreLogName) {
-            do {
-                try FileManager.default.removeItem(at: tmpErrLogFile)
-            } catch let err as NSError {
-                print("Failed to remove temporary log file. \(err)")
-            }
-        }
     }
     
     // MARK: - CLI Menu Items
@@ -288,6 +256,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     //MARK: - top-level interactions
     @IBAction func openPreferences(_ sender: NSMenuItem) {
         let preferencesPath = defaultConfigDirectory.appendingPathComponent(PREFERENCES_FILE_NAME)
+        setupConfigDirectory()
         NSDocumentController.shared.openDocument(
             withContentsOf: preferencesPath,
             display: true,
@@ -299,6 +268,31 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     //- MARK: - helpers
+    func setupConfigDirectory() {
+        let applicationDirectory = self.defaultConfigDirectory
+        let preferencesDirectory = applicationDirectory.appendingPathComponent(PREFERENCES_FILE_NAME)
+
+        // At setup, we create this application support directory first.
+        if !FileManager.default.fileExists(atPath: applicationDirectory.path) {
+            do {
+                try FileManager.default.createDirectory(at: applicationDirectory,
+                                                        withIntermediateDirectories: true,
+                                                        attributes: nil)
+            } catch let error  {
+                NSApplication.shared.presentError(error)
+            }
+        } 
+        
+        // Then we copy the example config to that folder as `preferences.xiconfig` if it isn't found.
+        if !FileManager.default.fileExists(atPath: preferencesDirectory.path) {
+            do {
+                let defaultConfigPath = Bundle.main.url(forResource: "client_example", withExtension: "toml")
+                try FileManager.default.copyItem(at: defaultConfigPath!, to: preferencesDirectory)    
+            } catch let error {
+                NSApplication.shared.presentError(error)
+            }
+        }
+    }
 
     func getUserConfigDirectory() -> String {
         if let configDir = ProcessInfo.processInfo.environment[XI_CONFIG_DIR] {
@@ -377,9 +371,8 @@ extension DocumentsProviding {
     }
 
 }
-
 protocol ConfigCacheProviding {
-    var configCache: [String: AnyObject] { get }
+    var configCache: Config { get }
 }
 
 protocol AppStyling {
