@@ -309,12 +309,8 @@ class StdoutRPCSender: RPCSending {
             self.client?.findStatus(viewIdentifier: viewIdentifier, status: status)
         case let .replaceStatus(viewIdentifier, status):
             self.client?.replaceStatus(viewIdentifier: viewIdentifier, status: status)
-        case .toggleTailConfigChanged:
-            let isTailEnabled = params["is_tail_enabled"] as! Bool
-            client?.toggleTailConfigChanged(
-                viewIdentifier: viewIdentifier!,
-                isTailEnabled: isTailEnabled
-            )
+        case let .toggleTailChanged(viewIdentifier, isTailEnabled):
+            self.client?.toggleTailConfigChanged(viewIdentifier: viewIdentifier, isTailEnabled: isTailEnabled)
         }
     }
 
