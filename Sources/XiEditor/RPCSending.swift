@@ -30,7 +30,7 @@ struct RemoteError {
     let code: Int
     let message: String
     let data: AnyObject?
-
+    
     init?(json: [String: AnyObject]) {
         guard let code = json["code"] as? Int,
             let message = json["message"] as? String else { return nil }
@@ -46,45 +46,6 @@ enum RpcResult {
     case ok(AnyObject)
 }
 
-<<<<<<< HEAD
-enum RPCRequestMethod: String {
-    case measureWidth = "measure_width"
-}
-
-enum RPCNotificationMethod: String {
-    case alert
-    
-    case update
-    case updateCommands = "update_cmds"
-    
-    case addStatusItem = "add_status_item"
-    case updateStatusItem = "update_status_item"
-    case removeStatusItem = "remove_status_item"
-    
-    case configurationChanged = "config_changed"
-    
-    case scrollTo = "scroll_to"
-    case defStyle = "def_style"
-    
-    case availablePlugins = "available_plugins"
-    case pluginStarted = "plugin_started"
-    case pluginStopped = "plugin_stopped"
-    
-    case availableThemes = "available_themes"
-    case themeChanged = "theme_changed"
-    
-    case availableLanguages = "available_languages"
-    case languageChanged = "language_changed"
-    
-    case showHover = "show_hover"
-    
-    case findStatus = "find_status"
-    case replaceStatus = "replace_status"
-    case toggleTailConfigChanged = "toggle_tail_config_changed"
-}
-
-=======
->>>>>>> master
 /// A completion handler for a synchronous RPC
 typealias RpcCallback = (RpcResult) -> ()
 
@@ -102,12 +63,12 @@ class StdoutRPCSender: RPCSending {
     weak var client: XiClient?
     private let rpcLogWriter: FileWriter?
     private var lastLogs = CircleBuffer<String>(capacity: 100)
-
+    
     // RPC state
     private var queue = DispatchQueue(label: "io.xi-editor.XiEditor.CoreConnection", attributes: [])
     private var rpcIndex = 0
     private var pending = Dictionary<Int, RpcCallback>()
-
+    
     init(path: String, errorLogDirectory: URL?) {
         if let rpcLogPath = ProcessInfo.processInfo.environment[XI_RPC_LOG] {
             self.rpcLogWriter = FileWriter(path: rpcLogPath)
@@ -127,18 +88,18 @@ class StdoutRPCSender: RPCSending {
             task.environment = ProcessInfo.processInfo.environment
         }
         task.environment?["RUST_BACKTRACE"] = "1"
-
+        
         let outPipe = Pipe()
         task.standardOutput = outPipe
         let inPipe = Pipe()
         task.standardInput = inPipe
         inHandle = inPipe.fileHandleForWriting
-
+        
         outPipe.fileHandleForReading.readabilityHandler = { handle in
             let data = handle.availableData
             self.recvHandler(data)
         }
-
+        
         let errPipe = Pipe()
         task.standardError = errPipe
         errPipe.fileHandleForReading.readabilityHandler = { [weak self] handle in
@@ -151,22 +112,22 @@ class StdoutRPCSender: RPCSending {
                 self?.lastLogs.push(errString)
             }
         }
-
+        
         // save backtrace on core crash
         task.terminationHandler = { [weak self] process in
             guard process.terminationStatus != 0, let strongSelf = self else {
                 print("xi-core exited with code 0")
                 return
             }
-
+            
             print("xi-core exited with code \(process.terminationStatus), attempting to save log")
-
+            
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy-MM-dd-HHMMSS"
             let timeStamp = dateFormatter.string(from: Date())
             let crashLogFilename = "XiEditor-Crash-\(timeStamp).log"
             let crashLogPath = errorLogDirectory?.appendingPathComponent(crashLogFilename)
-
+            
             let logText = strongSelf.lastLogs.allItems().joined()
             if let path = crashLogPath {
                 do {
@@ -179,12 +140,12 @@ class StdoutRPCSender: RPCSending {
         }
         task.launch()
     }
-
+    
     private func recvHandler(_ data: Data) {
         if data.count == 0 {
             return
         }
-
+        
         // Split incoming bytes into "packets" (separated by newlines)
         // and dispatch to the app to handle
         data.withUnsafeBytes { buffer in
@@ -200,44 +161,44 @@ class StdoutRPCSender: RPCSending {
                     } else {
                         handleRaw(bytes)
                     }
-
+                    
                     i = j + 1
                 }
             }
-
+            
             if i < buffer.endIndex {
                 recvBuf.append(Data(buffer[i..<buffer.endIndex]))
             }
         }
     }
-
+    
     private func sendJson(_ json: Any) {
         do {
             var data = try JSONSerialization.data(withJSONObject: json, options: [])
             data.append(NEW_LINE, count: 1)
-
+            
             if let writer = self.rpcLogWriter {
                 writer.write(bytes: CLIENT_LOG_PREFIX)
                 writer.write(bytes: data)
             }
-
+            
             inHandle.write(data as Data)
         } catch _ {
             print("error serializing to json")
         }
     }
-
+    
     private func sendResult(id: Any, result: Any) {
         let json = ["id": id, "result": result]
         sendJson(json)
     }
-
+    
     private func handleRaw(_ data: Data) {
         if let writer = self.rpcLogWriter {
             writer.write(bytes: CORE_LOG_PREFIX)
             writer.write(bytes: data)
         }
-
+        
         Trace.shared.trace("handleRaw", .rpc, .begin)
         do {
             let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
@@ -247,7 +208,7 @@ class StdoutRPCSender: RPCSending {
         }
         Trace.shared.trace("handleRaw", .rpc, .end)
     }
-
+    
     /// handle a JSON RPC call. Determines whether it is a request, response or notification
     /// and executes/responds accordingly
     private func handleRpc(_ json: Any) {
@@ -273,188 +234,84 @@ class StdoutRPCSender: RPCSending {
             self.handleNotification(json: obj)
         }
     }
-
+    
     private func handleRequest(json: [String: Any]) {
         guard let request = CoreRequest.fromJson(json) else {
             return
         }
-
+        
         switch request {
         case let .measureWidth(id, params):
             guard let result = client?.measureWidth(args: params) else {
                 assertionFailure("measure_width request from core failed: \(params)")
                 return
             }
-
+            
             sendResult(id: id, result: result)
         }
     }
-
+    
     private func handleNotification(json: [String: AnyObject]) {
         guard let notification = CoreNotification.fromJson(json) else {
             return
         }
-
-<<<<<<< HEAD
-        let viewIdentifier = params["view_id"] as? ViewIdentifier
         
-        switch method {
-        case .update:
-            let update = params["update"] as! [String: AnyObject]
-            self.client?.update(viewIdentifier: viewIdentifier!, update: update, rev: nil)
-
-        case .scrollTo:
-            let line = params["line"] as! Int
-            let col = params["col"] as! Int
-            self.client?.scroll(viewIdentifier: viewIdentifier!, line: line, column: col)
-
-        case .defStyle:
-            client?.defineStyle(style: params as! [String: AnyObject])
-
-        case .pluginStarted:
-            let plugin = params["plugin"] as! String
-            client?.pluginStarted(viewIdentifier: viewIdentifier!, pluginName: plugin)
-
-        case .pluginStopped:
-            let plugin = params["plugin"] as! String
-            client?.pluginStopped(viewIdentifier: viewIdentifier!, pluginName: plugin)
-
-        case .availableThemes:
-            let themes = params["themes"] as! [String]
-            client?.availableThemes(themes: themes)
-
-        case .themeChanged:
-            let name = params["name"] as! String
-            let themeJson = params["theme"] as! [String: AnyObject]
-            let theme = Theme(jsonObject: themeJson)
-            client?.themeChanged(name: name, theme: theme)
-        
-        case .languageChanged:
-            let languageIdentifier = params["language_id"] as! String
-            client?.languageChanged(
-                viewIdentifier: viewIdentifier!,
-                languageIdentifier: languageIdentifier
-            )
-            
-        case .availablePlugins:
-            let plugins = params["plugins"] as! [[String: AnyObject]]
-            client?.availablePlugins(viewIdentifier: viewIdentifier!, plugins: plugins)
-            
-        case .availableLanguages:
-            let languages = params["languages"] as! [String]
-            client?.availableLanguages(languages: languages)
-
-        case .updateCommands:
-            let plugin = params["plugin"] as! String
-            let cmdsJson = params["cmds"] as! [[String: AnyObject]]
-            let cmds = cmdsJson.map { Command(jsonObject: $0) }
-                .filter { $0 != nil }
-                .map { $0! }
-
-            client?.updateCommands(viewIdentifier: viewIdentifier!,
-                                   plugin: plugin, commands: cmds)
-
-        case .configurationChanged:
-            let changes = params["changes"] as! [String: AnyObject]
-            client?.configChanged(viewIdentifier: viewIdentifier!, changes: changes)
-
-        case .alert:
-            let message = params["msg"] as! String
-            client?.alert(text: message)
-
-        case .addStatusItem:
-            let source = params["source"] as! String
-            let key = params["key"] as! String
-            let value = params["value"] as! String
-            let alignment = params["alignment"] as! String
-            client?.addStatusItem(viewIdentifier: viewIdentifier!, source: source, key: key, value: value, alignment: alignment)
-
-        case .updateStatusItem:
-            let key = params["key"] as! String
-            let value = params["value"] as! String
-            client?.updateStatusItem(viewIdentifier: viewIdentifier!, key: key, value: value)
-
-        case .removeStatusItem:
-            let key = params["key"] as! String
-            client?.removeStatusItem(viewIdentifier: viewIdentifier!, key: key)
-
-        case .showHover:
-            let requestIdentifier = params["request_id"] as! Int
-            let result = params["result"] as! String
-            client?.showHover(viewIdentifier: viewIdentifier!, requestIdentifier: requestIdentifier, result: result)
-
-        case .findStatus:
-            let status = params["queries"] as! [[String: AnyObject]]
-            client?.findStatus(viewIdentifier: viewIdentifier!, status: status)
-
-        case .replaceStatus:
-            let status = params["status"] as! [String: AnyObject]
-            client?.replaceStatus(viewIdentifier: viewIdentifier!, status: status)
-            
-        case .toggleTailConfigChanged:
-            let isTailEnabled = params["is_tail_enabled"] as! Bool
-            client?.toggleTailConfigChanged(
-                viewIdentifier: viewIdentifier!,
-                isTailEnabled: isTailEnabled
-            )
-=======
         switch notification {
         case let .alert(message):
             self.client?.alert(text: message)
-
+            
         case let .updateCommands(viewIdentifier, plugin, commands):
             self.client?.updateCommands(viewIdentifier: viewIdentifier,
                                         plugin: plugin,
                                         commands: commands)
-
+            
         case let .scrollTo(viewIdentifier, line, column):
             self.client?.scroll(viewIdentifier: viewIdentifier, line: line, column: column)
-
+            
         case let .addStatusItem(viewIdentifier, source, key, value, alignment):
             self.client?.addStatusItem(viewIdentifier: viewIdentifier, source: source, key: key, value: value, alignment: alignment)
         case let .updateStatusItem(viewIdentifier, key, value):
             self.client?.updateStatusItem(viewIdentifier: viewIdentifier, key: key, value: value)
         case let .removeStatusItem(viewIdentifier, key):
             self.client?.removeStatusItem(viewIdentifier: viewIdentifier, key: key)
-
+            
         case let .update(viewIdentifier, params):
             self.client?.update(viewIdentifier: viewIdentifier,
                                 params: params, rev: nil)
-
+            
         case let .configChanged(viewIdentifier, config):
             self.client?.configChanged(viewIdentifier: viewIdentifier, changes: config)
-
+            
         case let .defStyle(params):
             self.client?.defineStyle(params: params)
-
+            
         case let .availablePlugins(viewIdentifier, plugins):
             self.client?.availablePlugins(viewIdentifier: viewIdentifier, plugins: plugins)
         case let .pluginStarted(viewIdentifier, plugin):
             self.client?.pluginStarted(viewIdentifier: viewIdentifier, pluginName: plugin)
         case let .pluginStopped(viewIdentifier, pluginName):
             self.client?.pluginStopped(viewIdentifier: viewIdentifier, pluginName: pluginName)
-
+            
         case let .availableThemes(themes):
             self.client?.availableThemes(themes: themes)
         case let .themeChanged(name, theme):
             self.client?.themeChanged(name: name, theme: theme)
-
+            
         case let .availableLanguages(languages):
             self.client?.availableLanguages(languages: languages)
         case let .languageChanged(viewIdentifier, languageIdentifier):
             self.client?.languageChanged(viewIdentifier: viewIdentifier, languageIdentifier: languageIdentifier)
-
+            
         case let .showHover(viewIdentifier, requestIdentifier, result):
             self.client?.showHover(viewIdentifier: viewIdentifier, requestIdentifier: requestIdentifier, result: result)
-
+            
         case let .findStatus(viewIdentifier, status):
             self.client?.findStatus(viewIdentifier: viewIdentifier, status: status)
         case let .replaceStatus(viewIdentifier, status):
             self.client?.replaceStatus(viewIdentifier: viewIdentifier, status: status)
->>>>>>> master
         }
     }
-
+    
     /// send an RPC request, returning immediately. The callback will be called when the
     /// response comes in, likely from a different thread
     func sendRpcAsync(_ method: String, params: Any, callback: RpcCallback? = nil) {
@@ -471,14 +328,14 @@ class StdoutRPCSender: RPCSending {
         sendJson(req as Any)
         Trace.shared.trace("send \(method)", .rpc, .end)
     }
-
+    
     /// send RPC synchronously, blocking until return. Note: there is no ordering guarantee on
     /// when this function may return. In particular, an async notification sent by the core after
     /// a response to a synchronous RPC may be delivered before it.
     func sendRpc(_ method: String, params: Any) -> RpcResult {
         let semaphore = DispatchSemaphore(value: 0)
         var result: RpcResult? = nil
-
+        
         sendRpcAsync(method, params: params) { (r) in
             result = r
             semaphore.signal()
@@ -487,3 +344,4 @@ class StdoutRPCSender: RPCSending {
         return result!
     }
 }
+

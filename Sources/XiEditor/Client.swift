@@ -85,12 +85,8 @@ protocol XiClient: AnyObject {
     func findStatus(viewIdentifier: String, status: [FindStatus])
 
     /// A notification containing the current replace status.
-<<<<<<< HEAD
-    func replaceStatus(viewIdentifier: String, status: [String: AnyObject])
+    func replaceStatus(viewIdentifier: String, status: ReplaceStatus)
     
     /// A notification telling toggle tail config was successfully changed.
     func toggleTailConfigChanged(viewIdentifier: String, isTailEnabled: Bool)
-=======
-    func replaceStatus(viewIdentifier: String, status: ReplaceStatus)
->>>>>>> master
 }
