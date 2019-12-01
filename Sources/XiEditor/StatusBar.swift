@@ -15,6 +15,11 @@
 import Foundation
 import Cocoa
 
+protocol StatusBarDelegate: class {
+    func showStatusBar()
+    func hideStatusBar()
+}
+
 enum StatusItemAlignment: String {
     case left = "left"
     case right = "right"
@@ -52,6 +57,8 @@ class StatusItem: NSTextField {
 }
 
 class StatusBar: NSView {
+    
+    weak var delegate: StatusBarDelegate?
 
     var currentItems = [String : StatusItem]()
     var hiddenItems: [StatusItem] {
@@ -80,8 +87,9 @@ class StatusBar: NSView {
     var backgroundColor: NSColor = NSColor.windowBackgroundColor
     var itemTextColor: NSColor = NSColor.labelColor
     var borderColor: NSColor = NSColor.systemGray
+    
+    static let statusBarHeight: CGFloat = 20
     let statusBarPadding: CGFloat = 10
-    let statusBarHeight: CGFloat = 24
     let firstItemMargin: CGFloat = 5
 
     // Difference (in points) to compensate for when status bar is resized
@@ -96,21 +104,12 @@ class StatusBar: NSView {
     }
 
     override var isFlipped: Bool {
-        return true;
+        return true
     }
-
-    override init(frame frameRect: NSRect) {
-        super.init(frame: .zero)
-        self.translatesAutoresizingMaskIntoConstraints = false
-        self.isHidden = true
-        updateStatusBarVisibility()
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
     }
-
-    @available(*, unavailable)
-    required init?(coder decoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
+    
     // Adds a status bar item.
     func addStatusItem(_ item: StatusItem) {
         if let existingItem = currentItems[item.key] {
@@ -219,14 +218,16 @@ class StatusBar: NSView {
     func updateStatusBarVisibility() {
         if !currentItems.isEmpty {
             self.hideTimer?.invalidate()
-            self.isHidden = false
+            delegate?.showStatusBar()
         } else if !self.isHidden {
             // Wait a moment before hiding the bar to avoid blinking in the case
             // that a single item is added and removed repeatedly in rapid succession.
             if #available(OSX 10.12, *) {
-                hideTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { _ in self.isHidden = true }
+                hideTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { _ in
+                    self.delegate?.hideStatusBar()
+                }
             } else {
-                self.isHidden = true
+                delegate?.hideStatusBar()
             }
         }
     }
@@ -285,5 +286,14 @@ class StatusBar: NSView {
         path.line(to: CGPoint(x: dirtyRect.maxX, y: dirtyRect.minY))
         path.stroke()
     }
+}
 
+extension EditViewController: StatusBarDelegate {
+    func showStatusBar() {
+        statusBarHeight.constant = StatusBar.statusBarHeight
+    }
+    
+    func hideStatusBar() {
+        statusBarHeight.constant = 0
+    }
 }

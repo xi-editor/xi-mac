@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="15702" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="15702"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -61,27 +61,36 @@
                                     </constraints>
                                 </clipView>
                                 <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="hEG-a6-BYd">
-                                    <rect key="frame" x="0.0" y="255" width="465" height="15"/>
+                                    <rect key="frame" x="0.0" y="231" width="465" height="15"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="O02-Lc-5gg" customClass="MarkerBar" customModule="XiEditor" customModuleProvider="target">
-                                    <rect key="frame" x="465" y="0.0" width="15" height="255"/>
+                                    <rect key="frame" x="465" y="0.0" width="15" height="231"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                             </scrollView>
+                            <customView translatesAutoresizingMaskIntoConstraints="NO" id="Tjs-fk-d3S" customClass="StatusBar" customModule="XiEditor" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="0.0" width="480" height="0.0"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" id="DO3-dq-Ibg"/>
+                                </constraints>
+                            </customView>
                         </subviews>
                         <constraints>
                             <constraint firstItem="x8W-KD-KOP" firstAttribute="leading" secondItem="q1P-kd-995" secondAttribute="leading" id="0m0-0O-Llk"/>
                             <constraint firstItem="x8W-KD-KOP" firstAttribute="top" secondItem="q1P-kd-995" secondAttribute="top" id="4lN-9b-wSx"/>
                             <constraint firstAttribute="trailing" secondItem="q1P-kd-995" secondAttribute="trailing" id="5IG-vx-2rb"/>
+                            <constraint firstItem="Tjs-fk-d3S" firstAttribute="leading" secondItem="3ye-5b-Ab2" secondAttribute="leading" id="Cav-5o-0ue"/>
+                            <constraint firstAttribute="bottom" secondItem="Tjs-fk-d3S" secondAttribute="bottom" id="F95-nZ-7H5"/>
                             <constraint firstItem="Qwv-ci-fVA" firstAttribute="leading" secondItem="q1P-kd-995" secondAttribute="leading" id="Pyq-kX-0wa"/>
                             <constraint firstItem="x8W-KD-KOP" firstAttribute="bottom" secondItem="q1P-kd-995" secondAttribute="bottom" id="Qak-2E-Fy6"/>
                             <constraint firstItem="Qwv-ci-fVA" firstAttribute="top" secondItem="q1P-kd-995" secondAttribute="top" id="Qwh-xz-kUZ"/>
                             <constraint firstItem="Qwv-ci-fVA" firstAttribute="bottom" secondItem="q1P-kd-995" secondAttribute="bottom" id="Sdy-8S-2NP"/>
+                            <constraint firstItem="Tjs-fk-d3S" firstAttribute="top" secondItem="q1P-kd-995" secondAttribute="bottom" id="ZnH-DY-sje"/>
                             <constraint firstItem="x8W-KD-KOP" firstAttribute="trailing" secondItem="q1P-kd-995" secondAttribute="trailing" id="dL4-Ba-yMB"/>
-                            <constraint firstItem="q1P-kd-995" firstAttribute="top" secondItem="3ye-5b-Ab2" secondAttribute="top" id="gHb-9s-5Ki"/>
+                            <constraint firstItem="q1P-kd-995" firstAttribute="top" secondItem="3ye-5b-Ab2" secondAttribute="top" id="gWG-JW-SJf"/>
                             <constraint firstItem="q1P-kd-995" firstAttribute="leading" secondItem="3ye-5b-Ab2" secondAttribute="leading" id="kaS-IB-LV9"/>
-                            <constraint firstAttribute="bottom" secondItem="q1P-kd-995" secondAttribute="bottom" id="ngA-1s-M67"/>
+                            <constraint firstAttribute="trailing" secondItem="Tjs-fk-d3S" secondAttribute="trailing" id="kg5-PT-wI0"/>
                             <constraint firstItem="Qwv-ci-fVA" firstAttribute="trailing" secondItem="q1P-kd-995" secondAttribute="trailing" id="w93-aW-WKu"/>
                         </constraints>
                     </view>
@@ -92,6 +101,8 @@
                         <outlet property="editViewWidth" destination="1Gd-zC-FVY" id="DtT-d0-KdH"/>
                         <outlet property="scrollView" destination="Qwv-ci-fVA" id="4cE-10-pSP"/>
                         <outlet property="shadowView" destination="x8W-KD-KOP" id="mme-7Z-x1H"/>
+                        <outlet property="statusBar" destination="Tjs-fk-d3S" id="MX5-p8-dzb"/>
+                        <outlet property="statusBarHeight" destination="DO3-dq-Ibg" id="JwM-iA-km2"/>
                         <segue destination="9Ak-VM-8lJ" kind="modal" identifier="UserInputSegue" id="GqW-PV-ZCy"/>
                     </connections>
                 </viewController>
@@ -121,7 +132,7 @@ DQ
                                 </connections>
                             </button>
                             <textField hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Di9-5Q-3Ia">
-                                <rect key="frame" x="20" y="20" width="275" height="22"/>
+                                <rect key="frame" x="20" y="20" width="275" height="21"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="zlO-6u-liO">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -142,7 +153,7 @@ Gw
                                 </connections>
                             </button>
                             <comboBox hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="AHD-SX-Tuj">
-                                <rect key="frame" x="21" y="16" width="277" height="26"/>
+                                <rect key="frame" x="21" y="16" width="277" height="25"/>
                                 <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" completes="NO" numberOfVisibleItems="5" id="nnP-RF-Vev">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -303,7 +314,7 @@ Gw
                                         </subviews>
                                         <visibilityPriorities>
                                             <integer value="1000"/>
-                                            <real value="1000"/>
+                                            <integer value="1000"/>
                                         </visibilityPriorities>
                                         <customSpacing>
                                             <real value="3.4028234663852886e+38"/>
@@ -386,7 +397,7 @@ Gw
                                                 <rect key="frame" x="4" y="-1" width="32" height="19"/>
                                                 <buttonCell key="cell" type="roundRect" title="+" bezelStyle="roundedRect" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="8uK-5I-cZg">
                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                    <font key="font" metaFont="system" size="16"/>
+                                                    <font key="font" metaFont="label" size="16"/>
                                                 </buttonCell>
                                                 <connections>
                                                     <action selector="addSearchField:" target="uoL-yg-E2H" id="0zi-0Z-ZCs"/>
@@ -396,7 +407,7 @@ Gw
                                                 <rect key="frame" x="38" y="-1" width="31" height="19"/>
                                                 <buttonCell key="cell" type="roundRect" title="-" bezelStyle="roundedRect" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="0dQ-No-w5x">
                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                    <font key="font" metaFont="system" size="16"/>
+                                                    <font key="font" metaFont="label" size="16"/>
                                                 </buttonCell>
                                                 <connections>
                                                     <action selector="removeSearchField:" target="uoL-yg-E2H" id="9Wq-QC-w07"/>
