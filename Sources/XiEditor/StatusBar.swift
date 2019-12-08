@@ -60,7 +60,7 @@ class StatusBar: NSView {
     
     weak var delegate: StatusBarDelegate?
 
-    var currentItems = [String : StatusItem]()
+    var currentItems = [String: StatusItem]()
     var hiddenItems: [StatusItem] {
         return currentItems.values
             .filter { $0.isHidden == true }
@@ -84,9 +84,9 @@ class StatusBar: NSView {
 
     var hasUnifiedTitlebar: Bool?
 
-    var backgroundColor: NSColor = NSColor.windowBackgroundColor
-    var itemTextColor: NSColor = NSColor.labelColor
-    var borderColor: NSColor = NSColor.systemGray
+    var backgroundColor = NSColor.windowBackgroundColor
+    var itemTextColor = NSColor.labelColor
+    var borderColor = NSColor.systemGray
     
     static let statusBarHeight: CGFloat = 20
     let statusBarPadding: CGFloat = 10
@@ -165,25 +165,21 @@ class StatusBar: NSView {
             switch item.barAlignment {
             case .left:
                 if item == leftItems.first {
-                    let leftConstraint = item.leadingAnchor.constraint(equalTo:
-                        self.leadingAnchor, constant: firstItemMargin)
+                    let leftConstraint = item.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: firstItemMargin)
                     item.barConstraints.append(leftConstraint)
                 } else {
                     guard lastLeftItem != nil else { return }
-                    let leftConstraint = item.leadingAnchor.constraint(equalTo:
-                        lastLeftItem!.trailingAnchor, constant: statusBarPadding)
+                    let leftConstraint = item.leadingAnchor.constraint(equalTo: lastLeftItem!.trailingAnchor, constant: statusBarPadding)
                     item.barConstraints.append(leftConstraint)
                 }
                 lastLeftItem = item
             case .right:
                 if item == rightItems.first {
-                    let rightConstraint = item.trailingAnchor.constraint(equalTo:
-                        self.trailingAnchor, constant: -firstItemMargin)
+                    let rightConstraint = item.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -firstItemMargin)
                     item.barConstraints.append(rightConstraint)
                 } else {
                     guard lastRightItem != nil else { return }
-                    let rightConstraint = item.trailingAnchor.constraint(equalTo:
-                        lastRightItem!.leadingAnchor, constant: -statusBarPadding)
+                    let rightConstraint = item.trailingAnchor.constraint(equalTo: lastRightItem!.leadingAnchor, constant: -statusBarPadding)
                     item.barConstraints.append(rightConstraint)
                 }
                 lastRightItem = item
@@ -219,15 +215,18 @@ class StatusBar: NSView {
         if !currentItems.isEmpty {
             self.hideTimer?.invalidate()
             delegate?.showStatusBar()
+            self.isHidden = false
         } else if !self.isHidden {
             // Wait a moment before hiding the bar to avoid blinking in the case
             // that a single item is added and removed repeatedly in rapid succession.
             if #available(OSX 10.12, *) {
                 hideTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { _ in
                     self.delegate?.hideStatusBar()
+                    self.isHidden = true
                 }
             } else {
                 delegate?.hideStatusBar()
+                self.isHidden = true
             }
         }
     }

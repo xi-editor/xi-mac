@@ -488,12 +488,10 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     override func uppercaseWord(_ sender: Any?) {
         xiView.uppercase()
-        self.showStatusBar()
     }
 
     override func lowercaseWord(_ sender: Any?) {
         xiView.lowercase()
-        self.hideStatusBar()
     }
 
     override func capitalizeWord(_ sender: Any?) {
