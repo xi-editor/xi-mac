@@ -18,10 +18,17 @@ import Foundation
 enum AnnotationType: String {
     case selection
     case find
+    case added
+    case deleted
+    case modified
 }
 
 extension AnnotationType {
-    static let all = [AnnotationType.selection, AnnotationType.find]
+    static let all = [AnnotationType.selection,
+                      AnnotationType.find,
+                      AnnotationType.added,
+                      AnnotationType.deleted,
+                      AnnotationType.modified]
 }
 
 /// Represents an annotation (eg. selection, find highlight).
