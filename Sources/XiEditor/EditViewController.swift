@@ -245,7 +245,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        statusBar.delegate = self
         shadowView.wantsLayer = true
         editView.dataSource = self
         editContainerView.contextMenu = contextMenu
@@ -273,7 +272,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     func setupStatusBar() {
         statusBar.hasUnifiedTitlebar = unifiedTitlebar
-        hideStatusBar()
     }
 
     func updateGutterWidth() {

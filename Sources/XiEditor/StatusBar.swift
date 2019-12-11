@@ -15,11 +15,6 @@
 import Foundation
 import Cocoa
 
-protocol StatusBarDelegate: class {
-    func showStatusBar()
-    func hideStatusBar()
-}
-
 enum StatusItemAlignment: String {
     case left = "left"
     case right = "right"
@@ -57,9 +52,6 @@ class StatusItem: NSTextField {
 }
 
 class StatusBar: NSView {
-    
-    weak var delegate: StatusBarDelegate?
-
     var currentItems = [String: StatusItem]()
     var hiddenItems: [StatusItem] {
         return currentItems.values
@@ -122,7 +114,6 @@ class StatusBar: NSView {
         currentItems[item.key] = item
         self.needsUpdateConstraints = true
         checkItemsFitFor(windowWidth: self.bounds.width)
-        updateStatusBarVisibility()
     }
 
     // Update a status bar item with a new value.
@@ -143,7 +134,6 @@ class StatusBar: NSView {
             currentItems.removeValue(forKey: key)
             self.needsUpdateConstraints = true
             checkItemsFitFor(windowWidth: self.bounds.width)
-            updateStatusBarVisibility()
         } else {
             print("tried to remove item with \(key) that doesn't exist")
             return
@@ -210,27 +200,6 @@ class StatusBar: NSView {
         self.needsDisplay = true
     }
 
-    // Shows/hides the statusbar based on whether it has any contents.
-    func updateStatusBarVisibility() {
-        if !currentItems.isEmpty {
-            self.hideTimer?.invalidate()
-            delegate?.showStatusBar()
-            self.isHidden = false
-        } else if !self.isHidden {
-            // Wait a moment before hiding the bar to avoid blinking in the case
-            // that a single item is added and removed repeatedly in rapid succession.
-            if #available(OSX 10.12, *) {
-                hideTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { _ in
-                    self.delegate?.hideStatusBar()
-                    self.isHidden = true
-                }
-            } else {
-                delegate?.hideStatusBar()
-                self.isHidden = true
-            }
-        }
-    }
-
     // When items are added, expanded or removed, the status bar checks if
     // any items need to be hidden or unhidden to make use of available space.
     func checkItemsFitFor(windowWidth: CGFloat) {
@@ -287,12 +256,36 @@ class StatusBar: NSView {
     }
 }
 
-extension EditViewController: StatusBarDelegate {
-    func showStatusBar() {
+extension EditViewController {
+    func addStatusItem(_ item: StatusItem) {
+        self.statusBar.addStatusItem(item)
+        self.updateStatusBarVisibility()
+    }
+
+    func removeStatusItem(_ key: String) {
+        self.statusBar.removeStatusItem(key)
+        self.updateStatusBarVisibility()
+    }
+
+    // Shows/hides the statusbar based on whether it has any contents.
+    func updateStatusBarVisibility() {
+        if !statusBar.currentItems.isEmpty {
+            self.showStatusBar()
+        } else if statusBarHeight.constant > 0 {
+            // If status bar is currently showing, hide it after a delay.
+            Timer.scheduledTimer(timeInterval: 1.0,
+                                 target: self,
+                                 selector: #selector(hideStatusBar),
+                                 userInfo: nil,
+                                 repeats: false)
+        }
+    }
+
+    private func showStatusBar() {
         statusBarHeight.constant = StatusBar.statusBarHeight
     }
-    
-    func hideStatusBar() {
+
+    @objc private func hideStatusBar() {
         statusBarHeight.constant = 0
     }
 }
