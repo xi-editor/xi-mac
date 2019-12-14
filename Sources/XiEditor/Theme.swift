@@ -31,7 +31,6 @@ struct Theme {
     /// Only used when the `highlight_line` setting is set to `true`.
     let lineHighlight: NSColor?
 
-
     /// Background color of regions matching the current search.
     let findHighlights: [NSColor]?
     /// Background color of regions matching the current search.
@@ -55,6 +54,13 @@ struct Theme {
 
     /// The color of the shadow used when a text area can be horizontally scrolled.
     let shadow: NSColor?
+
+    /// Color for added lines in gutter.
+    let gutterAdded: NSColor?
+    /// Color for deleted lines in gutter.
+    let gutterDeleted: NSColor?
+    /// Color for modified lines in gutter.
+    let gutterModified: NSColor?
 }
 
 extension Theme {
@@ -72,7 +78,10 @@ extension Theme {
               selectionBorder: nil,
               inactiveSelection: NSColor(red: 0.8, green: 0.8, blue: 0.8, alpha: 1.0),
               inactiveSelectionForeground: .selectedTextColor,
-              shadow: nil
+              shadow: nil,
+              gutterAdded: NSColor(red: 0.2, green: 0.8, blue: 0.1, alpha: 1.0),
+              gutterDeleted: NSColor(red: 0.8, green: 0.1, blue: 0.2, alpha: 1.0),
+              gutterModified: NSColor(red: 0.8, green: 0.7, blue: 0.1, alpha: 1.0)
             )
     }
 
@@ -109,7 +118,10 @@ extension Theme {
             selectionBorder: selection_border ?? defaults.selectionBorder,
             inactiveSelection: inactive_selection ?? defaults.inactiveSelection,
             inactiveSelectionForeground: inactive_selection_foreground ?? defaults.inactiveSelectionForeground,
-            shadow: shadow ?? defaults.shadow)
+            shadow: shadow ?? defaults.shadow,
+            gutterAdded: defaults.gutterAdded,
+            gutterDeleted: defaults.gutterDeleted,
+            gutterModified: defaults.gutterModified)
     }
 
     /// Helper function to generate highlight colors for multiple search queries. This is required because custom fields cannot be retrieved from themes. Therefore, it is not possible to define multiple highlight colors.

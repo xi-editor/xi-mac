@@ -123,6 +123,8 @@ func colorToArgb(_ color: NSColor) -> UInt32 {
 final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     var lastRevisionRendered = 0
     var gutterXPad: CGFloat = 8
+    var gutterAnnotationWidth = 3
+    var deletedAnnotationHeight = 3
     var gutterCache: GutterCache?
 
     weak var dataSource: EditViewDataSource!
@@ -447,6 +449,12 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
         case AnnotationType.find:
             let queryId = annotation.payload?["id"] as! Int
             return highlightsArgb[queryId % highlightsArgb.count]
+        case AnnotationType.added:
+            return colorToArgb(dataSource.theme.gutterAdded!)
+        case AnnotationType.deleted:
+            return colorToArgb(dataSource.theme.gutterDeleted!)
+        case AnnotationType.modified:
+            return colorToArgb(dataSource.theme.gutterModified!)
         }
     }
 
@@ -594,6 +602,8 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
             }
         }
 
+        let gutterAnnotations = [AnnotationType.added, AnnotationType.deleted, AnnotationType.modified]
+
         // gutter drawing
         // Note: drawing the gutter background after the text effectively clips the text. This
         // is a bit of a hack, and some optimization might be possible with real clipping
@@ -611,6 +621,28 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
 
                 let x = dataSource.gutterWidth - (gutterXPad + CGFloat(gutterTL.width))
                 let y0 = yOff + dataSource.textMetrics.ascent + linespace * CGFloat(lineIx)
+
+                for annotationType in gutterAnnotations {
+                    var lineAnnotations = annotationsForLines[lineIx]![annotationType]!
+                    while let lineAnnotation = lineAnnotations.next() {
+                        let color = annotationColor(for: lineAnnotation.annotation)
+
+                        if annotationType == AnnotationType.deleted {
+                            renderer.drawSolidRect(x: GLfloat(dataSource.gutterWidth - CGFloat(gutterAnnotationWidth)),
+                                                   y: GLfloat(yOff + dataSource.textMetrics.ascent + linespace * CGFloat(lineIx - 1)),
+                                                   width: GLfloat(gutterAnnotationWidth),
+                                                   height: GLfloat(deletedAnnotationHeight),
+                                                   argb: color)
+                        } else {
+                            renderer.drawSolidRect(x: GLfloat(dataSource.gutterWidth - CGFloat(gutterAnnotationWidth)),
+                                                   y: GLfloat(yOff + linespace * CGFloat(lineIx)),
+                                                   width: GLfloat(gutterAnnotationWidth),
+                                                   height: GLfloat(linespace),
+                                                   argb: color)
+                        }
+                    }
+                }
+
                 renderer.drawLine(line: gutterTL, x0: GLfloat(x), y0: GLfloat(y0))
             }
         }
