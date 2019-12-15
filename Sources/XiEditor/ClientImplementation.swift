@@ -184,7 +184,6 @@ class ClientImplementation: XiClient, DocumentsProviding, ConfigCacheProviding, 
         }
     }
 
-
     // Stores the config dict so new windows don't have to wait for core to send it.
     // The main purpose of this is ensuring that `unified_titlebar` applies immediately.
     var configCache = Config(fontFace: nil, fontSize: nil, scrollPastEnd: nil, unifiedToolbar: nil)

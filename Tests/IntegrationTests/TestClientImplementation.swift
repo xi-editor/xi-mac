@@ -89,7 +89,4 @@ class TestClientImplementation: XiClient {
     
     func toggleTailConfigChanged(viewIdentifier: String, isTailEnabled: Bool) {
     }
-    
-    func toggleTailConfigChanged(viewIdentifier: String, isTailEnabled: Bool) {
-    }
 }
