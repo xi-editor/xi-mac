@@ -1,7 +1,7 @@
 [submodule "xi-editor"]
 	path = xi-editor
-	url = https://github.com/sjoshid/xi-editor
-	branch = tail_toggle_v2
+	url = https://github.com/xi-editor/xi-editor
+	branch = master
 [submodule "test-data"]
 	path = test-data
 	url = https://github.com/xi-editor/test-data
