@@ -252,13 +252,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         case install = "Install 'xi' Shell Command"
         case remove  = "Remove 'xi' Shell Command"
     }
-    
-    func toggleTailConfigChanged(viewIdentifier: String, isTailEnabled: Bool) {
-        DispatchQueue.main.async { [weak self] in
-            let document = self?.documentForViewIdentifier(viewIdentifier: viewIdentifier)
-            document?.editViewController?.toggleTailConfigChanged(isTailEnabled)
-        }
-    }
 
     //MARK: - top-level interactions
     @IBAction func openPreferences(_ sender: NSMenuItem) {
