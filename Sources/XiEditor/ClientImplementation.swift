@@ -150,7 +150,7 @@ class ClientImplementation: XiClient, DocumentsProviding, ConfigCacheProviding, 
         let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
         DispatchQueue.main.async {
             let newStatusItem = StatusItem(source, key, value, alignment)
-            document?.editViewController?.statusBar.addStatusItem(newStatusItem)
+            document?.editViewController?.addStatusItem(newStatusItem)
         }
     }
 
@@ -164,7 +164,7 @@ class ClientImplementation: XiClient, DocumentsProviding, ConfigCacheProviding, 
     func removeStatusItem(viewIdentifier: String, key: String) {
         let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
         DispatchQueue.main.async {
-            document?.editViewController?.statusBar.removeStatusItem(key)
+            document?.editViewController?.removeStatusItem(key)
         }
     }
 

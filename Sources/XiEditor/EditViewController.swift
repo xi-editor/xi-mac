@@ -82,7 +82,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     @IBOutlet weak var editContainerView: EditContainerView!
     @IBOutlet var editView: EditView!
     @IBOutlet weak var shadowView: ShadowView!
-
+    @IBOutlet weak var statusBar: StatusBar!
+    
+    @IBOutlet weak var statusBarHeight: NSLayoutConstraint!
     @IBOutlet weak var editViewHeight: NSLayoutConstraint!
     @IBOutlet weak var editViewWidth: NSLayoutConstraint!
 
@@ -227,8 +229,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     var hoverEvent: NSEvent?
 
-    let statusBar = StatusBar(frame: .zero)
-
     // Popover that manages hover views.
     lazy var infoPopover: NSPopover = {
         let popover = NSPopover()
@@ -272,14 +272,6 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
 
     func setupStatusBar() {
         statusBar.hasUnifiedTitlebar = unifiedTitlebar
-        self.view.addSubview(statusBar)
-
-        NSLayoutConstraint.activate([
-            statusBar.heightAnchor.constraint(equalToConstant: statusBar.statusBarHeight),
-            statusBar.leadingAnchor.constraint(equalTo: editView.leadingAnchor),
-            statusBar.trailingAnchor.constraint(equalTo: editView.trailingAnchor),
-            statusBar.bottomAnchor.constraint(equalTo: editView.bottomAnchor)
-            ])
     }
 
     func updateGutterWidth() {

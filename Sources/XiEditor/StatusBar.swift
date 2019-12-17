@@ -52,8 +52,7 @@ class StatusItem: NSTextField {
 }
 
 class StatusBar: NSView {
-
-    var currentItems = [String : StatusItem]()
+    var currentItems = [String: StatusItem]()
     var hiddenItems: [StatusItem] {
         return currentItems.values
             .filter { $0.isHidden == true }
@@ -77,11 +76,12 @@ class StatusBar: NSView {
 
     var hasUnifiedTitlebar: Bool?
 
-    var backgroundColor: NSColor = NSColor.windowBackgroundColor
-    var itemTextColor: NSColor = NSColor.labelColor
-    var borderColor: NSColor = NSColor.systemGray
+    var backgroundColor = NSColor.windowBackgroundColor
+    var itemTextColor = NSColor.labelColor
+    var borderColor = NSColor.systemGray
+    
+    static let statusBarHeight: CGFloat = 20
     let statusBarPadding: CGFloat = 10
-    let statusBarHeight: CGFloat = 24
     let firstItemMargin: CGFloat = 5
 
     // Difference (in points) to compensate for when status bar is resized
@@ -96,21 +96,12 @@ class StatusBar: NSView {
     }
 
     override var isFlipped: Bool {
-        return true;
+        return true
     }
-
-    override init(frame frameRect: NSRect) {
-        super.init(frame: .zero)
-        self.translatesAutoresizingMaskIntoConstraints = false
-        self.isHidden = true
-        updateStatusBarVisibility()
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
     }
-
-    @available(*, unavailable)
-    required init?(coder decoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
+    
     // Adds a status bar item.
     func addStatusItem(_ item: StatusItem) {
         if let existingItem = currentItems[item.key] {
@@ -123,7 +114,6 @@ class StatusBar: NSView {
         currentItems[item.key] = item
         self.needsUpdateConstraints = true
         checkItemsFitFor(windowWidth: self.bounds.width)
-        updateStatusBarVisibility()
     }
 
     // Update a status bar item with a new value.
@@ -144,7 +134,6 @@ class StatusBar: NSView {
             currentItems.removeValue(forKey: key)
             self.needsUpdateConstraints = true
             checkItemsFitFor(windowWidth: self.bounds.width)
-            updateStatusBarVisibility()
         } else {
             print("tried to remove item with \(key) that doesn't exist")
             return
@@ -166,25 +155,21 @@ class StatusBar: NSView {
             switch item.barAlignment {
             case .left:
                 if item == leftItems.first {
-                    let leftConstraint = item.leadingAnchor.constraint(equalTo:
-                        self.leadingAnchor, constant: firstItemMargin)
+                    let leftConstraint = item.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: firstItemMargin)
                     item.barConstraints.append(leftConstraint)
                 } else {
                     guard lastLeftItem != nil else { return }
-                    let leftConstraint = item.leadingAnchor.constraint(equalTo:
-                        lastLeftItem!.trailingAnchor, constant: statusBarPadding)
+                    let leftConstraint = item.leadingAnchor.constraint(equalTo: lastLeftItem!.trailingAnchor, constant: statusBarPadding)
                     item.barConstraints.append(leftConstraint)
                 }
                 lastLeftItem = item
             case .right:
                 if item == rightItems.first {
-                    let rightConstraint = item.trailingAnchor.constraint(equalTo:
-                        self.trailingAnchor, constant: -firstItemMargin)
+                    let rightConstraint = item.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -firstItemMargin)
                     item.barConstraints.append(rightConstraint)
                 } else {
                     guard lastRightItem != nil else { return }
-                    let rightConstraint = item.trailingAnchor.constraint(equalTo:
-                        lastRightItem!.leadingAnchor, constant: -statusBarPadding)
+                    let rightConstraint = item.trailingAnchor.constraint(equalTo: lastRightItem!.leadingAnchor, constant: -statusBarPadding)
                     item.barConstraints.append(rightConstraint)
                 }
                 lastRightItem = item
@@ -213,22 +198,6 @@ class StatusBar: NSView {
             }
         }
         self.needsDisplay = true
-    }
-
-    // Shows/hides the statusbar based on whether it has any contents.
-    func updateStatusBarVisibility() {
-        if !currentItems.isEmpty {
-            self.hideTimer?.invalidate()
-            self.isHidden = false
-        } else if !self.isHidden {
-            // Wait a moment before hiding the bar to avoid blinking in the case
-            // that a single item is added and removed repeatedly in rapid succession.
-            if #available(OSX 10.12, *) {
-                hideTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { _ in self.isHidden = true }
-            } else {
-                self.isHidden = true
-            }
-        }
     }
 
     // When items are added, expanded or removed, the status bar checks if
@@ -285,5 +254,38 @@ class StatusBar: NSView {
         path.line(to: CGPoint(x: dirtyRect.maxX, y: dirtyRect.minY))
         path.stroke()
     }
+}
 
+extension EditViewController {
+    func addStatusItem(_ item: StatusItem) {
+        self.statusBar.addStatusItem(item)
+        self.updateStatusBarVisibility()
+    }
+
+    func removeStatusItem(_ key: String) {
+        self.statusBar.removeStatusItem(key)
+        self.updateStatusBarVisibility()
+    }
+
+    // Shows/hides the statusbar based on whether it has any contents.
+    func updateStatusBarVisibility() {
+        if !statusBar.currentItems.isEmpty {
+            self.showStatusBar()
+        } else if statusBarHeight.constant > 0 {
+            // If status bar is currently showing, hide it after a delay.
+            Timer.scheduledTimer(timeInterval: 1.0,
+                                 target: self,
+                                 selector: #selector(hideStatusBar),
+                                 userInfo: nil,
+                                 repeats: false)
+        }
+    }
+
+    private func showStatusBar() {
+        statusBarHeight.constant = StatusBar.statusBarHeight
+    }
+
+    @objc private func hideStatusBar() {
+        statusBarHeight.constant = 0
+    }
 }
