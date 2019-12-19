@@ -133,6 +133,7 @@ class XiDocumentController: NSDocumentController, AlertPresenting {
                         currentDocument.fileURL = url
                         self.setIdentifier(result, forDocument: currentDocument)
                         currentDocument.editViewController!.prepareForReuse()
+                        currentDocument.editViewController!.enableTailMenu()
                         completionHandler(currentDocument, false, nil)
 
                     case .error(let error):
@@ -182,6 +183,10 @@ class XiDocumentController: NSDocumentController, AlertPresenting {
                     let viewIdentifier = result as! String
                     self.setIdentifier(viewIdentifier, forDocument: document)
                     document.coreViewIdentifier = viewIdentifier
+                    if url != nil {
+                        document.editViewController?.isExistingFile = true
+                    }
+                    document.editViewController?.updateTailMenu()
                 case .error(let error):
                     document.close()
                     self.showAlert(with: error.message)

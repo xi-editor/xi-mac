@@ -177,10 +177,10 @@ class ClientImplementation: XiClient, DocumentsProviding, ConfigCacheProviding, 
         }
     }
     
-    func toggleTailConfigChanged(viewIdentifier: String, isTailEnabled: Bool) {
+    func enableTailing(viewIdentifier: String, isTailEnabled: Bool) {
         let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
         DispatchQueue.main.async {
-            document?.editViewController?.toggleTailConfigChanged(isTailEnabled)
+            document?.editViewController?.enableTailing(isTailEnabled)
         }
     }
 

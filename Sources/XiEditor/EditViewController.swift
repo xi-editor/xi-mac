@@ -153,11 +153,10 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         }
     }
     
-    var isTailEnabled: Bool = false {
-        didSet {
-            updateTailMenu()
-        }
-    }
+    /// Flag to determine if current file is being tailed.
+    var isTailEnabled: Bool = false
+    
+    var isExistingFile: Bool = false
 
     // used to calculate the gutter width. Initial -1 so that a new document
     // still triggers update of gutter width.
@@ -334,6 +333,12 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     func prepareForReuse() {
         _previousViewportSize = CGSize.zero
         redrawEverything()
+    }
+    
+    func enableTailMenu() {
+        let toggleTailSubMenu = NSApplication.shared.mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Tail File")
+        toggleTailSubMenu!.isEnabled = true
+        self.isExistingFile = true
     }
 
     /// If font size or theme changes, we invalidate all views.
@@ -852,11 +857,17 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     
     func updateTailMenu() {
         let toggleTailSubMenu = NSApplication.shared.mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Tail File")
-        
-        if self.isTailEnabled {
-            toggleTailSubMenu!.state = NSControl.StateValue.on
+        if self.isExistingFile {
+            toggleTailSubMenu!.isEnabled = true
+            if self.isTailEnabled {
+                toggleTailSubMenu!.state = NSControl.StateValue.on
+            } else {
+                toggleTailSubMenu!.state = NSControl.StateValue.off
+            }
         } else {
+            toggleTailSubMenu!.isEnabled = false
             toggleTailSubMenu!.state = NSControl.StateValue.off
+            self.isTailEnabled = false
         }
     }
     
@@ -941,8 +952,9 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         }
     }
     
-    public func toggleTailConfigChanged(_ isTailEnabled: Bool) {
+    public func enableTailing(_ isTailEnabled: Bool) {
         self.isTailEnabled = isTailEnabled
+        self.updateTailMenu()
     }
 
     @IBAction func gotoLine(_ sender: AnyObject) {
