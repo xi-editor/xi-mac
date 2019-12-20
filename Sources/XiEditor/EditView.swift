@@ -383,7 +383,7 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     }
 
     func yOffsetToLine(_ y: CGFloat) -> Int {
-        let y = max(y - dataSource.textMetrics.topPadding, 0)
+        let y = max(y - dataSource.textMetrics.topPadding - self.frame.origin.y, 0)
         return Int(floor(y / dataSource.textMetrics.linespace))
     }
 
