@@ -396,7 +396,7 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     func bufferPositionFromPoint(_ point: NSPoint) -> BufferPosition {
         let point = self.convert(point, from: nil)
         let x = point.x + dataSource.scrollOrigin.x - dataSource.gutterWidth
-        let y = point.y + dataSource.scrollOrigin.y
+        let y = point.y + dataSource.scrollOrigin.y + self.frame.origin.y
         let lineIx = yOffsetToLine(y)
         if let line = getLine(lineIx) {
             let s = line.text
