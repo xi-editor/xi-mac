@@ -383,7 +383,7 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     }
 
     func yOffsetToLine(_ y: CGFloat) -> Int {
-        let y = max(y - dataSource.textMetrics.topPadding, 0)
+        let y = max(y - dataSource.textMetrics.topPadding - self.frame.origin.y, 0)
         return Int(floor(y / dataSource.textMetrics.linespace))
     }
 
@@ -396,7 +396,7 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
     func bufferPositionFromPoint(_ point: NSPoint) -> BufferPosition {
         let point = self.convert(point, from: nil)
         let x = point.x + dataSource.scrollOrigin.x - dataSource.gutterWidth
-        let y = point.y + dataSource.scrollOrigin.y
+        let y = point.y + dataSource.scrollOrigin.y + self.frame.origin.y
         let lineIx = yOffsetToLine(y)
         if let line = getLine(lineIx) {
             let s = line.text
