@@ -21,13 +21,13 @@ class SearchIntegrationTests: XCTestCase {
     var searchTester: SearchTester?
 
     override func tearDown() {
-        super.tearDown()
         searchTester = nil
+        super.tearDown()
     }
 
     func testSearchingGoldenBoys() {
-        weak var findExpectation = expectation(description: "find expectation")
-        let findAction: TestClientImplementation.FindStatusAction = { status in
+        let findExpectation = expectation(description: "find expectation")
+        let findAction: TestClientImplementation.FindStatusAction = { [weak findExpectation] status in
             XCTAssertEqual(2, status.count)
             XCTAssertEqual(67, status[0].matches)
             XCTAssertEqual(202, status[1].matches)
@@ -36,26 +36,26 @@ class SearchIntegrationTests: XCTestCase {
         }
         searchTester = SearchTester(findAction: findAction)
         searchGoldenBoys(for: ["Golden", "Boys"])
-        wait(for: [findExpectation!], timeout: 5)
+        wait(for: [findExpectation], timeout: 5)
     }
 
     func testSearchingGoldenBoysCaseSensitive() {
-        weak var findExpectation = expectation(description: "find expectation")
-        let findAction: TestClientImplementation.FindStatusAction = { status in
+        let findExpectation = expectation(description: "find expectation")
+        let findAction: TestClientImplementation.FindStatusAction = { [weak findExpectation] status in
             XCTAssertEqual(2, status.count)
             XCTAssertEqual(52, status[0].matches)
             XCTAssertEqual(33, status[1].matches)
-            findExpectation!.fulfill()
+            findExpectation?.fulfill()
             findExpectation = nil
         }
         searchTester = SearchTester(findAction: findAction)
         searchGoldenBoys(for: ["Golden", "Boys"], caseSensitive: true)
-        wait(for: [findExpectation!], timeout: 5)
+        wait(for: [findExpectation], timeout: 5)
     }
 
     func testSearchingKernertok() {
-        weak var findExpectation = expectation(description: "find expectation")
-        let findAction: TestClientImplementation.FindStatusAction = { status in
+        let findExpectation = expectation(description: "find expectation")
+        let findAction: TestClientImplementation.FindStatusAction = { [weak findExpectation] status in
             XCTAssertEqual(1, status.count)
             XCTAssertEqual(26 , status[0].matches)
             findExpectation?.fulfill()
@@ -63,12 +63,12 @@ class SearchIntegrationTests: XCTestCase {
         }
         searchTester = SearchTester(findAction: findAction)
         searchGoldenBoys(for: ["Kernertok"])
-        wait(for: [findExpectation!], timeout: 5)
+        wait(for: [findExpectation], timeout: 5)
     }
 
     func testSearchingThe() {
-        weak var findExpectation = expectation(description: "find expectation")
-        let findAction: TestClientImplementation.FindStatusAction = { status in
+        let findExpectation = expectation(description: "find expectation")
+        let findAction: TestClientImplementation.FindStatusAction = { [weak findExpectation] status in
             XCTAssertEqual(1, status.count)
             XCTAssertEqual(5764, status[0].matches)
             findExpectation?.fulfill()
@@ -76,12 +76,12 @@ class SearchIntegrationTests: XCTestCase {
         }
         searchTester = SearchTester(findAction: findAction)
         searchGoldenBoys(for: ["the"])
-        wait(for: [findExpectation!], timeout: 5)
+        wait(for: [findExpectation], timeout: 5)
     }
 
     func testSearchingTheCaseSensitive() {
-        weak var findExpectation = expectation(description: "find expectation")
-        let findAction: TestClientImplementation.FindStatusAction = { status in
+        let findExpectation = expectation(description: "find expectation")
+        let findAction: TestClientImplementation.FindStatusAction = { [weak findExpectation] status in
             XCTAssertEqual(1, status.count)
             XCTAssertEqual(407, status[0].matches)
             findExpectation?.fulfill()
@@ -89,7 +89,7 @@ class SearchIntegrationTests: XCTestCase {
         }
         searchTester = SearchTester(findAction: findAction)
         searchGoldenBoys(for: ["The"], caseSensitive: true)
-        wait(for: [findExpectation!], timeout: 5)
+        wait(for: [findExpectation], timeout: 5)
     }
 
     private func searchGoldenBoys(for terms: [String], caseSensitive: Bool = false) {
