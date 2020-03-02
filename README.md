@@ -120,23 +120,14 @@ XiEditor includes a CLI for opening files directly from the command line.
 ### Usage
 
 ```text
-xi <file> [--wait | -w] [--help | -h]
-  open XiEditor at specified file path
+USAGE: xi [<files> ...] [--wait]
 
-  file
-    the path to the file (relative or absolute)
+ARGUMENTS:
+  <files>                 Relative or absolute path to the file(s) to open. If none, opens empty editor.
 
-  --wait, -w
-    wait for the editor to close
-
-  --help, -h
-    prints this
-
-xi [--help | -h]
-  open XiEditor
-
-  --help, -h
-    prints this
+OPTIONS:
+  --wait                  Wait for the editor to close before finishing process.
+  -h, --help              Show help information.
 ```
 
 ### Git Editor

@@ -3,17 +3,19 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0C53410D21B746AA004A9550 /* XiCliCoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C53410C21B746AA004A9550 /* XiCliCoreTests.swift */; };
 		0C53410F21B746AA004A9550 /* libXiCliCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C62058D21B63B8E00A9758F /* libXiCliCore.a */; };
 		0C53411A21B786F3004A9550 /* XiCli in Resources */ = {isa = PBXBuildFile; fileRef = 0C66CB2B218F5CDB00F6F899 /* XiCli */; };
-		0C62059621B63BAB00A9758F /* CommandLineTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C66CB36218F5E8A00F6F899 /* CommandLineTool.swift */; };
-		0C62059721B63BAE00A9758F /* Arguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1F5B2921B5EFA300B7CE15 /* Arguments.swift */; };
+		0C62059721B63BAE00A9758F /* Xi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1F5B2921B5EFA300B7CE15 /* Xi.swift */; };
 		0C62059821B63C0900A9758F /* libXiCliCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C62058D21B63B8E00A9758F /* libXiCliCore.a */; };
 		0C66CB2E218F5CDB00F6F899 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C66CB2D218F5CDB00F6F899 /* main.swift */; };
+		0C9BB2E9240C7A0A0047ED67 /* ArgumentParser in Frameworks */ = {isa = PBXBuildFile; productRef = 0C9BB2E8240C7A0A0047ED67 /* ArgumentParser */; };
+		0CC42143240C82250030170A /* RuntimeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9BB2EE240C81A80047ED67 /* RuntimeError.swift */; };
+		0CC42144240C82280030170A /* CliHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9BB2EC240C811B0047ED67 /* CliHelper.swift */; };
+		0CC42146240C82540030170A /* CliHelperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC42145240C82540030170A /* CliHelperTests.swift */; };
 		28F1ED4A1EC4C735008839BE /* Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F1ED491EC4C735008839BE /* Search.swift */; };
 		31D2A51721B6BF3C005919F0 /* XiEditor.help in Resources */ = {isa = PBXBuildFile; fileRef = 31D2A51621B6BF3C005919F0 /* XiEditor.help */; };
 		3F9C4E7D223D7E3200669C75 /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9C4E7C223D7E3200669C75 /* Types.swift */; };
@@ -136,15 +138,16 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		0C1F5B2921B5EFA300B7CE15 /* Arguments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Arguments.swift; sourceTree = "<group>"; };
+		0C1F5B2921B5EFA300B7CE15 /* Xi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Xi.swift; sourceTree = "<group>"; };
 		0C53410A21B746AA004A9550 /* XiCliCoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XiCliCoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		0C53410C21B746AA004A9550 /* XiCliCoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiCliCoreTests.swift; sourceTree = "<group>"; };
 		0C53410E21B746AA004A9550 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0C62058D21B63B8E00A9758F /* libXiCliCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libXiCliCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C66CB2B218F5CDB00F6F899 /* XiCli */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = XiCli; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C66CB2D218F5CDB00F6F899 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		0C66CB34218F5DF100F6F899 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		0C66CB36218F5E8A00F6F899 /* CommandLineTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandLineTool.swift; sourceTree = "<group>"; };
+		0C9BB2EC240C811B0047ED67 /* CliHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CliHelper.swift; sourceTree = "<group>"; };
+		0C9BB2EE240C81A80047ED67 /* RuntimeError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeError.swift; sourceTree = "<group>"; };
+		0CC42145240C82540030170A /* CliHelperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CliHelperTests.swift; sourceTree = "<group>"; };
 		28F1ED491EC4C735008839BE /* Search.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
 		31D2A51621B6BF3C005919F0 /* XiEditor.help */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = XiEditor.help; sourceTree = "<group>"; };
 		3F9C4E7C223D7E3200669C75 /* Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
@@ -229,6 +232,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0C9BB2E9240C7A0A0047ED67 /* ArgumentParser in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -288,7 +292,7 @@
 		0C53410B21B746AA004A9550 /* XiCliCoreTests */ = {
 			isa = PBXGroup;
 			children = (
-				0C53410C21B746AA004A9550 /* XiCliCoreTests.swift */,
+				0CC42145240C82540030170A /* CliHelperTests.swift */,
 				0C53410E21B746AA004A9550 /* Info.plist */,
 			);
 			path = XiCliCoreTests;
@@ -297,8 +301,9 @@
 		0C62058E21B63B8E00A9758F /* XiCliCore */ = {
 			isa = PBXGroup;
 			children = (
-				0C66CB36218F5E8A00F6F899 /* CommandLineTool.swift */,
-				0C1F5B2921B5EFA300B7CE15 /* Arguments.swift */,
+				0C1F5B2921B5EFA300B7CE15 /* Xi.swift */,
+				0C9BB2EC240C811B0047ED67 /* CliHelper.swift */,
+				0C9BB2EE240C81A80047ED67 /* RuntimeError.swift */,
 			);
 			path = XiCliCore;
 			sourceTree = "<group>";
@@ -509,8 +514,12 @@
 			buildRules = (
 			);
 			dependencies = (
+				0C9BB2EB240C7A9E0047ED67 /* PBXTargetDependency */,
 			);
 			name = XiCliCore;
+			packageProductDependencies = (
+				0C9BB2E8240C7A0A0047ED67 /* ArgumentParser */,
+			);
 			productName = XiCliCore;
 			productReference = 0C62058D21B63B8E00A9758F /* libXiCliCore.a */;
 			productType = "com.apple.product-type.library.static";
@@ -638,6 +647,9 @@
 				Base,
 			);
 			mainGroup = AE499DC31C82BB2B002D68AF;
+			packageReferences = (
+				0C9BB2E7240C7A0A0047ED67 /* XCRemoteSwiftPackageReference "swift-argument-parser" */,
+			);
 			productRefGroup = AE499DCD1C82BB2B002D68AF /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -702,7 +714,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0C53410D21B746AA004A9550 /* XiCliCoreTests.swift in Sources */,
+				0CC42146240C82540030170A /* CliHelperTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -710,8 +722,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0C62059721B63BAE00A9758F /* Arguments.swift in Sources */,
-				0C62059621B63BAB00A9758F /* CommandLineTool.swift in Sources */,
+				0C62059721B63BAE00A9758F /* Xi.swift in Sources */,
+				0CC42143240C82250030170A /* RuntimeError.swift in Sources */,
+				0CC42144240C82280030170A /* CliHelper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -812,6 +825,10 @@
 			target = 0C66CB2A218F5CDB00F6F899 /* XiCli */;
 			targetProxy = 0C53411821B7816B004A9550 /* PBXContainerItemProxy */;
 		};
+		0C9BB2EB240C7A9E0047ED67 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 0C9BB2EA240C7A9E0047ED67 /* ArgumentParser */;
+		};
 		AE499DDD1C82BB2B002D68AF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = AE499DCB1C82BB2B002D68AF /* XiEditor */;
@@ -843,7 +860,11 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = Tests/XiCliCoreTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -866,7 +887,11 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = Tests/XiCliCoreTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.XiCliCoreTests";
@@ -926,7 +951,11 @@
 				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = "$(SRCROOT)/Sources/XiCli/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(TOOLCHAIN_DIR)/usr/lib/swift/macosx @executable_path";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(TOOLCHAIN_DIR)/usr/lib/swift/macosx",
+					"@executable_path",
+				);
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.Cli";
@@ -949,7 +978,11 @@
 				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = "$(SRCROOT)/Sources/XiCli/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(TOOLCHAIN_DIR)/usr/lib/swift/macosx @executable_path";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(TOOLCHAIN_DIR)/usr/lib/swift/macosx",
+					"@executable_path",
+				);
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.Cli";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1055,7 +1088,8 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
@@ -1067,7 +1101,10 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "$(SRCROOT)/Sources/XiEditor/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				OTHER_SWIFT_FLAGS = "-D DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.Editor";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1080,7 +1117,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/Sources/XiEditor/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.Editor";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -1092,7 +1132,11 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Tests/XiEditorTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.XiEditorTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/XiEditor.app/Contents/MacOS/XiEditor";
@@ -1105,7 +1149,11 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Tests/XiEditorTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.XiEditorTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/XiEditor.app/Contents/MacOS/XiEditor";
@@ -1117,7 +1165,11 @@
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Tests/XiEditorUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.XiEditorUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_TARGET_NAME = XiEditor;
@@ -1130,7 +1182,11 @@
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Tests/XiEditorUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "io.xi-editor.XiEditor.XiEditorUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_TARGET_NAME = XiEditor;
@@ -1228,6 +1284,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		0C9BB2E7240C7A0A0047ED67 /* XCRemoteSwiftPackageReference "swift-argument-parser" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-argument-parser";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 0.0.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		0C9BB2E8240C7A0A0047ED67 /* ArgumentParser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C9BB2E7240C7A0A0047ED67 /* XCRemoteSwiftPackageReference "swift-argument-parser" */;
+			productName = ArgumentParser;
+		};
+		0C9BB2EA240C7A9E0047ED67 /* ArgumentParser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C9BB2E7240C7A0A0047ED67 /* XCRemoteSwiftPackageReference "swift-argument-parser" */;
+			productName = ArgumentParser;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = AE499DC41C82BB2B002D68AF /* Project object */;
 }

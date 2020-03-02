@@ -1,4 +1,4 @@
-// Copyright 2018 The xi-editor Authors.
+// Copyright 2020 The xi-editor Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,44 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import Cocoa
+import AppKit
+import ArgumentParser
 
-public final class CommandLineTool {
-    private let args: Arguments
-    
-    public init(args: Arguments) {
-        self.args = args
-    }
-    
-    public func run() throws {
-        if args.help == true {
-            help()
-            return
-        }
-        
-        guard !args.fileInputs.isEmpty else {
-            NSWorkspace.shared.launchApplication("XiEditor")
-            return
-        }
-
-        let filePaths = try args.fileInputs.map {
-            try resolvePath(from: $0)
-        }
-
-        for filePath in filePaths {
-            try openFile(at: filePath)
-        }
-
-        if args.wait, !filePaths.isEmpty {
-            print("waiting for editor to close...")
-            let group = DispatchGroup()
-            group.enter()
-            setObserver(group: group, filePaths: filePaths)
-            group.wait()
-        }
-    }
-    
-    func resolvePath(from input: String) throws -> String {
+struct CliHelper {
+    static func resolvePath(from input: String) throws -> String {
         let fileManager = FileManager.default
         var filePath: URL!
 
@@ -66,28 +33,28 @@ public final class CommandLineTool {
         let pathString = canonicalPath(input)
 
         guard pathIsNotDirectory(pathString) else {
-            throw CliError.pathIsDirectory
+            throw ValidationError("The path entered is to a directory")
         }
         
         if !fileManager.fileExists(atPath: pathString) {
             let createSuccess = fileManager.createFile(atPath: pathString, contents: nil, attributes: nil)
             
             guard createSuccess else {
-                throw CliError.couldNotCreateFile
+                throw RuntimeError("Could not create a file")
             }
         }
         
         return pathString
     }
     
-    func openFile(at path: String) throws {
+    static func openFile(at path: String) throws {
         let openSuccess = NSWorkspace.shared.openFile(path, withApplication: "XiEditor")
         guard openSuccess else {
-            throw CliError.failedToOpenEditor
+            throw RuntimeError("Xi editor could not be opened")
         }
     }
     
-    func setObserver(group: DispatchGroup, filePaths: [String]) {
+    static func setObserver(group: DispatchGroup, filePaths: [String]) {
         let notificationQueue: OperationQueue = {
             let queue = OperationQueue()
             queue.name = "Notification queue"
@@ -110,33 +77,9 @@ public final class CommandLineTool {
             }
         }
     }
-    
-    func help() {
-        let message = """
-                The Xi CLI Help:
-                xi <file>... [--wait | -w] [--help | -h]
 
-                file
-                    the path to the file (relative or absolute)
-
-                --wait, -w
-                    wait for the editor to close
-
-                --help, -h
-                    prints this
-                """
-        print(message)
-    }
-
-    func canonicalPath(_ path: String) -> String {
+    static func canonicalPath(_ path: String) -> String {
         return URL(fileURLWithPath: path).standardizedFileURL.resolvingSymlinksInPath().path
     }
 }
 
-public extension CommandLineTool {
-    enum CliError: Swift.Error {
-        case couldNotCreateFile
-        case failedToOpenEditor
-        case pathIsDirectory
-    }
-}
