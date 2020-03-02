@@ -1,4 +1,4 @@
-// Copyright 2018 The xi-editor Authors.
+// Copyright 2020 The xi-editor Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,14 +15,9 @@
 import XCTest
 @testable import XiCliCore
 
-class XiCliCoreTests: XCTestCase {
-
-    var commandLineTool: CommandLineTool!
-    
+class CliHelperTests: XCTestCase {
     override func setUp() {
         super.setUp()
-        let testArguments = Arguments(arguments: ["test.txt", "--wait"])
-        commandLineTool = CommandLineTool(args: testArguments)
         let fileManager = FileManager.default
         fileManager.createFile(atPath: "test.txt", contents: "This is a tester file".data(using: .utf8), attributes: nil)
         try? fileManager.createSymbolicLink(atPath: "test_link.txt", withDestinationPath: "test.txt")
@@ -33,23 +28,14 @@ class XiCliCoreTests: XCTestCase {
         try? FileManager.default.removeItem(atPath: "test_link.txt")
         try? FileManager.default.removeItem(atPath: "test.txt")
     }
-
-    func testArgParse() {
-        let arguments = ["xi", "--wait", "test1.txt", "test2.txt"]
-        let retrievedArgs = Arguments(arguments: arguments)
-        XCTAssertNotNil(retrievedArgs)
-        XCTAssert(retrievedArgs.fileInputs == ["test1.txt", "test2.txt"])
-        XCTAssert(retrievedArgs.wait == true)
-        XCTAssert(retrievedArgs.help == false)
-    }
-
+    
     func testResolveAbsolutePath() {
         let fromPath = fileInTempDir("testResolvePath")
         FileManager
             .default
             .createFile(atPath: fromPath, contents: "This is a tester file".data(using: .utf8), attributes: nil)
         do {
-            let path = try commandLineTool.resolvePath(from: fromPath)
+            let path = try CliHelper.resolvePath(from: fromPath)
             XCTAssert(path == fromPath)
         } catch {
             XCTFail("temp file in temp dir not found")
@@ -58,7 +44,7 @@ class XiCliCoreTests: XCTestCase {
 
     func testResolveRelativePath() {
         do {
-            let path = try commandLineTool.resolvePath(from: "test.txt")
+            let path = try CliHelper.resolvePath(from: "test.txt")
             let expectedPath = fileInCurrentDir("test.txt")
             XCTAssert(path == expectedPath, "path does not match expected")
         } catch {
@@ -68,7 +54,7 @@ class XiCliCoreTests: XCTestCase {
 
     func testResolveSymlink() {
         do {
-            let path = try commandLineTool.resolvePath(from: "test_link.txt")
+            let path = try CliHelper.resolvePath(from: "test_link.txt")
             let expectedPath = fileInCurrentDir("test.txt")
             XCTAssert(path == expectedPath, "path does not match expected")
         } catch {
@@ -77,7 +63,7 @@ class XiCliCoreTests: XCTestCase {
     }
 
     func testFileOpen() {
-        XCTAssertNoThrow(try commandLineTool.openFile(at: "test.txt"))
+        XCTAssertNoThrow(try CliHelper.openFile(at: "test.txt"))
     }
 
     func testObserver() {
@@ -85,7 +71,7 @@ class XiCliCoreTests: XCTestCase {
         group.enter()
         let observedPaths = ["filePath1", "test_link.txt"]
         let expectedPaths = [fileInCurrentDir("filePath1"), fileInCurrentDir("test.txt")]
-        commandLineTool.setObserver(group: group, filePaths: expectedPaths)
+        CliHelper.setObserver(group: group, filePaths: expectedPaths)
         DistributedNotificationCenter.default().post(name: Notification.Name("io.xi-editor.XiEditor.FileClosed"), object: nil, userInfo: ["path": observedPaths.first!])
         DistributedNotificationCenter.default().post(name: Notification.Name("io.xi-editor.XiEditor.FileClosed"), object: nil, userInfo: ["path": observedPaths.last!])
         let expectation = XCTestExpectation(description: "Notification Recieved")

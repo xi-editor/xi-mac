@@ -1,4 +1,4 @@
-// Copyright 2018 The xi-editor Authors.
+// Copyright 2020 The xi-editor Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,22 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-public struct Arguments {
-    var fileInputs: [String] = []
-    var wait: Bool = false
-    var help: Bool = false
+import Foundation
+
+struct RuntimeError: Error, CustomStringConvertible {
+    var description: String
     
-    public init(arguments: [String] = CommandLine.arguments) {
-        let actualArgs = Array(arguments.dropFirst())
-        for arg in actualArgs {
-            if arg == "--wait" || arg == "-w" {
-                self.wait = true
-            } else if arg == "--help" || arg == "-h" {
-                self.help = true
-            } else {
-                self.fileInputs.append(arg)
-            }
-        }
+    init(_ description: String) {
+        self.description = description
     }
 }
-

@@ -12,15 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import Foundation
 import XiCliCore
 
-let args = Arguments()
-let tool = CommandLineTool(args: args)
-
-do {
-    try tool.run()
-} catch {
-    print("Whoops! An error occurred: \(error)")
-    exit(1)
-}
+Xi.main()
