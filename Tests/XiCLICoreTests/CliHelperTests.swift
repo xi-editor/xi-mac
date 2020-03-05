@@ -13,9 +13,9 @@
 // limitations under the License.
 
 import XCTest
-@testable import XiCliCore
+@testable import XiCLICore
 
-class CliHelperTests: XCTestCase {
+class CLIHelperTests: XCTestCase {
     override func setUp() {
         super.setUp()
         let fileManager = FileManager.default
@@ -35,7 +35,7 @@ class CliHelperTests: XCTestCase {
             .default
             .createFile(atPath: fromPath, contents: "This is a tester file".data(using: .utf8), attributes: nil)
         do {
-            let path = try CliHelper.resolvePath(from: fromPath)
+            let path = try CLIHelper.resolvePath(from: fromPath)
             XCTAssert(path == fromPath)
         } catch {
             XCTFail("temp file in temp dir not found")
@@ -44,7 +44,7 @@ class CliHelperTests: XCTestCase {
 
     func testResolveRelativePath() {
         do {
-            let path = try CliHelper.resolvePath(from: "test.txt")
+            let path = try CLIHelper.resolvePath(from: "test.txt")
             let expectedPath = fileInCurrentDir("test.txt")
             XCTAssert(path == expectedPath, "path does not match expected")
         } catch {
@@ -54,7 +54,7 @@ class CliHelperTests: XCTestCase {
 
     func testResolveSymlink() {
         do {
-            let path = try CliHelper.resolvePath(from: "test_link.txt")
+            let path = try CLIHelper.resolvePath(from: "test_link.txt")
             let expectedPath = fileInCurrentDir("test.txt")
             XCTAssert(path == expectedPath, "path does not match expected")
         } catch {
@@ -63,7 +63,7 @@ class CliHelperTests: XCTestCase {
     }
 
     func testFileOpen() {
-        XCTAssertNoThrow(try CliHelper.openFile(at: "test.txt"))
+        XCTAssertNoThrow(try CLIHelper.openFile(at: "test.txt"))
     }
 
     func testObserver() {
@@ -71,7 +71,7 @@ class CliHelperTests: XCTestCase {
         group.enter()
         let observedPaths = ["filePath1", "test_link.txt"]
         let expectedPaths = [fileInCurrentDir("filePath1"), fileInCurrentDir("test.txt")]
-        CliHelper.setObserver(group: group, filePaths: expectedPaths)
+        CLIHelper.setObserver(group: group, filePaths: expectedPaths)
         DistributedNotificationCenter.default().post(name: Notification.Name("io.xi-editor.XiEditor.FileClosed"), object: nil, userInfo: ["path": observedPaths.first!])
         DistributedNotificationCenter.default().post(name: Notification.Name("io.xi-editor.XiEditor.FileClosed"), object: nil, userInfo: ["path": observedPaths.last!])
         let expectation = XCTestExpectation(description: "Notification Recieved")

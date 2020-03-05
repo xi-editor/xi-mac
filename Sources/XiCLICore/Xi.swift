@@ -32,18 +32,18 @@ public struct Xi: ParsableCommand {
         }
 
         let filePaths = try files.map {
-            try CliHelper.resolvePath(from: $0)
+            try CLIHelper.resolvePath(from: $0)
         }
 
         for filePath in filePaths {
-            try CliHelper.openFile(at: filePath)
+            try CLIHelper.openFile(at: filePath)
         }
 
         if wait, !filePaths.isEmpty {
             print("waiting for editor to close...")
             let group = DispatchGroup()
             group.enter()
-            CliHelper.setObserver(group: group, filePaths: filePaths)
+            CLIHelper.setObserver(group: group, filePaths: filePaths)
             group.wait()
         }
     }

@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "0C66CB2A218F5CDB00F6F899"
-               BuildableName = "XiCli"
-               BlueprintName = "XiCli"
+               BuildableName = "XiCLI"
+               BlueprintName = "XiCLI"
                ReferencedContainer = "container:XiEditor.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -27,6 +27,15 @@
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "0C66CB2A218F5CDB00F6F899"
+            BuildableName = "XiCLI"
+            BlueprintName = "XiCLI"
+            ReferencedContainer = "container:XiEditor.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
       <Testables>
          <TestableReference
             skipped = "NO">
@@ -39,17 +48,6 @@
             </BuildableReference>
          </TestableReference>
       </Testables>
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "0C66CB2A218F5CDB00F6F899"
-            BuildableName = "XiCli"
-            BlueprintName = "XiCli"
-            ReferencedContainer = "container:XiEditor.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
-      <AdditionalOptions>
-      </AdditionalOptions>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
@@ -66,13 +64,11 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "0C66CB2A218F5CDB00F6F899"
-            BuildableName = "XiCli"
-            BlueprintName = "XiCli"
+            BuildableName = "XiCLI"
+            BlueprintName = "XiCLI"
             ReferencedContainer = "container:XiEditor.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <AdditionalOptions>
-      </AdditionalOptions>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -85,8 +81,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "0C66CB2A218F5CDB00F6F899"
-            BuildableName = "XiCli"
-            BlueprintName = "XiCli"
+            BuildableName = "XiCLI"
+            BlueprintName = "XiCLI"
             ReferencedContainer = "container:XiEditor.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
