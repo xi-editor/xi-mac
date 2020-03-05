@@ -7,14 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0C53410F21B746AA004A9550 /* libXiCliCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C62058D21B63B8E00A9758F /* libXiCliCore.a */; };
-		0C53411A21B786F3004A9550 /* XiCli in Resources */ = {isa = PBXBuildFile; fileRef = 0C66CB2B218F5CDB00F6F899 /* XiCli */; };
+		0C53410F21B746AA004A9550 /* libXiCLICore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C62058D21B63B8E00A9758F /* libXiCLICore.a */; };
+		0C53411A21B786F3004A9550 /* XiCLI in Resources */ = {isa = PBXBuildFile; fileRef = 0C66CB2B218F5CDB00F6F899 /* XiCLI */; };
 		0C62059721B63BAE00A9758F /* Xi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1F5B2921B5EFA300B7CE15 /* Xi.swift */; };
-		0C62059821B63C0900A9758F /* libXiCliCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C62058D21B63B8E00A9758F /* libXiCliCore.a */; };
+		0C62059821B63C0900A9758F /* libXiCLICore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C62058D21B63B8E00A9758F /* libXiCLICore.a */; };
 		0C66CB2E218F5CDB00F6F899 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C66CB2D218F5CDB00F6F899 /* main.swift */; };
 		0C9BB2E9240C7A0A0047ED67 /* ArgumentParser in Frameworks */ = {isa = PBXBuildFile; productRef = 0C9BB2E8240C7A0A0047ED67 /* ArgumentParser */; };
 		0CC42143240C82250030170A /* RuntimeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9BB2EE240C81A80047ED67 /* RuntimeError.swift */; };
-		0CC42144240C82280030170A /* CliHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9BB2EC240C811B0047ED67 /* CliHelper.swift */; };
+		0CC42144240C82280030170A /* CLIHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9BB2EC240C811B0047ED67 /* CLIHelper.swift */; };
 		0CC42146240C82540030170A /* CliHelperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC42145240C82540030170A /* CliHelperTests.swift */; };
 		28F1ED4A1EC4C735008839BE /* Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F1ED491EC4C735008839BE /* Search.swift */; };
 		31D2A51721B6BF3C005919F0 /* XiEditor.help in Resources */ = {isa = PBXBuildFile; fileRef = 31D2A51621B6BF3C005919F0 /* XiEditor.help */; };
@@ -141,11 +141,11 @@
 		0C1F5B2921B5EFA300B7CE15 /* Xi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Xi.swift; sourceTree = "<group>"; };
 		0C53410A21B746AA004A9550 /* XiCliCoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XiCliCoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C53410E21B746AA004A9550 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		0C62058D21B63B8E00A9758F /* libXiCliCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libXiCliCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		0C66CB2B218F5CDB00F6F899 /* XiCli */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = XiCli; sourceTree = BUILT_PRODUCTS_DIR; };
+		0C62058D21B63B8E00A9758F /* libXiCLICore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libXiCLICore.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		0C66CB2B218F5CDB00F6F899 /* XiCLI */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = XiCLI; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C66CB2D218F5CDB00F6F899 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		0C66CB34218F5DF100F6F899 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		0C9BB2EC240C811B0047ED67 /* CliHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CliHelper.swift; sourceTree = "<group>"; };
+		0C9BB2EC240C811B0047ED67 /* CLIHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLIHelper.swift; sourceTree = "<group>"; };
 		0C9BB2EE240C81A80047ED67 /* RuntimeError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeError.swift; sourceTree = "<group>"; };
 		0CC42145240C82540030170A /* CliHelperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CliHelperTests.swift; sourceTree = "<group>"; };
 		28F1ED491EC4C735008839BE /* Search.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
@@ -224,7 +224,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0C53410F21B746AA004A9550 /* libXiCliCore.a in Frameworks */,
+				0C53410F21B746AA004A9550 /* libXiCLICore.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -240,7 +240,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0C62059821B63C0900A9758F /* libXiCliCore.a in Frameworks */,
+				0C62059821B63C0900A9758F /* libXiCLICore.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -272,8 +272,8 @@
 			isa = PBXGroup;
 			children = (
 				AE499DCE1C82BB2B002D68AF /* XiEditor */,
-				0C66CB2C218F5CDB00F6F899 /* XiCli */,
-				0C62058E21B63B8E00A9758F /* XiCliCore */,
+				0C66CB2C218F5CDB00F6F899 /* XiCLI */,
+				0C62058E21B63B8E00A9758F /* XiCLICore */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -284,37 +284,37 @@
 				D8F1F44B21C96BF6007FC254 /* IntegrationTests */,
 				AE499DDE1C82BB2B002D68AF /* XiEditorTests */,
 				AE499DE91C82BB2B002D68AF /* XiEditorUITests */,
-				0C53410B21B746AA004A9550 /* XiCliCoreTests */,
+				0C53410B21B746AA004A9550 /* XiCLICoreTests */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
 		};
-		0C53410B21B746AA004A9550 /* XiCliCoreTests */ = {
+		0C53410B21B746AA004A9550 /* XiCLICoreTests */ = {
 			isa = PBXGroup;
 			children = (
 				0CC42145240C82540030170A /* CliHelperTests.swift */,
 				0C53410E21B746AA004A9550 /* Info.plist */,
 			);
-			path = XiCliCoreTests;
+			path = XiCLICoreTests;
 			sourceTree = "<group>";
 		};
-		0C62058E21B63B8E00A9758F /* XiCliCore */ = {
+		0C62058E21B63B8E00A9758F /* XiCLICore */ = {
 			isa = PBXGroup;
 			children = (
 				0C1F5B2921B5EFA300B7CE15 /* Xi.swift */,
-				0C9BB2EC240C811B0047ED67 /* CliHelper.swift */,
+				0C9BB2EC240C811B0047ED67 /* CLIHelper.swift */,
 				0C9BB2EE240C81A80047ED67 /* RuntimeError.swift */,
 			);
-			path = XiCliCore;
+			path = XiCLICore;
 			sourceTree = "<group>";
 		};
-		0C66CB2C218F5CDB00F6F899 /* XiCli */ = {
+		0C66CB2C218F5CDB00F6F899 /* XiCLI */ = {
 			isa = PBXGroup;
 			children = (
 				0C66CB2D218F5CDB00F6F899 /* main.swift */,
 				0C66CB34218F5DF100F6F899 /* Info.plist */,
 			);
-			path = XiCli;
+			path = XiCLI;
 			sourceTree = "<group>";
 		};
 		31D2A51321B6BEEC005919F0 /* Resources */ = {
@@ -359,8 +359,8 @@
 				AE499DCC1C82BB2B002D68AF /* XiEditor.app */,
 				AE499DDB1C82BB2B002D68AF /* XiEditorTests.xctest */,
 				AE499DE61C82BB2B002D68AF /* XiEditorUITests.xctest */,
-				0C66CB2B218F5CDB00F6F899 /* XiCli */,
-				0C62058D21B63B8E00A9758F /* libXiCliCore.a */,
+				0C66CB2B218F5CDB00F6F899 /* XiCLI */,
+				0C62058D21B63B8E00A9758F /* libXiCLICore.a */,
 				0C53410A21B746AA004A9550 /* XiCliCoreTests.xctest */,
 			);
 			name = Products;
@@ -504,9 +504,9 @@
 			productReference = 0C53410A21B746AA004A9550 /* XiCliCoreTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		0C62058C21B63B8E00A9758F /* XiCliCore */ = {
+		0C62058C21B63B8E00A9758F /* XiCLICore */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0C62059321B63B8E00A9758F /* Build configuration list for PBXNativeTarget "XiCliCore" */;
+			buildConfigurationList = 0C62059321B63B8E00A9758F /* Build configuration list for PBXNativeTarget "XiCLICore" */;
 			buildPhases = (
 				0C62058A21B63B8E00A9758F /* Sources */,
 				0C62058B21B63B8E00A9758F /* Frameworks */,
@@ -516,17 +516,17 @@
 			dependencies = (
 				0C9BB2EB240C7A9E0047ED67 /* PBXTargetDependency */,
 			);
-			name = XiCliCore;
+			name = XiCLICore;
 			packageProductDependencies = (
 				0C9BB2E8240C7A0A0047ED67 /* ArgumentParser */,
 			);
 			productName = XiCliCore;
-			productReference = 0C62058D21B63B8E00A9758F /* libXiCliCore.a */;
+			productReference = 0C62058D21B63B8E00A9758F /* libXiCLICore.a */;
 			productType = "com.apple.product-type.library.static";
 		};
-		0C66CB2A218F5CDB00F6F899 /* XiCli */ = {
+		0C66CB2A218F5CDB00F6F899 /* XiCLI */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0C66CB31218F5CDB00F6F899 /* Build configuration list for PBXNativeTarget "XiCli" */;
+			buildConfigurationList = 0C66CB31218F5CDB00F6F899 /* Build configuration list for PBXNativeTarget "XiCLI" */;
 			buildPhases = (
 				0C66CB27218F5CDB00F6F899 /* Sources */,
 				0C66CB28218F5CDB00F6F899 /* Frameworks */,
@@ -537,9 +537,9 @@
 			dependencies = (
 				0C53411621B7475F004A9550 /* PBXTargetDependency */,
 			);
-			name = XiCli;
+			name = XiCLI;
 			productName = XiCLI;
-			productReference = 0C66CB2B218F5CDB00F6F899 /* XiCli */;
+			productReference = 0C66CB2B218F5CDB00F6F899 /* XiCLI */;
 			productType = "com.apple.product-type.tool";
 		};
 		AE499DCB1C82BB2B002D68AF /* XiEditor */ = {
@@ -656,8 +656,8 @@
 			targets = (
 				AE499DCB1C82BB2B002D68AF /* XiEditor */,
 				D023D9FE1CD0715E0087EC0A /* XiCore */,
-				0C66CB2A218F5CDB00F6F899 /* XiCli */,
-				0C62058C21B63B8E00A9758F /* XiCliCore */,
+				0C66CB2A218F5CDB00F6F899 /* XiCLI */,
+				0C62058C21B63B8E00A9758F /* XiCLICore */,
 				AE499DDA1C82BB2B002D68AF /* XiEditorTests */,
 				AE499DE51C82BB2B002D68AF /* XiEditorUITests */,
 				0C53410921B746AA004A9550 /* XiCliCoreTests */,
@@ -677,7 +677,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0C53411A21B786F3004A9550 /* XiCli in Resources */,
+				0C53411A21B786F3004A9550 /* XiCLI in Resources */,
 				31D2A51721B6BF3C005919F0 /* XiEditor.help in Resources */,
 				4DCB4AF020576A6F00476F75 /* fonts in Resources */,
 				F53EA2AD1DCAA8110071ACFD /* Main.storyboard in Resources */,
@@ -724,7 +724,7 @@
 			files = (
 				0C62059721B63BAE00A9758F /* Xi.swift in Sources */,
 				0CC42143240C82250030170A /* RuntimeError.swift in Sources */,
-				0CC42144240C82280030170A /* CliHelper.swift in Sources */,
+				0CC42144240C82280030170A /* CLIHelper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -812,17 +812,17 @@
 /* Begin PBXTargetDependency section */
 		0C53411121B746AA004A9550 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 0C62058C21B63B8E00A9758F /* XiCliCore */;
+			target = 0C62058C21B63B8E00A9758F /* XiCLICore */;
 			targetProxy = 0C53411021B746AA004A9550 /* PBXContainerItemProxy */;
 		};
 		0C53411621B7475F004A9550 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 0C62058C21B63B8E00A9758F /* XiCliCore */;
+			target = 0C62058C21B63B8E00A9758F /* XiCLICore */;
 			targetProxy = 0C53411521B7475F004A9550 /* PBXContainerItemProxy */;
 		};
 		0C53411921B7816B004A9550 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 0C66CB2A218F5CDB00F6F899 /* XiCli */;
+			target = 0C66CB2A218F5CDB00F6F899 /* XiCLI */;
 			targetProxy = 0C53411821B7816B004A9550 /* PBXContainerItemProxy */;
 		};
 		0C9BB2EB240C7A9E0047ED67 /* PBXTargetDependency */ = {
@@ -1220,7 +1220,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0C62059321B63B8E00A9758F /* Build configuration list for PBXNativeTarget "XiCliCore" */ = {
+		0C62059321B63B8E00A9758F /* Build configuration list for PBXNativeTarget "XiCLICore" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0C62059421B63B8E00A9758F /* Debug */,
@@ -1229,7 +1229,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0C66CB31218F5CDB00F6F899 /* Build configuration list for PBXNativeTarget "XiCli" */ = {
+		0C66CB31218F5CDB00F6F899 /* Build configuration list for PBXNativeTarget "XiCLI" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0C66CB2F218F5CDB00F6F899 /* Debug */,

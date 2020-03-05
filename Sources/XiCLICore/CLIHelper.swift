@@ -15,7 +15,7 @@
 import AppKit
 import ArgumentParser
 
-struct CliHelper {
+struct CLIHelper {
     static func resolvePath(from input: String) throws -> String {
         let fileManager = FileManager.default
         var filePath: URL!

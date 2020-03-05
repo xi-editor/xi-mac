@@ -166,7 +166,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         Trace.shared.trace("appWillLaunch", .main, .end)
         documentController = XiDocumentController()
         
-        // Set Cli Menu Title
+        // Set CLI Menu Title
         renameCliToggle()
     }
     
@@ -190,7 +190,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             info = "The file \(cliPath.path) already exists."
         } else {
             do {
-                let srcPath = Bundle.main.url(forResource: "XiCli", withExtension: "")
+                let srcPath = Bundle.main.url(forResource: "XiCLI", withExtension: "")
                 
                 if let srcPath = srcPath {
                     try FileManager.default.createSymbolicLink(at: cliPath, withDestinationURL: srcPath)
