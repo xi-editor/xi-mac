@@ -30,7 +30,7 @@ class CLIHelperTests: XCTestCase {
     }
     
     func testResolveAbsolutePath() {
-        let fromPath = fileInTempDir("testResolvePath")
+        let fromPath = fileInTempDir("test.txt")
         FileManager
             .default
             .createFile(atPath: fromPath, contents: "This is a tester file".data(using: .utf8), attributes: nil)
@@ -64,6 +64,12 @@ class CLIHelperTests: XCTestCase {
 
     func testFileOpen() {
         XCTAssertNoThrow(try CLIHelper.openFile(at: "test.txt"))
+    }
+    
+    func testDirectoryChecker() {
+        let path = FileManager.default.temporaryDirectory.path
+        let notDir = CLIHelper.pathIsNotDirectory(path)
+        XCTAssert(!notDir, "directory was not detected")
     }
 
     func testObserver() {

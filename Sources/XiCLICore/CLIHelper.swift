@@ -18,29 +18,18 @@ import ArgumentParser
 struct CLIHelper {
     static func resolvePath(from input: String) throws -> String {
         let fileManager = FileManager.default
-        var filePath: URL!
 
-        // Small helper function used to determine if path is not a folder.
-        func pathIsNotDirectory(_ path: String) -> Bool {
-            var isDirectory = ObjCBool(false)
-            if fileManager.fileExists(atPath: path, isDirectory: &isDirectory) {
-                return !isDirectory.boolValue
-            } else {
-                return true
-            }
-        }
-        
         let pathString = canonicalPath(input)
 
         guard pathIsNotDirectory(pathString) else {
-            throw ValidationError("The path entered is to a directory")
+            throw ValidationError("\(pathString) is a directory")
         }
         
         if !fileManager.fileExists(atPath: pathString) {
             let createSuccess = fileManager.createFile(atPath: pathString, contents: nil, attributes: nil)
             
             guard createSuccess else {
-                throw RuntimeError("Could not create a file")
+                throw RuntimeError("Could not create \(pathString)")
             }
         }
         
@@ -77,9 +66,20 @@ struct CLIHelper {
             }
         }
     }
-
+    
+    
+    // MARK: - Helper Functions
     static func canonicalPath(_ path: String) -> String {
         return URL(fileURLWithPath: path).standardizedFileURL.resolvingSymlinksInPath().path
+    }
+    
+    static func pathIsNotDirectory(_ path: String) -> Bool {
+        var isDirectory = ObjCBool(false)
+        if FileManager.default.fileExists(atPath: path, isDirectory: &isDirectory) {
+            return !isDirectory.boolValue
+        } else {
+            return true
+        }
     }
 }
 
