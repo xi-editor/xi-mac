@@ -64,12 +64,23 @@ struct Theme {
 }
 
 extension Theme {
+    static var defaultFindHighlightColor: NSColor {
+        if #available(OSX 10.13, *) {
+            return NSColor.findHighlightColor
+        }
+        else {
+            return NSColor(calibratedRed: 1.0, green: 1.0, blue: 0.0, alpha: 1.0)
+        }
+    }
+}
+
+extension Theme {
     static func defaultTheme() -> Theme {
         return Theme(foreground: .black,
               background: .white,
               caret: .black,
               lineHighlight: nil,
-              findHighlights: [NSColor(deviceWhite: 0.8, alpha: 0.4)],
+              findHighlights: [Theme.defaultFindHighlightColor],
               findHighlightForeground: nil,
               gutter: NSColor(deviceWhite: 0.9, alpha: 1.0),
               gutterForeground: NSColor(deviceWhite: 0.5, alpha: 1.0),
@@ -91,7 +102,8 @@ extension Theme {
         let caret = NSColor(jsonRgbaColor: json["caret"] as? [String: Any] ?? [:])
         let line_highlight = NSColor(jsonRgbaColor: json["line_highlight"] as? [String: Any] ?? [:])
 
-        let find_highlight: NSColor? = NSColor(jsonRgbaColor: json["find_highlight"] as? [String: Any] ?? [:])
+        // Use default find highlight color instead of theme's find_highlight value
+        let find_highlight: NSColor? = Theme.defaultFindHighlightColor
         let find_highlight_foreground = NSColor(jsonRgbaColor: json["find_highlight_foreground"] as? [String: Any] ?? [:])
         let gutter = NSColor(jsonRgbaColor: json["gutter"] as? [String: Any] ?? [:])
         let gutter_foreground = NSColor(jsonRgbaColor: json["gutter_foreground"] as? [String: Any] ?? [:])
@@ -109,7 +121,7 @@ extension Theme {
             background: background ?? defaults.background,
             caret: caret ?? defaults.caret,
             lineHighlight: line_highlight ?? defaults.lineHighlight,
-            findHighlights: Theme.generateHighlightColors(findHighlight: find_highlight ?? defaults.findHighlights?.first!),
+            findHighlights: Theme.generateHighlightColors(findHighlight: find_highlight),
             findHighlightForeground: find_highlight_foreground ?? defaults.findHighlightForeground,
             gutter: gutter ?? (background ?? defaults.gutter),
             gutterForeground: gutter_foreground ?? defaults.gutterForeground,
@@ -135,7 +147,7 @@ extension Theme {
             // Leave room for default highlight and selection colors
             let customHighlights = Style.N_RESERVED_STYLES - 2
             return [defaultHighlight] + (0..<customHighlights).map({
-                return NSColor(hue: CGFloat((1.0 / Double(customHighlights)) * Double($0)), saturation: 1, brightness: brightness, alpha: alpha)
+                return NSColor(hue: CGFloat((1.0 / Double(customHighlights)) * Double($0)) + hue, saturation: 1, brightness: brightness, alpha: alpha)
             })
         })
     }
