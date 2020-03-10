@@ -86,4 +86,7 @@ class TestClientImplementation: XiClient {
 
     func replaceStatus(viewIdentifier: String, status: ReplaceStatus) {
     }
+    
+    func enableTailing(viewIdentifier: String, isTailEnabled: Bool) {
+    }
 }

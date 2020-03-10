@@ -71,6 +71,7 @@ enum CoreNotification {
 
     case findStatus(viewIdentifier: ViewIdentifier, status: [FindStatus])
     case replaceStatus(viewIdentifier: ViewIdentifier, status: ReplaceStatus)
+    case enableTailing(viewIdentifier: ViewIdentifier, isTailEnabled: Bool)
 
     static func fromJson(_ json: [String: Any]) -> CoreNotification? {
         guard
@@ -227,6 +228,11 @@ enum CoreNotification {
                 let replaceStatus = ReplaceStatus(fromJson: status)
             {
                 return .replaceStatus(viewIdentifier: viewIdentifier!, status: replaceStatus)
+            }
+        case "enable_tailing":
+            if let isTailEnabled = jsonParams["is_tail_enabled"] as? Bool
+            {
+                return .enableTailing(viewIdentifier: viewIdentifier!, isTailEnabled: isTailEnabled)
             }
 
         default:

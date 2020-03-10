@@ -86,4 +86,7 @@ protocol XiClient: AnyObject {
 
     /// A notification containing the current replace status.
     func replaceStatus(viewIdentifier: String, status: ReplaceStatus)
+    
+    /// A notification telling whether tail was enabled/disabled.
+    func enableTailing(viewIdentifier: String, isTailEnabled: Bool)
 }

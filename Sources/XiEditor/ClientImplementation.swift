@@ -176,6 +176,14 @@ class ClientImplementation: XiClient, DocumentsProviding, ConfigCacheProviding, 
             }
         }
     }
+    
+    func enableTailing(viewIdentifier: String, isTailEnabled: Bool) {
+        let document = documentForViewIdentifier(viewIdentifier: viewIdentifier)
+        DispatchQueue.main.async {
+            document?.editViewController?.enableTailing(isTailEnabled)
+        }
+    }
+
 
     // Stores the config dict so new windows don't have to wait for core to send it.
     // The main purpose of this is ensuring that `unified_titlebar` applies immediately.

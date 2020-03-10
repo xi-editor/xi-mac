@@ -309,6 +309,8 @@ class StdoutRPCSender: RPCSending {
             self.client?.findStatus(viewIdentifier: viewIdentifier, status: status)
         case let .replaceStatus(viewIdentifier, status):
             self.client?.replaceStatus(viewIdentifier: viewIdentifier, status: status)
+        case let .enableTailing(viewIdentifier, isTailEnabled):
+            self.client?.enableTailing(viewIdentifier: viewIdentifier, isTailEnabled: isTailEnabled)
         }
     }
 

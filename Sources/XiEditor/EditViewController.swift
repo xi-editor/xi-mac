@@ -152,6 +152,11 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             updateLanguageMenu()
         }
     }
+    
+    /// Flag to determine if current file is being tailed.
+    var isTailEnabled: Bool = false
+    
+    var isExistingFile: Bool = false
 
     // used to calculate the gutter width. Initial -1 so that a new document
     // still triggers update of gutter width.
@@ -328,6 +333,12 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
     func prepareForReuse() {
         _previousViewportSize = CGSize.zero
         redrawEverything()
+    }
+    
+    func enableTailMenu() {
+        let toggleTailSubMenu = NSApplication.shared.mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Tail File")
+        toggleTailSubMenu!.isEnabled = true
+        self.isExistingFile = true
     }
 
     /// If font size or theme changes, we invalidate all views.
@@ -711,6 +722,10 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         document.xiCore.setTheme(themeName: sender.title)
     }
     
+    @IBAction func debugToggleTail(_ sender: NSMenuItem) {
+        document.xiCore.toggleTailConfig(identifier: document.coreViewIdentifier!, enabled: !self.isTailEnabled)
+    }
+    
     @IBAction func debugSetLanguage(_ sender: NSMenuItem) {
         guard sender.state != NSControl.StateValue.on else { print("language already active"); return }
         document.xiCore.setLanguage(identifier: document.coreViewIdentifier!, languageName: sender.title)
@@ -840,11 +855,28 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
         item.state = findViewController.showMultipleSearchQueries ? .on : .off
     }
     
+    func updateTailMenu() {
+        let toggleTailSubMenu = NSApplication.shared.mainMenu!.item(withTitle: "Debug")!.submenu!.item(withTitle: "Tail File")
+        if self.isExistingFile {
+            toggleTailSubMenu!.isEnabled = true
+            if self.isTailEnabled {
+                toggleTailSubMenu!.state = NSControl.StateValue.on
+            } else {
+                toggleTailSubMenu!.state = NSControl.StateValue.off
+            }
+        } else {
+            toggleTailSubMenu!.isEnabled = false
+            toggleTailSubMenu!.state = NSControl.StateValue.off
+            self.isTailEnabled = false
+        }
+    }
+    
     // Gets called when active window changes
     func updateMenuState() {
         updatePluginMenu()
         updateLanguageMenu()
         updateFindMenu()
+        updateTailMenu()
     }
 
     @objc func handleCommand(_ sender: NSMenuItem) {
@@ -918,6 +950,11 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
             item.state = NSControl.StateValue(rawValue: (language == currentlyActive) ? 1 : 0)
             languagesMenu.addItem(item)
         }
+    }
+    
+    public func enableTailing(_ isTailEnabled: Bool) {
+        self.isTailEnabled = isTailEnabled
+        self.updateTailMenu()
     }
 
     @IBAction func gotoLine(_ sender: AnyObject) {
