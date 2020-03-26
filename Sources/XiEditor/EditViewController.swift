@@ -214,7 +214,12 @@ class EditViewController: NSViewController, EditViewDataSource, FindDelegate, Sc
                 findViewController.updateColor(newBackgroundColor: self.theme.background, unifiedTitlebar: unifiedTitlebar)
 
                 if color.isDark && unifiedTitlebar {
-                    window.appearance = NSAppearance(named: .vibrantDark)
+                    if #available(OSX 10.14, *) {
+                        window.appearance = NSAppearance(named: .darkAqua)
+                    } else {
+                        // Fallback on earlier versions
+                        window.appearance = NSAppearance(named: .vibrantDark)
+                    }
                 } else {
                     window.appearance = NSAppearance(named: .aqua)
                 }
