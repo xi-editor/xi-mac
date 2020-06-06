@@ -15,7 +15,7 @@
 import Cocoa
 import OpenGL
 
-class GlAtlas: Atlas {
+class GLAtlas: Atlas {
     var textureId: GLuint = 0
 
     override init() {

@@ -17,7 +17,6 @@ import OpenGL
 import GLKit
 
 class TextPlaneDemo: NSView, TextPlaneDelegate {
-    var renderer: Renderer?
     var last: Double = 0
     var count = 0
 
@@ -25,9 +24,12 @@ class TextPlaneDemo: NSView, TextPlaneDelegate {
         super.init(frame: frame)
         wantsLayer = true
         wantsBestResolutionOpenGLSurface = true
-        let glLayer = TextPlaneLayer()
-        glLayer.textDelegate = self
-        layer = glLayer
+    }
+
+    override func makeBackingLayer() -> CALayer {
+        let layer = GLTextPlaneLayer()
+        layer.textDelegate = self
+        return layer
     }
 
     @available(*, unavailable)
@@ -65,7 +67,7 @@ class TextPlaneDemo: NSView, TextPlaneDelegate {
         let font = NSFont(name: "Inconsolata", size: 14) ?? NSFont(name: "Menlo", size: 14)!
         let builder = TextLineBuilder(text, font: font)
         builder.addFgSpan(range: 7..<10, argb: 0xffff0000)
-        let tl = builder.build(fontCache: renderer.atlas.fontCache)
+        let tl = builder.build(fontCache: renderer.fontCache)
         //textInstances.removeAll()
         //textInstances.append(contentsOf: [10, 100, 256, 256,  192.0, 192.0, 192.0, 255.0,  0.0, 0.0, 1.0, 1.0])
         for j in 0..<60 {
@@ -78,87 +80,3 @@ class TextPlaneDemo: NSView, TextPlaneDelegate {
 protocol TextPlaneDelegate: class {
     func render(_ renderer: Renderer, dirtyRect: NSRect)
 }
-
-/// A layer that efficiently renders text content. It is a subclass of NSOpenGLLayer,
-/// and is the main top-level integration point.
-class TextPlaneLayer : NSOpenGLLayer, FpsObserver {
-    lazy var renderer: Renderer = {
-        glEnable(GLenum(GL_BLEND))
-        glEnable(GLenum(GL_FRAMEBUFFER_SRGB))
-        return Renderer()
-    }()
-    weak var textDelegate: TextPlaneDelegate?
-
-    var fps = Fps()
-    var last: Double = 0
-    var count = 0
-
-    override init() {
-        super.init()
-        // TODO: consider upgrading minimum version to 10.12
-        if #available(OSX 10.12, *) {
-            colorspace = CGColorSpace(name: CGColorSpace.linearSRGB)
-        }
-        fps.add(observer: self)
-    }
-
-    override init(layer: Any) {
-        super.init(layer: layer)
-    }
-
-    @available(*, unavailable)
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override func copyCGLPixelFormat(forDisplayMask mask: UInt32) -> CGLPixelFormatObj {
-        let attr = [
-            NSOpenGLPixelFormatAttribute(NSOpenGLPFAAllowOfflineRenderers),
-            NSOpenGLPixelFormatAttribute(NSOpenGLPFAOpenGLProfile),
-            NSOpenGLPixelFormatAttribute(NSOpenGLProfileVersion3_2Core),
-            NSOpenGLPixelFormatAttribute(NSOpenGLPFAColorSize), 24,
-            NSOpenGLPixelFormatAttribute(NSOpenGLPFAAlphaSize), 8,
-            0
-        ]
-        return NSOpenGLPixelFormat(attributes: attr)!.cglPixelFormatObj!
-    }
-
-    func changed(fps: Double) {
-        // TODO: use a view/text label overlay within the document to show this
-        // controllable via a debug menu instead of a compile-time flag.
-#if FPS_RAW
-        print("Fps \(fps), ms/frame = \(1000.0 / fps)")
-#endif
-    }
-
-    func changed(fpsStats stats: FpsSnapshot) {
-        // TODO: use a view/text label overlay within the document to show this
-        // controllable via a debug menu instead of a compile-time flag.
-#if FPS_STATS
-        print("Fps mean: \(stats.meanFps()), 99%: \(stats.fps(percentile: 0.01)), min: \(stats.minFps()), max: \(stats.maxFps())")
-#endif
-    }
-
-    var previousFrame : FpsTimer?
-
-    override func draw(in context: NSOpenGLContext, pixelFormat: NSOpenGLPixelFormat, forLayerTime t: CFTimeInterval, displayTime ts: UnsafePointer<CVTimeStamp>) {
-        // We have to capture the FPS rate of successive draw calls.  This isn't
-        // great because we will have an artificially low FPS if nothing is
-        // happening and when things are happening it will by capped to VSync
-        // since this only gets called when something needs to be redrawn (no
-        // way to measure how much we exceed the refresh rate by).  This is
-        // needed because the OpenGL rendering is deferred & when it actually
-        // gets committed is out of our control (timing this method alone will
-        // yield millions of FPS).
-        previousFrame = nil
-        previousFrame = fps.startRender()
-        renderer.beginDraw(size: frame.size, scale: contentsScale)
-        textDelegate?.render(renderer, dirtyRect: frame)
-        renderer.endDraw()
-    }
-
-    override func releaseCGLPixelFormat(_ pf: CGLPixelFormatObj) {
-        // CGLPixelFormats already seem to be released; leaving the default implementation causes a crash.
-    }
-}
-
