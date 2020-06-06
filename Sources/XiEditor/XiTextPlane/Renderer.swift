@@ -38,7 +38,7 @@ class Renderer {
     var solidInstances: [GLfloat]
     var solidInstanceIx = 0
 
-    var atlas: Atlas
+    var atlas: GlAtlas
     var textProgram: ShaderProgram
     var text_u_scale: GLuint = 0
     let maxTextInstances = 65536
@@ -132,7 +132,7 @@ class Renderer {
         glVertexAttribPointer(5, 2, GLenum(GL_FLOAT), GLboolean(GL_FALSE), textInstanceBytes, UnsafeRawPointer(bitPattern: MemoryLayout<Float>.size * 10))
         glVertexAttribDivisor(5, 1)
 
-        atlas = Atlas()
+        atlas = GlAtlas()
     }
 
     /// Prepare for drawing a surface of the given size.
