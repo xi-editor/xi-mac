@@ -121,6 +121,8 @@ func colorToArgb(_ color: NSColor) -> UInt32 {
 }
 
 final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
+    let backingLayer: TextPlaneLayer = GLTextPlaneLayer()
+    //    let backingLayer: TextPlaneLayer = MetalTextPlaneLayer()
     var lastRevisionRendered = 0
     var gutterXPad: CGFloat = 8
     var gutterAnnotationWidth = 3
@@ -185,7 +187,7 @@ final class EditView: NSView, NSTextInputClient, TextPlaneDelegate {
 
         wantsLayer = true
         wantsBestResolutionOpenGLSurface = true
-        let glLayer = TextPlaneLayer()
+        let glLayer = GLTextPlaneLayer()
         glLayer.textDelegate = self
         layer = glLayer
         registerForDraggedTypes([kUTTypeFileURL as NSPasteboard.PasteboardType])
