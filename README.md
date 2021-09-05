@@ -45,6 +45,8 @@ Screenshot (will need to be updated as syntax coloring and UI polish is added):
 - [Xcode 10.2](https://developer.apple.com/xcode/)
 - [Rust](https://www.rust-lang.org/). We test against the latest stable version,
 and recommend installing through [rustup](https://rustup.rs).
+- [aarch64 target] XiCore requires aarch64 target support on x86_64 Macs `rustup target add aarch64-apple-darwin`.
+- [x86_64 target] XiCore requires x86_64 target support on Apple Silicon Macs `rustup target add x86_64-apple-darwin`.
 
 ### Installing
 
@@ -62,6 +64,7 @@ is the front-end, and the back-end (or core) is now in
 **Build and Open:**
 
 ```bash
+> 
 > xcodebuild
 > open build/Release/XiEditor.app
 ```
