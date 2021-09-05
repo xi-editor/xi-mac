@@ -64,7 +64,6 @@ is the front-end, and the back-end (or core) is now in
 **Build and Open:**
 
 ```bash
-> 
 > xcodebuild
 > open build/Release/XiEditor.app
 ```
